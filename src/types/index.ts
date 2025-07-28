@@ -27,12 +27,25 @@ export interface LoginResponse {
 // Navigation types
 export type RootStackParamList = {
     Auth: undefined;
-    MainTabs: undefined;
+    MainStack: undefined;
 };
 
 export type AuthStackParamList = {
     Login: undefined;
     Register: undefined;
+};
+
+export type MainStackParamList = {
+    MainTabs: undefined;
+    ProductScreen: undefined;
+    LazyDemoScreen: undefined;
+    LazyTestScreen: undefined;
+    ApiLazyDemoScreen: undefined;
+    CacheDemoScreen: undefined;
+    // Có thể thêm các màn hình khác ở đây
+    // DetailScreen: { id: string };
+    // SearchScreen: { query?: string };
+    // NotificationScreen: undefined;
 };
 
 export type MainTabParamList = {

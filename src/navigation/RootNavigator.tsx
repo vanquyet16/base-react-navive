@@ -3,7 +3,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {useAuthStore} from '@/stores/authStore';
 import AuthStack from './AuthStack';
-import MainTabs from './MainTabs';
+import MainStack from './MainStack';
 import LoadingScreen from '@/components/common/LoadingScreen';
 
 const Stack = createStackNavigator();
@@ -25,8 +25,8 @@ const RootNavigator: React.FC = () => {
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         {isAuthenticated ? (
-          // Đã đăng nhập -> Hiển thị MainTabs
-          <Stack.Screen name="MainTabs" component={MainTabs} />
+          // Đã đăng nhập -> Hiển thị MainStack (bao gồm MainTabs và các màn hình khác)
+          <Stack.Screen name="MainStack" component={MainStack} />
         ) : (
           // Chưa đăng nhập -> Hiển thị AuthStack
           <Stack.Screen name="Auth" component={AuthStack} />

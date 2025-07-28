@@ -5,7 +5,6 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  TextInput,
   Modal,
   Alert,
   RefreshControl,
@@ -17,12 +16,13 @@ import {
   useUpdateProduct,
   useDeleteProduct,
 } from '@/hooks/queries/useProducts';
-import {useBaseForm} from '@/hooks/useBaseForm';
 import {
   Product,
   CreateProductRequest,
   ProductFilters,
 } from '@/services/productService';
+import {useBaseForm} from '@/hooks';
+import FormInput from '@/components/form/FormInput';
 
 // Component hiển thị item product
 const ProductItem: React.FC<{
@@ -81,36 +81,47 @@ const ProductForm: React.FC<{
   // - watch: theo dõi giá trị realtime
   // - reset: reset form về defaultValues
   // - handleSubmitWithLoading: xử lý submit với loading state
-  const {handleSubmitWithLoading, setValue, watch, reset, isSubmitting} =
-    useBaseForm<CreateProductRequest>({
-      defaultValues: {
-        name: '',
-        description: '',
-        price: 0,
-        category: '',
-        stock: 0,
-        imageUrl: '',
-      },
-      onSubmit: async formData => {
+  const {
+    control,
+    handleSubmitWithLoading,
+    formState: {isValid},
+    isSubmitting,
+    setValue,
+    reset,
+  } = useBaseForm<CreateProductRequest>({
+    mode: 'onChange',
+    defaultValues: {
+      name: '',
+      description: '',
+      price: 0,
+      category: '',
+      stock: 0,
+      imageUrl: '',
+    },
+
+    onSubmit: async (data: CreateProductRequest) => {
+      try {
         if (product) {
-          // Cập nhật product
-          await updateMutation.mutateAsync({...formData, id: product.id});
+          // Cập nhật sản phẩm
+          await updateMutation.mutateAsync({id: product.id, ...data});
         } else {
-          // Thêm product mới
-          await createMutation.mutateAsync(formData);
+          // Tạo sản phẩm mới
+          await createMutation.mutateAsync(data);
         }
         onClose();
-        reset(); // Reset form sau khi submit thành công
-      },
-      successMessage: product
-        ? 'Cập nhật sản phẩm thành công!'
-        : 'Thêm sản phẩm thành công!',
-      errorMessage: 'Có lỗi xảy ra khi xử lý sản phẩm',
-      resetOnSuccess: true,
-    });
-
-  // 👀 Watch tất cả values để hiển thị trong inputs realtime
-  const watchedValues = watch();
+      } catch (error) {
+        // Lỗi sẽ được xử lý bởi useBaseForm
+        throw error;
+      }
+    },
+    successMessage: product
+      ? 'Cập nhật sản phẩm thành công!'
+      : 'Thêm sản phẩm thành công!',
+    errorMessage: product
+      ? 'Cập nhật sản phẩm thất bại!'
+      : 'Thêm sản phẩm thất bại!',
+    resetOnSuccess: true,
+  });
 
   // Effect để set dữ liệu khi edit hoặc reset khi thêm mới
   React.useEffect(() => {
@@ -141,55 +152,84 @@ const ProductForm: React.FC<{
           {/* ✏️ Tất cả inputs sử dụng setValue và watchedValues từ react-hook-form */}
 
           {/* Input tên sản phẩm */}
-          <TextInput
-            style={styles.input}
-            placeholder="Tên sản phẩm"
-            value={watchedValues.name}
-            onChangeText={text => setValue('name', text)}
+          <FormInput
+            control={control}
+            name="name"
+            label="Tên sản phẩm"
+            placeholder="Nhập tên sản phẩm"
+            required
+            rules={{
+              required: 'Tên sản phẩm là bắt buộc',
+            }}
           />
 
           {/* Input mô tả */}
-          <TextInput
-            style={[styles.input, styles.textArea]}
-            placeholder="Mô tả sản phẩm"
-            value={watchedValues.description}
-            onChangeText={text => setValue('description', text)}
+          <FormInput
+            control={control}
+            name="description"
+            label="Mô tả sản phẩm"
+            placeholder="Nhập mô tả sản phẩm"
+            required
             multiline
             numberOfLines={3}
+            style={styles.textArea}
+            rules={{
+              required: 'Mô tả sản phẩm là bắt buộc',
+            }}
           />
 
           {/* Input giá */}
-          <TextInput
-            style={styles.input}
-            placeholder="Giá (VNĐ)"
-            value={watchedValues.price.toString()}
-            onChangeText={text => setValue('price', parseInt(text) || 0)}
+          <FormInput
+            control={control}
+            name="price"
+            label="Giá (VNĐ)"
+            placeholder="Nhập giá sản phẩm"
+            required
             keyboardType="numeric"
+            rules={{
+              required: 'Giá sản phẩm là bắt buộc',
+              min: {
+                value: 1,
+                message: 'Giá sản phẩm phải lớn hơn 0',
+              },
+            }}
           />
 
           {/* Input danh mục */}
-          <TextInput
-            style={styles.input}
-            placeholder="Danh mục"
-            value={watchedValues.category}
-            onChangeText={text => setValue('category', text)}
+          <FormInput
+            control={control}
+            name="category"
+            label="Danh mục"
+            placeholder="Nhập danh mục sản phẩm"
+            required
+            rules={{
+              required: 'Danh mục là bắt buộc',
+            }}
           />
 
           {/* Input tồn kho */}
-          <TextInput
-            style={styles.input}
-            placeholder="Số lượng tồn kho"
-            value={watchedValues.stock.toString()}
-            onChangeText={text => setValue('stock', parseInt(text) || 0)}
+          <FormInput
+            control={control}
+            name="stock"
+            label="Số lượng tồn kho"
+            placeholder="Nhập số lượng tồn kho"
+            required
             keyboardType="numeric"
+            rules={{
+              required: 'Số lượng tồn kho là bắt buộc',
+              min: {
+                value: 0,
+                message: 'Số lượng tồn kho không được âm',
+              },
+            }}
           />
 
           {/* Input URL hình ảnh */}
-          <TextInput
-            style={styles.input}
-            placeholder="URL hình ảnh (tùy chọn)"
-            value={watchedValues.imageUrl}
-            onChangeText={text => setValue('imageUrl', text)}
+          <FormInput
+            control={control}
+            name="imageUrl"
+            label="URL hình ảnh"
+            placeholder="Nhập URL hình ảnh (tùy chọn)"
           />
 
           {/* Nút hành động */}
@@ -200,9 +240,14 @@ const ProductForm: React.FC<{
               <Text style={styles.modalButtonText}>Hủy</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.modalButton, styles.submitButton]}
+              style={[
+                styles.modalButton,
+                styles.submitButton,
+                (!isValid || isSubmitting || isLoading) &&
+                  styles.disabledButton,
+              ]}
               onPress={handleSubmitWithLoading}
-              disabled={isSubmitting || isLoading}>
+              disabled={!isValid || isSubmitting || isLoading}>
               <Text style={styles.modalButtonText}>
                 {isSubmitting || isLoading
                   ? 'Đang xử lý...'
@@ -433,14 +478,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#333',
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-    fontSize: 16,
-  },
   textArea: {
     height: 80,
     textAlignVertical: 'top',
@@ -466,6 +503,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     fontWeight: 'bold',
+  },
+
+  disabledButton: {
+    backgroundColor: '#ccc',
   },
 });
 

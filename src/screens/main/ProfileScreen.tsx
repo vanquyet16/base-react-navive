@@ -8,12 +8,11 @@ import {
 } from 'react-native';
 
 import Avatar from '@/components/common/Avatar';
-import {useUser} from '@/stores/authStore';
 import {COLORS, SCREEN_PADDING} from '@/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const ProfileScreen: React.FC = () => {
-  const user = useUser();
+  // const user = useUser();
 
   const profileMenuItems = [
     {
@@ -52,12 +51,12 @@ const ProfileScreen: React.FC = () => {
     <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
       {/* User Info Card */}
       <View style={styles.userCard}>
-        <Avatar user={user} size={80} />
-        <Text style={styles.userName}>{user?.name || 'Người dùng'}</Text>
+        {/* <Avatar user={user} size={80} /> */}
+        {/* <Text style={styles.userName}>{user?.name || 'Người dùng'}</Text> */}
         <Text style={styles.userEmail}>
-          {user?.email || 'email@example.com'}
+          {/* {user?.email || 'email@example.com'} */}
         </Text>
-        <Text style={styles.userRole}>Vai trò: {user?.role || 'User'}</Text>
+        {/* <Text style={styles.userRole}>Vai trò: {user?.role || 'User'}</Text> */}
       </View>
 
       {/* Stats Card */}

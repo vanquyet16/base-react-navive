@@ -2,6 +2,23 @@
 
 Dự án React Native cơ sở với các tính năng hiện đại và cấu trúc modular, sử dụng TypeScript, React Navigation, TanStack Query, Zustand và Ant Design.
 
+## 📋 Mục lục
+
+- [Công nghệ sử dụng](#-công-nghệ-sử-dụng)
+- [Cấu trúc thư mục](#️-cấu-trúc-thư-mục)
+- [Khởi chạy dự án](#-khởi-chạy-dự-án)
+- [Navigation System](#️-navigation-system)
+- [Layout & Header System](#️-layout--header-system)
+- [Store Management](#️-store-management)
+- [Service Layer](#️-service-layer)
+- [Query Management](#️-query-management)
+- [Cache Behavior](#️-cache-behavior)
+- [Lazy Loading](#️-lazy-loading)
+- [Custom Components](#️-custom-components)
+- [Theming & Validation](#️-theming--validation)
+- [Testing](#️-testing)
+- [Development Tips](#️-development-tips)
+
 ## 📦 Công nghệ sử dụng
 
 - **React Native** 0.76.0 với TypeScript
@@ -18,7 +35,7 @@ Dự án React Native cơ sở với các tính năng hiện đại và cấu tr
 ```
 src/
 ├── components/           # Các component tái sử dụng
-│   ├── common/          # Component cơ bản (Avatar, Loading, Logo)
+│   ├── common/          # Component cơ bản (Avatar, Loading, Logo, LazyScreen)
 │   ├── form/            # Component form (FormInput)
 │   ├── layout/          # Layout components (Header, MainLayout)
 │   ├── navigation/      # Custom navigation components
@@ -77,27 +94,49 @@ RootNavigator
 ├── AuthStack (khi chưa đăng nhập)
 │   ├── LoginScreen
 │   └── RegisterScreen
-└── MainTabs (khi đã đăng nhập)
-    ├── HomeScreen
-    ├── ProfileScreen
-    └── SettingsScreen
+└── MainStack (khi đã đăng nhập)
+    ├── MainTabs
+    │   ├── HomeScreen
+    │   ├── ProfileScreen
+    │   └── SettingsScreen
+    ├── ProductScreen
+    ├── LazyDemoScreen
+    ├── LazyTestScreen
+    ├── ApiLazyDemoScreen
+    └── CacheDemoScreen
 ```
 
-### 2. Bottom Tabs Usage
+### 2. MainStack - Quản lý màn hình không có trong bottom tabs
 
-#### Tạo Bottom Tabs cơ bản:
+```typescript
+// src/navigation/MainStack.tsx
+const MainStack: React.FC = () => {
+  return (
+    <Stack.Navigator screenOptions={{headerShown: false}}>
+      <Stack.Screen name="MainTabs" component={MainTabs} />
+      <Stack.Screen name="ProductScreen" component={ProductScreenWrapper} />
+      <Stack.Screen name="LazyDemoScreen" component={LazyDemoScreenWrapper} />
+      <Stack.Screen name="LazyTestScreen" component={LazyTestScreenWrapper} />
+      <Stack.Screen
+        name="ApiLazyDemoScreen"
+        component={ApiLazyDemoScreenWrapper}
+      />
+      <Stack.Screen name="CacheDemoScreen" component={CacheDemoScreenWrapper} />
+    </Stack.Navigator>
+  );
+};
+```
+
+### 3. Bottom Tabs Usage
 
 ```typescript
 // src/navigation/MainTabs.tsx
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const MainTabs = () => {
   return (
     <Tab.Navigator
-      tabBar={CustomTabBar} // Custom tab bar component
+      tabBar={CustomTabBar}
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: COLORS.primary,
@@ -119,38 +158,9 @@ const MainTabs = () => {
 };
 ```
 
-#### Custom Tab Bar:
-
-```typescript
-// src/components/navigation/CustomTabBar.tsx
-const CustomTabBar: React.FC<BottomTabBarProps> = ({
-  state,
-  descriptors,
-  navigation,
-}) => {
-  return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.tabsContainer}>
-        {state.routes.map((route, index) => {
-          const isFocused = state.index === index;
-          // Custom styling cho từng tab
-          return (
-            <TouchableOpacity key={route.key} onPress={onPress}>
-              {/* Icon và label */}
-            </TouchableOpacity>
-          );
-        })}
-      </View>
-    </SafeAreaView>
-  );
-};
-```
-
 ## 🏗️ Layout & Header System
 
 ### 1. MainLayout Component
-
-MainLayout là wrapper component chính cung cấp cấu trúc layout thống nhất:
 
 ```typescript
 // Sử dụng cơ bản
@@ -196,16 +206,6 @@ headerProps={{
 }}
 ```
 
-#### Header tìm kiếm (search):
-
-```typescript
-headerProps={{
-  type: 'search',
-  onSearch: (text) => handleSearch(text),
-  placeholder: 'Tìm kiếm...',
-}}
-```
-
 ## 🏪 Store Management với Zustand
 
 ### 1. Tạo Store cơ bản
@@ -216,7 +216,6 @@ import {create} from 'zustand';
 import {persist, createJSONStorage} from 'zustand/middleware';
 import {MMKV} from 'react-native-mmkv';
 
-// Tạo MMKV storage
 const storage = new MMKV();
 const mmkvStorage = {
   getItem: (name: string) => {
@@ -245,11 +244,8 @@ interface ExampleActions {
 export const useExampleStore = create<ExampleState & ExampleActions>()(
   persist(
     (set, get) => ({
-      // State
       count: 0,
       user: null,
-
-      // Actions
       increment: () => set(state => ({count: state.count + 1})),
       setUser: user => set({user}),
       reset: () => set({count: 0, user: null}),
@@ -264,28 +260,6 @@ export const useExampleStore = create<ExampleState & ExampleActions>()(
     },
   ),
 );
-
-// Selectors
-export const useCount = () => useExampleStore(state => state.count);
-export const useUser = () => useExampleStore(state => state.user);
-```
-
-### 2. Sử dụng Store trong Component
-
-```typescript
-import {useExampleStore, useCount} from '@/stores/exampleStore';
-
-const MyComponent = () => {
-  const {increment, setUser} = useExampleStore();
-  const count = useCount(); // Optimized selector
-
-  return (
-    <View>
-      <Text>Count: {count}</Text>
-      <Button onPress={increment} title="Tăng" />
-    </View>
-  );
-};
 ```
 
 ## 🌐 Service Layer
@@ -298,25 +272,21 @@ import api from './api';
 import {User, CreateUserRequest, UpdateUserRequest} from '@/types';
 
 export const userService = {
-  // Lấy danh sách users
   getUsers: async (): Promise<User[]> => {
     const response = await api.get('/users');
     return response.data;
   },
 
-  // Lấy user theo ID
   getUserById: async (id: string): Promise<User> => {
     const response = await api.get(`/users/${id}`);
     return response.data;
   },
 
-  // Tạo user mới
   createUser: async (userData: CreateUserRequest): Promise<User> => {
     const response = await api.post('/users', userData);
     return response.data;
   },
 
-  // Cập nhật user
   updateUser: async (
     id: string,
     userData: UpdateUserRequest,
@@ -325,7 +295,6 @@ export const userService = {
     return response.data;
   },
 
-  // Xóa user
   deleteUser: async (id: string): Promise<void> => {
     await api.delete(`/users/${id}`);
   },
@@ -364,13 +333,11 @@ api.interceptors.response.use(
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      // Logic refresh token
       try {
         const newTokens = await refreshToken();
         originalRequest.headers.Authorization = `Bearer ${newTokens.accessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        // Logout user nếu refresh thất bại
         useAuthStore.getState().logout();
       }
     }
@@ -395,7 +362,6 @@ interface UseBaseQueryProps<TData, TError = Error> {
   errorMessage?: string;
   showSuccessToast?: boolean;
   successMessage?: string;
-  // Kế thừa tất cả options của useQuery
 }
 
 export const useBaseQuery = <TData, TError = Error>({
@@ -411,7 +377,6 @@ export const useBaseQuery = <TData, TError = Error>({
     queryKey,
     queryFn,
     retry: (failureCount, error: any) => {
-      // Không retry với lỗi 401, 403, 404
       if ([401, 403, 404].includes(error?.response?.status)) {
         return false;
       }
@@ -432,27 +397,6 @@ export const useBaseQuery = <TData, TError = Error>({
     }
   }, [query.error]);
 
-  // Auto toast success handling
-  useEffect(() => {
-    if (
-      query.data &&
-      query.isSuccess &&
-      showSuccessToast &&
-      !query.isFetching
-    ) {
-      Toast.show({
-        type: 'success',
-        text1: successMessage,
-      });
-    }
-  }, [
-    query.data,
-    query.isSuccess,
-    showSuccessToast,
-    successMessage,
-    query.isFetching,
-  ]);
-
   return query;
 };
 ```
@@ -471,15 +415,7 @@ const {data: user} = useBaseQuery({
   queryKey: ['user', userId],
   queryFn: () => userService.getUserById(userId),
   errorMessage: 'Không thể tải thông tin người dùng',
-  enabled: !!userId, // Chỉ chạy khi có userId
-});
-
-// Với success toast
-const {data: profile} = useBaseQuery({
-  queryKey: ['profile'],
-  queryFn: () => authService.getCurrentUser(),
-  showSuccessToast: true,
-  successMessage: 'Tải hồ sơ thành công',
+  enabled: !!userId,
 });
 ```
 
@@ -489,14 +425,12 @@ const {data: profile} = useBaseQuery({
 // src/hooks/useBaseMutation.ts
 interface UseBaseMutationProps<TData, TError, TVariables> {
   mutationFn: (variables: TVariables) => Promise<TData>;
-  invalidateQueries?: QueryKey[]; // Các query cần invalidate
-  refetchQueries?: QueryKey[]; // Các query cần refetch
+  invalidateQueries?: QueryKey[];
+  refetchQueries?: QueryKey[];
   showSuccessToast?: boolean;
   successMessage?: string;
   showErrorToast?: boolean;
   errorMessage?: string;
-  onSuccessCallback?: (data: TData, variables: TVariables) => void;
-  onErrorCallback?: (error: TError, variables: TVariables) => void;
 }
 
 export const useBaseMutation = <TData, TError = Error, TVariables = void>({
@@ -507,8 +441,6 @@ export const useBaseMutation = <TData, TError = Error, TVariables = void>({
   successMessage = 'Thao tác thành công!',
   showErrorToast = true,
   errorMessage = 'Có lỗi xảy ra!',
-  onSuccessCallback,
-  onErrorCallback,
   ...options
 }) => {
   const queryClient = useQueryClient();
@@ -521,11 +453,6 @@ export const useBaseMutation = <TData, TError = Error, TVariables = void>({
         queryClient.invalidateQueries({queryKey});
       });
 
-      // Auto refetch queries
-      refetchQueries.forEach(queryKey => {
-        queryClient.refetchQueries({queryKey});
-      });
-
       // Auto success toast
       if (showSuccessToast) {
         Toast.show({
@@ -534,8 +461,6 @@ export const useBaseMutation = <TData, TError = Error, TVariables = void>({
         });
       }
 
-      // Custom success callback
-      onSuccessCallback?.(data, variables);
       options.onSuccess?.(data, variables, context);
     },
     onError: (error, variables, context) => {
@@ -550,8 +475,6 @@ export const useBaseMutation = <TData, TError = Error, TVariables = void>({
         });
       }
 
-      // Custom error callback
-      onErrorCallback?.(error, variables);
       options.onError?.(error, variables, context);
     },
     ...options,
@@ -566,7 +489,7 @@ export const useBaseMutation = <TData, TError = Error, TVariables = void>({
 const createUserMutation = useBaseMutation({
   mutationFn: (userData: CreateUserRequest) => userService.createUser(userData),
   successMessage: 'Tạo người dùng thành công!',
-  invalidateQueries: [['users']], // Invalidate danh sách users
+  invalidateQueries: [['users']],
 });
 
 // Sử dụng
@@ -578,19 +501,6 @@ const handleCreateUser = (userData: CreateUserRequest) => {
     },
   });
 };
-
-// Với custom callbacks
-const updateUserMutation = useBaseMutation({
-  mutationFn: ({id, ...data}: UpdateUserRequest) =>
-    userService.updateUser(id, data),
-  showSuccessToast: false, // Tắt toast mặc định
-  onSuccessCallback: (updatedUser, variables) => {
-    // Custom logic sau khi update thành công
-    queryClient.setQueryData(['user', variables.id], updatedUser);
-    navigation.goBack();
-  },
-  invalidateQueries: [['users'], ['user-profile']],
-});
 ```
 
 #### useBaseForm - Form hook với validation:
@@ -602,7 +512,6 @@ interface UseBaseFormProps<T extends FieldValues> {
   successMessage?: string;
   errorMessage?: string;
   resetOnSuccess?: boolean;
-  // Kế thừa tất cả props của useForm
 }
 
 interface UseBaseFormReturn<T extends FieldValues> extends UseFormReturn<T> {
@@ -630,7 +539,6 @@ export const useBaseForm = <T extends FieldValues>({
 
       await onSubmit(data);
 
-      // Auto success toast
       Toast.show({
         type: 'success',
         text1: successMessage,
@@ -644,7 +552,6 @@ export const useBaseForm = <T extends FieldValues>({
         error?.response?.data?.message || error?.message || errorMessage;
       setSubmitError(message);
 
-      // Auto error toast
       Toast.show({
         type: 'error',
         text1: 'Lỗi',
@@ -692,7 +599,7 @@ const LoginScreen = () => {
       await loginMutation.mutateAsync(data);
     },
     successMessage: 'Đăng nhập thành công!',
-    resetOnSuccess: false, // Không reset form sau khi đăng nhập
+    resetOnSuccess: false,
   });
 
   return (
@@ -737,275 +644,299 @@ const LoginScreen = () => {
 };
 ```
 
-### 2. Query Hooks cho từng module
+## 🎯 Cache Behavior
+
+### 1. Cache Strategy với Detail Navigation
+
+Khi bạn vào detail của một item và back ra rồi vào lại, hook của bạn **đã cache** và sẽ không gọi API nếu cùng ID:
 
 ```typescript
-// src/hooks/queries/useUsers.ts
-import {useBaseQuery, useBaseMutation} from '@/hooks';
-import {userService} from '@/services/userService';
+// ✅ Lần đầu vào Product ID = "123"
+const {data} = useBaseQuery({
+  queryKey: ['product', '123'], // Cache key unique
+  queryFn: () => apiService.getProductById('123'),
+});
+// Result: Gọi API, cache data
 
-// Query keys
-export const userKeys = {
-  all: ['users'] as const,
-  lists: () => [...userKeys.all, 'list'] as const,
-  list: (filters: string) => [...userKeys.lists(), {filters}] as const,
-  details: () => [...userKeys.all, 'detail'] as const,
-  detail: (id: string) => [...userKeys.details(), id] as const,
-};
+// ✅ Lần sau vào lại Product ID = "123"
+const {data} = useBaseQuery({
+  queryKey: ['product', '123'], // Cùng cache key
+  queryFn: () => apiService.getProductById('123'),
+});
+// Result: Load từ cache, KHÔNG gọi API
+```
 
-// Get users
-export const useGetUsers = (filters?: string) => {
+### 2. Cache Key Strategy
+
+```typescript
+// ✅ Cache theo ID - Recommended
+const useProductDetail = (productId: string) => {
   return useBaseQuery({
-    queryKey: userKeys.list(filters || ''),
-    queryFn: () => userService.getUsers(),
-    showSuccessToast: false,
+    queryKey: ['product', productId], // Unique cache key
+    queryFn: () => apiService.getProductById(productId),
+    staleTime: 5 * 60 * 1000, // Cache 5 phút
   });
 };
 
-// Get user by ID
-export const useGetUser = (id: string) => {
+// ✅ Cache theo multiple params
+const useOrderDetail = (orderId: string, userId: string) => {
   return useBaseQuery({
-    queryKey: userKeys.detail(id),
-    queryFn: () => userService.getUserById(id),
-    enabled: !!id,
-  });
-};
-
-// Create user
-export const useCreateUser = () => {
-  const queryClient = useQueryClient();
-
-  return useBaseMutation({
-    mutationFn: userService.createUser,
-    showSuccessToast: true,
-    onSuccessCallback: () => {
-      // Invalidate và refetch users list
-      queryClient.invalidateQueries({queryKey: userKeys.lists()});
-    },
-  });
-};
-
-// Update user
-export const useUpdateUser = () => {
-  const queryClient = useQueryClient();
-
-  return useBaseMutation({
-    mutationFn: ({id, ...data}: {id: string} & UpdateUserRequest) =>
-      userService.updateUser(id, data),
-    showSuccessToast: true,
-    onSuccessCallback: (data, variables) => {
-      // Cập nhật cache cho user detail
-      queryClient.setQueryData(userKeys.detail(variables.id), data);
-      // Invalidate users list
-      queryClient.invalidateQueries({queryKey: userKeys.lists()});
-    },
+    queryKey: ['order', orderId, userId], // Complex cache key
+    queryFn: () => apiService.getOrderById(orderId, userId),
   });
 };
 ```
 
-### 3. Sử dụng Query trong Component
+### 3. Cache Benefits
+
+- ✅ **Instant loading** khi navigate back
+- ✅ **Giảm API calls** đáng kể
+- ✅ **Background refetch** khi data stale
+- ✅ **Offline support** với cached data
+- ✅ **Better UX** với smooth navigation
+
+### 4. Cache Invalidation
 
 ```typescript
-// src/screens/UserListScreen.tsx
-import {useGetUsers, useCreateUser} from '@/hooks/queries/useUsers';
-
-const UserListScreen = () => {
-  const {data: users, isLoading, error, refetch} = useGetUsers();
-  const createUserMutation = useCreateUser();
-
-  const handleCreateUser = (userData: CreateUserRequest) => {
-    createUserMutation.mutate(userData, {
-      onSuccess: () => {
-        console.log('User created successfully');
-      },
-    });
-  };
-
-  if (isLoading) return <LoadingScreen />;
-  if (error) return <ErrorScreen onRetry={refetch} />;
-
-  return (
-    <View>
-      <FlatList
-        data={users}
-        renderItem={({item}) => <UserItem user={item} />}
-        refreshing={isLoading}
-        onRefresh={refetch}
-      />
-      <Button
-        title="Tạo User"
-        onPress={() => handleCreateUser({name: 'New User'})}
-        loading={createUserMutation.isPending}
-      />
-    </View>
-  );
-};
-```
-
-## 🛠️ Patterns và Best Practices
-
-### 1. Component Pattern
-
-```typescript
-// Component với TypeScript và memo
-import React, {memo} from 'react';
-
-interface UserCardProps {
-  user: User;
-  onPress?: (user: User) => void;
-}
-
-const UserCard: React.FC<UserCardProps> = memo(({user, onPress}) => {
-  const handlePress = () => onPress?.(user);
-
-  return (
-    <TouchableOpacity onPress={handlePress}>
-      <Text>{user.name}</Text>
-    </TouchableOpacity>
-  );
+// Auto invalidation với useBaseMutation
+const updateProduct = useBaseMutation({
+  mutationFn: apiService.updateProduct,
+  invalidateQueries: [['product']], // Invalidate tất cả product queries
+  showSuccessToast: true,
 });
 
-UserCard.displayName = 'UserCard';
+// Manual invalidation
+queryClient.invalidateQueries({queryKey: ['product', '123']});
+queryClient.invalidateQueries({queryKey: ['product']});
+queryClient.clear(); // Clear all cache
 ```
 
-### 2. Service Integration Pattern
+## ⚡ Lazy Loading
+
+### 1. Component Lazy Loading
 
 ```typescript
-// Kết hợp Service + Store + Query
-const useAuthFlow = () => {
-  const {login: setAuthState} = useAuthStore();
+// src/components/common/LazyScreen.tsx
+interface LazyScreenProps {
+  component: () => Promise<{default: React.ComponentType<any>}>;
+  fallback?: React.ReactNode;
+  onLoad?: () => void;
+  onError?: (error: Error) => void;
+}
 
-  const loginMutation = useBaseMutation({
-    mutationFn: authService.login,
-    onSuccessCallback: data => {
-      setAuthState(data.tokens);
-    },
-  });
+const LazyScreen: React.FC<LazyScreenProps> = ({
+  component,
+  fallback = <LoadingScreen />,
+  onLoad,
+  onError,
+}) => {
+  const [Component, setComponent] = useState<React.ComponentType<any> | null>(
+    null,
+  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  const logout = () => {
-    authService.logout();
-    useAuthStore.getState().logout();
-  };
+  useEffect(() => {
+    component()
+      .then(module => {
+        setComponent(() => module.default);
+        setIsLoading(false);
+        onLoad?.();
+      })
+      .catch(err => {
+        setError(err);
+        setIsLoading(false);
+        onError?.(err);
+      });
+  }, [component]);
 
-  return {
-    login: loginMutation.mutate,
-    logout,
-    isLoading: loginMutation.isPending,
-  };
+  if (isLoading) return <>{fallback}</>;
+  if (error) return <ErrorScreen error={error} />;
+  if (!Component) return null;
+
+  return <Component />;
 };
 ```
 
-### 3. Error Handling Pattern
+### 2. Sử dụng trong Navigation
 
 ```typescript
-// Component với error boundary
-<ErrorBoundary fallback={<ErrorScreen />}>
-  <QueryErrorResetBoundary>
-    {({reset}) => <UserListScreen onError={reset} />}
-  </QueryErrorResetBoundary>
-</ErrorBoundary>
+// Wrapper cho LazyScreen
+const LazyDemoScreenWrapper = () => (
+  <MainLayout
+    showHeader={true}
+    showTabs={false}
+    headerProps={{
+      title: 'Demo Lazy Loading',
+      type: 'minimal',
+    }}>
+    <LazyScreen component={() => import('../screens/example/LazyDemoScreen')} />
+  </MainLayout>
+);
 ```
 
-## 📱 Custom Components
+### 3. Advanced Lazy Loading
+
+```typescript
+// src/components/common/AdvancedLazyScreen.tsx
+interface AdvancedLazyScreenProps {
+  component: () => Promise<{default: React.ComponentType<any>}>;
+  fallback?: React.ReactNode;
+  retryCount?: number;
+  retryDelay?: number;
+  onLoad?: () => void;
+  onError?: (error: Error) => void;
+  onRetry?: () => void;
+}
+
+const AdvancedLazyScreen: React.FC<AdvancedLazyScreenProps> = ({
+  component,
+  fallback = <LoadingScreen />,
+  retryCount = 3,
+  retryDelay = 1000,
+  onLoad,
+  onError,
+  onRetry,
+}) => {
+  const [Component, setComponent] = useState<React.ComponentType<any> | null>(
+    null,
+  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+  const [retryAttempts, setRetryAttempts] = useState(0);
+
+  const loadComponent = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const module = await component();
+      setComponent(() => module.default);
+      setIsLoading(false);
+      onLoad?.();
+    } catch (err) {
+      setError(err as Error);
+      setIsLoading(false);
+      onError?.(err as Error);
+    }
+  }, [component, onLoad, onError]);
+
+  const handleRetry = useCallback(() => {
+    if (retryAttempts < retryCount) {
+      setRetryAttempts(prev => prev + 1);
+      setTimeout(loadComponent, retryDelay);
+      onRetry?.();
+    }
+  }, [retryAttempts, retryCount, retryDelay, loadComponent, onRetry]);
+
+  useEffect(() => {
+    loadComponent();
+  }, [loadComponent]);
+
+  if (isLoading) return <>{fallback}</>;
+  if (error) {
+    return (
+      <ErrorScreen
+        error={error}
+        onRetry={handleRetry}
+        canRetry={retryAttempts < retryCount}
+      />
+    );
+  }
+  if (!Component) return null;
+
+  return <Component />;
+};
+```
+
+### 4. API Lazy Loading
+
+```typescript
+// Lazy loading queries - chỉ fetch khi enabled
+const usersQuery = useQuery({
+  queryKey: ['users', page],
+  queryFn: () => apiService.getUsers(page, 10),
+  enabled: isEnabled && activeTab === 'users', // Conditional fetching
+  staleTime: 5 * 60 * 1000, // 5 phút
+});
+
+const postsQuery = useQuery({
+  queryKey: ['posts', page],
+  queryFn: () => apiService.getPosts(page, 10),
+  enabled: isEnabled && activeTab === 'posts',
+  staleTime: 5 * 60 * 1000,
+});
+```
+
+### 5. Lazy Loading Benefits
+
+- ✅ **Giảm bundle size** với code splitting
+- ✅ **Faster initial load** với component lazy loading
+- ✅ **Conditional API calls** với enabled option
+- ✅ **Better performance** với background loading
+- ✅ **Memory optimization** với dynamic imports
+
+## 🎨 Custom Components
 
 ### 1. CustomHeader Component
 
-CustomHeader là component header tùy chỉnh với nhiều tính năng như tìm kiếm, thông báo, menu và profile.
-
-#### Props Interface:
-
 ```typescript
+// Props Interface
 interface CustomHeaderProps {
-  title?: string; // Tiêu đề header
-  subtitle?: string; // Phụ đề (hiển thị dưới title)
-  showProfile?: boolean; // Hiển thị avatar profile
-  showBack?: boolean; // Hiển thị nút back
-  showSearch?: boolean; // Hiển thị nút search
-  showNotification?: boolean; // Hiển thị nút thông báo
-  showMenu?: boolean; // Hiển thị nút menu
-  onBack?: () => void; // Callback khi nhấn nút back
-  onSearch?: (text: string) => void; // Callback khi tìm kiếm
-  onNotificationPress?: () => void; // Callback khi nhấn thông báo
-  onMenuPress?: () => void; // Callback khi nhấn menu
-  rightComponent?: React.ReactNode; // Component tùy chỉnh bên phải
-  backgroundColor?: string; // Màu nền header
-  textColor?: string; // Màu chữ
-  type?: 'default' | 'search' | 'minimal'; // Kiểu hiển thị
-  notificationCount?: number; // Số lượng thông báo
+  title?: string;
+  subtitle?: string;
+  showProfile?: boolean;
+  showBack?: boolean;
+  showSearch?: boolean;
+  showNotification?: boolean;
+  showMenu?: boolean;
+  onBack?: () => void;
+  onSearch?: (text: string) => void;
+  onNotificationPress?: () => void;
+  onMenuPress?: () => void;
+  rightComponent?: React.ReactNode;
+  backgroundColor?: string;
+  textColor?: string;
+  type?: 'default' | 'search' | 'minimal';
+  notificationCount?: number;
 }
-```
 
-#### Cách sử dụng CustomHeader:
-
-```typescript
-import {CustomHeader} from '@/components';
-
-// Header cơ bản
-<CustomHeader
-  title="Trang chủ"
-  showProfile={true}
-/>
-
-// Header với tìm kiếm và thông báo
+// Sử dụng
 <CustomHeader
   title="Ứng dụng của tôi"
   subtitle="Chào mừng bạn"
   showSearch={true}
   showNotification={true}
   notificationCount={5}
-  onSearch={(text) => console.log('Tìm kiếm:', text)}
+  onSearch={text => console.log('Tìm kiếm:', text)}
   onNotificationPress={() => console.log('Mở thông báo')}
-/>
-
-// Header minimal với nút back
-<CustomHeader
-  title="Chi tiết"
-  showBack={true}
-  onBack={() => navigation.goBack()}
-  type="minimal"
-/>
-
-// Header tìm kiếm
-<CustomHeader
-  type="search"
-  onSearch={(text) => handleSearch(text)}
-  placeholder="Tìm kiếm sản phẩm..."
-/>
+/>;
 ```
 
 ### 2. CustomTabBar Component
 
-CustomTabBar là component bottom navigation tùy chỉnh với animation và hiệu ứng đẹp.
-
-#### Props Interface:
-
 ```typescript
+// Props Interface
 interface CustomTabBarProps {
-  tabs: TabItem[]; // Danh sách tabs
-  activeTab: string; // Tab đang active
-  onTabPress: (tabKey: string) => void; // Callback khi nhấn tab
-  backgroundColor?: string; // Màu nền
-  activeColor?: string; // Màu khi active
-  inactiveColor?: string; // Màu khi không active
-  showLabels?: boolean; // Hiển thị label
-  animationType?: 'slide' | 'scale' | 'fade'; // Kiểu animation
+  tabs: TabItem[];
+  activeTab: string;
+  onTabPress: (tabKey: string) => void;
+  backgroundColor?: string;
+  activeColor?: string;
+  inactiveColor?: string;
+  showLabels?: boolean;
+  animationType?: 'slide' | 'scale' | 'fade';
 }
 
 interface TabItem {
-  key: string; // Key duy nhất của tab
-  icon: string; // Tên icon (Material Icons)
-  label: string; // Label hiển thị
-  badge?: number; // Số badge (thông báo)
-  disabled?: boolean; // Vô hiệu hóa tab
+  key: string;
+  icon: string;
+  label: string;
+  badge?: number;
+  disabled?: boolean;
 }
-```
 
-#### Cách sử dụng CustomTabBar:
-
-```typescript
-import {CustomTabBar, BottomBarTab} from '@/components';
-
-// Sử dụng với BottomBarTab có sẵn
+// Sử dụng
 const tabs = [
   BottomBarTab.Home,
   {...BottomBarTab.Search, badge: 3},
@@ -1020,40 +951,6 @@ const tabs = [
   showLabels={true}
   animationType="slide"
 />;
-
-// Tạo tabs tùy chỉnh
-const customTabs = [
-  {
-    key: 'dashboard',
-    icon: 'dashboard',
-    label: 'Bảng điều khiển',
-  },
-  {
-    key: 'orders',
-    icon: 'receipt',
-    label: 'Đơn hàng',
-    badge: 12,
-  },
-  {
-    key: 'customers',
-    icon: 'people',
-    label: 'Khách hàng',
-  },
-];
-```
-
-#### BottomBarTab có sẵn:
-
-```typescript
-// Các tab định nghĩa sẵn
-BottomBarTab.Home; // Trang chủ
-BottomBarTab.Search; // Tìm kiếm
-BottomBarTab.Favorites; // Yêu thích
-BottomBarTab.Profile; // Hồ sơ
-BottomBarTab.Settings; // Cài đặt
-BottomBarTab.Cart; // Giỏ hàng
-BottomBarTab.Notifications; // Thông báo
-BottomBarTab.Messages; // Tin nhắn
 ```
 
 ### 3. Form Components
@@ -1101,90 +998,9 @@ const FormInput: React.FC<FormInputProps> = ({
 };
 ```
 
-### 4. Layout Helpers
+## 🎨 Theming & Validation
 
-```typescript
-// Wrapper cho screens với layout thống nhất
-const ScreenWrapper = ({children, title}) => (
-  <MainLayout headerProps={{title}} enableScroll={true}>
-    <View style={styles.screenPadding}>{children}</View>
-  </MainLayout>
-);
-```
-
-### 5. Tính năng nổi bật
-
-#### CustomHeader:
-
-- 🔍 Tìm kiếm với animation mượt mà
-- 🔔 Thông báo với badge số lượng
-- 👤 Profile avatar
-- 🎨 Tùy chỉnh màu sắc và style
-- 📱 3 kiểu hiển thị: default, search, minimal
-
-#### CustomTabBar:
-
-- 🎬 Animation slide indicator
-- 📊 Scale animation khi nhấn
-- 🔵 Badge thông báo cho từng tab
-- 🎨 Tùy chỉnh màu sắc
-- 🚫 Vô hiệu hóa tab
-- 📱 Responsive design
-
-### 6. Ví dụ hoàn chỉnh
-
-```typescript
-// Screen sử dụng cả CustomHeader và CustomTabBar
-const ExampleScreen = () => {
-  const [activeTab, setActiveTab] = useState('home');
-  const [searchText, setSearchText] = useState('');
-
-  const tabs = [
-    BottomBarTab.Home,
-    {...BottomBarTab.Search, badge: 3},
-    BottomBarTab.Favorites,
-    BottomBarTab.Profile,
-  ];
-
-  return (
-    <View style={{flex: 1}}>
-      <CustomHeader
-        title="Ứng dụng Demo"
-        subtitle="Chào mừng bạn!"
-        showSearch={true}
-        showNotification={true}
-        notificationCount={5}
-        onSearch={setSearchText}
-        onNotificationPress={() => console.log('Notifications')}
-      />
-
-      <View style={{flex: 1}}>
-        {/* Nội dung chính */}
-        <Text>Active Tab: {activeTab}</Text>
-        <Text>Search: {searchText}</Text>
-      </View>
-
-      <CustomTabBar
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabPress={setActiveTab}
-        showLabels={true}
-        animationType="slide"
-      />
-    </View>
-  );
-};
-```
-
-### 7. Lưu ý sử dụng
-
-- Cả CustomHeader và CustomTabBar đều tương thích với React Navigation
-- Sử dụng Material Icons từ react-native-vector-icons
-- Tương thích với cả iOS và Android
-- Hỗ trợ TypeScript đầy đủ
-- Components được tối ưu performance với React.memo
-
-## 🎨 Theming
+### 1. Colors & Constants
 
 ```typescript
 // src/constants/index.ts
@@ -1194,20 +1010,22 @@ export const COLORS = {
   success: '#52c41a',
   warning: '#faad14',
   error: '#ff4d4f',
-  // ... themes khác
+  info: '#13c2c2',
+  text: '#262626',
+  textSecondary: '#8c8c8c',
+  background: '#ffffff',
+  border: '#f0f0f0',
 };
 
-// Sử dụng trong component
-const styles = StyleSheet.create({
-  button: {
-    backgroundColor: COLORS.primary,
-    borderRadius: BORDER_RADIUS,
-    padding: SCREEN_PADDING,
-  },
-});
+export const BORDER_RADIUS = 8;
+export const SCREEN_PADDING = 16;
+export const API_CONFIG = {
+  BASE_URL: 'https://api.example.com',
+  TIMEOUT: 10000,
+};
 ```
 
-## 🚦 Validation
+### 2. Validation Rules
 
 ```typescript
 // src/constants/index.ts
@@ -1250,12 +1068,73 @@ npm run test -- --coverage
 
 ## 📝 Development Tips
 
-1. **Hot Reload**: Sử dụng Metro bundler cho hot reload nhanh
-2. **Debugging**: Dùng Flipper hoặc React Native Debugger
-3. **Performance**: Sử dụng `React.memo`, `useMemo`, `useCallback` cho tối ưu
-4. **Type Safety**: Định nghĩa types đầy đủ trong `src/types/`
-5. **Code Splitting**: Lazy load các screen nặng
-6. **Memory Management**: Cleanup subscriptions và timers
+### 1. Performance Optimization
+
+```typescript
+// Sử dụng React.memo cho components
+const UserCard: React.FC<UserCardProps> = memo(({user, onPress}) => {
+  const handlePress = useCallback(() => onPress?.(user), [user, onPress]);
+
+  return (
+    <TouchableOpacity onPress={handlePress}>
+      <Text>{user.name}</Text>
+    </TouchableOpacity>
+  );
+});
+
+// Sử dụng useMemo cho expensive calculations
+const expensiveValue = useMemo(() => {
+  return heavyCalculation(data);
+}, [data]);
+
+// Sử dụng useCallback cho event handlers
+const handleSubmit = useCallback(
+  (data: FormData) => {
+    submitMutation.mutate(data);
+  },
+  [submitMutation],
+);
+```
+
+### 2. Error Handling
+
+```typescript
+// Component với error boundary
+<ErrorBoundary fallback={<ErrorScreen />}>
+  <QueryErrorResetBoundary>
+    {({reset}) => <UserListScreen onError={reset} />}
+  </QueryErrorResetBoundary>
+</ErrorBoundary>
+```
+
+### 3. Code Splitting
+
+```typescript
+// Lazy load các screen nặng
+const HeavyScreen = lazy(() => import('./HeavyScreen'));
+
+// Sử dụng với Suspense
+<Suspense fallback={<LoadingScreen />}>
+  <HeavyScreen />
+</Suspense>;
+```
+
+### 4. Memory Management
+
+```typescript
+// Cleanup subscriptions và timers
+useEffect(() => {
+  const subscription = someService.subscribe();
+  const timer = setInterval(() => {
+    // Do something
+  }, 1000);
+
+  return () => {
+    subscription.unsubscribe();
+    clearInterval(timer);
+  };
+}, []);
+```
 
 ## 🔧 Configuration Files
 

@@ -6,17 +6,27 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
 import {useAuthStore} from '@/stores/authStore';
 import {COLORS, SCREEN_PADDING} from '@/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {MainLayout} from '@/components';
+import {MainStackParamList} from '@/types';
+
+type NavigationProp = StackNavigationProp<MainStackParamList>;
 
 const HomeScreen: React.FC = () => {
+  const navigation = useNavigation<NavigationProp>();
   // const user = useUser();
   const {logout} = useAuthStore();
 
   const handleLogout = () => {
     logout();
+  };
+
+  const handleNavigateToProduct = () => {
+    navigation.navigate('ProductScreen');
   };
 
   return (
@@ -44,9 +54,39 @@ const HomeScreen: React.FC = () => {
             <Text style={styles.actionText}>Thống kê</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionCard}>
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={handleNavigateToProduct}>
             <Icon name="inventory" size={24} color={COLORS.primary} />
             <Text style={styles.actionText}>Quản lý</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => navigation.navigate('LazyDemoScreen')}>
+            <Icon name="speed" size={24} color={COLORS.primary} />
+            <Text style={styles.actionText}>Lazy Demo</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => navigation.navigate('LazyTestScreen')}>
+            <Icon name="quiz" size={24} color={COLORS.primary} />
+            <Text style={styles.actionText}>Lazy Test</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => navigation.navigate('ApiLazyDemoScreen')}>
+            <Icon name="api" size={24} color={COLORS.primary} />
+            <Text style={styles.actionText}>API Demo</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.actionCard}
+            onPress={() => navigation.navigate('CacheDemoScreen')}>
+            <Icon name="cached" size={24} color={COLORS.primary} />
+            <Text style={styles.actionText}>Cache Demo</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.actionCard}>

@@ -1,5 +1,11 @@
 import React, {ReactNode, useMemo, useCallback, memo} from 'react';
-import {View, StyleSheet, ScrollView} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import CustomHeader from './CustomHeader';
@@ -14,6 +20,7 @@ import {COLORS} from '@/constants';
  * - useMemo cho các tính toán và style objects
  * - useCallback cho các hàm render
  * - Memoize inline styles để tránh tạo object mới mỗi lần render
+ * - KeyboardAvoidingView để tự động đẩy nội dung lên khi bàn phím xuất hiện
  */
 interface MainLayoutProps {
   children: ReactNode;
@@ -44,6 +51,9 @@ interface MainLayoutProps {
   backgroundColor?: string;
   // Thuộc tính Scroll
   enableScroll?: boolean;
+  // Thuộc tính Keyboard
+  enableKeyboardAvoiding?: boolean;
+  keyboardVerticalOffset?: number;
 }
 
 // Hàm so sánh tùy chỉnh cho React.memo
@@ -53,7 +63,9 @@ const areEqual = (prevProps: MainLayoutProps, nextProps: MainLayoutProps) => {
     prevProps.showHeader !== nextProps.showHeader ||
     prevProps.showTabs !== nextProps.showTabs ||
     prevProps.backgroundColor !== nextProps.backgroundColor ||
-    prevProps.enableScroll !== nextProps.enableScroll
+    prevProps.enableScroll !== nextProps.enableScroll ||
+    prevProps.enableKeyboardAvoiding !== nextProps.enableKeyboardAvoiding ||
+    prevProps.keyboardVerticalOffset !== nextProps.keyboardVerticalOffset
   ) {
     return false;
   }
@@ -88,6 +100,8 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
     tabsProps,
     backgroundColor = COLORS.backgroundSecondary,
     enableScroll = true,
+    enableKeyboardAvoiding = true,
+    keyboardVerticalOffset,
   }) => {
     // Ghi nhớ tính toán hasBottomTabs
     const hasBottomTabs = useMemo(
@@ -128,12 +142,19 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
       [contentPaddingBottom],
     );
 
+    // Ghi nhớ keyboardVerticalOffset
+    const keyboardOffset = useMemo(
+      () => keyboardVerticalOffset ?? (Platform.OS === 'ios' ? 0 : 20),
+      [keyboardVerticalOffset],
+    );
+
     // Callback cho render nội dung với scroll
     const renderScrollContent = useCallback(
       () => (
         <ScrollView
           contentContainerStyle={scrollContentStyle}
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled">
           {children}
         </ScrollView>
       ),
@@ -152,6 +173,25 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
       [enableScroll, renderScrollContent, renderNonScrollContent],
     );
 
+    // Callback cho render layout với keyboard avoiding
+    const renderWithKeyboardAvoiding = useCallback(
+      () => (
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoidingView}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={keyboardOffset}>
+          {renderContent()}
+        </KeyboardAvoidingView>
+      ),
+      [keyboardOffset, renderContent],
+    );
+
+    // Callback cho render layout thông thường
+    const renderNormalLayout = useCallback(
+      () => renderContent(),
+      [renderContent],
+    );
+
     return (
       <View style={containerStyle}>
         {/* Header */}
@@ -159,10 +199,16 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
 
         {/* Nội dung */}
         {showHeader ? (
-          <View style={styles.content}>{renderContent()}</View>
+          <View style={styles.content}>
+            {enableKeyboardAvoiding
+              ? renderWithKeyboardAvoiding()
+              : renderNormalLayout()}
+          </View>
         ) : (
           <SafeAreaView style={styles.content} edges={['top']}>
-            {renderContent()}
+            {enableKeyboardAvoiding
+              ? renderWithKeyboardAvoiding()
+              : renderNormalLayout()}
           </SafeAreaView>
         )}
 
@@ -184,6 +230,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
+    flex: 1,
+  },
+  keyboardAvoidingView: {
     flex: 1,
   },
   scrollContent: {

@@ -1,8 +1,13 @@
 import React from 'react';
-import {View, StyleSheet, ScrollView} from 'react-native';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import {Button, WhiteSpace, WingBlank} from '@ant-design/react-native';
-import {useForm, Controller} from 'react-hook-form';
-import {useLogin} from '@/hooks/queries/useAuth';
+import {useLogin, useBaseForm} from '@/hooks';
 import {LoginRequest} from '@/types';
 import {COLORS, SCREEN_PADDING, ERROR_MESSAGES, VALIDATION} from '@/constants';
 import FormInput from '@/components/form/FormInput';
@@ -13,106 +18,115 @@ const LoginScreen = ({navigation}: any) => {
 
   const {
     control,
-    handleSubmit,
+    handleSubmitWithLoading,
     formState: {errors, isValid},
-  } = useForm<LoginRequest>({
+    isSubmitting,
+  } = useBaseForm<LoginRequest>({
     mode: 'onChange',
     defaultValues: {
       userName: '',
       password: '',
     },
+    onSubmit: async (data: LoginRequest) => {
+      try {
+        await loginMutation.mutateAsync(data);
+        // Có thể thêm logic xử lý sau khi đăng nhập thành công ở đây
+      } catch (error) {
+        // Lỗi sẽ được xử lý bởi useBaseForm
+        throw error;
+      }
+    },
+    successMessage: 'Đăng nhập thành công!',
+    errorMessage: 'Đăng nhập thất bại!',
+    resetOnSuccess: false,
   });
-
-  const onSubmit = (data: LoginRequest) => {
-    loginMutation.mutate(data);
-  };
 
   const navigateToRegister = () => {
     navigation.navigate('Register');
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <WingBlank size="lg">
-        <View style={styles.header}>
-          <Logo />
-        </View>
+    <KeyboardAvoidingView
+      style={styles.keyboardAvoidingView}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
+      <ScrollView
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled">
+        <WingBlank size="lg">
+          <View style={styles.header}>
+            <Logo />
+          </View>
 
-        <View style={styles.form}>
-          <Controller
-            control={control}
-            name="userName"
-            rules={{
-              required: ERROR_MESSAGES.REQUIRED_FIELD,
-              pattern: {
-                value: VALIDATION.USER_NAME_REGEX,
-                message: ERROR_MESSAGES.USER_NAME_INVALID,
-              },
-            }}
-            render={({field: {onChange, onBlur, value}}) => (
-              <FormInput
-                label="Tài khoản"
-                placeholder="Nhập tài khoản"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={errors.userName?.message}
-                keyboardType="default"
-                autoCapitalize="none"
-              />
-            )}
-          />
+          <View style={styles.form}>
+            <FormInput
+              name="userName"
+              control={control}
+              label="Tài khoản"
+              placeholder="Nhập tài khoản"
+              rules={{
+                required: ERROR_MESSAGES.REQUIRED_FIELD,
+                pattern: {
+                  value: VALIDATION.USER_NAME_REGEX,
+                  message: ERROR_MESSAGES.USER_NAME_INVALID,
+                },
+              }}
+              keyboardType="default"
+              autoCapitalize="none"
+            />
 
-          <WhiteSpace size="lg" />
+            <WhiteSpace size="lg" />
 
-          <Controller
-            control={control}
-            name="password"
-            rules={{
-              required: ERROR_MESSAGES.REQUIRED_FIELD,
-              minLength: {
-                value: VALIDATION.PASSWORD_MIN_LENGTH,
-                message: ERROR_MESSAGES.PASSWORD_TOO_SHORT,
-              },
-            }}
-            render={({field: {onChange, onBlur, value}}) => (
-              <FormInput
-                label="Mật khẩu"
-                placeholder="Nhập mật khẩu"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={errors.password?.message}
-                secureTextEntry
-              />
-            )}
-          />
+            <FormInput
+              name="password"
+              control={control}
+              label="Mật khẩu"
+              placeholder="Nhập mật khẩu"
+              rules={{
+                required: ERROR_MESSAGES.REQUIRED_FIELD,
+                minLength: {
+                  value: VALIDATION.PASSWORD_MIN_LENGTH,
+                  message: ERROR_MESSAGES.PASSWORD_TOO_SHORT,
+                },
+              }}
+              secureTextEntry
+            />
 
-          <WhiteSpace size="xl" />
+            <WhiteSpace size="xl" />
 
-          <Button
-            type="primary"
-            disabled={!isValid || loginMutation.isPending}
-            loading={loginMutation.isPending}
-            onPress={handleSubmit(onSubmit)}>
-            Đăng nhập
-          </Button>
+            <Button
+              type="primary"
+              disabled={!isValid || isSubmitting}
+              loading={isSubmitting}
+              onPress={handleSubmitWithLoading}>
+              Đăng nhập
+            </Button>
 
-          <WhiteSpace size="lg" />
+            <WhiteSpace size="lg" />
 
-          <Button type="ghost" onPress={navigateToRegister}>
-            Chưa có tài khoản? Đăng ký ngay
-          </Button>
-        </View>
-      </WingBlank>
-    </ScrollView>
+            <Button type="ghost" onPress={navigateToRegister}>
+              Chưa có tài khoản? Đăng ký ngay
+            </Button>
+          </View>
+        </WingBlank>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
+  keyboardAvoidingView: {
+    flex: 1,
+    backgroundColor: COLORS.background,
+  },
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
+  },
+  scrollContent: {
+    flexGrow: 1,
   },
   header: {
     alignItems: 'center',

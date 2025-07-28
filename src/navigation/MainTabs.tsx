@@ -3,16 +3,14 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MainLayout from '@/components/layout/MainLayout';
 import {COLORS} from '@/constants';
-import HomeScreen from '../screens/main/HomeScreen';
-import ProfileScreen from '../screens/main/ProfileScreen';
-import SettingsScreen from '../screens/main/SettingsScreen';
+import {LazyScreen} from '@/components/common';
 import {MainTabParamList} from '@/types';
 import {View} from 'react-native';
 import {CustomTabBar} from '@/components';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-// Wrapper components với MainLayout
+// Wrapper components với MainLayout và LazyScreen
 const HomeScreenWrapper = () => {
   const handleSearch = (text: string) => {
     console.log('Tìm kiếm:', text);
@@ -36,7 +34,7 @@ const HomeScreenWrapper = () => {
         onNotificationPress: handleNotificationPress,
         notificationCount: 3,
       }}>
-      <HomeScreen />
+      <LazyScreen component={() => import('../screens/main/HomeScreen')} />
     </MainLayout>
   );
 };
@@ -49,7 +47,7 @@ const ProfileScreenWrapper = () => (
       title: 'Hồ sơ',
       type: 'minimal',
     }}>
-    <ProfileScreen />
+    <LazyScreen component={() => import('../screens/main/ProfileScreen')} />
   </MainLayout>
 );
 
@@ -61,7 +59,7 @@ const SettingsScreenWrapper = () => (
       title: 'Cài đặt',
       type: 'minimal',
     }}>
-    <SettingsScreen />
+    <LazyScreen component={() => import('../screens/main/SettingsScreen')} />
   </MainLayout>
 );
 

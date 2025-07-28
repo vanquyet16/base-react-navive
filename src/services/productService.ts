@@ -28,6 +28,7 @@ export interface UpdateProductRequest extends Partial<CreateProductRequest> {
 
 // Interface cho filters
 export interface ProductFilters {
+    productId?: string;
     category?: string;
     minPrice?: number;
     maxPrice?: number;
