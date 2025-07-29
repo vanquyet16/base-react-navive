@@ -75,6 +75,34 @@ const CacheDemoScreenWrapper = () => (
   </MainLayout>
 );
 
+// Wrapper cho PdfDemoScreen
+const PdfDemoScreenWrapper = () => (
+  <MainLayout
+    showHeader={true}
+    showTabs={false}
+    headerProps={{
+      title: 'PDF Viewer Demo',
+      type: 'minimal',
+    }}>
+    <LazyScreen component={() => import('../screens/example/PdfDemoScreen')} />
+  </MainLayout>
+);
+
+// Wrapper cho PdfFileManagerScreen
+const PdfFileManagerScreenWrapper = () => (
+  <MainLayout
+    showHeader={true}
+    showTabs={false}
+    headerProps={{
+      title: 'Quản lý File PDF',
+      type: 'minimal',
+    }}>
+    <LazyScreen
+      component={() => import('../screens/example/PdfFileManagerScreen')}
+    />
+  </MainLayout>
+);
+
 // Có thể thêm các màn hình khác ở đây
 // Ví dụ: DetailScreen, SearchScreen, NotificationScreen, etc.
 
@@ -93,6 +121,11 @@ const MainStack: React.FC = () => {
         component={ApiLazyDemoScreenWrapper}
       />
       <Stack.Screen name="CacheDemoScreen" component={CacheDemoScreenWrapper} />
+      <Stack.Screen name="PdfDemoScreen" component={PdfDemoScreenWrapper} />
+      <Stack.Screen
+        name="PdfFileManagerScreen"
+        component={PdfFileManagerScreenWrapper}
+      />
 
       {/* Có thể thêm các màn hình khác ở đây */}
       {/* <Stack.Screen name="DetailScreen" component={DetailScreenWrapper} /> */}

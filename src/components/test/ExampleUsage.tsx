@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {View, StyleSheet, Alert} from 'react-native';
-import CustomHeader from './layout/CustomHeader';
-import CustomBottomBar, {BottomBarTab} from './navigation/CustomBottomBar';
+import CustomHeader from '../layout/CustomHeader';
+import CustomBottomBar, {BottomBarTab} from '../navigation/CustomBottomBar';
 import {COLORS} from '@/constants';
 
 const ExampleUsage: React.FC = () => {

@@ -12,9 +12,7 @@ const RootNavigator: React.FC = () => {
   const {isAuthenticated, isLoading} = useAuthStore();
 
   // Log trạng thái authentication cho debug
-  useEffect(() => {
-    console.log('Auth State:', {isAuthenticated, isLoading});
-  }, [isAuthenticated, isLoading]);
+  useEffect(() => {}, [isAuthenticated, isLoading]);
 
   // Hiển thị loading khi đang kiểm tra authentication
   if (isLoading) {
@@ -24,7 +22,7 @@ const RootNavigator: React.FC = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
-        {isAuthenticated ? (
+        {true ? (
           // Đã đăng nhập -> Hiển thị MainStack (bao gồm MainTabs và các màn hình khác)
           <Stack.Screen name="MainStack" component={MainStack} />
         ) : (

@@ -51,4 +51,7 @@ export const isValidEmail = (email: string) => {
 
 export const sleep = (ms: number) => {
     return new Promise(resolve => setTimeout(resolve, ms));
-}; 
+};
+
+// PDF Utilities
+export { default as PdfUtils, type PdfSource } from './pdfUtils'; 

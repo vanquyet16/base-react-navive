@@ -43,7 +43,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response: AxiosResponse) => {
         if (__DEV__) {
-            console.log(`✅ [${response.status}] ${response.config.url}`, response.data);
+            // console.log(`✅ [${response.status}] ${response.config.url}`, response.data);
         }
         return response;
     },

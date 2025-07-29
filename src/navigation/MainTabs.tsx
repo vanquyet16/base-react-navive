@@ -6,7 +6,7 @@ import {COLORS} from '@/constants';
 import {LazyScreen} from '@/components/common';
 import {MainTabParamList} from '@/types';
 import {View} from 'react-native';
-import {CustomTabBar} from '@/components';
+import {CustomTabBar} from '@/components/navigation';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 

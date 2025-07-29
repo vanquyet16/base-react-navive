@@ -1213,7 +1213,70 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-blob-util (0.22.2):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - react-native-document-picker (9.3.1):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-mmkv (3.3.0):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - react-native-pdf (6.7.7):
     - DoubleConversion
     - glog
     - RCT-Folly (= 2024.01.01.00)
@@ -1550,6 +1613,27 @@ PODS:
     - React-logger (= 0.76.0)
     - React-perflogger (= 0.76.0)
     - React-utils (= 0.76.0)
+  - RNCPicker (2.11.1):
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNGestureHandler (2.27.2):
     - DoubleConversion
     - glog
@@ -1764,7 +1848,10 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
+  - react-native-blob-util (from `../node_modules/react-native-blob-util`)
+  - react-native-document-picker (from `../node_modules/react-native-document-picker`)
   - react-native-mmkv (from `../node_modules/react-native-mmkv`)
+  - react-native-pdf (from `../node_modules/react-native-pdf`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-nativeconfig (from `../node_modules/react-native/ReactCommon`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -1792,6 +1879,7 @@ DEPENDENCIES:
   - React-utils (from `../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
+  - "RNCPicker (from `../node_modules/@react-native-picker/picker`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -1872,8 +1960,14 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
+  react-native-blob-util:
+    :path: "../node_modules/react-native-blob-util"
+  react-native-document-picker:
+    :path: "../node_modules/react-native-document-picker"
   react-native-mmkv:
     :path: "../node_modules/react-native-mmkv"
+  react-native-pdf:
+    :path: "../node_modules/react-native-pdf"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   React-nativeconfig:
@@ -1928,6 +2022,8 @@ EXTERNAL SOURCES:
     :path: build/generated/ios
   ReactCommon:
     :path: "../node_modules/react-native/ReactCommon"
+  RNCPicker:
+    :path: "../node_modules/@react-native-picker/picker"
   RNGestureHandler:
     :path: "../node_modules/react-native-gesture-handler"
   RNReanimated:
@@ -1976,7 +2072,10 @@ SPEC CHECKSUMS:
   React-logger: d1a89c7d9b3c847eb63eb85724c54b06cae2c939
   React-Mapbuffer: b0b4ace5b62b269f3838df26ba2d8b4f39f90783
   React-microtasksnativemodule: 34f9aee73aad675b6fd8d6f41cb1c1d78f583dc2
+  react-native-blob-util: 07d20ef08b802ba7e0fc9816316c05ba28218b55
+  react-native-document-picker: a59727779eb982c8994eaf299b48dc982a67e216
   react-native-mmkv: 94759f6db43de26d6a9b5a3f723501ce7d6be47c
+  react-native-pdf: 24997c793f51b238e3c3097b180384cb3d93dc42
   react-native-safe-area-context: aba2ea7b55947cc76527284298193ea78249fe9e
   React-nativeconfig: 72c10ff34863148ef90df9c9c8eacba99d2faaaa
   React-NativeModulesApple: db1123c7760c5003bf48c8317b143971b88bba73
@@ -2004,6 +2103,7 @@ SPEC CHECKSUMS:
   React-utils: bea5ee68dbfc39bc8ea34e92b255d2f2f7c838c2
   ReactCodegen: aa86896478e2d00a9e2ff5e864c88163f03fac0a
   ReactCommon: 4ab4f677cc87445d97eb59507c09958ff4573246
+  RNCPicker: 58636d0fb0c7c2d932f4dd15e24047bbb5103453
   RNGestureHandler: 71ebac67774e7e6cdcbaf747ec7621fceeb5fa88
   RNReanimated: 5ca00f3f39d3fa9d221490377af1ebfc0c2977fa
   RNScreens: 2e02d5d788a12de0078967f075e316a76fa30645
@@ -2012,6 +2112,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 1d66db49f38fd9e576a1d7c3b081e46ab4c28b9e
 
-PODFILE CHECKSUM: 7134422811aecfef935c18429df92c57d0544ad6
+PODFILE CHECKSUM: 86998efc0d32a2f6e740fde79f98d62da01e61cf
 
 COCOAPODS: 1.15.2

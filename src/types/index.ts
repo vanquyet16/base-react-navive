@@ -42,6 +42,9 @@ export type MainStackParamList = {
     LazyTestScreen: undefined;
     ApiLazyDemoScreen: undefined;
     CacheDemoScreen: undefined;
+    PdfDemoScreen: undefined;
+    PdfFileManagerScreen: undefined;
+    PdfDownloadGuideScreen: undefined;
     // Có thể thêm các màn hình khác ở đây
     // DetailScreen: { id: string };
     // SearchScreen: { query?: string };
