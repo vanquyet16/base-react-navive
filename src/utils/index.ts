@@ -54,4 +54,7 @@ export const sleep = (ms: number) => {
 };
 
 // PDF Utilities
-export { default as PdfUtils, type PdfSource } from './pdfUtils'; 
+export { default as PdfUtils, type PdfSource } from './pdfUtils';
+
+// Size Matters Utilities
+export * from './sizeMatters'; 

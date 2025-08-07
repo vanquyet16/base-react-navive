@@ -55,6 +55,7 @@ export type MainTabParamList = {
     Home: undefined;
     Profile: undefined;
     Settings: undefined;
+    ResponsiveDemo: undefined;
 };
 
 // API Response types

@@ -63,6 +63,20 @@ const SettingsScreenWrapper = () => (
   </MainLayout>
 );
 
+const ResponsiveDemoWrapper = () => (
+  <MainLayout
+    showHeader={true}
+    showTabs={false}
+    headerProps={{
+      title: 'Responsive Demo',
+      type: 'minimal',
+    }}>
+    <LazyScreen
+      component={() => import('../screens/example/ResponsiveDemoScreen')}
+    />
+  </MainLayout>
+);
+
 const MainTabs = () => {
   return (
     <Tab.Navigator
@@ -99,6 +113,16 @@ const MainTabs = () => {
           tabBarLabel: 'Cài đặt',
           tabBarIcon: ({color, size}) => (
             <Icon name="settings" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="ResponsiveDemo"
+        component={ResponsiveDemoWrapper}
+        options={{
+          tabBarLabel: 'Responsive',
+          tabBarIcon: ({color, size}) => (
+            <Icon name="aspect-ratio" size={size} color={color} />
           ),
         }}
       />
