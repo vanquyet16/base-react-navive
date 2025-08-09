@@ -3,7 +3,7 @@ import {
     verticalScale,   // Scale theo height - dùng cho height, top, bottom, marginVertical
     moderateScale,   // Scale với factor có thể điều chỉnh - ít aggressive hơn scale
 } from 'react-native-size-matters';
-import { Dimensions } from 'react-native';
+import { Dimensions, PixelRatio } from 'react-native';
 
 // ============================================================================
 // RE-EXPORT CÁC FUNCTION CHÍNH TỪ THƯ VIỆN GỐC
@@ -30,20 +30,41 @@ export { verticalScale };
  */
 export { moderateScale };
 
-// Export Dimensions từ react-native để lấy kích thước màn hình
-export { Dimensions };
+// Export Dimensions và PixelRatio từ react-native
+export { Dimensions, PixelRatio };
 
 // ============================================================================
-// CÁC CONSTANT HỮU ÍCH
+// CÁC CONSTANT HỮU ÍCH VÀ CACHE
 // ============================================================================
+
+// Cache kích thước màn hình để tránh tính toán lại
+let _screenDimensions: { width: number; height: number } | null = null;
+let _pixelRatio: number | null = null;
 
 /**
- * Lấy kích thước màn hình hiện tại
+ * Lấy kích thước màn hình hiện tại (có cache)
  * SCREEN_WIDTH: Chiều rộng màn hình
  * SCREEN_HEIGHT: Chiều cao màn hình
  */
-export const SCREEN_WIDTH = Dimensions.get('window').width;
-export const SCREEN_HEIGHT = Dimensions.get('window').height;
+export const getScreenDimensions = () => {
+    if (!_screenDimensions) {
+        _screenDimensions = Dimensions.get('screen');
+    }
+    return _screenDimensions;
+};
+
+export const SCREEN_WIDTH = getScreenDimensions().width;
+export const SCREEN_HEIGHT = getScreenDimensions().height;
+
+/**
+ * Lấy pixel ratio (có cache)
+ */
+export const getPixelRatio = () => {
+    if (_pixelRatio === null) {
+        _pixelRatio = PixelRatio.get();
+    }
+    return _pixelRatio;
+};
 
 // ============================================================================
 // CÁC GIÁ TRỊ SCALE MẪU CHO CÁC KÍCH THƯỚC PHỔ BIẾN
@@ -94,15 +115,18 @@ export const SIZES = {
     ICON_MEDIUM: scale(24),    // Icon trung bình - cho button icon
     ICON_LARGE: scale(32),     // Icon lớn - cho feature icon
     ICON_XLARGE: scale(40),    // Icon rất lớn - cho hero icon
-};
+} as const;
 
 // ============================================================================
-// HELPER FUNCTIONS
+// HELPER FUNCTIONS TỐI ƯU
 // ============================================================================
+
+// Cache cho các giá trị đã tính toán
+const sizeCache = new Map<string, number>();
 
 /**
  * getResponsiveSize(size: number, factor: number = 0.5)
- * Tạo kích thước responsive với factor có thể điều chỉnh
+ * Tạo kích thước responsive với factor có thể điều chỉnh (có cache)
  * 
  * @param size - Kích thước gốc
  * @param factor - Factor điều chỉnh (0-1), mặc định 0.5
@@ -111,7 +135,15 @@ export const SIZES = {
  * Ví dụ: getResponsiveSize(16, 0.3) - scale ít hơn
  */
 export const getResponsiveSize = (size: number, factor: number = 0.5) => {
-    return moderateScale(size, factor);
+    const cacheKey = `${size}_${factor}`;
+
+    if (sizeCache.has(cacheKey)) {
+        return sizeCache.get(cacheKey)!;
+    }
+
+    const result = moderateScale(size, factor);
+    sizeCache.set(cacheKey, result);
+    return result;
 };
 
 /**
@@ -124,7 +156,15 @@ export const getResponsiveSize = (size: number, factor: number = 0.5) => {
  * Ví dụ: getScaledWidth(50) - 50% chiều rộng màn hình
  */
 export const getScaledWidth = (percentage: number) => {
-    return (SCREEN_WIDTH * percentage) / 100;
+    const cacheKey = `width_${percentage}`;
+
+    if (sizeCache.has(cacheKey)) {
+        return sizeCache.get(cacheKey)!;
+    }
+
+    const result = (SCREEN_WIDTH * percentage) / 100;
+    sizeCache.set(cacheKey, result);
+    return result;
 };
 
 /**
@@ -137,5 +177,185 @@ export const getScaledWidth = (percentage: number) => {
  * Ví dụ: getScaledHeight(25) - 25% chiều cao màn hình
  */
 export const getScaledHeight = (percentage: number) => {
-    return (SCREEN_HEIGHT * percentage) / 100;
+    const cacheKey = `height_${percentage}`;
+
+    if (sizeCache.has(cacheKey)) {
+        return sizeCache.get(cacheKey)!;
+    }
+
+    const result = (SCREEN_HEIGHT * percentage) / 100;
+    sizeCache.set(cacheKey, result);
+    return result;
+};
+
+// ============================================================================
+// CÁC FUNCTION MỚI TỐI ƯU
+// ============================================================================
+
+/**
+ * getOptimalFontSize(baseSize: number, minSize?: number, maxSize?: number)
+ * Tạo font size tối ưu với giới hạn min/max
+ * 
+ * @param baseSize - Kích thước font cơ bản
+ * @param minSize - Kích thước tối thiểu (tùy chọn)
+ * @param maxSize - Kích thước tối đa (tùy chọn)
+ * @returns Font size đã tối ưu
+ */
+export const getOptimalFontSize = (
+    baseSize: number,
+    minSize?: number,
+    maxSize?: number
+) => {
+    const scaledSize = scale(baseSize);
+
+    if (minSize !== undefined && scaledSize < minSize) {
+        return minSize;
+    }
+
+    if (maxSize !== undefined && scaledSize > maxSize) {
+        return maxSize;
+    }
+
+    return scaledSize;
+};
+
+/**
+ * getAspectRatio(width: number, height: number)
+ * Tính tỷ lệ khung hình và scale
+ * 
+ * @param width - Chiều rộng gốc
+ * @param height - Chiều cao gốc
+ * @returns Object chứa width và height đã scale
+ */
+export const getAspectRatio = (width: number, height: number) => {
+    const aspectRatio = width / height;
+    const scaledWidth = scale(width);
+    const scaledHeight = scaledWidth / aspectRatio;
+
+    return {
+        width: scaledWidth,
+        height: scaledHeight,
+        aspectRatio
+    };
+};
+
+/**
+ * getResponsivePadding(horizontal: number, vertical: number)
+ * Tạo padding responsive cho cả horizontal và vertical
+ * 
+ * @param horizontal - Padding ngang
+ * @param vertical - Padding dọc
+ * @returns Object padding đã scale
+ */
+export const getResponsivePadding = (horizontal: number, vertical: number) => {
+    return {
+        paddingHorizontal: scale(horizontal),
+        paddingVertical: verticalScale(vertical)
+    };
+};
+
+/**
+ * getResponsiveMargin(horizontal: number, vertical: number)
+ * Tạo margin responsive cho cả horizontal và vertical
+ * 
+ * @param horizontal - Margin ngang
+ * @param vertical - Margin dọc
+ * @returns Object margin đã scale
+ */
+export const getResponsiveMargin = (horizontal: number, vertical: number) => {
+    return {
+        marginHorizontal: scale(horizontal),
+        marginVertical: verticalScale(vertical)
+    };
+};
+
+/**
+ * clearSizeCache()
+ * Xóa cache để tính toán lại khi cần thiết (ví dụ: khi xoay màn hình)
+ */
+export const clearSizeCache = () => {
+    sizeCache.clear();
+    _screenDimensions = null;
+    _pixelRatio = null;
+};
+
+/**
+ * isTablet()
+ * Kiểm tra xem thiết bị có phải là tablet không
+ * 
+ * @returns true nếu là tablet, false nếu là phone
+ */
+export const isTablet = () => {
+    const { width, height } = getScreenDimensions();
+    const pixelRatio = getPixelRatio();
+
+    // Logic đơn giản để detect tablet
+    return (
+        (width >= 768 && height >= 1024) || // iPad
+        (width >= 1024 && height >= 768) || // iPad landscape
+        pixelRatio <= 2 // Một số tablet có pixel ratio thấp
+    );
+};
+
+/**
+ * getDeviceType()
+ * Lấy loại thiết bị hiện tại
+ * 
+ * @returns 'phone' | 'tablet'
+ */
+export const getDeviceType = () => {
+    return isTablet() ? 'tablet' : 'phone';
+};
+
+// ============================================================================
+// BREAKPOINTS VÀ RESPONSIVE HELPERS
+// ============================================================================
+
+/**
+ * BREAKPOINTS - Các điểm break cho responsive design
+ */
+export const BREAKPOINTS = {
+    PHONE_SMALL: 320,   // iPhone SE, Galaxy S8
+    PHONE_MEDIUM: 375,  // iPhone 12, 13, 14
+    PHONE_LARGE: 414,   // iPhone 12 Pro Max, 13 Pro Max
+    TABLET_SMALL: 768,  // iPad Mini
+    TABLET_MEDIUM: 834, // iPad Air
+    TABLET_LARGE: 1024, // iPad Pro 11"
+} as const;
+
+/**
+ * getBreakpoint()
+ * Lấy breakpoint hiện tại dựa trên chiều rộng màn hình
+ * 
+ * @returns Tên breakpoint hiện tại
+ */
+export const getBreakpoint = () => {
+    const width = SCREEN_WIDTH;
+
+    if (width < BREAKPOINTS.PHONE_SMALL) return 'phone_small';
+    if (width < BREAKPOINTS.PHONE_MEDIUM) return 'phone_medium';
+    if (width < BREAKPOINTS.PHONE_LARGE) return 'phone_large';
+    if (width < BREAKPOINTS.TABLET_SMALL) return 'tablet_small';
+    if (width < BREAKPOINTS.TABLET_MEDIUM) return 'tablet_medium';
+    if (width < BREAKPOINTS.TABLET_LARGE) return 'tablet_large';
+
+    return 'tablet_large';
+};
+
+/**
+ * getResponsiveValue<T>(values: Record<string, T>)
+ * Lấy giá trị responsive dựa trên breakpoint hiện tại
+ * 
+ * @param values - Object chứa các giá trị cho từng breakpoint
+ * @returns Giá trị phù hợp với breakpoint hiện tại
+ * 
+ * Ví dụ: getResponsiveValue({
+ *   phone_small: 12,
+ *   phone_medium: 14,
+ *   tablet_small: 16
+ * })
+ */
+export const getResponsiveValue = <T>(values: Record<string, T>): T => {
+    const currentBreakpoint = getBreakpoint();
+    return values[currentBreakpoint] || values.phone_medium || Object.values(values)[0];
 };

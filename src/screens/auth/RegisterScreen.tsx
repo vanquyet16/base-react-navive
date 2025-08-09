@@ -81,7 +81,7 @@ const RegisterScreen = ({navigation}: any) => {
             rules={{
               required: ERROR_MESSAGES.REQUIRED_FIELD,
               pattern: {
-                value: VALIDATION.EMAIL_REGEX,
+                value: VALIDATION.USER_NAME_REGEX,
                 message: ERROR_MESSAGES.EMAIL_INVALID,
               },
             }}
