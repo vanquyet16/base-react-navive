@@ -7,11 +7,11 @@ import {
   Platform,
 } from 'react-native';
 import {Button, WhiteSpace, WingBlank} from '@ant-design/react-native';
-import {useLogin, useBaseForm} from '@/hooks';
-import {LoginRequest} from '@/types';
-import {COLORS, SCREEN_PADDING, ERROR_MESSAGES, VALIDATION} from '@/constants';
+import {useLogin, useBaseForm} from '@/shared/hooks';
+import {LoginRequest} from '@/shared/types';
+import {COLORS, SCREEN_PADDING, ERROR_MESSAGES, VALIDATION} from '@/shared/constants';
 import FormInput from '@/components/form/FormInput';
-import Logo from '@/components/common/Logo';
+import Logo from '@/shared/components/Logo';
 
 const LoginScreen = ({navigation}: any) => {
   const loginMutation = useLogin();

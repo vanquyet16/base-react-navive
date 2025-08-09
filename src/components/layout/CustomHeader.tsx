@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,8 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {COLORS, SCREEN_PADDING} from '@/constants';
-import Avatar from '@/components/common/Avatar';
+import { COLORS, SCREEN_PADDING } from '@/shared/constants';
+import Avatar from '@/shared/components/Avatar';
 
 interface CustomHeaderProps {
   title?: string;
@@ -98,19 +98,17 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({
         },
       ]}>
       <View style={styles.searchInputContainer}>
-        <Icon name="search" size={20} color={COLORS.textSecondary} />
+        <Icon name='search' size={20} color={COLORS.textSecondary} />
         <TextInput
           style={styles.searchInput}
-          placeholder="Tìm kiếm..."
+          placeholder='Tìm kiếm...'
           placeholderTextColor={COLORS.placeholder}
           value={searchText}
           onChangeText={handleSearch}
           autoFocus
         />
-        <TouchableOpacity
-          onPress={toggleSearch}
-          style={styles.searchCloseButton}>
-          <Icon name="close" size={20} color={COLORS.textSecondary} />
+        <TouchableOpacity onPress={toggleSearch} style={styles.searchCloseButton}>
+          <Icon name='close' size={20} color={COLORS.textSecondary} />
         </TouchableOpacity>
       </View>
     </Animated.View>
@@ -122,22 +120,22 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({
       <View style={styles.leftSection}>
         {showBack ? (
           <TouchableOpacity onPress={onBack} style={styles.iconButton}>
-            <Icon name="arrow-back" size={24} color={textColor} />
+            <Icon name='arrow-back' size={24} color={textColor} />
           </TouchableOpacity>
         ) : showMenu ? (
           <TouchableOpacity onPress={onMenuPress} style={styles.iconButton}>
-            <Icon name="menu" size={24} color={textColor} />
+            <Icon name='menu' size={24} color={textColor} />
           </TouchableOpacity>
         ) : null}
       </View>
 
       {/* Phần giữa */}
       <View style={styles.centerSection}>
-        <Text style={[styles.title, {color: textColor}]} numberOfLines={1}>
+        <Text style={[styles.title, { color: textColor }]} numberOfLines={1}>
           {title}
         </Text>
         {subtitle && (
-          <Text style={[styles.subtitle, {color: textColor}]} numberOfLines={1}>
+          <Text style={[styles.subtitle, { color: textColor }]} numberOfLines={1}>
             {subtitle}
           </Text>
         )}
@@ -147,15 +145,13 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({
       <View style={styles.rightSection}>
         {showSearch && (
           <TouchableOpacity onPress={toggleSearch} style={styles.iconButton}>
-            <Icon name="search" size={24} color={textColor} />
+            <Icon name='search' size={24} color={textColor} />
           </TouchableOpacity>
         )}
 
         {showNotification && (
-          <TouchableOpacity
-            onPress={onNotificationPress}
-            style={styles.iconButton}>
-            <Icon name="notifications" size={24} color={textColor} />
+          <TouchableOpacity onPress={onNotificationPress} style={styles.iconButton}>
+            <Icon name='notifications' size={24} color={textColor} />
             {notificationCount > 0 && (
               <View style={styles.notificationBadge}>
                 <Text style={styles.notificationText}>
@@ -181,20 +177,18 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({
     <View style={styles.minimalContainer}>
       {showBack && (
         <TouchableOpacity onPress={onBack} style={styles.iconButton}>
-          <Icon name="arrow-back" size={24} color={textColor} />
+          <Icon name='arrow-back' size={24} color={textColor} />
         </TouchableOpacity>
       )}
-      <Text style={[styles.minimalTitle, {color: textColor}]}>{title}</Text>
+      <Text style={[styles.minimalTitle, { color: textColor }]}>{title}</Text>
     </View>
   );
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor}]}>
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <StatusBar
         backgroundColor={backgroundColor}
-        barStyle={
-          backgroundColor === '#ffffff' ? 'dark-content' : 'light-content'
-        }
+        barStyle={backgroundColor === '#ffffff' ? 'dark-content' : 'light-content'}
       />
 
       {searchVisible && renderSearchHeader()}

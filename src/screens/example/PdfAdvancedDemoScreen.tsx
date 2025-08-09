@@ -9,8 +9,8 @@ import {
   SafeAreaView,
   ActivityIndicator,
 } from 'react-native';
-import PdfViewer from '../../components/test/PdfViewer';
-import {PdfUtils} from '../../utils';
+import PdfViewer from '@/features/performance/components/PdfViewer';
+import {PdfUtils} from '@/shared/utils';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 
 const PdfAdvancedDemoScreen: React.FC = () => {

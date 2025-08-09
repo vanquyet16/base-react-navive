@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {COLORS} from '@/constants';
+import {COLORS} from '@/shared/constants';
 
 const {width: SCREEN_WIDTH} = Dimensions.get('screen');
 

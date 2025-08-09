@@ -1,8 +1,8 @@
 // import React from 'react';
 // import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 // import Icon from 'react-native-vector-icons/MaterialIcons';
-// import {COLORS, HEADER_HEIGHT, SCREEN_PADDING} from '@/constants';
-// import Avatar from '@/components/common/Avatar';
+// import {COLORS, HEADER_HEIGHT, SCREEN_PADDING} from '@/shared/constants';
+// import Avatar from '@/shared/components/Avatar';
 
 // interface HeaderProps {
 //   title: string;

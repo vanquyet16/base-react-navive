@@ -7,7 +7,7 @@ import {
   Path,
   RegisterOptions,
 } from 'react-hook-form';
-import {COLORS, BORDER_RADIUS} from '@/constants';
+import {COLORS, BORDER_RADIUS} from '@/shared/constants';
 
 interface FormInputProps<T extends FieldValues = FieldValues>
   extends Omit<TextInputProps, 'onChangeText' | 'value'> {

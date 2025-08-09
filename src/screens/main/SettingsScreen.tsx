@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 import {useTheme, useSetTheme} from '@/stores/appStore';
-import {COLORS, SCREEN_PADDING} from '@/constants';
+import {COLORS, SCREEN_PADDING} from '@/shared/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const SettingsScreen: React.FC = () => {

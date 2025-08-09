@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import MainLayout from './MainLayout';
-import {COLORS} from '@/constants';
+import {COLORS} from '@/shared/constants';
 
 // Example 1: Full layout với header và tabs
 export const FullLayoutExample = () => {

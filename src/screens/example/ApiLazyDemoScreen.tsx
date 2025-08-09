@@ -12,9 +12,9 @@ import {
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {COLORS, SCREEN_PADDING} from '@/constants';
+import {COLORS, SCREEN_PADDING} from '@/shared/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {MainStackParamList} from '@/types';
+import {MainStackParamList} from '@/shared/types';
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 
 type NavigationProp = StackNavigationProp<MainStackParamList>;

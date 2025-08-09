@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { MMKV } from 'react-native-mmkv';
-import { AuthTokens } from '@/types';
+import { AuthTokens } from '@/shared/types';
 
 
 // Tạo instance lưu trữ MMKV

@@ -1,5 +1,5 @@
 import api from './api';
-import { LoginRequest, LoginResponse, User, AuthTokens } from '@/types';
+import { LoginRequest, LoginResponse, User, AuthTokens } from '@/shared/types';
 
 // Mock data cho development
 // const MOCK_USER: User = {

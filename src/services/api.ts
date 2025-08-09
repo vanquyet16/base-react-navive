@@ -1,8 +1,9 @@
 import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
-import { API_CONFIG, ERROR_MESSAGES } from '@/constants';
+import { API_CONFIG } from '@/config';
 import { useAuthStore } from '@/stores/authStore';
-import { CustomAxiosRequestConfig } from '@/types';
-import Toast from 'react-native-toast-message';
+import { CustomAxiosRequestConfig } from '@/shared/types';
+import { logger, logApiRequest, logApiResponse } from '@/shared/utils/logger';
+import { errorHandler, handleApiError } from '@/shared/utils/errorHandler';
 
 // Tạo axios instance
 const api = axios.create({
@@ -22,19 +23,16 @@ api.interceptors.request.use(
             config.headers.Authorization = `Bearer ${tokens.token}`;
         }
 
-        if (__DEV__) {
-            console.log(`🚀 [${config.method?.toUpperCase()}] ${config.url}`, {
-                params: config.params,
-                data: config.data,
-            });
-        }
+        // Log API request
+        logApiRequest(config.method?.toUpperCase() || 'UNKNOWN', config.url || '', {
+            params: config.params,
+            data: config.data,
+        });
 
         return config;
     },
     (error: AxiosError) => {
-        if (__DEV__) {
-            console.error('❌ Request Error:', error);
-        }
+        logger.error('Request Error', error);
         return Promise.reject(error);
     },
 );
@@ -42,17 +40,15 @@ api.interceptors.request.use(
 // Interceptor response
 api.interceptors.response.use(
     (response: AxiosResponse) => {
-        if (__DEV__) {
-            // console.log(`✅ [${response.status}] ${response.config.url}`, response.data);
-        }
+        // Log API response
+        logApiResponse(response.status, response.config.url || '', response.data);
         return response;
     },
     async (error: AxiosError) => {
         const originalRequest = error.config as CustomAxiosRequestConfig;
 
-        if (__DEV__) {
-            console.error(`❌ [${error.response?.status}] ${error.config?.url}`, error.response?.data);
-        }
+        // Log error response
+        logger.error(`API Error [${error.response?.status}] ${error.config?.url}`, error.response?.data);
 
         // Xử lý lỗi 401 Unauthorized
         if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
@@ -82,40 +78,18 @@ api.interceptors.response.use(
                 } catch (refreshError) {
                     // Làm mới token thất bại, đăng xuất người dùng
                     logout();
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Phiên đăng nhập hết hạn',
-                        text2: 'Vui lòng đăng nhập lại',
-                    });
+                    errorHandler.handleApiError(refreshError, 'Token Refresh');
                     return Promise.reject(refreshError);
                 }
             } else {
                 // Không có refresh token, đăng xuất người dùng
                 logout();
-                Toast.show({
-                    type: 'error',
-                    text1: 'Phiên đăng nhập hết hạn',
-                    text2: 'Vui lòng đăng nhập lại',
-                });
+                errorHandler.handleApiError(error, 'No Refresh Token');
             }
         }
 
-        // Xử lý các lỗi khác
-        let errorMessage = ERROR_MESSAGES.SERVER_ERROR;
-
-        if (error.code === 'ECONNABORTED' || (error.message && typeof error.message === 'string' && error.message.includes('timeout'))) {
-            errorMessage = 'Timeout - Vui lòng thử lại';
-        } else if (error.code === 'ERR_NETWORK') {
-            errorMessage = ERROR_MESSAGES.NETWORK_ERROR;
-        } else if (error.response?.data && typeof error.response.data === 'object' && 'message' in error.response.data) {
-            errorMessage = error.response.data.message as string;
-        }
-
-        Toast.show({
-            type: 'error',
-            text1: 'Lỗi',
-            text2: errorMessage,
-        });
+        // Xử lý các lỗi khác bằng error handler
+        errorHandler.handleApiError(error, 'API Response');
 
         return Promise.reject(error);
     },

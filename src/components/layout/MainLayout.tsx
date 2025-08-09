@@ -1,16 +1,12 @@
-import React, {ReactNode, useMemo, useCallback, memo} from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
+import React, { ReactNode, useMemo, useCallback, memo } from 'react';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { useNavigation } from '@react-navigation/native';
+import { DrawerNavigationProp } from '@react-navigation/drawer';
 import CustomHeader from './CustomHeader';
 import CustomTabBar from '@/components/navigation/CustomTabBar';
-import {COLORS} from '@/constants';
+import { COLORS } from '@/shared/constants';
 
 /**
  * MainLayout Component - Tối ưu hiệu suất với memo và callback
@@ -71,10 +67,7 @@ const areEqual = (prevProps: MainLayoutProps, nextProps: MainLayoutProps) => {
   }
 
   // So sánh headerProps (so sánh nông)
-  if (
-    JSON.stringify(prevProps.headerProps) !==
-    JSON.stringify(nextProps.headerProps)
-  ) {
+  if (JSON.stringify(prevProps.headerProps) !== JSON.stringify(nextProps.headerProps)) {
     return false;
   }
 
@@ -103,42 +96,36 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
     enableKeyboardAvoiding = true,
     keyboardVerticalOffset,
   }) => {
+    const navigation = useNavigation() as DrawerNavigationProp<any>;
+
+    const openDrawer = () => {
+      navigation.openDrawer();
+    };
+
     // Ghi nhớ tính toán hasBottomTabs
     const hasBottomTabs = useMemo(
-      () =>
-        showTabs &&
-        tabsProps?.state &&
-        tabsProps?.descriptors &&
-        tabsProps?.navigation,
-      [
-        showTabs,
-        tabsProps?.state,
-        tabsProps?.descriptors,
-        tabsProps?.navigation,
-      ],
+      () => showTabs && tabsProps?.state && tabsProps?.descriptors && tabsProps?.navigation,
+      [showTabs, tabsProps?.state, tabsProps?.descriptors, tabsProps?.navigation],
     );
 
     // Ghi nhớ tính toán padding
-    const contentPaddingBottom = useMemo(
-      () => (hasBottomTabs ? 80 : 0),
-      [hasBottomTabs],
-    );
+    const contentPaddingBottom = useMemo(() => (hasBottomTabs ? 80 : 0), [hasBottomTabs]);
 
     // Ghi nhớ style cho container
     const containerStyle = useMemo(
-      () => [styles.container, {backgroundColor}],
+      () => [styles.container, { backgroundColor }],
       [backgroundColor],
     );
 
     // Ghi nhớ scrollContent style
     const scrollContentStyle = useMemo(
-      () => [styles.scrollContent, {paddingBottom: contentPaddingBottom}],
+      () => [styles.scrollContent, { paddingBottom: contentPaddingBottom }],
       [contentPaddingBottom],
     );
 
     // Ghi nhớ nonScrollContent style
     const nonScrollStyle = useMemo(
-      () => ({paddingBottom: contentPaddingBottom}),
+      () => ({ paddingBottom: contentPaddingBottom }),
       [contentPaddingBottom],
     );
 
@@ -154,7 +141,7 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
         <ScrollView
           contentContainerStyle={scrollContentStyle}
           showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled">
+          keyboardShouldPersistTaps='handled'>
           {children}
         </ScrollView>
       ),
@@ -187,35 +174,32 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
     );
 
     // Callback cho render layout thông thường
-    const renderNormalLayout = useCallback(
-      () => renderContent(),
-      [renderContent],
-    );
+    const renderNormalLayout = useCallback(() => renderContent(), [renderContent]);
 
     return (
       <View style={containerStyle}>
         {/* Header */}
-        {showHeader && <CustomHeader {...headerProps} />}
+        {showHeader && (
+          <CustomHeader
+            {...headerProps}
+            showMenu={headerProps?.showMenu ?? true}
+            onMenuPress={openDrawer}
+          />
+        )}
 
         {/* Nội dung */}
         {showHeader ? (
           <View style={styles.content}>
-            {enableKeyboardAvoiding
-              ? renderWithKeyboardAvoiding()
-              : renderNormalLayout()}
+            {enableKeyboardAvoiding ? renderWithKeyboardAvoiding() : renderNormalLayout()}
           </View>
         ) : (
           <SafeAreaView style={styles.content} edges={['top']}>
-            {enableKeyboardAvoiding
-              ? renderWithKeyboardAvoiding()
-              : renderNormalLayout()}
+            {enableKeyboardAvoiding ? renderWithKeyboardAvoiding() : renderNormalLayout()}
           </SafeAreaView>
         )}
 
         {/* Bottom Tabs */}
-        {hasBottomTabs && (
-          <CustomTabBar {...(tabsProps as BottomTabBarProps)} />
-        )}
+        {hasBottomTabs && <CustomTabBar {...(tabsProps as BottomTabBarProps)} />}
       </View>
     );
   },

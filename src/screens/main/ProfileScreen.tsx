@@ -7,8 +7,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import Avatar from '@/components/common/Avatar';
-import {COLORS, SCREEN_PADDING} from '@/constants';
+import Avatar from '@/shared/components/Avatar';
+import {COLORS, SCREEN_PADDING} from '@/shared/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const ProfileScreen: React.FC = () => {

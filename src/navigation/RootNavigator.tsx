@@ -1,15 +1,33 @@
-import React, {useEffect} from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
-import {useAuthStore} from '@/stores/authStore';
+// ============================================================================
+// ROOT NAVIGATOR - NAVIGATOR GỐC CỦA ỨNG DỤNG
+// ============================================================================
+
+import React, { useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { useAuthStore } from '@/stores/authStore';
 import AuthStack from './AuthStack';
-import MainStack from './MainStack';
-import LoadingScreen from '@/components/common/LoadingScreen';
+import DrawerNavigator from './DrawerNavigator';
+import { LoadingScreen } from '@/shared/components';
+import { NAVIGATION_KEYS } from './config';
 
 const Stack = createStackNavigator();
 
+/**
+ * RootNavigator - Navigator gốc của ứng dụng
+ *
+ * Chức năng:
+ * - Quản lý trạng thái authentication
+ * - Chuyển đổi giữa Auth và Drawer navigation
+ * - Hiển thị loading screen khi đang kiểm tra auth
+ *
+ * Cấu trúc:
+ * - AuthStack: Màn hình đăng nhập/đăng ký
+ * - DrawerNavigator: Màn hình chính với drawer menu
+ */
 const RootNavigator: React.FC = () => {
-  const {isAuthenticated, isLoading} = useAuthStore();
+  // Lấy trạng thái authentication từ store
+  const { isAuthenticated, isLoading } = useAuthStore();
 
   // Log trạng thái authentication cho debug
   useEffect(() => {}, [isAuthenticated, isLoading]);
@@ -21,13 +39,13 @@ const RootNavigator: React.FC = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
-        {isAuthenticated ? (
-          // Đã đăng nhập -> Hiển thị MainStack (bao gồm MainTabs và các màn hình khác)
-          <Stack.Screen name="MainStack" component={MainStack} />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {true ? (
+          // Đã đăng nhập -> Hiển thị DrawerNavigator (bao gồm MainStack và drawer)
+          <Stack.Screen name={NAVIGATION_KEYS.ROOT.DRAWER} component={DrawerNavigator} />
         ) : (
           // Chưa đăng nhập -> Hiển thị AuthStack
-          <Stack.Screen name="Auth" component={AuthStack} />
+          <Stack.Screen name={NAVIGATION_KEYS.ROOT.AUTH} component={AuthStack} />
         )}
       </Stack.Navigator>
     </NavigationContainer>

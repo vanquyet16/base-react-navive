@@ -15,13 +15,13 @@ import {
   useCreateProduct,
   useUpdateProduct,
   useDeleteProduct,
-} from '@/hooks/queries/useProducts';
+} from '@/shared/hooks/queries/useProducts';
 import {
   Product,
   CreateProductRequest,
   ProductFilters,
 } from '@/services/productService';
-import {useBaseForm} from '@/hooks';
+import {useBaseForm} from '@/shared/hooks';
 import FormInput from '@/components/form/FormInput';
 
 // Component hiển thị item product

@@ -9,7 +9,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {COLORS} from '@/constants';
+import {COLORS} from '@/shared/constants';
 
 interface TabItem {
   key: string;

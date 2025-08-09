@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
-import {View, StyleSheet, SafeAreaView} from 'react-native';
-import {PdfFileManager, PdfViewer} from '../../components';
+import React, { useState } from 'react';
+import { View, StyleSheet, SafeAreaView } from 'react-native';
+import { PdfFileManager, PdfViewer } from '@/features/performance/components';
 
 const PdfFileManagerScreen: React.FC = () => {
   const [selectedPdf, setSelectedPdf] = useState<string | null>(null);
@@ -29,10 +29,7 @@ const PdfFileManagerScreen: React.FC = () => {
           />
         </View>
       ) : (
-        <PdfFileManager
-          onFileSelect={handleFileSelect}
-          style={styles.fileManager}
-        />
+        <PdfFileManager onFileSelect={handleFileSelect} style={styles.fileManager} />
       )}
     </SafeAreaView>
   );

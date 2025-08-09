@@ -39,11 +39,37 @@ target 'BaseReactNative' do
       # :ccache_enabled => true
     )
     
-    # Fix for react-native-pdf
+    # Fix for react-native-pdf và RCT-Folly
     installer.pods_project.targets.each do |target|
       target.build_configurations.each do |config|
         config.build_settings['ENABLE_BITCODE'] = 'NO'
         config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+        
+        # Fix cho lỗi RCT-Folly và react-native-reanimated
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_NO_CONFIG=1'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_MOBILE=1'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_USE_LIBCPP=1'
+        config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_HAVE_CLOCK_GETTIME=1'
+        
+        # Fix cho xung đột phiên bản
+        if target.name == 'RCT-Folly'
+          config.build_settings['HEADER_SEARCH_PATHS'] ||= ['$(inherited)']
+          config.build_settings['HEADER_SEARCH_PATHS'] << '${PODS_ROOT}/RCT-Folly'
+          config.build_settings['HEADER_SEARCH_PATHS'] << '${PODS_ROOT}/boost'
+          config.build_settings['HEADER_SEARCH_PATHS'] << '${PODS_ROOT}/DoubleConversion'
+          config.build_settings['HEADER_SEARCH_PATHS'] << '${PODS_ROOT}/fmt/include'
+          config.build_settings['HEADER_SEARCH_PATHS'] << '${PODS_ROOT}/glog'
+        end
+        
+        # Fix cho tất cả các target có thể gặp lỗi Folly
+        if ['RNReanimated', 'RNGestureHandler', 'RNScreens', 'react-native-pdf'].include?(target.name)
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_NO_CONFIG=1'
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_MOBILE=1'
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_USE_LIBCPP=1'
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_HAVE_CLOCK_GETTIME=1'
+        end
       end
     end
   end

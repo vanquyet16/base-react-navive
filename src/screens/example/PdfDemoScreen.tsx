@@ -8,10 +8,10 @@ import {
   Alert,
   SafeAreaView,
 } from 'react-native';
-import PdfViewer from '../../components/test/PdfViewer';
-import PdfDownloader from '../../components/test/PdfDownloader';
-import PdfPhoneDownloader from '../../components/test/PdfPhoneDownloader';
-import PdfIosDownloader from '../../components/test/PdfIosDownloader';
+import PdfViewer from '@/features/performance/components/PdfViewer';
+import PdfDownloader from '@/features/performance/components/PdfDownloader';
+import PdfPhoneDownloader from '@/features/performance/components/PdfPhoneDownloader';
+import PdfIosDownloader from '@/features/performance/components/PdfIosDownloader';
 
 const PdfDemoScreen: React.FC = () => {
   const [currentPdf, setCurrentPdf] = useState<string | null>(null);

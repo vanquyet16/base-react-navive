@@ -25,7 +25,7 @@ import {
   getResponsiveSize,
   getScaledWidth,
   getScaledHeight,
-} from '../../utils/sizeMatters';
+} from '@/shared/utils/sizeMatters';
 
 const ResponsiveDemoScreen: React.FC = () => {
   return (
