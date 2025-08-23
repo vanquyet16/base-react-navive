@@ -1,5 +1,3 @@
-# Navigation Architecture - Chuẩn Senior
-
 ## 📁 Cấu trúc thư mục
 
 ```
@@ -22,32 +20,38 @@ src/navigation/
 ## 🏗️ Kiến trúc Navigation
 
 ### 1. **RootNavigator** (Cấp cao nhất)
+
 - Quản lý trạng thái authentication
 - Chuyển đổi giữa Auth và Drawer navigation
 - Sử dụng `NAVIGATION_KEYS.ROOT` cho tên screens
 
 ### 2. **DrawerNavigator** (Menu bên)
+
 - Chứa MainStack
 - Custom drawer content
 - Sử dụng `NAVIGATION_KEYS.MAIN_STACK.MAIN_TABS`
 
 ### 3. **MainStack** (Stack navigation)
+
 - Chứa MainTabs và các screens demo
 - Sử dụng config từ `MAIN_STACK_SCREENS`
 - Factory pattern để tạo screen wrappers
 
 ### 4. **MainTabs** (Bottom tabs)
+
 - 4 tabs chính: Home, Profile, Settings, ResponsiveDemo
 - Sử dụng `NAVIGATION_KEYS.TAB` cho tên screens
 - Custom tab bar
 
 ### 5. **AuthStack** (Authentication)
+
 - Login và Register screens
 - Sử dụng `NAVIGATION_KEYS.AUTH` cho tên screens
 
 ## 🔧 Configuration Pattern
 
 ### Screen Configuration
+
 ```typescript
 export interface ScreenConfig {
   title: string;
@@ -62,6 +66,7 @@ export interface ScreenConfig {
 ```
 
 ### Navigation Keys
+
 ```typescript
 export const NAVIGATION_KEYS = {
   ROOT: {
@@ -88,12 +93,14 @@ export const NAVIGATION_KEYS = {
 ## 🏭 Factory Pattern
 
 ### Screen Factory Functions
+
 - `createMainStackScreenWrapper()` - Tạo wrapper cho main stack screens
 - `createTabScreenWrapper()` - Tạo wrapper cho tab screens
 - `createAuthScreenWrapper()` - Tạo wrapper cho auth screens
 - `createHomeScreenWrapper()` - Tạo wrapper đặc biệt cho Home screen
 
 ### Batch Creation
+
 - `createMainStackScreenWrappers()` - Tạo tất cả main stack wrappers
 - `createTabScreenWrappers()` - Tạo tất cả tab wrappers
 - `createAuthScreenWrappers()` - Tạo tất cả auth wrappers
@@ -101,6 +108,7 @@ export const NAVIGATION_KEYS = {
 ## 📱 Screen Categories
 
 ### Main Stack Screens
+
 1. **Product Management**
    - `ProductManagement` - Quản lý sản phẩm
 
@@ -122,38 +130,45 @@ export const NAVIGATION_KEYS = {
    - `PerformanceMonitorDemo` - Performance Monitor Demo
 
 ### Tab Screens
+
 - `Home` - Trang chủ (với search, notification)
 - `Profile` - Hồ sơ
 - `Settings` - Cài đặt
 - `ResponsiveDemo` - Responsive Demo
 
 ### Auth Screens
+
 - `Login` - Đăng nhập
 - `Register` - Đăng ký
 
 ## 🚀 Lợi ích của kiến trúc mới
 
 ### 1. **Separation of Concerns**
+
 - Config tách biệt khỏi components
 - Factory pattern tách biệt logic tạo components
 - Mỗi navigator có trách nhiệm rõ ràng
 
 ### 2. **Maintainability**
+
 - Dễ dàng thêm/sửa/xóa screens
 - Config tập trung tại một nơi
 - Type safety với TypeScript
 
 ### 3. **Scalability**
+
 - Dễ dàng mở rộng thêm screens
 - Factory pattern cho phép tái sử dụng logic
 - Navigation keys constants tránh hardcode
 
 ### 4. **Performance**
+
 - Lazy loading cho tất cả screens
 - Factory pattern tối ưu memory usage
 - Config được tạo một lần duy nhất
 
 ### 5. **Developer Experience**
+
 - Code dễ đọc và hiểu
 - IntelliSense support tốt
 - Debugging dễ dàng với display names
@@ -161,6 +176,7 @@ export const NAVIGATION_KEYS = {
 ## 🔄 Cách thêm Screen mới
 
 ### 1. Thêm vào config
+
 ```typescript
 // Trong navigationConfig.ts
 export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
@@ -176,6 +192,7 @@ export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
 ```
 
 ### 2. Thêm navigation key
+
 ```typescript
 export const NAVIGATION_KEYS = {
   MAIN_STACK: {
@@ -201,12 +218,14 @@ export const NAVIGATION_KEYS = {
 ## 🔍 Debugging
 
 ### Navigation Keys
+
 ```typescript
 import { NAVIGATION_KEYS } from '@/navigation/config';
 console.log('Navigation keys:', NAVIGATION_KEYS);
 ```
 
 ### Screen Configs
+
 ```typescript
 import { getScreenConfig } from '@/navigation/config';
 const config = getScreenConfig('ProductManagement');
@@ -214,6 +233,7 @@ console.log('Screen config:', config);
 ```
 
 ### Factory Functions
+
 ```typescript
 import { createMainStackScreenWrapper } from '@/navigation/factories';
 const wrapper = createMainStackScreenWrapper('NewScreen', config);

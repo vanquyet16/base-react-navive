@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import {
   scale,
   verticalScale,
@@ -37,8 +31,7 @@ const ResponsiveDemoScreen: React.FC = () => {
           Screen: {getScreenDimensions().width} x {getScreenDimensions().height}
         </Text>
         <Text style={styles.deviceInfo}>
-          Device: {getDeviceType()} | Breakpoint: {getBreakpoint()} | Pixel
-          Ratio: {getPixelRatio()}
+          Device: {getDeviceType()} | Breakpoint: {getBreakpoint()} | Pixel Ratio: {getPixelRatio()}
         </Text>
       </View>
 
@@ -48,12 +41,9 @@ const ResponsiveDemoScreen: React.FC = () => {
 
         {/* getOptimalFontSize */}
         <View style={styles.demoItem}>
-          <Text style={styles.demoLabel}>
-            getOptimalFontSize() - Font Size Tối Ưu
-          </Text>
+          <Text style={styles.demoLabel}>getOptimalFontSize() - Font Size Tối Ưu</Text>
           <Text style={styles.optimalFontText}>
-            Font size tối ưu với giới hạn min/max:{' '}
-            {Math.round(getOptimalFontSize(18, 14, 22))}px
+            Font size tối ưu với giới hạn min/max: {Math.round(getOptimalFontSize(18, 14, 22))}px
           </Text>
           <Text style={styles.optimalFontText2}>
             Font size không giới hạn: {Math.round(getOptimalFontSize(16))}px
@@ -62,9 +52,7 @@ const ResponsiveDemoScreen: React.FC = () => {
 
         {/* getAspectRatio */}
         <View style={styles.demoItem}>
-          <Text style={styles.demoLabel}>
-            getAspectRatio() - Tỷ Lệ Khung Hình
-          </Text>
+          <Text style={styles.demoLabel}>getAspectRatio() - Tỷ Lệ Khung Hình</Text>
           <View style={styles.aspectRatioDemo}>
             <View style={styles.aspectRatioBox}>
               <Text style={styles.aspectRatioText}>16:9 Ratio</Text>
@@ -76,8 +64,7 @@ const ResponsiveDemoScreen: React.FC = () => {
             <View style={styles.aspectRatioBox}>
               <Text style={styles.aspectRatioText}>4:3 Ratio</Text>
               <Text style={styles.aspectRatioSubtext}>
-                {Math.round(getAspectRatio(4, 3).width)} x{' '}
-                {Math.round(getAspectRatio(4, 3).height)}
+                {Math.round(getAspectRatio(4, 3).width)} x {Math.round(getAspectRatio(4, 3).height)}
               </Text>
             </View>
           </View>
@@ -85,16 +72,13 @@ const ResponsiveDemoScreen: React.FC = () => {
 
         {/* getResponsivePadding & getResponsiveMargin */}
         <View style={styles.demoItem}>
-          <Text style={styles.demoLabel}>
-            getResponsivePadding() & getResponsiveMargin()
-          </Text>
+          <Text style={styles.demoLabel}>getResponsivePadding() & getResponsiveMargin()</Text>
           <View style={styles.responsiveSpacingDemo}>
             <View style={styles.paddingDemo}>
               <Text style={styles.spacingLabel}>Responsive Padding</Text>
               <View style={styles.paddingBox}>
                 <Text style={styles.paddingText}>
-                  H: {Math.round(scale(16))}px, V:{' '}
-                  {Math.round(verticalScale(12))}px
+                  H: {Math.round(scale(16))}px, V: {Math.round(verticalScale(12))}px
                 </Text>
               </View>
             </View>
@@ -102,8 +86,7 @@ const ResponsiveDemoScreen: React.FC = () => {
               <Text style={styles.spacingLabel}>Responsive Margin</Text>
               <View style={styles.marginBox}>
                 <Text style={styles.marginText}>
-                  H: {Math.round(scale(20))}px, V:{' '}
-                  {Math.round(verticalScale(16))}px
+                  H: {Math.round(scale(20))}px, V: {Math.round(verticalScale(16))}px
                 </Text>
               </View>
             </View>
@@ -117,13 +100,10 @@ const ResponsiveDemoScreen: React.FC = () => {
 
         {/* Breakpoint Demo */}
         <View style={styles.demoItem}>
-          <Text style={styles.demoLabel}>
-            Breakpoint System - Responsive Values
-          </Text>
+          <Text style={styles.demoLabel}>Breakpoint System - Responsive Values</Text>
           <View style={styles.breakpointDemo}>
             <Text style={styles.breakpointText}>
-              Current Breakpoint:{' '}
-              <Text style={styles.breakpointValue}>{getBreakpoint()}</Text>
+              Current Breakpoint: <Text style={styles.breakpointValue}>{getBreakpoint()}</Text>
             </Text>
             <Text style={styles.breakpointText}>
               Responsive Font Size:{' '}
@@ -160,24 +140,12 @@ const ResponsiveDemoScreen: React.FC = () => {
         <View style={styles.demoItem}>
           <Text style={styles.demoLabel}>BREAKPOINTS Constants</Text>
           <View style={styles.breakpointsDemo}>
-            <Text style={styles.breakpointText}>
-              PHONE_SMALL: {BREAKPOINTS.PHONE_SMALL}px
-            </Text>
-            <Text style={styles.breakpointText}>
-              PHONE_MEDIUM: {BREAKPOINTS.PHONE_MEDIUM}px
-            </Text>
-            <Text style={styles.breakpointText}>
-              PHONE_LARGE: {BREAKPOINTS.PHONE_LARGE}px
-            </Text>
-            <Text style={styles.breakpointText}>
-              TABLET_SMALL: {BREAKPOINTS.TABLET_SMALL}px
-            </Text>
-            <Text style={styles.breakpointText}>
-              TABLET_MEDIUM: {BREAKPOINTS.TABLET_MEDIUM}px
-            </Text>
-            <Text style={styles.breakpointText}>
-              TABLET_LARGE: {BREAKPOINTS.TABLET_LARGE}px
-            </Text>
+            <Text style={styles.breakpointText}>PHONE_SMALL: {BREAKPOINTS.PHONE_SMALL}px</Text>
+            <Text style={styles.breakpointText}>PHONE_MEDIUM: {BREAKPOINTS.PHONE_MEDIUM}px</Text>
+            <Text style={styles.breakpointText}>PHONE_LARGE: {BREAKPOINTS.PHONE_LARGE}px</Text>
+            <Text style={styles.breakpointText}>TABLET_SMALL: {BREAKPOINTS.TABLET_SMALL}px</Text>
+            <Text style={styles.breakpointText}>TABLET_MEDIUM: {BREAKPOINTS.TABLET_MEDIUM}px</Text>
+            <Text style={styles.breakpointText}>TABLET_LARGE: {BREAKPOINTS.TABLET_LARGE}px</Text>
           </View>
         </View>
       </View>
@@ -196,9 +164,7 @@ const ResponsiveDemoScreen: React.FC = () => {
             </View>
             <View style={styles.deviceInfoBox}>
               <Text style={styles.deviceInfoTitle}>Is Tablet</Text>
-              <Text style={styles.deviceInfoValue}>
-                {isTablet() ? 'Yes' : 'No'}
-              </Text>
+              <Text style={styles.deviceInfoValue}>{isTablet() ? 'Yes' : 'No'}</Text>
             </View>
             <View style={styles.deviceInfoBox}>
               <Text style={styles.deviceInfoTitle}>Screen Dimensions</Text>
@@ -212,15 +178,10 @@ const ResponsiveDemoScreen: React.FC = () => {
         {/* Device-specific Layout */}
         <View style={styles.demoItem}>
           <Text style={styles.demoLabel}>Device-specific Layout</Text>
-          <View
-            style={[styles.deviceLayout, isTablet() && styles.tabletLayout]}>
-            <Text style={styles.deviceLayoutText}>
-              Layout cho {getDeviceType()}
-            </Text>
+          <View style={[styles.deviceLayout, isTablet() && styles.tabletLayout]}>
+            <Text style={styles.deviceLayoutText}>Layout cho {getDeviceType()}</Text>
             <Text style={styles.deviceLayoutSubtext}>
-              {isTablet()
-                ? 'Tablet layout với nhiều cột'
-                : 'Phone layout với một cột'}
+              {isTablet() ? 'Tablet layout với nhiều cột' : 'Phone layout với một cột'}
             </Text>
           </View>
         </View>
@@ -228,36 +189,24 @@ const ResponsiveDemoScreen: React.FC = () => {
 
       {/* Section 4: Performance Demo - Cache System */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>
-          4. Performance Demo - Cache System
-        </Text>
+        <Text style={styles.sectionTitle}>4. Performance Demo - Cache System</Text>
 
         <View style={styles.demoItem}>
           <Text style={styles.demoLabel}>Cached vs Non-Cached Values</Text>
           <View style={styles.performanceDemo}>
             <View style={styles.performanceItem}>
-              <Text style={styles.performanceLabel}>
-                Cached getResponsiveSize(20, 0.5)
-              </Text>
+              <Text style={styles.performanceLabel}>Cached getResponsiveSize(20, 0.5)</Text>
               <Text style={styles.performanceValue}>
                 {Math.round(getResponsiveSize(20, 0.5))}px
               </Text>
             </View>
             <View style={styles.performanceItem}>
-              <Text style={styles.performanceLabel}>
-                Cached getScaledWidth(50)
-              </Text>
-              <Text style={styles.performanceValue}>
-                {Math.round(getScaledWidth(50))}px
-              </Text>
+              <Text style={styles.performanceLabel}>Cached getScaledWidth(50)</Text>
+              <Text style={styles.performanceValue}>{Math.round(getScaledWidth(50))}px</Text>
             </View>
             <View style={styles.performanceItem}>
-              <Text style={styles.performanceLabel}>
-                Cached getScaledHeight(25)
-              </Text>
-              <Text style={styles.performanceValue}>
-                {Math.round(getScaledHeight(25))}px
-              </Text>
+              <Text style={styles.performanceLabel}>Cached getScaledHeight(25)</Text>
+              <Text style={styles.performanceValue}>{Math.round(getScaledHeight(25))}px</Text>
             </View>
           </View>
         </View>
@@ -270,8 +219,7 @@ const ResponsiveDemoScreen: React.FC = () => {
               <View key={item} style={styles.gridItem}>
                 <Text style={styles.gridText}>Item {item}</Text>
                 <Text style={styles.gridSubtext}>
-                  {Math.round(getScaledWidth(48))} x{' '}
-                  {Math.round(verticalScale(60))}
+                  {Math.round(getScaledWidth(48))} x {Math.round(verticalScale(60))}
                 </Text>
               </View>
             ))}
@@ -309,17 +257,13 @@ const ResponsiveDemoScreen: React.FC = () => {
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>moderateScale()</Text>
               <Text style={styles.tableCell}>Kiểm soát mức độ scale</Text>
-              <Text style={styles.tableCell}>
-                fontSize: moderateScale(16, 0.3)
-              </Text>
+              <Text style={styles.tableCell}>fontSize: moderateScale(16, 0.3)</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>getResponsiveSize()</Text>
               <Text style={styles.tableCell}>Size với factor tùy chỉnh</Text>
-              <Text style={styles.tableCell}>
-                fontSize: getResponsiveSize(20, 0.5)
-              </Text>
+              <Text style={styles.tableCell}>fontSize: getResponsiveSize(20, 0.5)</Text>
             </View>
 
             <View style={styles.tableRow}>
@@ -346,65 +290,49 @@ const ResponsiveDemoScreen: React.FC = () => {
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>getOptimalFontSize()</Text>
               <Text style={styles.tableCell}>Font size với giới hạn</Text>
-              <Text style={styles.tableCell}>
-                fontSize: getOptimalFontSize(18, 14, 22)
-              </Text>
+              <Text style={styles.tableCell}>fontSize: getOptimalFontSize(18, 14, 22)</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>getAspectRatio()</Text>
               <Text style={styles.tableCell}>Tỷ lệ khung hình</Text>
-              <Text style={styles.tableCell}>
-                const size = getAspectRatio(16, 9)
-              </Text>
+              <Text style={styles.tableCell}>const size = getAspectRatio(16, 9)</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>getResponsivePadding()</Text>
               <Text style={styles.tableCell}>Padding responsive</Text>
-              <Text style={styles.tableCell}>
-                padding: getResponsivePadding(16, 12)
-              </Text>
+              <Text style={styles.tableCell}>padding: getResponsivePadding(16, 12)</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>getResponsiveMargin()</Text>
               <Text style={styles.tableCell}>Margin responsive</Text>
-              <Text style={styles.tableCell}>
-                margin: getResponsiveMargin(20, 16)
-              </Text>
+              <Text style={styles.tableCell}>margin: getResponsiveMargin(20, 16)</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>isTablet()</Text>
               <Text style={styles.tableCell}>Kiểm tra thiết bị</Text>
-              <Text style={styles.tableCell}>
-                if (isTablet()) tablet layout
-              </Text>
+              <Text style={styles.tableCell}>if (isTablet()) tablet layout</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>getDeviceType()</Text>
               <Text style={styles.tableCell}>Loại thiết bị</Text>
-              <Text style={styles.tableCell}>
-                const device = getDeviceType()
-              </Text>
+              <Text style={styles.tableCell}>const device = getDeviceType()</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>getBreakpoint()</Text>
               <Text style={styles.tableCell}>Breakpoint hiện tại</Text>
-              <Text style={styles.tableCell}>
-                const breakpoint = getBreakpoint()
-              </Text>
+              <Text style={styles.tableCell}>const breakpoint = getBreakpoint()</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>getResponsiveValue()</Text>
               <Text style={styles.tableCell}>Giá trị theo breakpoint</Text>
-              <Text style={styles.tableCell}>
-                fontSize: getResponsiveValue(breakpoints)
-              </Text>
+              <Text style={styles.tableCell}>fontSize: getResponsiveValue(breakpoints)</Text>
             </View>
           </View>
 
@@ -431,9 +359,7 @@ const ResponsiveDemoScreen: React.FC = () => {
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>SIZES.RADIUS_*</Text>
               <Text style={styles.tableCell}>Border radius</Text>
-              <Text style={styles.tableCell}>
-                borderRadius: SIZES.RADIUS_NORMAL
-              </Text>
+              <Text style={styles.tableCell}>borderRadius: SIZES.RADIUS_NORMAL</Text>
             </View>
 
             <View style={styles.tableRow}>
@@ -445,9 +371,7 @@ const ResponsiveDemoScreen: React.FC = () => {
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>BREAKPOINTS.*</Text>
               <Text style={styles.tableCell}>Điểm break</Text>
-              <Text style={styles.tableCell}>
-                if (width {'<'} BREAKPOINTS.TABLET_SMALL)
-              </Text>
+              <Text style={styles.tableCell}>if (width {'<'} BREAKPOINTS.TABLET_SMALL)</Text>
             </View>
           </View>
 
@@ -467,9 +391,7 @@ const ResponsiveDemoScreen: React.FC = () => {
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>Layout</Text>
-              <Text style={styles.tableCell}>
-                Kết hợp scale() + verticalScale()
-              </Text>
+              <Text style={styles.tableCell}>Kết hợp scale() + verticalScale()</Text>
               <Text style={styles.tableCell}>Responsive tốt hơn</Text>
             </View>
 
@@ -513,17 +435,13 @@ const ResponsiveDemoScreen: React.FC = () => {
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>Font Size</Text>
               <Text style={styles.tableCell}>scale(16)</Text>
-              <Text style={styles.tableCell}>
-                getOptimalFontSize(16, 12, 20)
-              </Text>
+              <Text style={styles.tableCell}>getOptimalFontSize(16, 12, 20)</Text>
               <Text style={styles.tableCell}>Giới hạn min/max</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>Aspect Ratio</Text>
-              <Text style={styles.tableCell}>
-                width: scale(300), height: scale(200)
-              </Text>
+              <Text style={styles.tableCell}>width: scale(300), height: scale(200)</Text>
               <Text style={styles.tableCell}>getAspectRatio(16, 9)</Text>
               <Text style={styles.tableCell}>Tỷ lệ chính xác</Text>
             </View>
@@ -548,30 +466,22 @@ const ResponsiveDemoScreen: React.FC = () => {
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>Device Check</Text>
-              <Text style={styles.tableCell}>
-                Dimensions.get('window').width {'>'} 768
-              </Text>
+              <Text style={styles.tableCell}>Dimensions.get('window').width {'>'} 768</Text>
               <Text style={styles.tableCell}>isTablet()</Text>
               <Text style={styles.tableCell}>Logic đơn giản</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>Breakpoint</Text>
-              <Text style={styles.tableCell}>
-                if (width {'<'} 768) phone else tablet
-              </Text>
+              <Text style={styles.tableCell}>if (width {'<'} 768) phone else tablet</Text>
               <Text style={styles.tableCell}>getBreakpoint()</Text>
               <Text style={styles.tableCell}>Nhiều breakpoint</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>Responsive Value</Text>
-              <Text style={styles.tableCell}>
-                const fontSize = width {'<'} 768 ? 14 : 16
-              </Text>
-              <Text style={styles.tableCell}>
-                getResponsiveValue(breakpoints)
-              </Text>
+              <Text style={styles.tableCell}>const fontSize = width {'<'} 768 ? 14 : 16</Text>
+              <Text style={styles.tableCell}>getResponsiveValue(breakpoints)</Text>
               <Text style={styles.tableCell}>Linh hoạt hơn</Text>
             </View>
           </View>
@@ -626,28 +536,20 @@ const ResponsiveDemoScreen: React.FC = () => {
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>Typography</Text>
               <Text style={styles.tableCell}>fontSize: scale(16)</Text>
-              <Text style={styles.tableCell}>
-                fontSize: getOptimalFontSize(16, 14, 18)
-              </Text>
+              <Text style={styles.tableCell}>fontSize: getOptimalFontSize(16, 14, 18)</Text>
               <Text style={styles.tableCell}>Readability tốt hơn</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>Image Container</Text>
-              <Text style={styles.tableCell}>
-                width: scale(300), height: scale(200)
-              </Text>
-              <Text style={styles.tableCell}>
-                const size = getAspectRatio(16, 9)
-              </Text>
+              <Text style={styles.tableCell}>width: scale(300), height: scale(200)</Text>
+              <Text style={styles.tableCell}>const size = getAspectRatio(16, 9)</Text>
               <Text style={styles.tableCell}>Tỷ lệ chính xác</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>Card Layout</Text>
-              <Text style={styles.tableCell}>
-                padding: scale(16), margin: verticalScale(12)
-              </Text>
+              <Text style={styles.tableCell}>padding: scale(16), margin: verticalScale(12)</Text>
               <Text style={styles.tableCell}>
                 ...getResponsivePadding(16, 12), ...getResponsiveMargin(20, 16)
               </Text>
@@ -656,9 +558,7 @@ const ResponsiveDemoScreen: React.FC = () => {
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>Device Layout</Text>
-              <Text style={styles.tableCell}>
-                if (Dimensions.get('window').width {'>'} 768)
-              </Text>
+              <Text style={styles.tableCell}>if (Dimensions.get('window').width {'>'} 768)</Text>
               <Text style={styles.tableCell}>if (isTablet())</Text>
               <Text style={styles.tableCell}>Logic rõ ràng</Text>
             </View>
@@ -683,20 +583,14 @@ const ResponsiveDemoScreen: React.FC = () => {
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>Font Size</Text>
               <Text style={styles.tableCell}>scale(16)</Text>
-              <Text style={styles.tableCell}>
-                getOptimalFontSize(16, 14, 18)
-              </Text>
+              <Text style={styles.tableCell}>getOptimalFontSize(16, 14, 18)</Text>
               <Text style={styles.tableCell}>Thêm min/max values</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>Aspect Ratio</Text>
-              <Text style={styles.tableCell}>
-                width: scale(300), height: scale(200)
-              </Text>
-              <Text style={styles.tableCell}>
-                const size = getAspectRatio(16, 9)
-              </Text>
+              <Text style={styles.tableCell}>width: scale(300), height: scale(200)</Text>
+              <Text style={styles.tableCell}>const size = getAspectRatio(16, 9)</Text>
               <Text style={styles.tableCell}>Sử dụng object destructuring</Text>
             </View>
 
@@ -705,26 +599,20 @@ const ResponsiveDemoScreen: React.FC = () => {
               <Text style={styles.tableCell}>
                 paddingHorizontal: scale(16), paddingVertical: verticalScale(12)
               </Text>
-              <Text style={styles.tableCell}>
-                ...getResponsivePadding(16, 12)
-              </Text>
+              <Text style={styles.tableCell}>...getResponsivePadding(16, 12)</Text>
               <Text style={styles.tableCell}>Sử dụng spread operator</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>Device Check</Text>
-              <Text style={styles.tableCell}>
-                Dimensions.get('window').width {'>'} 768
-              </Text>
+              <Text style={styles.tableCell}>Dimensions.get('window').width {'>'} 768</Text>
               <Text style={styles.tableCell}>isTablet()</Text>
               <Text style={styles.tableCell}>Logic đơn giản hơn</Text>
             </View>
 
             <View style={styles.tableRow}>
               <Text style={styles.tableCell}>Breakpoint</Text>
-              <Text style={styles.tableCell}>
-                if (width {'<'} 768) phone else tablet
-              </Text>
+              <Text style={styles.tableCell}>if (width {'<'} 768) phone else tablet</Text>
               <Text style={styles.tableCell}>getBreakpoint()</Text>
               <Text style={styles.tableCell}>Nhiều breakpoint hơn</Text>
             </View>
@@ -746,8 +634,8 @@ const ResponsiveDemoScreen: React.FC = () => {
             </View>
             <View style={styles.cardContent}>
               <Text style={styles.cardText}>
-                Card này sử dụng các function responsive mới để tự động điều
-                chỉnh kích thước theo thiết bị.
+                Card này sử dụng các function responsive mới để tự động điều chỉnh kích thước theo
+                thiết bị.
               </Text>
             </View>
             <View style={styles.cardFooter}>

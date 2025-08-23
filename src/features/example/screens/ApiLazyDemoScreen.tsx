@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,12 +10,12 @@ import {
   RefreshControl,
   Alert,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {COLORS, SCREEN_PADDING} from '@/shared/constants';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { COLORS, SCREEN_PADDING } from '@/shared/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import {MainStackParamList} from '@/shared/types';
-import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
+import { MainStackParamList } from '@/shared/types';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 type NavigationProp = StackNavigationProp<MainStackParamList>;
 
@@ -24,52 +24,44 @@ const apiService = {
   // Lazy load users
   getUsers: async (page: number = 1, limit: number = 10) => {
     await new Promise(resolve => setTimeout(resolve, 1500)); // Mô phỏng delay
-    const users = Array.from({length: limit}, (_, i) => ({
+    const users = Array.from({ length: limit }, (_, i) => ({
       id: (page - 1) * limit + i + 1,
       name: `User ${(page - 1) * limit + i + 1}`,
       email: `user${(page - 1) * limit + i + 1}@example.com`,
-      avatar: `https://picsum.photos/100/100?random=${
-        (page - 1) * limit + i + 1
-      }`,
+      avatar: `https://picsum.photos/100/100?random=${(page - 1) * limit + i + 1}`,
       role: ['admin', 'user', 'moderator'][Math.floor(Math.random() * 3)],
     }));
-    return {users, total: 100, page, totalPages: 10};
+    return { users, total: 100, page, totalPages: 10 };
   },
 
   // Lazy load posts
   getPosts: async (page: number = 1, limit: number = 10) => {
     await new Promise(resolve => setTimeout(resolve, 2000)); // Mô phỏng delay
-    const posts = Array.from({length: limit}, (_, i) => ({
+    const posts = Array.from({ length: limit }, (_, i) => ({
       id: (page - 1) * limit + i + 1,
       title: `Post ${(page - 1) * limit + i + 1}`,
       content: `Nội dung chi tiết của post ${(page - 1) * limit + i + 1}`,
       author: `Author ${(page - 1) * limit + i + 1}`,
-      image: `https://picsum.photos/300/200?random=${
-        (page - 1) * limit + i + 1
-      }`,
+      image: `https://picsum.photos/300/200?random=${(page - 1) * limit + i + 1}`,
       likes: Math.floor(Math.random() * 100),
       comments: Math.floor(Math.random() * 50),
     }));
-    return {posts, total: 200, page, totalPages: 20};
+    return { posts, total: 200, page, totalPages: 20 };
   },
 
   // Lazy load products
   getProducts: async (page: number = 1, limit: number = 10) => {
     await new Promise(resolve => setTimeout(resolve, 1000)); // Mô phỏng delay
-    const products = Array.from({length: limit}, (_, i) => ({
+    const products = Array.from({ length: limit }, (_, i) => ({
       id: (page - 1) * limit + i + 1,
       name: `Product ${(page - 1) * limit + i + 1}`,
       price: Math.floor(Math.random() * 1000000) + 100000,
-      category: ['Electronics', 'Clothing', 'Books', 'Home'][
-        Math.floor(Math.random() * 4)
-      ],
-      image: `https://picsum.photos/200/200?random=${
-        (page - 1) * limit + i + 1
-      }`,
+      category: ['Electronics', 'Clothing', 'Books', 'Home'][Math.floor(Math.random() * 4)],
+      image: `https://picsum.photos/200/200?random=${(page - 1) * limit + i + 1}`,
       rating: (Math.random() * 5).toFixed(1),
       stock: Math.floor(Math.random() * 100),
     }));
-    return {products, total: 150, page, totalPages: 15};
+    return { products, total: 150, page, totalPages: 15 };
   },
 };
 
@@ -77,9 +69,7 @@ const ApiLazyDemoScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const queryClient = useQueryClient();
 
-  const [activeTab, setActiveTab] = useState<'users' | 'posts' | 'products'>(
-    'users',
-  );
+  const [activeTab, setActiveTab] = useState<'users' | 'posts' | 'products'>('users');
   const [page, setPage] = useState(1);
   const [isEnabled, setIsEnabled] = useState(false);
 
@@ -111,11 +101,7 @@ const ApiLazyDemoScreen: React.FC = () => {
   }, [activeTab]);
 
   const currentQuery =
-    activeTab === 'users'
-      ? usersQuery
-      : activeTab === 'posts'
-      ? postsQuery
-      : productsQuery;
+    activeTab === 'users' ? usersQuery : activeTab === 'posts' ? postsQuery : productsQuery;
 
   const handleLoadData = () => {
     setIsEnabled(true);
@@ -141,18 +127,14 @@ const ApiLazyDemoScreen: React.FC = () => {
     Alert.alert('Cache cleared', 'Đã xóa cache và reset state');
   };
 
-  const renderUserItem = ({item}: {item: any}) => (
+  const renderUserItem = ({ item }: { item: any }) => (
     <View style={styles.itemContainer}>
-      <Image source={{uri: item.avatar}} style={styles.avatar} />
+      <Image source={{ uri: item.avatar }} style={styles.avatar} />
       <View style={styles.itemContent}>
         <Text style={styles.itemTitle}>{item.name}</Text>
         <Text style={styles.itemSubtitle}>{item.email}</Text>
         <View style={styles.roleContainer}>
-          <Text
-            style={[
-              styles.roleBadge,
-              {backgroundColor: getRoleColor(item.role)},
-            ]}>
+          <Text style={[styles.roleBadge, { backgroundColor: getRoleColor(item.role) }]}>
             {item.role}
           </Text>
         </View>
@@ -160,9 +142,9 @@ const ApiLazyDemoScreen: React.FC = () => {
     </View>
   );
 
-  const renderPostItem = ({item}: {item: any}) => (
+  const renderPostItem = ({ item }: { item: any }) => (
     <View style={styles.postContainer}>
-      <Image source={{uri: item.image}} style={styles.postImage} />
+      <Image source={{ uri: item.image }} style={styles.postImage} />
       <View style={styles.postContentContainer}>
         <Text style={styles.postTitle}>{item.title}</Text>
         <Text style={styles.postAuthor}>By {item.author}</Text>
@@ -171,11 +153,11 @@ const ApiLazyDemoScreen: React.FC = () => {
         </Text>
         <View style={styles.postStats}>
           <View style={styles.statItem}>
-            <Icon name="thumb-up" size={16} color={COLORS.primary} />
+            <Icon name='thumb-up' size={16} color={COLORS.primary} />
             <Text style={styles.statText}>{item.likes}</Text>
           </View>
           <View style={styles.statItem}>
-            <Icon name="comment" size={16} color={COLORS.primary} />
+            <Icon name='comment' size={16} color={COLORS.primary} />
             <Text style={styles.statText}>{item.comments}</Text>
           </View>
         </View>
@@ -183,22 +165,20 @@ const ApiLazyDemoScreen: React.FC = () => {
     </View>
   );
 
-  const renderProductItem = ({item}: {item: any}) => (
+  const renderProductItem = ({ item }: { item: any }) => (
     <View style={styles.productContainer}>
-      <Image source={{uri: item.image}} style={styles.productImage} />
+      <Image source={{ uri: item.image }} style={styles.productImage} />
       <View style={styles.productContent}>
         <Text style={styles.productTitle}>{item.name}</Text>
         <Text style={styles.productCategory}>{item.category}</Text>
-        <Text style={styles.productPrice}>
-          {item.price.toLocaleString('vi-VN')} VNĐ
-        </Text>
+        <Text style={styles.productPrice}>{item.price.toLocaleString('vi-VN')} VNĐ</Text>
         <View style={styles.productStats}>
           <View style={styles.statItem}>
-            <Icon name="star" size={16} color="#FFD700" />
+            <Icon name='star' size={16} color='#FFD700' />
             <Text style={styles.statText}>{item.rating}</Text>
           </View>
           <View style={styles.statItem}>
-            <Icon name="inventory" size={16} color={COLORS.primary} />
+            <Icon name='inventory' size={16} color={COLORS.primary} />
             <Text style={styles.statText}>{item.stock}</Text>
           </View>
         </View>
@@ -221,9 +201,7 @@ const ApiLazyDemoScreen: React.FC = () => {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>API Lazy Loading Demo</Text>
-        <Text style={styles.subtitle}>
-          Tối ưu performance với lazy loading API calls
-        </Text>
+        <Text style={styles.subtitle}>Tối ưu performance với lazy loading API calls</Text>
       </View>
 
       {/* Control Panel */}
@@ -234,14 +212,14 @@ const ApiLazyDemoScreen: React.FC = () => {
           <TouchableOpacity
             style={[styles.controlButton, styles.primaryButton]}
             onPress={handleLoadData}>
-            <Icon name="cloud-download" size={20} color="#fff" />
+            <Icon name='cloud-download' size={20} color='#fff' />
             <Text style={styles.buttonText}>Load Data</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.controlButton, styles.secondaryButton]}
             onPress={handleClearCache}>
-            <Icon name="clear" size={20} color="#fff" />
+            <Icon name='clear' size={20} color='#fff' />
             <Text style={styles.buttonText}>Clear Cache</Text>
           </TouchableOpacity>
         </View>
@@ -251,7 +229,7 @@ const ApiLazyDemoScreen: React.FC = () => {
             style={[styles.controlButton, styles.successButton]}
             onPress={handleRefresh}
             disabled={currentQuery.isFetching}>
-            <Icon name="refresh" size={20} color="#fff" />
+            <Icon name='refresh' size={20} color='#fff' />
             <Text style={styles.buttonText}>
               {currentQuery.isFetching ? 'Refreshing...' : 'Refresh'}
             </Text>
@@ -260,7 +238,7 @@ const ApiLazyDemoScreen: React.FC = () => {
           <TouchableOpacity
             style={[styles.controlButton, styles.infoButton]}
             onPress={() => navigation.navigate('ProductScreen')}>
-            <Icon name="navigate-next" size={20} color="#fff" />
+            <Icon name='navigate-next' size={20} color='#fff' />
             <Text style={styles.buttonText}>Go to Products</Text>
           </TouchableOpacity>
         </View>
@@ -271,50 +249,26 @@ const ApiLazyDemoScreen: React.FC = () => {
         <TouchableOpacity
           style={[styles.tab, activeTab === 'users' && styles.activeTab]}
           onPress={() => setActiveTab('users')}>
-          <Icon
-            name="people"
-            size={20}
-            color={activeTab === 'users' ? '#fff' : COLORS.text}
-          />
-          <Text
-            style={[
-              styles.tabText,
-              activeTab === 'users' && styles.activeTabText,
-            ]}>
-            Users
-          </Text>
+          <Icon name='people' size={20} color={activeTab === 'users' ? '#fff' : COLORS.text} />
+          <Text style={[styles.tabText, activeTab === 'users' && styles.activeTabText]}>Users</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.tab, activeTab === 'posts' && styles.activeTab]}
           onPress={() => setActiveTab('posts')}>
-          <Icon
-            name="article"
-            size={20}
-            color={activeTab === 'posts' ? '#fff' : COLORS.text}
-          />
-          <Text
-            style={[
-              styles.tabText,
-              activeTab === 'posts' && styles.activeTabText,
-            ]}>
-            Posts
-          </Text>
+          <Icon name='article' size={20} color={activeTab === 'posts' ? '#fff' : COLORS.text} />
+          <Text style={[styles.tabText, activeTab === 'posts' && styles.activeTabText]}>Posts</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.tab, activeTab === 'products' && styles.activeTab]}
           onPress={() => setActiveTab('products')}>
           <Icon
-            name="inventory"
+            name='inventory'
             size={20}
             color={activeTab === 'products' ? '#fff' : COLORS.text}
           />
-          <Text
-            style={[
-              styles.tabText,
-              activeTab === 'products' && styles.activeTabText,
-            ]}>
+          <Text style={[styles.tabText, activeTab === 'products' && styles.activeTabText]}>
             Products
           </Text>
         </TouchableOpacity>
@@ -325,18 +279,12 @@ const ApiLazyDemoScreen: React.FC = () => {
         <Text style={styles.statusTitle}>Trạng thái:</Text>
         <View style={styles.statusGrid}>
           <View style={styles.statusItem}>
-            <Icon
-              name="cloud"
-              size={16}
-              color={isEnabled ? COLORS.success : COLORS.error}
-            />
-            <Text style={styles.statusText}>
-              {isEnabled ? 'Enabled' : 'Disabled'}
-            </Text>
+            <Icon name='cloud' size={16} color={isEnabled ? COLORS.success : COLORS.error} />
+            <Text style={styles.statusText}>{isEnabled ? 'Enabled' : 'Disabled'}</Text>
           </View>
           <View style={styles.statusItem}>
             <Icon
-              name="cached"
+              name='cached'
               size={16}
               color={currentQuery.isFetching ? COLORS.warning : COLORS.success}
             />
@@ -345,7 +293,7 @@ const ApiLazyDemoScreen: React.FC = () => {
             </Text>
           </View>
           <View style={styles.statusItem}>
-            <Icon name="storage" size={16} color={COLORS.info} />
+            <Icon name='storage' size={16} color={COLORS.info} />
             <Text style={styles.statusText}>Page {page}</Text>
           </View>
         </View>
@@ -355,31 +303,25 @@ const ApiLazyDemoScreen: React.FC = () => {
       <View style={styles.dataContainer}>
         {!isEnabled ? (
           <View style={styles.emptyState}>
-            <Icon name="cloud-off" size={64} color={COLORS.textSecondary} />
+            <Icon name='cloud-off' size={64} color={COLORS.textSecondary} />
             <Text style={styles.emptyTitle}>Chưa load data</Text>
-            <Text style={styles.emptySubtitle}>
-              Nhấn "Load Data" để bắt đầu lazy loading
-            </Text>
+            <Text style={styles.emptySubtitle}>Nhấn "Load Data" để bắt đầu lazy loading</Text>
           </View>
         ) : currentQuery.isLoading ? (
           <View style={styles.loadingState}>
-            <Icon name="hourglass-empty" size={64} color={COLORS.primary} />
+            <Icon name='hourglass-empty' size={64} color={COLORS.primary} />
             <Text style={styles.loadingTitle}>Đang load data...</Text>
-            <Text style={styles.loadingSubtitle}>
-              Fetching {activeTab} từ API (mô phỏng delay)
-            </Text>
+            <Text style={styles.loadingSubtitle}>Fetching {activeTab} từ API (mô phỏng delay)</Text>
           </View>
         ) : currentQuery.isError ? (
           <View style={styles.errorState}>
-            <Icon name="error" size={64} color={COLORS.error} />
+            <Icon name='error' size={64} color={COLORS.error} />
             <Text style={styles.errorTitle}>Lỗi load data</Text>
             <Text style={styles.errorMessage}>
               {currentQuery.error?.message || 'Unknown error'}
             </Text>
-            <TouchableOpacity
-              style={styles.retryButton}
-              onPress={handleRefresh}>
-              <Icon name="refresh" size={20} color="#fff" />
+            <TouchableOpacity style={styles.retryButton} onPress={handleRefresh}>
+              <Icon name='refresh' size={20} color='#fff' />
               <Text style={styles.retryText}>Thử lại</Text>
             </TouchableOpacity>
           </View>
@@ -390,22 +332,19 @@ const ApiLazyDemoScreen: React.FC = () => {
                 activeTab === 'users'
                   ? (currentQuery.data as any)?.users || []
                   : activeTab === 'posts'
-                  ? (currentQuery.data as any)?.posts || []
-                  : (currentQuery.data as any)?.products || []
+                    ? (currentQuery.data as any)?.posts || []
+                    : (currentQuery.data as any)?.products || []
               }
               keyExtractor={item => item.id.toString()}
               renderItem={
                 activeTab === 'users'
                   ? renderUserItem
                   : activeTab === 'posts'
-                  ? renderPostItem
-                  : renderProductItem
+                    ? renderPostItem
+                    : renderProductItem
               }
               refreshControl={
-                <RefreshControl
-                  refreshing={currentQuery.isFetching}
-                  onRefresh={handleRefresh}
-                />
+                <RefreshControl refreshing={currentQuery.isFetching} onRefresh={handleRefresh} />
               }
               showsVerticalScrollIndicator={false}
               scrollEnabled={false} // Disable scroll for demo
@@ -417,26 +356,17 @@ const ApiLazyDemoScreen: React.FC = () => {
                 style={[styles.pageButton, page === 1 && styles.disabledButton]}
                 onPress={handlePrevPage}
                 disabled={page === 1}>
-                <Icon
-                  name="chevron-left"
-                  size={20}
-                  color={page === 1 ? '#ccc' : '#fff'}
-                />
-                <Text
-                  style={[styles.pageText, page === 1 && styles.disabledText]}>
-                  Trước
-                </Text>
+                <Icon name='chevron-left' size={20} color={page === 1 ? '#ccc' : '#fff'} />
+                <Text style={[styles.pageText, page === 1 && styles.disabledText]}>Trước</Text>
               </TouchableOpacity>
 
               <Text style={styles.pageInfo}>
                 Trang {page} / {currentQuery.data?.totalPages || 1}
               </Text>
 
-              <TouchableOpacity
-                style={styles.pageButton}
-                onPress={handleNextPage}>
+              <TouchableOpacity style={styles.pageButton} onPress={handleNextPage}>
                 <Text style={styles.pageText}>Sau</Text>
-                <Icon name="chevron-right" size={20} color="#fff" />
+                <Icon name='chevron-right' size={20} color='#fff' />
               </TouchableOpacity>
             </View>
           </View>
@@ -448,23 +378,19 @@ const ApiLazyDemoScreen: React.FC = () => {
         <Text style={styles.performanceTitle}>Lợi ích Lazy Loading API:</Text>
         <View style={styles.benefitList}>
           <View style={styles.benefitItem}>
-            <Icon name="speed" size={16} color={COLORS.primary} />
+            <Icon name='speed' size={16} color={COLORS.primary} />
             <Text style={styles.benefitText}>Chỉ fetch data khi cần thiết</Text>
           </View>
           <View style={styles.benefitItem}>
-            <Icon name="memory" size={16} color={COLORS.primary} />
+            <Icon name='memory' size={16} color={COLORS.primary} />
             <Text style={styles.benefitText}>Cache data để tái sử dụng</Text>
           </View>
           <View style={styles.benefitItem}>
-            <Icon name="network-check" size={16} color={COLORS.primary} />
+            <Icon name='network-check' size={16} color={COLORS.primary} />
             <Text style={styles.benefitText}>Giảm network requests</Text>
           </View>
           <View style={styles.benefitItem}>
-            <Icon
-              name="battery-charging-full"
-              size={16}
-              color={COLORS.primary}
-            />
+            <Icon name='battery-charging-full' size={16} color={COLORS.primary} />
             <Text style={styles.benefitText}>Tiết kiệm pin và bandwidth</Text>
           </View>
         </View>

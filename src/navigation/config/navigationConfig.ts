@@ -32,6 +32,15 @@ export interface TabScreenConfig {
     component: () => Promise<any>; // Component được lazy load
     icon: string; // Icon cho tab
     badge?: number; // Số badge hiển thị trên tab
+    header?: {
+        type?: 'default' | 'search' | 'minimal';
+        subtitle?: string;
+        showProfile?: boolean;
+        showSearch?: boolean;
+        showNotification?: boolean;
+        notificationCount?: number;
+        showMenu?: boolean;
+    };
 }
 
 /**
@@ -57,7 +66,7 @@ export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
     // ============================================================================
     ProductManagement: {
         title: 'Quản lý sản phẩm',
-        component: () => import('@/screens/example/ProductScreen'),
+        component: () => import('@/features/example/screens/ProductScreen'),
         showHeader: true,
         showTabs: false,
         headerType: 'minimal',
@@ -69,7 +78,7 @@ export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
     // Tương thích ngược với tên screen cũ
     ProductScreen: {
         title: 'Quản lý sản phẩm',
-        component: () => import('@/screens/example/ProductScreen'),
+        component: () => import('@/features/example/screens/ProductScreen'),
         showHeader: true,
         showTabs: false,
         headerType: 'minimal',
@@ -83,7 +92,7 @@ export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
     // ============================================================================
     LazyDemoScreen: {
         title: 'Demo Lazy Loading',
-        component: () => import('@/screens/example/LazyDemoScreen'),
+        component: () => import('@/features/example/screens/LazyDemoScreen'),
         showHeader: true,
         showTabs: false,
         headerType: 'minimal',
@@ -92,7 +101,7 @@ export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
 
     LazyTestScreen: {
         title: 'Bài Test Lazy Loading',
-        component: () => import('@/screens/example/LazyTestScreen'),
+        component: () => import('@/features/example/screens/LazyTestScreen'),
         showHeader: true,
         showTabs: false,
         headerType: 'minimal',
@@ -102,7 +111,7 @@ export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
 
     ApiLazyDemoScreen: {
         title: 'API Lazy Loading Demo',
-        component: () => import('@/screens/example/ApiLazyDemoScreen'),
+        component: () => import('@/features/example/screens/ApiLazyDemoScreen'),
         showHeader: true,
         showTabs: false,
         headerType: 'minimal',
@@ -114,7 +123,7 @@ export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
     // ============================================================================
     CacheDemoScreen: {
         title: 'Cache Demo',
-        component: () => import('@/screens/example/CacheDemoScreen'),
+        component: () => import('@/features/example/screens/CacheDemoScreen'),
         showHeader: true,
         showTabs: false,
         headerType: 'minimal',
@@ -125,21 +134,21 @@ export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
     // ============================================================================
     PdfDemoScreen: {
         title: 'PDF Viewer Demo',
-        component: () => import('@/screens/example/PdfDemoScreen'),
+        component: () => import('@/features/example/screens/PdfDemoScreen'),
         showHeader: true,
         showTabs: false,
         headerType: 'minimal',
     },
     PdfFileManagerScreen: {
         title: 'Quản lý File PDF',
-        component: () => import('@/screens/example/PdfFileManagerScreen'),
+        component: () => import('@/features/example/screens/PdfFileManagerScreen'),
         showHeader: true,
         showTabs: false,
         headerType: 'minimal',
     },
     PdfAdvancedDemoScreen: {
         title: 'PDF Advanced Demo',
-        component: () => import('@/screens/example/PdfAdvancedDemoScreen'),
+        component: () => import('@/features/example/screens/PdfAdvancedDemoScreen'),
         showHeader: true,
         showTabs: false,
         headerType: 'minimal',
@@ -150,7 +159,7 @@ export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
     // ============================================================================
     ResponsiveDemoScreen: {
         title: 'Responsive Demo',
-        component: () => import('@/screens/example/ResponsiveDemoScreen'),
+        component: () => import('@/features/example/screens/ResponsiveDemoScreen'),
         showHeader: true,
         showTabs: false,
         headerType: 'minimal',
@@ -165,7 +174,7 @@ export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
     // B2
     DemoNewScreen: {
         title: 'Demo New Screen',
-        component: () => import('@/screens/example/NewDemoScreen'),
+        component: () => import('@/features/example/screens/NewDemoScreen'),
         showHeader: true,
         showTabs: false,
         headerType: 'minimal',
@@ -183,26 +192,47 @@ export const TAB_SCREENS: TabScreenConfig[] = [
     {
         name: 'Home',
         title: 'Trang chủ',
-        component: () => import('@/screens/main/HomeScreen'),
+        component: () => import('@/features/home/screens/HomeScreen'),
         icon: 'home',
+        header: {
+            subtitle: 'Chào mừng trở lại!',
+            showProfile: true,
+            showSearch: true,
+            showNotification: true,
+            notificationCount: 3,
+            type: 'default',
+            showMenu: true,
+        },
     },
     {
         name: 'Profile',
         title: 'Hồ sơ',
-        component: () => import('@/screens/main/ProfileScreen'),
+        component: () => import('@/features/profile/screens/ProfileScreen'),
         icon: 'person',
+        header: {
+            type: 'minimal',
+            showMenu: true,
+        },
     },
     {
         name: 'Settings',
         title: 'Cài đặt',
-        component: () => import('@/screens/main/SettingsScreen'),
+        component: () => import('@/features/profile/screens/SettingsScreen'),
         icon: 'settings',
+        header: {
+            type: 'minimal',
+            showMenu: true,
+        },
     },
     {
         name: 'ResponsiveDemo',
         title: 'Responsive',
-        component: () => import('@/screens/example/ResponsiveDemoScreen'),
+        component: () => import('@/features/example/screens/ResponsiveDemoScreen'),
         icon: 'aspect-ratio',
+        header: {
+            type: 'minimal',
+            showMenu: true,
+        },
     },
 ];
 
@@ -217,12 +247,12 @@ export const AUTH_SCREENS: AuthScreenConfig[] = [
     {
         name: 'Login',
         title: 'Đăng nhập',
-        component: () => import('@/screens/auth/LoginScreen'),
+        component: () => import('@/features/auth/screens/LoginScreen'),
     },
     {
         name: 'Register',
         title: 'Đăng ký',
-        component: () => import('@/screens/auth/RegisterScreen'),
+        component: () => import('@/features/auth/screens/RegisterScreen'),
     },
 ];
 

@@ -1,14 +1,8 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 import Avatar from '@/shared/components/Avatar';
-import {COLORS, SCREEN_PADDING} from '@/shared/constants';
+import { COLORS, SCREEN_PADDING } from '@/shared/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const ProfileScreen: React.FC = () => {
@@ -53,9 +47,7 @@ const ProfileScreen: React.FC = () => {
       <View style={styles.userCard}>
         {/* <Avatar user={user} size={80} /> */}
         {/* <Text style={styles.userName}>{user?.name || 'Người dùng'}</Text> */}
-        <Text style={styles.userEmail}>
-          {/* {user?.email || 'email@example.com'} */}
-        </Text>
+        <Text style={styles.userEmail}>{/* {user?.email || 'email@example.com'} */}</Text>
         {/* <Text style={styles.userRole}>Vai trò: {user?.role || 'User'}</Text> */}
       </View>
 
@@ -78,10 +70,7 @@ const ProfileScreen: React.FC = () => {
       {/* Menu Items */}
       <View style={styles.menuContainer}>
         {profileMenuItems.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.menuItem}
-            onPress={item.onPress}>
+          <TouchableOpacity key={index} style={styles.menuItem} onPress={item.onPress}>
             <View style={styles.menuLeft}>
               <View style={styles.iconContainer}>
                 <Icon name={item.icon} size={24} color={COLORS.primary} />
@@ -91,7 +80,7 @@ const ProfileScreen: React.FC = () => {
                 <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
               </View>
             </View>
-            <Icon name="chevron-right" size={24} color={COLORS.textSecondary} />
+            <Icon name='chevron-right' size={24} color={COLORS.textSecondary} />
           </TouchableOpacity>
         ))}
       </View>
@@ -117,7 +106,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
@@ -150,7 +139,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -16,12 +16,8 @@ import {
   useUpdateProduct,
   useDeleteProduct,
 } from '@/shared/hooks/queries/useProducts';
-import {
-  Product,
-  CreateProductRequest,
-  ProductFilters,
-} from '@/services/productService';
-import {useBaseForm} from '@/shared/hooks';
+import { Product, CreateProductRequest, ProductFilters } from '@/services/productService';
+import { useBaseForm } from '@/shared/hooks';
 import FormInput from '@/components/form/FormInput';
 
 // Component hiển thị item product
@@ -29,22 +25,18 @@ const ProductItem: React.FC<{
   product: Product;
   onEdit: (product: Product) => void;
   onDelete: (id: string) => void;
-}> = ({product, onEdit, onDelete}) => {
+}> = ({ product, onEdit, onDelete }) => {
   return (
     <View style={styles.productItem}>
       {/* Hình ảnh sản phẩm */}
-      {product.imageUrl && (
-        <Image source={{uri: product.imageUrl}} style={styles.productImage} />
-      )}
+      {product.imageUrl && <Image source={{ uri: product.imageUrl }} style={styles.productImage} />}
 
       {/* Thông tin sản phẩm */}
       <View style={styles.productInfo}>
         <Text style={styles.productName}>{product.name}</Text>
         <Text style={styles.productDescription}>{product.description}</Text>
         <Text style={styles.productCategory}>Danh mục: {product.category}</Text>
-        <Text style={styles.productPrice}>
-          Giá: {product.price.toLocaleString('vi-VN')} VNĐ
-        </Text>
+        <Text style={styles.productPrice}>Giá: {product.price.toLocaleString('vi-VN')} VNĐ</Text>
         <Text style={styles.productStock}>Tồn kho: {product.stock}</Text>
       </View>
 
@@ -71,7 +63,7 @@ const ProductForm: React.FC<{
   product?: Product;
   onClose: () => void;
   filters: ProductFilters;
-}> = ({visible, product, onClose, filters}) => {
+}> = ({ visible, product, onClose, filters }) => {
   // Sử dụng mutations từ useProducts
   const createMutation = useCreateProduct(filters);
   const updateMutation = useUpdateProduct(filters);
@@ -84,7 +76,7 @@ const ProductForm: React.FC<{
   const {
     control,
     handleSubmitWithLoading,
-    formState: {isValid},
+    formState: { isValid },
     isSubmitting,
     setValue,
     reset,
@@ -103,7 +95,7 @@ const ProductForm: React.FC<{
       try {
         if (product) {
           // Cập nhật sản phẩm
-          await updateMutation.mutateAsync({id: product.id, ...data});
+          await updateMutation.mutateAsync({ id: product.id, ...data });
         } else {
           // Tạo sản phẩm mới
           await createMutation.mutateAsync(data);
@@ -114,12 +106,8 @@ const ProductForm: React.FC<{
         throw error;
       }
     },
-    successMessage: product
-      ? 'Cập nhật sản phẩm thành công!'
-      : 'Thêm sản phẩm thành công!',
-    errorMessage: product
-      ? 'Cập nhật sản phẩm thất bại!'
-      : 'Thêm sản phẩm thất bại!',
+    successMessage: product ? 'Cập nhật sản phẩm thành công!' : 'Thêm sản phẩm thành công!',
+    errorMessage: product ? 'Cập nhật sản phẩm thất bại!' : 'Thêm sản phẩm thất bại!',
     resetOnSuccess: true,
   });
 
@@ -142,21 +130,19 @@ const ProductForm: React.FC<{
   const isLoading = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Modal visible={visible} animationType="slide" transparent>
+    <Modal visible={visible} animationType='slide' transparent>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>
-            {product ? 'Sửa sản phẩm' : 'Thêm sản phẩm mới'}
-          </Text>
+          <Text style={styles.modalTitle}>{product ? 'Sửa sản phẩm' : 'Thêm sản phẩm mới'}</Text>
 
           {/* ✏️ Tất cả inputs sử dụng setValue và watchedValues từ react-hook-form */}
 
           {/* Input tên sản phẩm */}
           <FormInput
             control={control}
-            name="name"
-            label="Tên sản phẩm"
-            placeholder="Nhập tên sản phẩm"
+            name='name'
+            label='Tên sản phẩm'
+            placeholder='Nhập tên sản phẩm'
             required
             rules={{
               required: 'Tên sản phẩm là bắt buộc',
@@ -166,9 +152,9 @@ const ProductForm: React.FC<{
           {/* Input mô tả */}
           <FormInput
             control={control}
-            name="description"
-            label="Mô tả sản phẩm"
-            placeholder="Nhập mô tả sản phẩm"
+            name='description'
+            label='Mô tả sản phẩm'
+            placeholder='Nhập mô tả sản phẩm'
             required
             multiline
             numberOfLines={3}
@@ -181,11 +167,11 @@ const ProductForm: React.FC<{
           {/* Input giá */}
           <FormInput
             control={control}
-            name="price"
-            label="Giá (VNĐ)"
-            placeholder="Nhập giá sản phẩm"
+            name='price'
+            label='Giá (VNĐ)'
+            placeholder='Nhập giá sản phẩm'
             required
-            keyboardType="numeric"
+            keyboardType='numeric'
             rules={{
               required: 'Giá sản phẩm là bắt buộc',
               min: {
@@ -198,9 +184,9 @@ const ProductForm: React.FC<{
           {/* Input danh mục */}
           <FormInput
             control={control}
-            name="category"
-            label="Danh mục"
-            placeholder="Nhập danh mục sản phẩm"
+            name='category'
+            label='Danh mục'
+            placeholder='Nhập danh mục sản phẩm'
             required
             rules={{
               required: 'Danh mục là bắt buộc',
@@ -210,11 +196,11 @@ const ProductForm: React.FC<{
           {/* Input tồn kho */}
           <FormInput
             control={control}
-            name="stock"
-            label="Số lượng tồn kho"
-            placeholder="Nhập số lượng tồn kho"
+            name='stock'
+            label='Số lượng tồn kho'
+            placeholder='Nhập số lượng tồn kho'
             required
-            keyboardType="numeric"
+            keyboardType='numeric'
             rules={{
               required: 'Số lượng tồn kho là bắt buộc',
               min: {
@@ -227,33 +213,26 @@ const ProductForm: React.FC<{
           {/* Input URL hình ảnh */}
           <FormInput
             control={control}
-            name="imageUrl"
-            label="URL hình ảnh"
-            placeholder="Nhập URL hình ảnh (tùy chọn)"
+            name='imageUrl'
+            label='URL hình ảnh'
+            placeholder='Nhập URL hình ảnh (tùy chọn)'
           />
 
           {/* Nút hành động */}
           <View style={styles.modalActions}>
-            <TouchableOpacity
-              style={[styles.modalButton, styles.cancelButton]}
-              onPress={onClose}>
+            <TouchableOpacity style={[styles.modalButton, styles.cancelButton]} onPress={onClose}>
               <Text style={styles.modalButtonText}>Hủy</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[
                 styles.modalButton,
                 styles.submitButton,
-                (!isValid || isSubmitting || isLoading) &&
-                  styles.disabledButton,
+                (!isValid || isSubmitting || isLoading) && styles.disabledButton,
               ]}
               onPress={handleSubmitWithLoading}
               disabled={!isValid || isSubmitting || isLoading}>
               <Text style={styles.modalButtonText}>
-                {isSubmitting || isLoading
-                  ? 'Đang xử lý...'
-                  : product
-                  ? 'Cập nhật'
-                  : 'Thêm mới'}
+                {isSubmitting || isLoading ? 'Đang xử lý...' : product ? 'Cập nhật' : 'Thêm mới'}
               </Text>
             </TouchableOpacity>
           </View>
@@ -267,10 +246,10 @@ const ProductForm: React.FC<{
 const ProductScreen: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | undefined>();
-  const [filters, _setFilters] = useState<ProductFilters>({page: 1, limit: 10});
+  const [filters, _setFilters] = useState<ProductFilters>({ page: 1, limit: 10 });
 
   // Sử dụng hooks từ useProducts.ts
-  const {data: productsData, isLoading, refetch} = useProducts(filters);
+  const { data: productsData, isLoading, refetch } = useProducts(filters);
   const deleteMutation = useDeleteProduct(filters);
 
   // Xử lý sửa sản phẩm
@@ -282,7 +261,7 @@ const ProductScreen: React.FC = () => {
   // Xử lý xóa sản phẩm
   const handleDeleteProduct = (id: string) => {
     Alert.alert('Xác nhận xóa', 'Bạn có chắc chắn muốn xóa sản phẩm này?', [
-      {text: 'Hủy', style: 'cancel'},
+      { text: 'Hủy', style: 'cancel' },
       {
         text: 'Xóa',
         style: 'destructive',
@@ -311,8 +290,7 @@ const ProductScreen: React.FC = () => {
       {productsData && (
         <View style={styles.infoContainer}>
           <Text style={styles.infoText}>
-            Hiển thị {productsData.products.length} / {productsData.total} sản
-            phẩm
+            Hiển thị {productsData.products.length} / {productsData.total} sản phẩm
           </Text>
         </View>
       )}
@@ -321,16 +299,10 @@ const ProductScreen: React.FC = () => {
       <FlatList
         data={productsData?.products || []}
         keyExtractor={item => item.id}
-        renderItem={({item}) => (
-          <ProductItem
-            product={item}
-            onEdit={handleEditProduct}
-            onDelete={handleDeleteProduct}
-          />
+        renderItem={({ item }) => (
+          <ProductItem product={item} onEdit={handleEditProduct} onDelete={handleDeleteProduct} />
         )}
-        refreshControl={
-          <RefreshControl refreshing={isLoading} onRefresh={refetch} />
-        }
+        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} />}
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
       />
@@ -397,7 +369,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     borderRadius: 8,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,

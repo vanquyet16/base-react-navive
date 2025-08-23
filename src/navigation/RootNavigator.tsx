@@ -40,7 +40,7 @@ const RootNavigator: React.FC = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {true ? (
+        {isAuthenticated ? (
           // Đã đăng nhập -> Hiển thị DrawerNavigator (bao gồm MainStack và drawer)
           <Stack.Screen name={NAVIGATION_KEYS.ROOT.DRAWER} component={DrawerNavigator} />
         ) : (

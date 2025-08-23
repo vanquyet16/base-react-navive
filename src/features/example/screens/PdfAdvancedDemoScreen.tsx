@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import PdfViewer from '@/features/performance/components/PdfViewer';
-import {PdfUtils} from '@/shared/utils';
+import { PdfUtils } from '@/shared/utils';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 
 const PdfAdvancedDemoScreen: React.FC = () => {
@@ -19,7 +19,7 @@ const PdfAdvancedDemoScreen: React.FC = () => {
   const [downloading, setDownloading] = useState(false);
   const [savedPdfs, setSavedPdfs] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [fileSizes, setFileSizes] = useState<{[key: string]: string}>({});
+  const [fileSizes, setFileSizes] = useState<{ [key: string]: string }>({});
 
   // Sample PDF URLs for testing
   const samplePdfs = {
@@ -39,7 +39,7 @@ const PdfAdvancedDemoScreen: React.FC = () => {
       setSavedPdfs(files);
 
       // Load file sizes
-      const sizes: {[key: string]: string} = {};
+      const sizes: { [key: string]: string } = {};
       for (const fileName of files) {
         try {
           const filePath = `${ReactNativeBlobUtil.fs.dirs.DocumentDir}/${fileName}`;
@@ -58,17 +58,13 @@ const PdfAdvancedDemoScreen: React.FC = () => {
   };
 
   const handlePdfLoad = (numberOfPages: number, filePath: string) => {
-    Alert.alert(
-      'PDF Loaded Successfully',
-      `Pages: ${numberOfPages}\nFile: ${filePath}`,
-      [{text: 'OK'}],
-    );
+    Alert.alert('PDF Loaded Successfully', `Pages: ${numberOfPages}\nFile: ${filePath}`, [
+      { text: 'OK' },
+    ]);
   };
 
   const handlePdfError = (error: any) => {
-    Alert.alert('PDF Error', error.message || 'Failed to load PDF', [
-      {text: 'OK'},
-    ]);
+    Alert.alert('PDF Error', error.message || 'Failed to load PDF', [{ text: 'OK' }]);
   };
 
   const handlePageChange = (page: number, numberOfPages: number) => {
@@ -80,27 +76,23 @@ const PdfAdvancedDemoScreen: React.FC = () => {
       setDownloading(true);
       const fileName = PdfUtils.getFilenameFromUrl(url);
 
-      Alert.alert(
-        'Download PDF',
-        `Do you want to download "${fileName}" to your device?`,
-        [
-          {text: 'Cancel', style: 'cancel'},
-          {
-            text: 'Download',
-            onPress: async () => {
-              try {
-                const localPath = await PdfUtils.downloadPdf(url, fileName);
-                setCurrentPdf(localPath);
-                setPdfType(`${type} (Local)`);
-                await loadSavedPdfs(); // Refresh saved PDFs list
-                Alert.alert('Success', 'PDF downloaded and saved locally!');
-              } catch (error) {
-                Alert.alert('Error', 'Failed to download PDF');
-              }
-            },
+      Alert.alert('Download PDF', `Do you want to download "${fileName}" to your device?`, [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Download',
+          onPress: async () => {
+            try {
+              const localPath = await PdfUtils.downloadPdf(url, fileName);
+              setCurrentPdf(localPath);
+              setPdfType(`${type} (Local)`);
+              await loadSavedPdfs(); // Refresh saved PDFs list
+              Alert.alert('Success', 'PDF downloaded and saved locally!');
+            } catch (error) {
+              Alert.alert('Error', 'Failed to download PDF');
+            }
           },
-        ],
-      );
+        },
+      ]);
     } catch (error) {
       Alert.alert('Error', 'Failed to download PDF');
     } finally {
@@ -120,30 +112,26 @@ const PdfAdvancedDemoScreen: React.FC = () => {
   };
 
   const deleteLocalPdf = async (fileName: string) => {
-    Alert.alert(
-      'Delete PDF',
-      `Are you sure you want to delete "${fileName}"?`,
-      [
-        {text: 'Cancel', style: 'cancel'},
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              const success = await PdfUtils.deletePdf(fileName);
-              if (success) {
-                await loadSavedPdfs();
-                Alert.alert('Success', 'PDF deleted successfully!');
-              } else {
-                Alert.alert('Error', 'Failed to delete PDF');
-              }
-            } catch (error) {
+    Alert.alert('Delete PDF', `Are you sure you want to delete "${fileName}"?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            const success = await PdfUtils.deletePdf(fileName);
+            if (success) {
+              await loadSavedPdfs();
+              Alert.alert('Success', 'PDF deleted successfully!');
+            } else {
               Alert.alert('Error', 'Failed to delete PDF');
             }
-          },
+          } catch (error) {
+            Alert.alert('Error', 'Failed to delete PDF');
+          }
         },
-      ],
-    );
+      },
+    ]);
   };
 
   const clearPdf = () => {
@@ -156,9 +144,7 @@ const PdfAdvancedDemoScreen: React.FC = () => {
       <ScrollView style={styles.scrollView}>
         <View style={styles.header}>
           <Text style={styles.title}>Advanced PDF Demo</Text>
-          <Text style={styles.subtitle}>
-            Test PDF downloading, local storage, and management
-          </Text>
+          <Text style={styles.subtitle}>Test PDF downloading, local storage, and management</Text>
         </View>
 
         {!currentPdf ? (
@@ -188,20 +174,14 @@ const PdfAdvancedDemoScreen: React.FC = () => {
 
               <TouchableOpacity
                 style={styles.button}
-                onPress={() =>
-                  viewRemotePdf(samplePdfs.sample1, 'Remote (Sample 1)')
-                }
+                onPress={() => viewRemotePdf(samplePdfs.sample1, 'Remote (Sample 1)')}
                 disabled={downloading}>
-                <Text style={styles.buttonText}>
-                  View Remote PDF (Sample 1)
-                </Text>
+                <Text style={styles.buttonText}>View Remote PDF (Sample 1)</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.button}
-                onPress={() =>
-                  downloadAndViewPdf(samplePdfs.sample1, 'Downloaded')
-                }
+                onPress={() => downloadAndViewPdf(samplePdfs.sample1, 'Downloaded')}
                 disabled={downloading}>
                 <Text style={styles.buttonText}>
                   {downloading ? 'Downloading...' : 'Download Sample 1 PDF'}
@@ -212,12 +192,10 @@ const PdfAdvancedDemoScreen: React.FC = () => {
             {/* Local PDFs Section */}
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Local PDFs</Text>
-              <Text style={styles.sectionSubtitle}>
-                View PDFs saved on your device
-              </Text>
+              <Text style={styles.sectionSubtitle}>View PDFs saved on your device</Text>
 
               {loading ? (
-                <ActivityIndicator size="small" color="#007AFF" />
+                <ActivityIndicator size='small' color='#007AFF' />
               ) : savedPdfs.length > 0 ? (
                 savedPdfs.map((fileName, index) => (
                   <View key={index} style={styles.localPdfItem}>

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -19,25 +19,20 @@ const PdfDemoScreen: React.FC = () => {
 
   // Sample PDF URLs for testing
   const samplePdfs = {
-    remote:
-      'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    remote: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
     sample1: 'https://www.africau.edu/images/default/sample.pdf',
     sample2:
       'https://www.learningcontainer.com/wp-content/uploads/2019/09/sample-pdf-download-10-mb.pdf',
   };
 
   const handlePdfLoad = (numberOfPages: number, filePath: string) => {
-    Alert.alert(
-      'PDF Loaded Successfully',
-      `Pages: ${numberOfPages}\nFile: ${filePath}`,
-      [{text: 'OK'}],
-    );
+    Alert.alert('PDF Loaded Successfully', `Pages: ${numberOfPages}\nFile: ${filePath}`, [
+      { text: 'OK' },
+    ]);
   };
 
   const handlePdfError = (error: any) => {
-    Alert.alert('PDF Error', error.message || 'Failed to load PDF', [
-      {text: 'OK'},
-    ]);
+    Alert.alert('PDF Error', error.message || 'Failed to load PDF', [{ text: 'OK' }]);
   };
 
   const handlePageChange = (page: number, numberOfPages: number) => {
@@ -59,9 +54,7 @@ const PdfDemoScreen: React.FC = () => {
       <ScrollView style={styles.scrollView}>
         <View style={styles.header}>
           <Text style={styles.title}>PDF Viewer Demo</Text>
-          <Text style={styles.subtitle}>
-            Test different PDF sources and configurations
-          </Text>
+          <Text style={styles.subtitle}>Test different PDF sources and configurations</Text>
         </View>
 
         {!currentPdf ? (
@@ -93,7 +86,7 @@ const PdfDemoScreen: React.FC = () => {
                 Alert.alert(
                   'Base64 PDF',
                   'This would load a PDF from base64 data. In a real app, you would provide the actual base64 string.',
-                  [{text: 'OK'}],
+                  [{ text: 'OK' }],
                 );
               }}>
               <Text style={styles.buttonText}>Load Base64 PDF (Demo)</Text>
@@ -108,7 +101,7 @@ const PdfDemoScreen: React.FC = () => {
 
               <PdfDownloader
                 url={samplePdfs.remote}
-                fileName="w3c-dummy.pdf"
+                fileName='w3c-dummy.pdf'
                 onDownloadComplete={localPath => {
                   setCurrentPdf(localPath);
                   setPdfType('Local (Downloaded)');
@@ -120,7 +113,7 @@ const PdfDemoScreen: React.FC = () => {
 
               <PdfDownloader
                 url={samplePdfs.sample1}
-                fileName="sample-document.pdf"
+                fileName='sample-document.pdf'
                 onDownloadComplete={localPath => {
                   setCurrentPdf(localPath);
                   setPdfType('Local (Downloaded)');
@@ -135,13 +128,12 @@ const PdfDemoScreen: React.FC = () => {
             <View style={styles.downloadSection}>
               <Text style={styles.sectionTitle}>📱 Tải PDF về điện thoại</Text>
               <Text style={styles.sectionSubtitle}>
-                Tải PDF về thư mục Downloads/Documents của điện thoại để truy
-                cập từ File Manager
+                Tải PDF về thư mục Downloads/Documents của điện thoại để truy cập từ File Manager
               </Text>
 
               <PdfPhoneDownloader
                 url={samplePdfs.remote}
-                fileName="w3c-dummy-phone.pdf"
+                fileName='w3c-dummy-phone.pdf'
                 onDownloadComplete={localPath => {
                   console.log('PDF downloaded to phone:', localPath);
                   Alert.alert('Thành công', 'PDF đã được tải về điện thoại!');
@@ -153,7 +145,7 @@ const PdfDemoScreen: React.FC = () => {
 
               <PdfPhoneDownloader
                 url={samplePdfs.sample1}
-                fileName="sample-document-phone.pdf"
+                fileName='sample-document-phone.pdf'
                 onDownloadComplete={localPath => {
                   console.log('PDF downloaded to phone:', localPath);
                   Alert.alert('Thành công', 'PDF đã được tải về điện thoại!');
@@ -177,16 +169,14 @@ const PdfDemoScreen: React.FC = () => {
 
             {/* Tải PDF vào Files app của iOS */}
             <View style={styles.downloadSection}>
-              <Text style={styles.sectionTitle}>
-                📱 Tải PDF vào Files app (iOS)
-              </Text>
+              <Text style={styles.sectionTitle}>📱 Tải PDF vào Files app (iOS)</Text>
               <Text style={styles.sectionSubtitle}>
                 Sử dụng DocumentPicker để lưu file vào Files app của iPhone
               </Text>
 
               <PdfIosDownloader
                 url={samplePdfs.remote}
-                fileName="w3c-dummy-ios.pdf"
+                fileName='w3c-dummy-ios.pdf'
                 onDownloadComplete={localPath => {
                   console.log('PDF saved to iOS Files:', localPath);
                   Alert.alert('Thành công', 'PDF đã được lưu vào Files app!');
@@ -198,7 +188,7 @@ const PdfDemoScreen: React.FC = () => {
 
               <PdfIosDownloader
                 url={samplePdfs.sample1}
-                fileName="sample-document-ios.pdf"
+                fileName='sample-document-ios.pdf'
                 onDownloadComplete={localPath => {
                   console.log('PDF saved to iOS Files:', localPath);
                   Alert.alert('Thành công', 'PDF đã được lưu vào Files app!');

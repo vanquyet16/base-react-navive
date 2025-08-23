@@ -24,3 +24,4 @@ pod install
 
 echo "✅ Clean build hoàn tất! Bây giờ bạn có thể build lại project."
 echo "💡 Chạy: npx react-native run-ios"
+

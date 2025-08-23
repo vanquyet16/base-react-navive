@@ -93,3 +93,4 @@ npx react-native run-ios
 - Đảm bảo sử dụng đúng phiên bản React Native (0.76.0)
 - Kiểm tra compatibility giữa các thư viện
 - Nếu vẫn gặp lỗi, thử downgrade `react-native-reanimated` xuống phiên bản 3.15.0
+

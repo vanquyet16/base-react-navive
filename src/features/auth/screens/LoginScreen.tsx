@@ -1,25 +1,19 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import {Button, WhiteSpace, WingBlank} from '@ant-design/react-native';
-import {useLogin, useBaseForm} from '@/shared/hooks';
-import {LoginRequest} from '@/shared/types';
-import {COLORS, SCREEN_PADDING, ERROR_MESSAGES, VALIDATION} from '@/shared/constants';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { Button, WhiteSpace, WingBlank } from '@ant-design/react-native';
+import { useLogin, useBaseForm } from '@/shared/hooks';
+import { LoginRequest } from '@/shared/types';
+import { COLORS, SCREEN_PADDING, ERROR_MESSAGES, VALIDATION } from '@/shared/constants';
 import FormInput from '@/components/form/FormInput';
 import Logo from '@/shared/components/Logo';
 
-const LoginScreen = ({navigation}: any) => {
+const LoginScreen = ({ navigation }: any) => {
   const loginMutation = useLogin();
 
   const {
     control,
     handleSubmitWithLoading,
-    formState: {errors, isValid},
+    formState: { errors, isValid },
     isSubmitting,
   } = useBaseForm<LoginRequest>({
     mode: 'onChange',
@@ -54,18 +48,18 @@ const LoginScreen = ({navigation}: any) => {
         style={styles.container}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled">
-        <WingBlank size="lg">
+        keyboardShouldPersistTaps='handled'>
+        <WingBlank size='lg'>
           <View style={styles.header}>
             <Logo />
           </View>
 
           <View style={styles.form}>
             <FormInput
-              name="userName"
+              name='userName'
               control={control}
-              label="Tài khoản"
-              placeholder="Nhập tài khoản"
+              label='Tài khoản'
+              placeholder='Nhập tài khoản'
               rules={{
                 required: ERROR_MESSAGES.REQUIRED_FIELD,
                 pattern: {
@@ -73,17 +67,17 @@ const LoginScreen = ({navigation}: any) => {
                   message: ERROR_MESSAGES.USER_NAME_INVALID,
                 },
               }}
-              keyboardType="default"
-              autoCapitalize="none"
+              keyboardType='default'
+              autoCapitalize='none'
             />
 
-            <WhiteSpace size="lg" />
+            <WhiteSpace size='lg' />
 
             <FormInput
-              name="password"
+              name='password'
               control={control}
-              label="Mật khẩu"
-              placeholder="Nhập mật khẩu"
+              label='Mật khẩu'
+              placeholder='Nhập mật khẩu'
               rules={{
                 required: ERROR_MESSAGES.REQUIRED_FIELD,
                 minLength: {
@@ -94,19 +88,19 @@ const LoginScreen = ({navigation}: any) => {
               secureTextEntry
             />
 
-            <WhiteSpace size="xl" />
+            <WhiteSpace size='xl' />
 
             <Button
-              type="primary"
+              type='primary'
               disabled={!isValid || isSubmitting}
               loading={isSubmitting}
               onPress={handleSubmitWithLoading}>
               Đăng nhập
             </Button>
 
-            <WhiteSpace size="lg" />
+            <WhiteSpace size='lg' />
 
-            <Button type="ghost" onPress={navigateToRegister}>
+            <Button type='ghost' onPress={navigateToRegister}>
               Chưa có tài khoản? Đăng ký ngay
             </Button>
           </View>

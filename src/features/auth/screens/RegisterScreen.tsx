@@ -1,9 +1,9 @@
 import React from 'react';
-import {View, StyleSheet, ScrollView} from 'react-native';
-import {Button, WhiteSpace, WingBlank} from '@ant-design/react-native';
-import {useForm, Controller} from 'react-hook-form';
-import {useRegister} from '@/shared/hooks/queries/useAuth';
-import {COLORS, SCREEN_PADDING, VALIDATION, ERROR_MESSAGES} from '@/shared/constants';
+import { View, StyleSheet, ScrollView } from 'react-native';
+import { Button, WhiteSpace, WingBlank } from '@ant-design/react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { useRegister } from '@/shared/hooks/queries/useAuth';
+import { COLORS, SCREEN_PADDING, VALIDATION, ERROR_MESSAGES } from '@/shared/constants';
 import FormInput from '@/components/form/FormInput';
 import Logo from '@/shared/components/Logo';
 
@@ -14,14 +14,14 @@ interface RegisterFormData {
   confirmPassword: string;
 }
 
-const RegisterScreen = ({navigation}: any) => {
+const RegisterScreen = ({ navigation }: any) => {
   const registerMutation = useRegister();
 
   const {
     control,
     handleSubmit,
     watch,
-    formState: {errors, isValid},
+    formState: { errors, isValid },
   } = useForm<RegisterFormData>({
     mode: 'onChange',
     defaultValues: {
@@ -35,7 +35,7 @@ const RegisterScreen = ({navigation}: any) => {
   const password = watch('password');
 
   const onSubmit = (data: RegisterFormData) => {
-    const {confirmPassword, ...registerData} = data;
+    const { confirmPassword, ...registerData } = data;
     registerMutation.mutate(registerData);
   };
 
@@ -45,7 +45,7 @@ const RegisterScreen = ({navigation}: any) => {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <WingBlank size="lg">
+      <WingBlank size='lg'>
         <View style={styles.header}>
           <Logo />
         </View>
@@ -53,7 +53,7 @@ const RegisterScreen = ({navigation}: any) => {
         <View style={styles.form}>
           <Controller
             control={control}
-            name="name"
+            name='name'
             rules={{
               required: ERROR_MESSAGES.REQUIRED_FIELD,
               minLength: {
@@ -61,10 +61,10 @@ const RegisterScreen = ({navigation}: any) => {
                 message: 'Tên phải có ít nhất 2 ký tự',
               },
             }}
-            render={({field: {onChange, onBlur, value}}) => (
+            render={({ field: { onChange, onBlur, value } }) => (
               <FormInput
-                label="Họ và tên"
-                placeholder="Nhập họ và tên"
+                label='Họ và tên'
+                placeholder='Nhập họ và tên'
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -73,11 +73,11 @@ const RegisterScreen = ({navigation}: any) => {
             )}
           />
 
-          <WhiteSpace size="lg" />
+          <WhiteSpace size='lg' />
 
           <Controller
             control={control}
-            name="email"
+            name='email'
             rules={{
               required: ERROR_MESSAGES.REQUIRED_FIELD,
               pattern: {
@@ -85,25 +85,25 @@ const RegisterScreen = ({navigation}: any) => {
                 message: ERROR_MESSAGES.EMAIL_INVALID,
               },
             }}
-            render={({field: {onChange, onBlur, value}}) => (
+            render={({ field: { onChange, onBlur, value } }) => (
               <FormInput
-                label="Email"
-                placeholder="Nhập email của bạn"
+                label='Email'
+                placeholder='Nhập email của bạn'
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
                 error={errors.email?.message}
-                keyboardType="email-address"
-                autoCapitalize="none"
+                keyboardType='email-address'
+                autoCapitalize='none'
               />
             )}
           />
 
-          <WhiteSpace size="lg" />
+          <WhiteSpace size='lg' />
 
           <Controller
             control={control}
-            name="password"
+            name='password'
             rules={{
               required: ERROR_MESSAGES.REQUIRED_FIELD,
               minLength: {
@@ -111,10 +111,10 @@ const RegisterScreen = ({navigation}: any) => {
                 message: ERROR_MESSAGES.PASSWORD_TOO_SHORT,
               },
             }}
-            render={({field: {onChange, onBlur, value}}) => (
+            render={({ field: { onChange, onBlur, value } }) => (
               <FormInput
-                label="Mật khẩu"
-                placeholder="Nhập mật khẩu"
+                label='Mật khẩu'
+                placeholder='Nhập mật khẩu'
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -124,20 +124,19 @@ const RegisterScreen = ({navigation}: any) => {
             )}
           />
 
-          <WhiteSpace size="lg" />
+          <WhiteSpace size='lg' />
 
           <Controller
             control={control}
-            name="confirmPassword"
+            name='confirmPassword'
             rules={{
               required: ERROR_MESSAGES.REQUIRED_FIELD,
-              validate: value =>
-                value === password || 'Mật khẩu xác nhận không khớp',
+              validate: value => value === password || 'Mật khẩu xác nhận không khớp',
             }}
-            render={({field: {onChange, onBlur, value}}) => (
+            render={({ field: { onChange, onBlur, value } }) => (
               <FormInput
-                label="Xác nhận mật khẩu"
-                placeholder="Nhập lại mật khẩu"
+                label='Xác nhận mật khẩu'
+                placeholder='Nhập lại mật khẩu'
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -147,19 +146,19 @@ const RegisterScreen = ({navigation}: any) => {
             )}
           />
 
-          <WhiteSpace size="xl" />
+          <WhiteSpace size='xl' />
 
           <Button
-            type="primary"
+            type='primary'
             disabled={!isValid || registerMutation.isPending}
             loading={registerMutation.isPending}
             onPress={handleSubmit(onSubmit)}>
             Đăng ký
           </Button>
 
-          <WhiteSpace size="lg" />
+          <WhiteSpace size='lg' />
 
-          <Button type="ghost" onPress={navigateToLogin}>
+          <Button type='ghost' onPress={navigateToLogin}>
             Đã có tài khoản? Đăng nhập ngay
           </Button>
         </View>

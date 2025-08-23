@@ -14,8 +14,15 @@ const Stack = createStackNavigator();
 // TẠO SCREEN WRAPPERS TỪ CONFIG
 // ============================================================================
 
-// Tạo tất cả screen wrappers từ config sử dụng factory pattern
+// Tạo tất cả screen wrappers từ config sử dụng factory pattern (làm 1 lần)
 const screenWrappers = createMainStackScreenWrappers(MAIN_STACK_SCREENS);
+
+// Chuẩn hoá danh sách screen (name, config, wrapper) để map nhanh & rõ ràng
+const MAIN_STACK_ENTRIES = Object.entries(MAIN_STACK_SCREENS).map(([name, config]) => ({
+  name,
+  config,
+  Wrapper: screenWrappers[name] as React.ComponentType<any>,
+}));
 
 // ============================================================================
 // MAIN STACK COMPONENT
@@ -64,21 +71,17 @@ const MainStack: React.FC = () => {
       />
 
       {/* Các màn hình demo và utility từ config */}
-      {Object.entries(screenWrappers).map(([screenName, ScreenWrapper]) => {
-        const config = MAIN_STACK_SCREENS[screenName];
-        return (
-          <Stack.Screen
-            key={screenName}
-            name={screenName}
-            component={ScreenWrapper as React.ComponentType<any>}
-            options={{
-              // Cấu hình gesture navigation cho từng screen
-              gestureEnabled: config.gestureEnabled ?? true,
-              gestureDirection: config.gestureDirection ?? 'horizontal',
-            }}
-          />
-        );
-      })}
+      {MAIN_STACK_ENTRIES.map(({ name, config, Wrapper }) => (
+        <Stack.Screen
+          key={name}
+          name={name}
+          component={Wrapper}
+          options={{
+            gestureEnabled: config.gestureEnabled ?? true,
+            gestureDirection: config.gestureDirection ?? 'horizontal',
+          }}
+        />
+      ))}
     </Stack.Navigator>
   );
 };

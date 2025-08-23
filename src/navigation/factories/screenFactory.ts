@@ -44,18 +44,23 @@ export const createMainStackScreenWrapper = (screenName: string, config: ScreenC
  */
 export const createTabScreenWrapper = (config: TabScreenConfig) => {
     const TabScreenWrapper: React.FC = () => {
+        const header = config.header;
         return React.createElement(MainLayout, {
             showHeader: true,
-            showTabs: false, // Tabs được quản lý bởi Tab.Navigator
+            showTabs: false,
             headerProps: {
                 title: config.title,
-                type: 'minimal',
-                showMenu: true,
+                type: header?.type || 'default',
+                subtitle: header?.subtitle,
+                showProfile: header?.showProfile,
+                showSearch: header?.showSearch,
+                showNotification: header?.showNotification,
+                notificationCount: header?.notificationCount,
+                showMenu: header?.showMenu ?? true,
             },
             children: React.createElement(LazyScreen, { component: config.component })
         });
     };
-
     TabScreenWrapper.displayName = `${config.name}TabWrapper`;
     return TabScreenWrapper;
 };
@@ -124,91 +129,4 @@ export const createAuthScreenWrappers = (
 // SPECIALIZED WRAPPERS - CÁC WRAPPER ĐẶC BIỆT CHO TỪNG SCREEN
 // ============================================================================
 
-/**
- * Tạo HomeScreen wrapper với các tính năng đặc biệt
- * Bao gồm search, notification và các tính năng khác
- * @returns React component cho HomeScreen
- */
-export const createHomeScreenWrapper = () => {
-    const HomeScreenWrapper: React.FC = () => {
-        // Xử lý tìm kiếm
-        const handleSearch = (text: string) => {
-            console.log('Tìm kiếm:', text);
-        };
-
-        // Xử lý thông báo
-        const handleNotificationPress = () => {
-            console.log('Thông báo được nhấn');
-        };
-
-        return React.createElement(MainLayout, {
-            showHeader: true,
-            showTabs: false,
-            headerProps: {
-                title: 'Trang chủ',
-                subtitle: 'Chào mừng trở lại!',
-                showProfile: true,
-                showSearch: true,
-                showNotification: true,
-                showMenu: true,
-                onSearch: handleSearch,
-                onNotificationPress: handleNotificationPress,
-                notificationCount: 3,
-            },
-            children: React.createElement(LazyScreen, {
-                component: () => import('@/screens/main/HomeScreen')
-            })
-        });
-    };
-
-    HomeScreenWrapper.displayName = 'HomeScreenWrapper';
-    return HomeScreenWrapper;
-};
-
-/**
- * Tạo ProfileScreen wrapper với header đặc biệt
- * @returns React component cho ProfileScreen
- */
-export const createProfileScreenWrapper = () => {
-    const ProfileScreenWrapper: React.FC = () => {
-        return React.createElement(MainLayout, {
-            showHeader: true,
-            showTabs: false,
-            headerProps: {
-                title: 'Hồ sơ',
-                type: 'minimal',
-                showMenu: true,
-            },
-            children: React.createElement(LazyScreen, {
-                component: () => import('@/screens/main/ProfileScreen')
-            })
-        });
-    };
-
-    ProfileScreenWrapper.displayName = 'ProfileScreenWrapper';
-    return ProfileScreenWrapper;
-};
-
-/**
- * Tạo SettingsScreen wrapper với header đặc biệt
- * @returns React component cho SettingsScreen
- */
-export const createSettingsScreenWrapper = () => {
-    const SettingsScreenWrapper: React.FC = () => {
-        return React.createElement(MainLayout, {
-            showHeader: true,
-            showTabs: false,
-            headerProps: {
-                title: 'Cài đặt',
-                type: 'minimal',
-                showMenu: true,
-            },
-            children: React.createElement(LazyScreen, {
-                component: () => import('@/screens/main/SettingsScreen')
-            })
-        });
-    };
-
-    SettingsScreenWrapper.displayName = 'SettingsScreenWrapper';
-    return SettingsScreenWrapper;
-};
+// Các specialized wrappers cho Home/Profile/Settings đã được thay thế bằng cấu hình header trong TAB_SCREENS.
