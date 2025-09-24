@@ -1,285 +1,84 @@
-# 📁 Cấu Trúc Thư Mục Dự Án React Native
+# 📁 Cấu trúc thư mục dự án (hiện tại)
 
-## 🎯 Tổng Quan
+Tài liệu này mô tả cấu trúc thực tế của dự án hiện tại theo hướng Feature-based + Shared.
 
-Cấu trúc thư mục được tổ chức theo nguyên tắc:
-
-- **Separation of Concerns**: Tách biệt rõ ràng các concerns
-- **Scalability**: Dễ dàng mở rộng khi dự án lớn
-- **Maintainability**: Dễ bảo trì và tìm kiếm
-- **Reusability**: Tái sử dụng components và utilities
-
-## 📂 Cấu Trúc Hiện Tại vs Đề Xuất
-
-### **Hiện Tại:**
+## 🗂️ Sơ đồ thư mục `src/`
 
 ```
 src/
-├── components/
-│   ├── common/          # Components dùng chung
-│   ├── form/           # Form components
-│   ├── layout/         # Layout components
-│   ├── navigation/     # Navigation components
-│   ├── test/           # Test components (không nên ở đây)
-│   └── ui/             # UI components
-├── screens/
-│   ├── auth/           # Auth screens
-│   ├── example/        # Example screens (không nên ở đây)
-│   └── main/           # Main screens
-├── services/
-├── utils/
-├── hooks/
-├── stores/
-├── types/
-├── config/
-└── constants/
+├── components/                 # Component tái sử dụng theo domain UI
+│   ├── form/                   # FormInput, ... (barrel: index.ts)
+│   ├── layout/                 # Header, MainLayout, ... (barrel)
+│   └── navigation/             # CustomBottomBar/Drawer/TabBar (barrel + READMEs)
+├── config/                     # Cấu hình app & axios (barrel)
+│   └── axios/                  # axios.config.ts, index.ts
+├── features/                   # Nhóm theo tính năng (feature)
+│   ├── auth/
+│   │   ├── components/         # (để trống/chưa dùng)
+│   │   ├── hooks/              # Barrel export
+│   │   │   └── queries/        # useAuth.ts + index.ts (barrel)
+│   │   ├── screens/            # LoginScreen, RegisterScreen (+ index.ts)
+│   │   ├── services/           # auth.service.ts (+ index.ts)
+│   │   ├── store/              # authStore.ts (+ index.ts)
+│   │   └── types/              # index.ts
+│   ├── example/
+│   │   ├── hooks/
+│   │   │   └── queries/        # useProducts.ts + index.ts (barrel)
+│   │   ├── screens/            # ProductScreen, Lazy*, Pdf*, ... (+ index.ts)
+│   │   └── services/           # product.service.ts (+ index.ts)
+│   ├── home/                   # Home feature (screens + index.ts)
+│   ├── performance/            # PDF/Performance demo (components/utils/screens)
+│   └── profile/                # Profile/Settings screens (+ index.ts)
+├── navigation/                 # RootNavigator, Stacks/Tabs, config (barrels)
+├── shared/                     # Dùng chung toàn app (barrels đầy đủ)
+│   ├── components/             # Avatar, Logo, LoadingScreen, LazyScreen, ...
+│   ├── constants/              # COLORS, VALIDATION, ...
+│   ├── hooks/                  # useBaseQuery/useBaseMutation/useBaseForm, ...
+│   ├── types/                  # global.d.ts, type utils
+│   └── utils/                  # logger, errorHandler, queryClient, ...
+└── stores/                     # appStore.ts (độc lập với feature)
 ```
 
-### **Đề Xuất Cải Tiến:**
+## 📦 Barrel exports (quan trọng)
 
-```
-src/
-├── components/         # Reusable UI components
-│   ├── ui/            # Base UI components
-│   ├── forms/         # Form components
-│   ├── layout/        # Layout components
-│   └── navigation/    # Navigation components
-├── screens/           # Screen components
-│   ├── auth/          # Authentication screens
-│   ├── main/          # Main app screens
-│   └── features/      # Feature-specific screens
-├── features/          # Feature-based modules
-│   ├── auth/          # Auth feature
-│   ├── products/      # Products feature
-│   ├── pdf/           # PDF feature
-│   └── performance/   # Performance feature
-├── shared/            # Shared utilities & components
-│   ├── components/    # Shared components
-│   ├── hooks/         # Custom hooks
-│   ├── utils/         # Utility functions
-│   ├── constants/     # App constants
-│   └── types/         # TypeScript types
-├── services/          # API & external services
-├── stores/            # State management
-├── navigation/        # Navigation configuration
-└── config/            # App configuration
-```
+- `features/auth/hooks/index.ts` → `export * from './queries'`
+- `features/auth/hooks/queries/index.ts` → `export * from './useAuth'`
+- `features/example/hooks/index.ts` → `export * from './queries'`
+- `features/example/hooks/queries/index.ts` → `export * from './useProducts'`
+- `shared/hooks/index.ts` → re-export từ `@/features/*/hooks` để dùng chung:
+  - `export * from '@/features/auth/hooks'`
+  - `export * from '@/features/example/hooks'`
 
-## 🔄 Kế Hoạch Refactor
+Lợi ích:
 
-### **Bước 1: Tạo Cấu Trúc Mới**
+- Import ngắn gọn: `import { useLogin } from '@/shared/hooks'` hoặc `import { useLogin } from '../hooks'` trong feature.
+- Dễ mở rộng khi thêm hooks mới, chỉ cần export tại barrel tương ứng.
 
-1. Tạo thư mục `features/` cho feature-based modules
-2. Tạo thư mục `shared/` cho shared resources
-3. Di chuyển components test vào `features/performance/`
+## 🔗 Alias import
 
-### **Bước 2: Di Chuyển Files**
+- Được cấu hình trong `tsconfig.json` với `baseUrl` và `paths`:
+  - `@/*` trỏ tới `src/*`
+- Ví dụ:
+  - `@/shared/hooks`, `@/features/auth/hooks`, `@/components/layout`, ...
 
-1. Di chuyển test components → `features/performance/components/`
-2. Di chuyển example screens → `features/` tương ứng
-3. Tổ chức lại utils theo chức năng
+## ✅ Quy ước import đề xuất
 
-### **Bước 3: Cập Nhật Imports**
+- Trong nội bộ feature: dùng barrel cấp feature
+  - Ví dụ (Auth): `import { useLogin } from '../hooks'`
+- Từ nơi khác dùng chung: qua `@/shared/hooks`
+  - Ví dụ: `import { useLogin } from '@/shared/hooks'`
 
-1. Cập nhật tất cả import paths
-2. Cập nhật navigation
-3. Cập nhật index files
+## 🧭 Điều hướng thư mục chính
 
-## 📋 Chi Tiết Từng Thư Mục
+- `src/components`: tập trung UI tái sử dụng (có README ở `components/navigation`)
+- `src/features`: code theo domain/tính năng, mỗi feature có `hooks/screens/services/store/types`
+- `src/shared`: utilities, hooks cơ sở, constants, types toàn cục
+- `src/navigation`: Root/Stacks/Tabs + config factory
+- `src/config`: config app + axios (interceptors trong `axios.config.ts`)
+- `src/stores`: global stores (ví dụ `appStore.ts`)
 
-### **`src/components/` - UI Components**
+## 📝 Tips mở rộng
 
-```
-components/
-├── ui/                # Base UI components
-│   ├── Button/
-│   ├── Input/
-│   ├── Modal/
-│   └── index.ts
-├── forms/             # Form components
-│   ├── FormInput/
-│   ├── FormSelect/
-│   └── index.ts
-├── layout/            # Layout components
-│   ├── Header/
-│   ├── Footer/
-│   ├── Sidebar/
-│   └── index.ts
-└── navigation/        # Navigation components
-    ├── TabBar/
-    ├── Drawer/
-    └── index.ts
-```
-
-### **`src/features/` - Feature Modules**
-
-```
-features/
-├── auth/              # Authentication feature
-│   ├── components/    # Auth-specific components
-│   ├── screens/       # Auth screens
-│   ├── services/      # Auth services
-│   ├── hooks/         # Auth hooks
-│   ├── types/         # Auth types
-│   └── index.ts
-├── products/          # Products feature
-│   ├── components/
-│   ├── screens/
-│   ├── services/
-│   └── index.ts
-├── pdf/               # PDF feature
-│   ├── components/
-│   ├── screens/
-│   ├── utils/
-│   └── index.ts
-└── performance/       # Performance monitoring
-    ├── components/
-    ├── screens/
-    ├── utils/
-    └── index.ts
-```
-
-### **`src/shared/` - Shared Resources**
-
-```
-shared/
-├── components/        # Shared components
-│   ├── Loading/
-│   ├── ErrorBoundary/
-│   └── index.ts
-├── hooks/             # Custom hooks
-│   ├── useAuth.ts
-│   ├── useApi.ts
-│   └── index.ts
-├── utils/             # Utility functions
-│   ├── logger.ts
-│   ├── performanceMonitor.ts
-│   ├── errorHandler.ts
-│   └── index.ts
-├── constants/         # App constants
-│   ├── colors.ts
-│   ├── sizes.ts
-│   └── index.ts
-└── types/             # TypeScript types
-    ├── api.ts
-    ├── navigation.ts
-    └── index.ts
-```
-
-### **`src/services/` - External Services**
-
-```
-services/
-├── api/               # API configuration
-│   ├── client.ts
-│   ├── interceptors.ts
-│   └── index.ts
-├── auth/              # Auth services
-│   ├── authService.ts
-│   └── index.ts
-├── products/          # Product services
-│   ├── productService.ts
-│   └── index.ts
-└── index.ts
-```
-
-## 🎯 Lợi Ích Của Cấu Trúc Mới
-
-### **1. Feature-Based Organization**
-
-- Mỗi feature có thể phát triển độc lập
-- Dễ dàng thêm/xóa features
-- Code liên quan được nhóm lại với nhau
-
-### **2. Shared Resources**
-
-- Tránh duplicate code
-- Dễ dàng tái sử dụng
-- Centralized management
-
-### **3. Scalability**
-
-- Dễ dàng mở rộng khi dự án lớn
-- Có thể tách thành micro-frontends sau này
-- Team có thể làm việc song song
-
-### **4. Maintainability**
-
-- Dễ tìm kiếm code
-- Clear separation of concerns
-- Reduced coupling
-
-## 🚀 Implementation Plan
-
-### **Phase 1: Setup Structure**
-
-1. Tạo thư mục mới
-2. Di chuyển files cơ bản
-3. Cập nhật imports
-
-### **Phase 2: Feature Migration**
-
-1. Di chuyển auth feature
-2. Di chuyển products feature
-3. Di chuyển PDF feature
-4. Di chuyển performance feature
-
-### **Phase 3: Cleanup**
-
-1. Xóa thư mục cũ
-2. Cập nhật documentation
-3. Test toàn bộ app
-
-## 📝 Naming Conventions
-
-### **Files & Folders**
-
-- **PascalCase**: Components, Screens, Features
-- **camelCase**: Utilities, Services, Hooks
-- **kebab-case**: CSS files, config files
-
-### **Exports**
-
-- **Named exports**: Components, Utilities
-- **Default exports**: Screens, Pages
-- **Index files**: Re-export everything
-
-### **Imports**
-
-```typescript
-// ✅ Good
-import { Button } from '@/components/ui';
-import { useAuth } from '@/shared/hooks';
-import { ProductScreen } from '@/features/products';
-
-// ❌ Bad
-import Button from '@/components/ui/Button/Button';
-```
-
-## 🔧 Tools & Scripts
-
-### **Path Aliases**
-
-```json
-{
-  "@/*": ["src/*"],
-  "@/components/*": ["src/components/*"],
-  "@/features/*": ["src/features/*"],
-  "@/shared/*": ["src/shared/*"],
-  "@/services/*": ["src/services/*"]
-}
-```
-
-### **Linting Rules**
-
-- Enforce import order
-- Prevent circular dependencies
-- Enforce naming conventions
-
----
-
-## 📚 References
-
-- [React Native Project Structure](https://reactnative.dev/docs/project-structure)
-- [Feature-Based Architecture](https://martinfowler.com/articles/micro-frontends.html)
-- [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- Mỗi thư mục con nên có `index.ts` để barrel export.
+- Tránh import sâu (deep import) vào file con, ưu tiên `index.ts` của thư mục.
+- Khi thêm feature mới, giữ cấu trúc đồng nhất: `components/`, `hooks/`, `screens/`, `services/`, `store/`, `types/`.

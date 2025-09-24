@@ -30,32 +30,48 @@ Dự án React Native cơ sở với các tính năng hiện đại và cấu tr
 - **React Hook Form** cho form management
 - **React Native Vector Icons** cho icons
 
-## 🗂️ Cấu trúc thư mục
+## 🗂️ Cấu trúc thư mục (hiện tại)
 
 ```
 src/
-├── components/           # Các component tái sử dụng
-│   ├── common/          # Component cơ bản (Avatar, Loading, Logo, LazyScreen)
-│   ├── form/            # Component form (FormInput)
-│   ├── layout/          # Layout components (Header, MainLayout)
-│   ├── navigation/      # Custom navigation components
-│   └── ui/              # UI utilities (ErrorBoundary)
-├── constants/           # Hằng số (colors, API config, messages)
-├── hooks/               # Custom hooks
-│   ├── queries/         # React Query hooks
-│   ├── useBaseForm.ts   # Base form hook
-│   ├── useBaseMutation.ts # Base mutation hook
-│   └── useBaseQuery.ts  # Base query hook
-├── navigation/          # Navigation setup
-├── screens/             # Các màn hình
-│   ├── auth/           # Màn hình authentication
-│   ├── main/           # Màn hình chính
-│   └── example/        # Màn hình demo
-├── services/            # API services
-├── stores/             # Zustand stores
-├── types/              # TypeScript type definitions
-└── utils/              # Utility functions
+├── components/           # Component tái sử dụng
+│   ├── form/            # FormInput (barrel index.ts)
+│   ├── layout/          # Header, MainLayout, ... (barrel)
+│   └── navigation/      # CustomBottomBar/Drawer/TabBar (barrel + READMEs)
+├── config/              # app.config, axios.config (barrel)
+├── features/            # Tổ chức theo tính năng (feature)
+│   ├── auth/
+│   │   ├── hooks/      # index.ts → export * from './queries'
+│   │   │   └── queries/ # useAuth.ts + index.ts (barrel)
+│   │   ├── screens/    # LoginScreen, RegisterScreen (+ index.ts)
+│   │   ├── services/   # auth.service.ts (+ index.ts)
+│   │   ├── store/      # authStore.ts (+ index.ts)
+│   │   └── types/      # index.ts
+│   ├── example/
+│   │   ├── hooks/      # index.ts → export * from './queries'
+│   │   │   └── queries/ # useProducts.ts + index.ts (barrel)
+│   │   ├── screens/    # ProductScreen, Lazy*, Pdf*, ... (+ index.ts)
+│   │   └── services/   # product.service.ts (+ index.ts)
+│   ├── home/           # Home feature (screens + index.ts)
+│   ├── performance/    # PDF/Performance demo (components/utils/screens)
+│   └── profile/        # Profile/Settings screens (+ index.ts)
+├── navigation/          # RootNavigator, Stacks/Tabs, config (barrels)
+├── shared/              # Dùng chung: components, hooks, utils, constants, types
+│   ├── hooks/          # useBaseQuery/useBaseMutation/useBaseForm (barrel)
+│   └── components/     # Avatar, LazyScreen, LoadingScreen, ErrorBoundary, ...
+├── stores/              # appStore.ts
+└── config/              # app/axios config
 ```
+
+### Barrel exports nổi bật
+
+- `features/auth/hooks/index.ts` → `export * from './queries'`
+- `features/auth/hooks/queries/index.ts` → `export * from './useAuth'`
+- `features/example/hooks/index.ts` → `export * from './queries'`
+- `features/example/hooks/queries/index.ts` → `export * from './useProducts'`
+- `shared/hooks/index.ts` re-export từ features để dùng tiện lợi:
+  - `export * from '@/features/auth/hooks'`
+  - `export * from '@/features/example/hooks'`
 
 ## 🚀 Khởi chạy dự án
 
@@ -212,9 +228,9 @@ headerProps={{
 
 ```typescript
 // src/stores/exampleStore.ts
-import {create} from 'zustand';
-import {persist, createJSONStorage} from 'zustand/middleware';
-import {MMKV} from 'react-native-mmkv';
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { MMKV } from 'react-native-mmkv';
 
 const storage = new MMKV();
 const mmkvStorage = {
@@ -246,9 +262,9 @@ export const useExampleStore = create<ExampleState & ExampleActions>()(
     (set, get) => ({
       count: 0,
       user: null,
-      increment: () => set(state => ({count: state.count + 1})),
-      setUser: user => set({user}),
-      reset: () => set({count: 0, user: null}),
+      increment: () => set(state => ({ count: state.count + 1 })),
+      setUser: user => set({ user }),
+      reset: () => set({ count: 0, user: null }),
     }),
     {
       name: 'example-store',
@@ -269,7 +285,7 @@ export const useExampleStore = create<ExampleState & ExampleActions>()(
 ```typescript
 // src/services/userService.ts
 import api from './api';
-import {User, CreateUserRequest, UpdateUserRequest} from '@/types';
+import { User, CreateUserRequest, UpdateUserRequest } from '@/types';
 
 export const userService = {
   getUsers: async (): Promise<User[]> => {
@@ -287,10 +303,7 @@ export const userService = {
     return response.data;
   },
 
-  updateUser: async (
-    id: string,
-    userData: UpdateUserRequest,
-  ): Promise<User> => {
+  updateUser: async (id: string, userData: UpdateUserRequest): Promise<User> => {
     const response = await api.put(`/users/${id}`, userData);
     return response.data;
   },
@@ -306,7 +319,7 @@ export const userService = {
 ```typescript
 // src/services/api.ts
 import axios from 'axios';
-import {useAuthStore} from '@/stores/authStore';
+import { useAuthStore } from '@/stores/authStore';
 
 const api = axios.create({
   baseURL: API_CONFIG.BASE_URL,
@@ -318,7 +331,7 @@ const api = axios.create({
 
 // Request interceptor - thêm token vào header
 api.interceptors.request.use(config => {
-  const {tokens} = useAuthStore.getState();
+  const { tokens } = useAuthStore.getState();
   if (tokens?.token) {
     config.headers.Authorization = `Bearer ${tokens.token}`;
   }
@@ -405,13 +418,13 @@ export const useBaseQuery = <TData, TError = Error>({
 
 ```typescript
 // Ví dụ cơ bản
-const {data, isLoading, error} = useBaseQuery({
+const { data, isLoading, error } = useBaseQuery({
   queryKey: ['users'],
   queryFn: () => userService.getUsers(),
 });
 
 // Với custom error message
-const {data: user} = useBaseQuery({
+const { data: user } = useBaseQuery({
   queryKey: ['user', userId],
   queryFn: () => userService.getUserById(userId),
   errorMessage: 'Không thể tải thông tin người dùng',
@@ -450,7 +463,7 @@ export const useBaseMutation = <TData, TError = Error, TVariables = void>({
     onSuccess: (data, variables, context) => {
       // Auto invalidate queries
       invalidateQueries.forEach(queryKey => {
-        queryClient.invalidateQueries({queryKey});
+        queryClient.invalidateQueries({ queryKey });
       });
 
       // Auto success toast
@@ -466,8 +479,7 @@ export const useBaseMutation = <TData, TError = Error, TVariables = void>({
     onError: (error, variables, context) => {
       // Auto error toast
       if (showErrorToast) {
-        const message =
-          error?.response?.data?.message || error?.message || errorMessage;
+        const message = error?.response?.data?.message || error?.message || errorMessage;
         Toast.show({
           type: 'error',
           text1: 'Lỗi',
@@ -497,7 +509,7 @@ const handleCreateUser = (userData: CreateUserRequest) => {
   createUserMutation.mutate(userData, {
     onSuccess: newUser => {
       console.log('User created:', newUser);
-      navigation.navigate('UserDetail', {userId: newUser.id});
+      navigation.navigate('UserDetail', { userId: newUser.id });
     },
   });
 };
@@ -548,8 +560,7 @@ export const useBaseForm = <T extends FieldValues>({
         form.reset();
       }
     } catch (error: any) {
-      const message =
-        error?.response?.data?.message || error?.message || errorMessage;
+      const message = error?.response?.data?.message || error?.message || errorMessage;
       setSubmitError(message);
 
       Toast.show({
@@ -652,14 +663,14 @@ Khi bạn vào detail của một item và back ra rồi vào lại, hook của 
 
 ```typescript
 // ✅ Lần đầu vào Product ID = "123"
-const {data} = useBaseQuery({
+const { data } = useBaseQuery({
   queryKey: ['product', '123'], // Cache key unique
   queryFn: () => apiService.getProductById('123'),
 });
 // Result: Gọi API, cache data
 
 // ✅ Lần sau vào lại Product ID = "123"
-const {data} = useBaseQuery({
+const { data } = useBaseQuery({
   queryKey: ['product', '123'], // Cùng cache key
   queryFn: () => apiService.getProductById('123'),
 });
@@ -706,8 +717,8 @@ const updateProduct = useBaseMutation({
 });
 
 // Manual invalidation
-queryClient.invalidateQueries({queryKey: ['product', '123']});
-queryClient.invalidateQueries({queryKey: ['product']});
+queryClient.invalidateQueries({ queryKey: ['product', '123'] });
+queryClient.invalidateQueries({ queryKey: ['product'] });
 queryClient.clear(); // Clear all cache
 ```
 
