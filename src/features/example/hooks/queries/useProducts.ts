@@ -7,7 +7,7 @@ import {
     CreateProductRequest,
     UpdateProductRequest,
     ProductFilters,
-} from '@/services/productService';
+} from '@/features/example/services/product.service';
 
 // ============================================================================
 // QUERY KEYS

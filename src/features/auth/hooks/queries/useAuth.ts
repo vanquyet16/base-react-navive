@@ -1,10 +1,10 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useCallback } from 'react';
-import { authService } from '@/services/authService';
-import { useAuthStore } from '@/stores/authStore';
 import { useBaseMutation } from '@/shared/hooks/useBaseMutation';
 import { useBaseQuery } from '@/shared/hooks/useBaseQuery';
 import { LoginRequest } from '@/shared/types';
+import { authService } from '../../services';
+import { authStore } from '../../store';
 
 // ============================================================================
 // QUERY KEYS
@@ -25,7 +25,7 @@ export const authKeys = {
  * Lấy thông tin user hiện tại
  */
 export const useGetCurrentUser = () => {
-    const { isAuthenticated } = useAuthStore();
+    const { isAuthenticated } = authStore();
 
     // Memoize query key để tránh re-render không cần thiết
     const queryKey = useMemo(() => authKeys.me(), []);
@@ -52,7 +52,7 @@ export const useGetCurrentUser = () => {
  * Lấy thông tin profile user
  */
 export const useGetUserProfile = () => {
-    const { isAuthenticated } = useAuthStore();
+    const { isAuthenticated } = authStore();
 
     const queryKey = useMemo(() => authKeys.profile(), []);
 
@@ -77,7 +77,7 @@ export const useGetUserProfile = () => {
  * Đăng nhập
  */
 export const useLogin = () => {
-    const { login, setLoading } = useAuthStore();
+    const { login, setLoading } = authStore();
     // Memoize invalidate queries
     const invalidateQueries = useMemo(() => [authKeys.me(), authKeys.profile()], []);
 
@@ -109,7 +109,7 @@ export const useLogin = () => {
  * Đăng ký
  */
 export const useRegister = () => {
-    const { login, setLoading } = useAuthStore();
+    const { login, setLoading } = authStore();
 
     // Memoize invalidate queries
     const invalidateQueries = useMemo(() => [authKeys.me(), authKeys.profile()], []);
@@ -137,7 +137,7 @@ export const useRegister = () => {
  * Đăng xuất
  */
 export const useLogout = () => {
-    const { logout, setLoading } = useAuthStore();
+    const { logout, setLoading } = authStore();
     const queryClient = useQueryClient();
 
     // Memoize clear function
@@ -204,7 +204,7 @@ export const useUpdateProfile = () => {
  * Refresh token
  */
 export const useRefreshToken = () => {
-    const { updateTokens } = useAuthStore();
+    const { updateTokens } = authStore();
 
     return useBaseMutation({
         mutationFn: authService.refreshToken,

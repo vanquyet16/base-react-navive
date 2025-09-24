@@ -2,5 +2,5 @@
 export * from './useBaseForm';
 export * from './useBaseMutation';
 export * from './useBaseQuery';
-export * from './queries/useAuth';
-export * from './queries/useProducts'; 
+export * from '@/features/auth/hooks';
+export * from '@/features/example/hooks';

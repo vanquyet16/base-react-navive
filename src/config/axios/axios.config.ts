@@ -1,12 +1,12 @@
 import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from 'axios';
-import { API_CONFIG } from '@/config';
-import { useAuthStore } from '@/stores/authStore';
+import { API_CONFIG } from '@/config/app.config';
 import { CustomAxiosRequestConfig } from '@/shared/types';
 import { logger, logApiRequest, logApiResponse } from '@/shared/utils/logger';
 import { errorHandler, handleApiError } from '@/shared/utils/errorHandler';
+import { authStore } from '@/features/auth';
 
 // Tạo axios instance
-const api = axios.create({
+const apiClient = axios.create({
     baseURL: API_CONFIG.BASE_URL,
     timeout: API_CONFIG.TIMEOUT,
     headers: {
@@ -15,9 +15,9 @@ const api = axios.create({
 });
 
 // Interceptor request
-api.interceptors.request.use(
+apiClient.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
-        const { tokens } = useAuthStore.getState();
+        const { tokens } = authStore.getState();
 
         if (tokens?.token) {
             config.headers.Authorization = `Bearer ${tokens.token}`;
@@ -38,7 +38,7 @@ api.interceptors.request.use(
 );
 
 // Interceptor response
-api.interceptors.response.use(
+apiClient.interceptors.response.use(
     (response: AxiosResponse) => {
         // Log API response
         logApiResponse(response.status, response.config.url || '', response.data);
@@ -54,7 +54,7 @@ api.interceptors.response.use(
         if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
             originalRequest._retry = true;
 
-            const { tokens, logout, updateTokens } = useAuthStore.getState();
+            const { tokens, logout, updateTokens } = authStore.getState();
 
             if (tokens?.refreshToken) {
                 try {
@@ -74,7 +74,7 @@ api.interceptors.response.use(
                         originalRequest.headers = { Authorization: `Bearer ${newTokens.accessToken}` };
                     }
 
-                    return api(originalRequest);
+                    return apiClient(originalRequest);
                 } catch (refreshError) {
                     // Làm mới token thất bại, đăng xuất người dùng
                     logout();
@@ -95,4 +95,4 @@ api.interceptors.response.use(
     },
 );
 
-export default api; 
+export default apiClient; 

@@ -1,4 +1,4 @@
-import api from '@/services/api';
+import apiClient from '@/config/axios/axios.config';
 import { LoginRequest, LoginResponse, User, AuthTokens } from '@/shared/types';
 
 // Mock data cho development
@@ -20,7 +20,7 @@ export const authService = {
     login: async (credentials: LoginRequest): Promise<LoginResponse> => {
         console.log("🚀 ~ credentials:", credentials)
 
-        const response = await api.post('api/Account/Login', {
+        const response = await apiClient.post('api/Account/Login', {
             matKhau: credentials.password,
             taiKhoan: credentials.userName
         });
@@ -49,7 +49,7 @@ export const authService = {
         password: string;
         name: string;
     }): Promise<LoginResponse> => {
-        const response = await api.post('/auth/register', userData);
+        const response = await apiClient.post('/auth/register', userData);
 
         // Kiểm tra response success
         if (!response.data.success) {
@@ -73,7 +73,7 @@ export const authService = {
 
     // Làm mới token
     refreshToken: async (refreshToken: string): Promise<AuthTokens> => {
-        const response = await api.post('/auth/refresh', { refreshToken });
+        const response = await apiClient.post('/auth/refresh', { refreshToken });
         return response.data.tokens;
     },
 
@@ -85,7 +85,7 @@ export const authService = {
     // Lấy thông tin người dùng hiện tại
     getCurrentUser: async (): Promise<User> => {
 
-        const response = await api.get('/auth/me');
+        const response = await apiClient.get('/auth/me');
         return response.data;
         // await new Promise(resolve => setTimeout(resolve, 500));
         // return MOCK_USER;
@@ -93,7 +93,7 @@ export const authService = {
 
     // Cập nhật hồ sơ
     updateProfile: async (userData: Partial<User>): Promise<User> => {
-        const response = await api.put('/auth/profile', userData);
+        const response = await apiClient.put('/auth/profile', userData);
         return response.data;
     },
 
@@ -102,12 +102,12 @@ export const authService = {
         currentPassword: string;
         newPassword: string;
     }): Promise<void> => {
-        await api.post('/auth/change-password', data);
+        await apiClient.post('/auth/change-password', data);
     },
 
     // Quên mật khẩu
     forgotPassword: async (email: string): Promise<void> => {
-        await api.post('/auth/forgot-password', { email });
+        await apiClient.post('/auth/forgot-password', { email });
     },
 
     // Đặt lại mật khẩu
@@ -115,6 +115,6 @@ export const authService = {
         token: string;
         password: string;
     }): Promise<void> => {
-        await api.post('/auth/reset-password', data);
+        await apiClient.post('/auth/reset-password', data);
     },
 }; 

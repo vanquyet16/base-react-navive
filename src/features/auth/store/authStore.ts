@@ -39,7 +39,7 @@ interface AuthActions {
 
 type AuthStore = AuthState & AuthActions;
 
-export const useAuthStore = create<AuthStore>()(
+export const authStore = create<AuthStore>()(
     persist(
         (set, get) => ({
             // State
@@ -102,7 +102,7 @@ export const useAuthStore = create<AuthStore>()(
 );
 
 // Selectors
-// export const useUser = () => useAuthStore(state => state.user);
-export const useTokens = () => useAuthStore(state => state.tokens);
-export const useIsAuthenticated = () => useAuthStore(state => state.isAuthenticated);
-export const useAuthLoading = () => useAuthStore(state => state.isLoading);
+// export const useUser = () => authStore(state => state.user);
+export const useTokens = () => authStore(state => state.tokens);
+export const useIsAuthenticated = () => authStore(state => state.isAuthenticated);
+export const useAuthLoading = () => authStore(state => state.isLoading);

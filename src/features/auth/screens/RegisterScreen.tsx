@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { Button, WhiteSpace, WingBlank } from '@ant-design/react-native';
 import { useForm, Controller } from 'react-hook-form';
-import { useRegister } from '@/shared/hooks/queries/useAuth';
+import { useRegister } from '@/features/auth/hooks/queries/useAuth';
 import { COLORS, SCREEN_PADDING, VALIDATION, ERROR_MESSAGES } from '@/shared/constants';
 import FormInput from '@/components/form/FormInput';
 import Logo from '@/shared/components/Logo';

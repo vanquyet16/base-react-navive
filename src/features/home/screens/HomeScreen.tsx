@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useAuthStore } from '@/stores/authStore';
 import { COLORS, SCREEN_PADDING } from '@/shared/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { MainLayout } from '@/components';
@@ -13,13 +12,14 @@ import {
 } from '@/features/performance/components';
 import TestDocumentPicker from '@/features/performance/components/TestDocumentPicker';
 import { MainStackParamList } from '@/shared/types';
+import { authStore } from '@/features/auth';
 
 type NavigationProp = StackNavigationProp<MainStackParamList>;
 
 const HomeScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   // const user = useUser();
-  const { logout } = useAuthStore();
+  const { logout } = authStore();
 
   const handleLogout = () => {
     logout();

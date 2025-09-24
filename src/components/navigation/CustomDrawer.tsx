@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { COLORS } from '@/shared/constants';
-import { useAuthStore } from '@/stores/authStore';
 import { useNavigation } from '@react-navigation/native';
+import { authStore } from '@/features/auth';
 
 interface CustomDrawerProps {
   props: any;
@@ -12,7 +12,7 @@ interface CustomDrawerProps {
 
 const CustomDrawer: React.FC<CustomDrawerProps> = ({ props }) => {
   const navigation = useNavigation();
-  const { logout } = useAuthStore();
+  const { logout } = authStore();
 
   const handleLogout = () => {
     logout();
@@ -197,4 +197,3 @@ const styles = StyleSheet.create({
 });
 
 export default CustomDrawer;
-

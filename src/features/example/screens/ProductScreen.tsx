@@ -15,8 +15,12 @@ import {
   useCreateProduct,
   useUpdateProduct,
   useDeleteProduct,
-} from '@/shared/hooks/queries/useProducts';
-import { Product, CreateProductRequest, ProductFilters } from '@/services/productService';
+} from '@/features/example/hooks/queries/useProducts';
+import {
+  Product,
+  CreateProductRequest,
+  ProductFilters,
+} from '@/features/example/services/product.service';
 import { useBaseForm } from '@/shared/hooks';
 import FormInput from '@/components/form/FormInput';
 

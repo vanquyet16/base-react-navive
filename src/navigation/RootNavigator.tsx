@@ -5,11 +5,11 @@
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useAuthStore } from '@/stores/authStore';
 import AuthStack from './AuthStack';
 import DrawerNavigator from './DrawerNavigator';
 import { LoadingScreen } from '@/shared/components';
 import { NAVIGATION_KEYS } from './config';
+import { authStore } from '@/features/auth';
 
 const Stack = createStackNavigator();
 
@@ -27,7 +27,7 @@ const Stack = createStackNavigator();
  */
 const RootNavigator: React.FC = () => {
   // Lấy trạng thái authentication từ store
-  const { isAuthenticated, isLoading } = useAuthStore();
+  const { isAuthenticated, isLoading } = authStore();
 
   // Log trạng thái authentication cho debug
   useEffect(() => {}, [isAuthenticated, isLoading]);
