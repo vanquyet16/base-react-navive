@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
   Modal,
 } from 'react-native';
-import {PdfUtils} from '@/shared/utils';
+import { PdfUtils } from '@/shared/utils';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -63,8 +63,8 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({
           'File đã tồn tại',
           `File "${getFileName()}" đã được tải trước đó. Bạn có muốn tải lại không?`,
           [
-            {text: 'Hủy', style: 'cancel'},
-            {text: 'Tải lại', onPress: () => startDownload()},
+            { text: 'Hủy', style: 'cancel' },
+            { text: 'Tải lại', onPress: () => startDownload() },
           ],
         );
         setShowProgress(false);
@@ -128,7 +128,7 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({
             text: 'Xem ngay',
             onPress: () => onDownloadComplete?.(localPath),
           },
-          {text: 'OK'},
+          { text: 'OK' },
         ],
       );
 
@@ -182,7 +182,8 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({
       <TouchableOpacity
         style={[styles.downloadButton, downloading && styles.downloadingButton]}
         onPress={downloadPdf}
-        disabled={downloading}>
+        disabled={downloading}
+      >
         {downloading ? (
           <ActivityIndicator size="small" color="#fff" />
         ) : (
@@ -202,13 +203,19 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({
       {/* Nút xóa file */}
       <TouchableOpacity
         style={styles.deleteButton}
-        onPress={deleteDownloadedFile}>
+        onPress={deleteDownloadedFile}
+      >
         <Icon name="delete" size={20} color="#ff3b30" />
         <Text style={styles.deleteButtonText}>Xóa file</Text>
       </TouchableOpacity>
 
       {/* Modal hiển thị tiến trình */}
-      <Modal visible={showProgress} transparent={true} animationType="fade">
+      <Modal
+        visible={showProgress}
+        transparent={true}
+        animationType="fade"
+        presentationStyle="overFullScreen"
+      >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Đang tải PDF...</Text>
@@ -216,7 +223,9 @@ const PdfDownloader: React.FC<PdfDownloaderProps> = ({
 
             <View style={styles.progressContainer}>
               <View style={styles.progressBar}>
-                <View style={[styles.progressFill, {width: `${progress}%`}]} />
+                <View
+                  style={[styles.progressFill, { width: `${progress}%` }]}
+                />
               </View>
               <Text style={styles.progressText}>{progress}%</Text>
             </View>
