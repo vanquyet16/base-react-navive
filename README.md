@@ -1,97 +1,361 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Base React Native 0.83
 
-# Getting Started
+> **Production-ready** React Native boilerplate với New Architecture (Fabric + TurboModules), feature-based architecture, và enterprise-grade tooling.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+[![React Native](https://img.shields.io/badge/React%20Native-0.83.1-blue.svg)](https://reactnative.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)](https://www.typescriptlang.org/)
+[![New Architecture](https://img.shields.io/badge/New%20Architecture-Enabled-green)](https://reactnative.dev/docs/the-new-architecture/landing-page)
 
-## Step 1: Start Metro
+## 🌟 Features
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- ✅ **React Native 0.83.1** với New Architecture (Fabric + TurboModules)
+- ✅ **TypeScript** strict mode với senior-level code standards
+- ✅ **Feature-based Architecture** - modular, scalable, maintainable
+- ✅ **TanStack Query** (React Query) cho data fetching & caching
+- ✅ **Zustand** cho global state management
+- ✅ **React Navigation v7** với custom Bottom Tabs, Drawer, Stack
+- ✅ **Ant Design Mobile** components với custom wrappers
+- ✅ **Axios** với interceptors, error handling, retry logic
+- ✅ **Path Aliases** (`@/components`, `@/features`, etc.)
+- ✅ **Yoga API Patch** - fixed compatibility issue với New Architecture
+- ✅ **Enterprise tooling**: ESLint, Prettier, patch-package
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## 📋 Prerequisites
 
-```sh
-# Using npm
-npm start
+- **Node.js**: >= 20.x
+- **npm** hoặc **Yarn**: Latest version
+- **Xcode**: 15+ (cho iOS)
+- **Android Studio**: Latest (cho Android)
+- **Ruby**: 2.7+ (cho CocoaPods)
+- **CocoaPods**: 1.15+
 
-# OR using Yarn
-yarn start
+Xem [React Native Environment Setup](https://reactnative.dev/docs/environment-setup) để setup đầy đủ.
+
+## 🚀 Quick Start
+
+### 1. Clone và Install Dependencies
+
+```bash
+# Clone repository
+git clone https://github.com/vanquyet16/base-react-navive.git
+cd base-react-navive
+
+# Install JavaScript dependencies
+npm install --legacy-peer-deps
+# hoặc
+yarn install
+
+# Install iOS dependencies (macOS only)
+cd ios
+pod install
+cd ..
 ```
 
-## Step 2: Build and run your app
+> **Lưu ý**: Sử dụng `--legacy-peer-deps` để tránh peer dependency conflicts.
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+### 2. Start Metro Bundler
 
-### Android
+```bash
+# Start Metro với cache reset
+npm start
+# hoặc
+yarn start
 
-```sh
-# Using npm
-npm run android
+# Metro sẽ chạy trên http://localhost:8081
+```
 
-# OR using Yarn
+**Metro Shortcuts:**
+
+- Press `r` - Reload app
+- Press `d` - Open Dev Menu
+- Press `j` - Open React Native DevTools
+
+### 3. Run App
+
+**iOS:**
+
+```bash
+# Run trên iPhone Xs simulator
+yarn ios
+
+# Run trên simulator khác
+yarn ios --simulator="iPhone 15 Pro"
+```
+
+**Android:**
+
+```bash
 yarn android
 ```
 
-### iOS
+## 📁 Project Structure
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
+```
+src/
+├── app/                    # App root & providers
+├── components/             # Shared UI components
+│   ├── base/              # Atomic components (Button, Text, etc.)
+│   ├── custom-antd/       # Wrapped Ant Design components
+│   ├── form/              # Form components
+│   ├── layout/            # Layout components
+│   ├── navigation/        # Custom navigation components
+│   └── utility/           # Utility components (ErrorBoundary, LazyScreen)
+├── config/                # App configuration
+│   ├── app.config.ts      # App constants
+│   ├── env.ts             # Environment variables
+│   └── build-info.ts      # Build information
+├── constants/             # Constants & enums
+│   ├── api-endpoints.ts   # API endpoints
+│   ├── routes.ts          # Route names
+│   └── storage-keys.ts    # AsyncStorage keys
+├── features/              # Feature modules (by domain)
+│   ├── auth/              # Authentication feature
+│   │   ├── screens/       # Auth screens (Login, Register)
+│   │   ├── hooks/         # Auth-specific hooks & queries
+│   │   ├── services/      # Auth API services
+│   │   └── types/         # Auth types
+│   ├── home/              # Home feature
+│   ├── profile/           # Profile feature
+│   ├── example/           # Example/demo features
+│   └── performance/       # Performance monitoring
+├── hooks/                 # Global custom hooks
+├── navigation/            # Navigation configuration
+│   ├── MainTabs.tsx       # Main tab navigator
+│   ├── config/            # Navigation configs
+│   └── factories/         # Screen factory patterns
+├── query/                 # TanStack Query setup
+│   ├── query-client.ts    # Query client configuration
+│   ├── query-keys.ts      # Query key factories
+│   └── query-provider.tsx # Query provider wrapper
+├── services/              # Global services
+│   ├── http/              # HTTP client (Axios)
+│   ├── auth/              # Auth service & token management
+│   └── user/              # User service
+├── shared/                # Shared utilities
+│   ├── hooks/             # Shared hooks (useBaseQuery, useBaseMutation)
+│   ├── types/             # Global TypeScript types
+│   └── utils/             # Utility functions
+├── store/                 # Zustand stores
+│   ├── app-store.ts       # App state
+│   ├── session-store.ts   # Session/auth state
+│   └── settings-store.ts  # User settings
+├── theme/                 # Theme system
+│   ├── theme.ts           # Theme configuration
+│   ├── tokens.ts          # Design tokens
+│   └── use-theme.ts       # Theme hook
+└── types/                 # Shared TypeScript types
+    ├── api.ts             # API response types
+    ├── common.ts          # Common types
+    └── domain/            # Domain models
 ```
 
-Then, and every time you update your native dependencies, run:
+## 🔧 Important Configuration
 
-```sh
-bundle exec pod install
+### Path Aliases
+
+`babel.config.js` đã được config với path aliases:
+
+```javascript
+'@': './src',
+'@components': './src/components',
+'@features': './src/features',
+'@services': './src/services',
+// ... etc
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+**Sử dụng:**
 
-```sh
-# Using npm
-npm run ios
+```typescript
+import { CustomButton } from '@/components';
+import { useAuth } from '@/features/auth';
+```
 
-# OR using Yarn
+### Yoga API Patch
+
+Project có patch quan trọng cho `react-native-safe-area-context` để fix lỗi yoga API với New Architecture:
+
+**File patch:** `patches/react-native-safe-area-context+4.14.1.patch`
+
+Patch này thay đổi yoga API từ `.unit()` sang `.isDefined()` để tương thích với Yoga 3.0 trong RN 0.83.
+
+**Patch được tự động apply** sau `npm install` nhờ `postinstall` script.
+
+> ⚠️ **QUAN TRỌNG**: Không xóa thư mục `patches/` và package `patch-package`.
+
+## 📦 Key Dependencies
+
+### Core
+
+- `react-native`: 0.83.1
+- `react`: 19.2.0
+- `typescript`: 5.8.3
+
+### State Management & Data Fetching
+
+- `@tanstack/react-query`: 5.90.19 - Server state management
+- `zustand`: 5.0.10 - Client state management
+- `axios`: 1.13.2 - HTTP client
+
+### Navigation
+
+- `@react-navigation/native`: 7.1.14
+- `@react-navigation/stack`: 7.4.0
+- `@react-navigation/bottom-tabs`: 7.4.0
+- `@react-navigation/drawer`: 7.5.0
+
+### UI Components
+
+- `@ant-design/react-native`: 5.4.3
+- `react-native-vector-icons`: 10.3.0
+- `react-native-size-matters`: 0.4.2 - Responsive sizing
+
+### Storage & Utilities
+
+- `react-native-mmkv`: 3.3.3 - Fast key-value storage
+- `react-hook-form`: 7.71.1 - Form management
+
+### Development
+
+- `patch-package`: 8.0.1 - Patch node_modules
+- `babel-plugin-module-resolver`: 5.0.2 - Path aliases
+
+## 🛠️ Development
+
+### Commands
+
+```bash
+# Start Metro bundler
+yarn start
+
+# Run iOS
+yarn ios
+
+# Run Android
+yarn android
+
+# Run tests
+yarn test
+
+# Lint code
+yarn lint
+
+# Type check
+npx tsc --noEmit
+```
+
+### Adding New Features
+
+1. Tạo folder mới trong `src/features/<feature-name>/`
+2. Cấu trúc feature:
+   ```
+   features/my-feature/
+   ├── screens/
+   ├── hooks/
+   ├── services/
+   ├── types/
+   └── index.ts
+   ```
+3. Export public API qua `index.ts`
+4. Sử dụng feature qua path alias: `@/features/my-feature`
+
+### Code Standards
+
+- **TypeScript strict mode** - Tránh `any`, sử dụng proper types
+- **Senior-level code** - Clean, scalable, maintainable
+- **Comments required** - Giải thích logic, trade-offs, edge cases
+- **Defensive programming** - Validate inputs, handle errors gracefully
+- **Consistent patterns** - Follow existing patterns trong codebase
+
+## 🐛 Troubleshooting
+
+### iOS Build Errors
+
+**Lỗi: `No member named 'unit' in 'facebook::yoga::StyleLength'`**
+
+✅ **Đã fix** với patch trong `patches/react-native-safe-area-context+4.14.1.patch`
+
+Nếu vẫn gặp lỗi:
+
+```bash
+# Re-apply patches
+npx patch-package
+
+# Reinstall pods
+cd ios
+rm -rf Pods Podfile.lock
+pod install
+cd ..
+
+# Clean và rebuild
+rm -rf ~/Library/Developer/Xcode/DerivedData/*
 yarn ios
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+### Metro Bundler Issues
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+**Lỗi: `Cannot find module 'babel-plugin-module-resolver'`**
 
-## Step 3: Modify your app
+```bash
+# Reinstall dependencies
+rm -rf node_modules package-lock.json yarn.lock
+npm install --legacy-peer-deps
 
-Now that you have successfully run the app, let's make changes!
+# Restart Metro with cache reset
+yarn start --reset-cache
+```
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+### Android Build Issues
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+```bash
+# Clean Android build
+cd android
+./gradlew clean
+cd ..
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+# Rebuild
+yarn android
+```
 
-## Congratulations! :tada:
+## 📝 New Architecture Notes
 
-You've successfully run and modified your React Native App. :partying_face:
+Project này sử dụng **New Architecture** (Fabric + TurboModules):
 
-### Now what?
+**Enabled trong:** `ios/BaseReactNative083/Info.plist`
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+```xml
+<key>RCTNewArchEnabled</key>
+<true/>
+```
 
-# Troubleshooting
+**Benefits:**
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+- ⚡ Faster rendering với Fabric
+- 🚀 Better performance với TurboModules
+- 🔄 Synchronous access to native modules
+- 📦 Smaller bundle sizes
 
-# Learn More
+**Trade-offs:**
 
-To learn more about React Native, take a look at the following resources:
+- Cần patches cho một số libraries chưa tương thích
+- Debugging phức tạp hơn (sử dụng Bridgeless mode)
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## 🤝 Contributing
+
+1. Create feature branch: `git checkout -b feature/my-feature`
+2. Commit changes: `git commit -m 'feat: add my feature'`
+3. Push branch: `git push origin feature/my-feature`
+4. Create Pull Request
+
+## 📄 License
+
+MIT
+
+## 👥 Author
+
+**vanquyet16**
+
+GitHub: [@vanquyet16](https://github.com/vanquyet16)
+
+---
+
+Made with ❤️ using React Native 0.83 + New Architecture
