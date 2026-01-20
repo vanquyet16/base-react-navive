@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
-import {PdfUtils} from '@/shared/utils';
+import { PdfUtils } from '@/shared/utils';
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -61,7 +61,8 @@ const PdfIosDownloader: React.FC<PdfIosDownloaderProps> = ({
 
       // Thử sử dụng DocumentPicker
       try {
-        const DocumentPicker = require('react-native-document-picker').default;
+        const DocumentPicker =
+          require('@react-native-documents/picker').default;
 
         const result = await DocumentPicker.pick({
           type: [DocumentPicker.types.allFiles],
@@ -84,7 +85,7 @@ const PdfIosDownloader: React.FC<PdfIosDownloaderProps> = ({
                 text: 'Mở Files',
                 onPress: () => openFilesApp(),
               },
-              {text: 'OK'},
+              { text: 'OK' },
             ],
           );
 
@@ -110,7 +111,7 @@ const PdfIosDownloader: React.FC<PdfIosDownloaderProps> = ({
                   text: 'Mở Files',
                   onPress: () => openFilesApp(),
                 },
-                {text: 'OK'},
+                { text: 'OK' },
               ],
             );
           } else {
@@ -124,7 +125,7 @@ const PdfIosDownloader: React.FC<PdfIosDownloaderProps> = ({
                   text: 'Mở Files',
                   onPress: () => openFilesApp(),
                 },
-                {text: 'OK'},
+                { text: 'OK' },
               ],
             );
           }
@@ -183,7 +184,7 @@ const PdfIosDownloader: React.FC<PdfIosDownloaderProps> = ({
       'Mở Files App',
       '1. Mở ứng dụng Files trên iPhone\n2. Tìm file PDF vừa lưu\n3. File sẽ hiển thị trong thư mục bạn đã chọn',
       [
-        {text: 'OK'},
+        { text: 'OK' },
         {
           text: 'Hướng dẫn chi tiết',
           onPress: () => {
@@ -214,7 +215,8 @@ const PdfIosDownloader: React.FC<PdfIosDownloaderProps> = ({
 
       // Thử sử dụng DocumentPicker
       try {
-        const DocumentPicker = require('react-native-document-picker').default;
+        const DocumentPicker =
+          require('@react-native-documents/picker').default;
 
         const result = await DocumentPicker.pickDirectory();
 
@@ -231,7 +233,7 @@ const PdfIosDownloader: React.FC<PdfIosDownloaderProps> = ({
               text: 'Mở Files',
               onPress: () => openFilesApp(),
             },
-            {text: 'OK'},
+            { text: 'OK' },
           ]);
 
           onDownloadComplete?.(targetPath);
@@ -256,7 +258,7 @@ const PdfIosDownloader: React.FC<PdfIosDownloaderProps> = ({
                   text: 'Mở Files',
                   onPress: () => openFilesApp(),
                 },
-                {text: 'OK'},
+                { text: 'OK' },
               ],
             );
           } else {
@@ -270,7 +272,7 @@ const PdfIosDownloader: React.FC<PdfIosDownloaderProps> = ({
                   text: 'Mở Files',
                   onPress: () => openFilesApp(),
                 },
-                {text: 'OK'},
+                { text: 'OK' },
               ],
             );
           }
@@ -321,7 +323,8 @@ const PdfIosDownloader: React.FC<PdfIosDownloaderProps> = ({
           (downloading || saving) && styles.downloadingButton,
         ]}
         onPress={downloadAndSaveToFiles}
-        disabled={downloading || saving}>
+        disabled={downloading || saving}
+      >
         {downloading || saving ? (
           <ActivityIndicator size="small" color="#fff" />
         ) : (
@@ -340,7 +343,8 @@ const PdfIosDownloader: React.FC<PdfIosDownloaderProps> = ({
       <TouchableOpacity
         style={styles.pickDirectoryButton}
         onPress={pickDirectory}
-        disabled={downloading || saving}>
+        disabled={downloading || saving}
+      >
         <Icon name="folder-open" size={20} color="#007AFF" />
         <Text style={styles.pickDirectoryButtonText}>Chọn thư mục cụ thể</Text>
       </TouchableOpacity>

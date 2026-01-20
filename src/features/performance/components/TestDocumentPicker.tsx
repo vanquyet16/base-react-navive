@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -23,7 +23,7 @@ const TestDocumentPicker: React.FC = () => {
       // Thử import DocumentPicker
       let DocumentPicker;
       try {
-        DocumentPicker = require('react-native-document-picker').default;
+        DocumentPicker = require('@react-native-documents/picker').default;
         console.log('DocumentPicker imported successfully');
       } catch (importError) {
         console.error('Error importing DocumentPicker:', importError);
@@ -81,7 +81,7 @@ const TestDocumentPicker: React.FC = () => {
       // Thử import DocumentPicker
       let DocumentPicker;
       try {
-        DocumentPicker = require('react-native-document-picker').default;
+        DocumentPicker = require('@react-native-documents/picker').default;
         console.log('DocumentPicker imported successfully');
       } catch (importError) {
         console.error('Error importing DocumentPicker:', importError);
@@ -127,13 +127,14 @@ const TestDocumentPicker: React.FC = () => {
     <View style={styles.container}>
       <Text style={styles.title}>🧪 Test DocumentPicker</Text>
       <Text style={styles.subtitle}>
-        Kiểm tra xem react-native-document-picker có hoạt động không
+        Kiểm tra xem @react-native-documents/picker có hoạt động không
       </Text>
 
       <TouchableOpacity
         style={[styles.testButton, testing && styles.testingButton]}
         onPress={testDocumentPicker}
-        disabled={testing}>
+        disabled={testing}
+      >
         <Text style={styles.testButtonText}>
           {testing ? 'Đang test...' : 'Test File Picker'}
         </Text>
@@ -142,7 +143,8 @@ const TestDocumentPicker: React.FC = () => {
       <TouchableOpacity
         style={[styles.testButton, testing && styles.testingButton]}
         onPress={testDirectoryPicker}
-        disabled={testing}>
+        disabled={testing}
+      >
         <Text style={styles.testButtonText}>
           {testing ? 'Đang test...' : 'Test Directory Picker'}
         </Text>

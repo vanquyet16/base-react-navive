@@ -1709,6 +1709,11 @@
     prompts "^2.4.2"
     semver "^7.5.2"
 
+"@react-native-documents/picker@^12.0.0":
+  version "12.0.0"
+  resolved "https://registry.npmjs.org/@react-native-documents/picker/-/picker-12.0.0.tgz#fbb88a9434da1fb0035a5196fd02259ff67596f9"
+  integrity sha512-7kdUaF0Kin3F6OBixHTGY7mMHG7JAejbnAWUQltC8v2xmkPN+CMli3i4sm62ZIEhYzf3QX+fCe/3kFBcr+Vb6g==
+
 "@react-native-picker/picker@^2.9.2":
   version "2.11.4"
   resolved "https://registry.npmjs.org/@react-native-picker/picker/-/picker-2.11.4.tgz#7fb09506ee00a82989125cc03e8495204c8afc01"
@@ -6515,13 +6520,6 @@ react-native-collapsible@^1.6.0:
   version "1.6.2"
   resolved "https://registry.npmjs.org/react-native-collapsible/-/react-native-collapsible-1.6.2.tgz#3b67fa402a6ba3c291022f5db8f345083862c3d8"
   integrity sha512-MCOBVJWqHNjnDaGkvxX997VONmJeebh6wyJxnHEgg0L1PrlcXU1e/bo6eK+CDVFuMrCafw8Qh4DOv/C4V/+Iew==
-
-react-native-document-picker@^9.3.1:
-  version "9.3.1"
-  resolved "https://registry.npmjs.org/react-native-document-picker/-/react-native-document-picker-9.3.1.tgz#f2c33237a906fd0893130e0605c8f18a3aef1605"
-  integrity sha512-Vcofv9wfB0j67zawFjfq9WQPMMzXxOZL9kBmvWDpjVuEcVK73ndRmlXHlkeFl5ZHVsv4Zb6oZYhqm9u5omJOPA==
-  dependencies:
-    invariant "^2.2.4"
 
 react-native-drawer-layout@^4.2.1:
   version "4.2.1"
