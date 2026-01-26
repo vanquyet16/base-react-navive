@@ -47,6 +47,7 @@ const TAB_WRAPPERS = createTabScreenWrappers(TAB_SCREENS);
 const MainTabs: React.FC = () => {
   return (
     <Tab.Navigator
+      id="MainTabs" // Required by React Navigation v6+ for TypeScript strict mode
       tabBar={props => <CustomTabBar {...props} />}
       screenOptions={{
         headerShown: false,

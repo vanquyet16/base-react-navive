@@ -136,20 +136,10 @@ src/
 │   ├── performance/         # Performance feature
 │   └── example/             # Example/Demo feature
 │
-├── navigation/               # Navigation configuration & factories (SENIOR PATTERN)
-│   ├── MainTabs.tsx         # Bottom tabs navigator
-│   ├── config/              # Navigation configurations
-│   │   ├── index.ts
-│   │   └── navigationConfig.ts
-│   ├── factories/           # Generic factory pattern
-│   │   ├── index.ts
-│   │   ├── navigatorFactory.tsx  # Generic navigator factory (CORE)
-│   │   └── screenFactory.tsx
-│   ├── navigators/          # Dedicated navigator components
-│   │   ├── index.ts
-│   │   ├── AuthStackNavigator.tsx
-│   │   └── MainStackNavigator.tsx
-│   └── index.ts
+├── navigation/               # Navigation configuration & factories
+│   ├── MainTabs.tsx         # Tab navigator definition
+│   ├── config/              # Navigation config & types
+│   └── factories/           # Screen factory functions
 │
 ├── shared/                   # Shared utilities & configurations
 │   ├── config/              # App configuration (env, API URLs, etc.)

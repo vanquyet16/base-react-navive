@@ -18,7 +18,8 @@
  */
 /**
  * FACTORY EXPORTS
- * Exports factory functions for creating screen wrappers
+ * Exports factory functions for creating screen wrappers and navigators
  */
 
 export * from './screenFactory';
+export * from './navigatorFactory';

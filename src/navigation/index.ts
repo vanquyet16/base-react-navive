@@ -1,13 +1,17 @@
 /**
  * NAVIGATION EXPORTS
  * ==================
- * Note: Old navigation files (AuthStack, MainStack, RootNavigator) deleted.
- * New navigation in src/app/app-navigator.tsx
+ * Centralized exports cho tất cả navigation-related modules
  */
 
-// Keep MainTabs nếu còn dùng
+// Navigators - Dedicated stack navigators
+export * from './navigators';
+
+// MainTabs - Bottom tabs navigation
 export { default as MainTabs } from './MainTabs';
 
-// Keep config/factories if needed
+// Config - Navigation configuration
 export * from './config';
+
+// Factories - Screen và navigator factories
 export * from './factories';
