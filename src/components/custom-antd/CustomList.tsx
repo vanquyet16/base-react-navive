@@ -16,7 +16,7 @@ interface CustomListProps extends ListProps {
 
 /**
  * CustomList - Wrapper cho Ant Design List
- * 
+ *
  * @example
  * <CustomList padded>
  *   <List.Item>Item 1</List.Item>
@@ -32,10 +32,7 @@ export const CustomList: React.FC<CustomListProps> = ({
   const styles = useStyles(theme);
 
   return (
-    <List
-      style={[styles.list, padded && styles.padded, style]}
-      {...props}
-    />
+    <List style={[styles.list, padded && styles.padded, style]} {...props} />
   );
 };
 

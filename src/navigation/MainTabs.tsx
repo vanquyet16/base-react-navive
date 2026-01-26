@@ -47,12 +47,13 @@ const TAB_WRAPPERS = createTabScreenWrappers(TAB_SCREENS);
 const MainTabs: React.FC = () => {
   return (
     <Tab.Navigator
-      tabBar={CustomTabBar}
+      tabBar={props => <CustomTabBar {...props} />}
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.textSecondary,
-      }}>
+      }}
+    >
       {TAB_SCREENS.map(cfg => {
         const tabName = cfg.name as keyof MainTabParamList;
         const Wrapper = TAB_WRAPPERS[tabName];
@@ -73,7 +74,9 @@ const MainTabs: React.FC = () => {
             component={Wrapper}
             options={{
               tabBarLabel: cfg.title,
-              tabBarIcon: ({ color, size }) => <Icon name={cfg.icon} size={size} color={color} />,
+              tabBarIcon: ({ color, size }) => (
+                <Icon name={cfg.icon} size={size} color={color} />
+              ),
             }}
           />
         );

@@ -1,145 +1,228 @@
+/**
+ * AUTH SERVICE
+ * ============
+ * Authentication service: login, register, logout, refresh token.
+ * Integrates với HTTP client và token store.
+ * 
+ * @senior-pattern Service layer với single responsibility
+ */
+
 import { httpClient } from '@/shared/services/http/http-client';
-import { LoginRequest, LoginResponse, User, AuthTokens } from '@/shared/types';
+import { tokenStore } from '@/shared/store/token-store';
+import { setupTokenHandlers } from '@/shared/services/http/axios-interceptors';
 import { API_ENDPOINTS } from '@/shared/constants/api-endpoints';
+import type {
+    LoginRequest,
+    LoginResponse,
+    RegisterRequest,
+    RegisterResponse,
+    RefreshTokenRequest,
+    RefreshTokenResponse,
+    ForgotPasswordRequest,
+    ChangePasswordRequest,
+    TokenPair,
+} from '@/shared/types/domain/auth';
+import type { ApiResponse } from '@/shared/types/api';
+import type { User } from '@/shared/types/domain/user';
 
-// Mock data cho development
-// const MOCK_USER: User = {
-//     id: '1',
-//     userName: 'user@example.com',
-//     name: 'Người dùng Demo',
-//     avatar: 'https://i.pravatar.cc/150?img=1',
-//     role: 'user'
-// };
-
-// const MOCK_TOKENS: AuthTokens = {
-//     accessToken: 'mock_access_token_12345',
-//     refreshToken: 'mock_refresh_token_67890'
-// };
-
-export const authService = {
+/**
+ * Auth Service class
+ */
+class AuthService {
     /**
-     * Đăng nhập
-     * POST api/Account/Login
+     * Initialize auth service
+     * Setup interceptors với token handlers
      */
-    login: async (credentials: LoginRequest): Promise<LoginResponse> => {
-        const response = await httpClient.post(API_ENDPOINTS.AUTH.LOGIN, {
-            matKhau: credentials.password,
-            taiKhoan: credentials.userName
+    public initialize(): void {
+        setupTokenHandlers({
+            getAccessToken: () => tokenStore.getAccessToken(),
+            getRefreshToken: () => tokenStore.getRefreshToken(),
+            refreshToken: () => this.refreshTokenInternal(),
+            onTokenRefreshFailed: () => this.handleRefreshFailed(),
         });
+    }
 
-        // Kiểm tra response success
-        if (!response.data.success) {
-            throw new Error(response.data.error || 'Đăng nhập thất bại');
+    /**
+     * Login
+     */
+    public async login(request: LoginRequest): Promise<LoginResponse> {
+        // Call API với skipAuth vì chưa có token
+        const response = await httpClient.post<ApiResponse<LoginResponse>>(
+            API_ENDPOINTS.AUTH.LOGIN,
+            request,
+            { skipAuth: true },
+        );
+
+        // Validate response
+        if (!response.data) {
+            throw new Error('Invalid login response');
+        }
+
+        const { tokens, user } = response.data;
+
+        // Store tokens directly to Disk
+        await tokenStore.setTokens(tokens);
+
+        return { tokens, user };
+    }
+
+    /**
+     * Register
+     */
+    public async register(
+        request: RegisterRequest,
+    ): Promise<RegisterResponse> {
+        const response = await httpClient.post<ApiResponse<RegisterResponse>>(
+            API_ENDPOINTS.AUTH.REGISTER,
+            request,
+            { skipAuth: true },
+        );
+
+        // Auto login sau register nếu backend return tokens
+        if (response.data.tokens) {
+            await tokenStore.setTokens(response.data.tokens);
         }
 
         return response.data;
-        // Giả lập delay API call
-
-        // Mock thành công với bất kỳ email/password nào
-        // return {
-        //     user: {
-        //         ...MOCK_USER,
-        //         userName: credentials.userName
-        //     },
-        //     tokens: MOCK_TOKENS
-        // };
-    },
+    }
 
     /**
-     * Đăng ký tài khoản mới
-     * POST /auth/register
+     * Logout
      */
-    register: async (userData: {
-        email: string;
-        password: string;
-        name: string;
-    }): Promise<LoginResponse> => {
-        const response = await httpClient.post(API_ENDPOINTS.AUTH.REGISTER, userData);
+    public async logout(): Promise<void> {
+        try {
+            // Call API logout (best effort)
+            await httpClient.post(API_ENDPOINTS.AUTH.LOGOUT);
+        } catch (error) {
+            console.warn('[AuthService] Logout API error (ignored):', error);
+        } finally {
+            // Always clear local tokens
+            await tokenStore.clearTokens();
+        }
+    }
 
-        // Kiểm tra response success
-        if (!response.data.success) {
-            throw new Error(response.data.error || 'Đăng ký thất bại');
+    /**
+     * Refresh token (internal - called by interceptor)
+     */
+    private async refreshTokenInternal(): Promise<string> {
+        const refreshToken = await tokenStore.getRefreshToken();
+
+        if (!refreshToken) {
+            throw new Error('No refresh token available');
         }
 
-        return response.data;
+        const request: RefreshTokenRequest = { refreshToken };
 
+        const response = await httpClient.post<ApiResponse<RefreshTokenResponse>>(
+            API_ENDPOINTS.AUTH.REFRESH_TOKEN,
+            request,
+            {
+                skipAuth: true,
+                skipRefresh: true, // Prevent infinite loop
+            },
+        );
 
-        // await new Promise(resolve => setTimeout(resolve, 1000));
+        const { tokens } = response.data;
 
-        // return {
-        //     user: {
-        //         ...MOCK_USER,
-        //         email: userData.email,
-        //         name: userData.name
-        //     },
-        //     tokens: MOCK_TOKENS
-        // };
-    },
+        // Update stored tokens
+        await tokenStore.setTokens(tokens);
+
+        return tokens.accessToken;
+    }
 
     /**
-     * Làm mới access token
-     * POST /auth/refresh
+     * Handle refresh token failed
      */
-    refreshToken: async (refreshToken: string): Promise<AuthTokens> => {
-        const response = await httpClient.post(API_ENDPOINTS.AUTH.REFRESH_TOKEN, { refreshToken });
+    private async handleRefreshFailed(): Promise<void> {
+        console.warn('[AuthService] Refresh token failed - logging out');
+        await this.logout();
+        // Trigger generic "logout" event if utilizing EventBus
+    }
+
+    /**
+     * Forgot password
+     */
+    public async forgotPassword(
+        request: ForgotPasswordRequest,
+    ): Promise<void> {
+        await httpClient.post(
+            API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
+            request,
+            { skipAuth: true },
+        );
+    }
+
+    /**
+     * Change password
+     */
+    public async changePassword(
+        request: ChangePasswordRequest,
+    ): Promise<void> {
+        await httpClient.post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, request);
+    }
+
+    /**
+     * Get current user
+     */
+    public async getCurrentUser(): Promise<User> {
+        const response = await httpClient.get<ApiResponse<any>>(
+            API_ENDPOINTS.AUTH.GET_CURRENT_USER,
+        );
+        return response.data;
+    }
+
+    /**
+     * Refresh access token (public)
+     */
+    public async refreshToken(refreshToken: string): Promise<TokenPair> {
+        const response = await httpClient.post<ApiResponse<RefreshTokenResponse>>(
+            API_ENDPOINTS.AUTH.REFRESH_TOKEN,
+            { refreshToken },
+            { skipAuth: true, skipRefresh: true }
+        );
         return response.data.tokens;
-    },
+    }
 
     /**
-     * Đăng xuất
-     * POST /auth/logout
+     * Update user profile
      */
-    logout: async (): Promise<void> => {
-        // TODO: Call API khi có backend endpoint
-        // await httpClient.post(API_ENDPOINTS.AUTH.LOGOUT);
-        await new Promise(resolve => setTimeout(resolve, 500));
-    },
-
-    /**
-     * Lấy thông tin người dùng hiện tại
-     * GET /auth/me
-     */
-    getCurrentUser: async (): Promise<User> => {
-        const response = await httpClient.get(API_ENDPOINTS.AUTH.GET_CURRENT_USER);
+    public async updateProfile(data: Partial<User>): Promise<User> {
+        const response = await httpClient.put<ApiResponse<User>>(
+            API_ENDPOINTS.AUTH.UPDATE_PROFILE,
+            data
+        );
         return response.data;
-    },
+    }
 
     /**
-     * Cập nhật hồ sơ người dùng
-     * PUT /auth/profile
+     * Reset password
      */
-    updateProfile: async (userData: Partial<User>): Promise<User> => {
-        const response = await httpClient.put(API_ENDPOINTS.AUTH.UPDATE_PROFILE, userData);
-        return response.data;
-    },
+    public async resetPassword(data: { token: string; password: string; passwordConfirmation: string }): Promise<void> {
+        await httpClient.post(
+            API_ENDPOINTS.AUTH.RESET_PASSWORD,
+            data,
+            { skipAuth: true }
+        );
+    }
 
     /**
-     * Đổi mật khẩu
-     * POST /auth/change-password
+     * Verify email
      */
-    changePassword: async (data: {
-        currentPassword: string;
-        newPassword: string;
-    }): Promise<void> => {
-        await httpClient.post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, data);
-    },
+    public async verifyEmail(token: string): Promise<void> {
+        await httpClient.post(
+            API_ENDPOINTS.AUTH.VERIFY_EMAIL,
+            { token },
+            { skipAuth: true }
+        );
+    }
 
     /**
-     * Gửi email quên mật khẩu
-     * POST /auth/forgot-password
+     * Check if user is authenticated
      */
-    forgotPassword: async (email: string): Promise<void> => {
-        await httpClient.post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, { email });
-    },
+    public async isAuthenticated(): Promise<boolean> {
+        return tokenStore.hasAccessToken();
+    }
+}
 
-    /**
-     * Reset mật khẩu với token từ email
-     * POST /auth/reset-password
-     */
-    resetPassword: async (data: {
-        token: string;
-        password: string;
-    }): Promise<void> => {
-        await httpClient.post(API_ENDPOINTS.AUTH.RESET_PASSWORD, data);
-    },
-}; 
+export const authService = new AuthService();
+export { AuthService };

@@ -12,7 +12,7 @@ type NavigationProp = StackNavigationProp<MainStackParamList>;
 // Mock API service
 const apiService = {
   getProductById: async (id: string) => {
-    await new Promise(resolve => setTimeout(resolve, 1000)); // Mô phỏng delay
+    await new Promise<void>(resolve => setTimeout(resolve, 1000)); // Mô phỏng delay
     return {
       id,
       name: `Product ${id}`,

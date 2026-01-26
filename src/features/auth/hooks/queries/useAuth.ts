@@ -3,19 +3,10 @@ import { useMemo, useCallback } from 'react';
 import { useBaseMutation } from '@/shared/hooks/useBaseMutation';
 import { useBaseQuery } from '@/shared/hooks/useBaseQuery';
 import { LoginRequest } from '@/shared/types';
-import { authService } from '../../services';
 import { useIsAuthenticated, useSessionActions } from '@/shared/store/selectors';
-
-// ============================================================================
-// QUERY KEYS
-// ============================================================================
-
-export const authKeys = {
-    all: ['auth'] as const,
-    me: () => [...authKeys.all, 'me'] as const,
-    profile: () => [...authKeys.all, 'profile'] as const,
-    tokens: () => [...authKeys.all, 'tokens'] as const,
-} as const;
+import { authService } from '@/features/auth/services/auth.service';
+// Import authKeys từ shared query keys (nguồn chính thống)
+import { authKeys } from '@/shared/query/query-keys';
 
 // ============================================================================
 // QUERIES
@@ -83,7 +74,10 @@ export const useLogin = () => {
 
     return useBaseMutation({
         mutationFn: (credentials: LoginRequest) => {
-            return authService.login(credentials);
+            return authService.login({
+                username: credentials.userName,
+                password: credentials.password,
+            });
         },
         showSuccessToast: false, // Không hiển thị toast success mặc định
         showErrorToast: true,
@@ -94,9 +88,7 @@ export const useLogin = () => {
             // Note: old LoginResponse has flat structure: { token, refreshToken, ...user fields }
             setSession({
                 isAuthenticated: true,
-                user: data as any,// Cast vì structure khác nhau temporarily
-                accessToken: data.token,
-                refreshToken: data.refreshToken,
+                user: data.user,
             });
         },
         // Note: Loading state được handle bởi mutation's isPending
@@ -113,7 +105,14 @@ export const useRegister = () => {
     const invalidateQueries = useMemo(() => [authKeys.me(), authKeys.profile()], []);
 
     return useBaseMutation({
-        mutationFn: (userData: { email: string; password: string; name: string }) => authService.register(userData),
+        mutationFn: (userData: { email: string; password: string; name: string }) =>
+            authService.register({
+                username: userData.email,
+                email: userData.email,
+                password: userData.password,
+                passwordConfirmation: userData.password,
+                displayName: userData.name,
+            }),
         showSuccessToast: true,
         successMessage: 'Đăng ký thành công!',
         showErrorToast: true,
@@ -123,8 +122,6 @@ export const useRegister = () => {
             setSession({
                 isAuthenticated: true,
                 user: data as any,
-                accessToken: data.token,
-                refreshToken: data.refreshToken,
             });
         },
     });
@@ -158,7 +155,12 @@ export const useLogout = () => {
  */
 export const useChangePassword = () => {
     return useBaseMutation({
-        mutationFn: (data: { currentPassword: string; newPassword: string }) => authService.changePassword(data),
+        mutationFn: (data: { currentPassword: string; newPassword: string }) =>
+            authService.changePassword({
+                currentPassword: data.currentPassword,
+                newPassword: data.newPassword,
+                passwordConfirmation: data.newPassword
+            }),
         showSuccessToast: true,
         successMessage: 'Đổi mật khẩu thành công!',
         showErrorToast: true,
@@ -202,11 +204,7 @@ export const useRefreshToken = () => {
         showSuccessToast: false,
         showErrorToast: false,
         onSuccessCallback: (data) => {
-            // Update tokens trong session
-            setSession({
-                accessToken: data.token,
-                refreshToken: data.refreshToken,
-            } as any); // Partial update
+            // Updated tokens automatically handled by interceptors/store
         },
         // Không retry refresh token để tránh loop vô hạn
         retry: false,
@@ -218,7 +216,7 @@ export const useRefreshToken = () => {
  */
 export const useForgotPassword = () => {
     return useBaseMutation({
-        mutationFn: (email: string) => authService.forgotPassword(email),
+        mutationFn: (email: string) => authService.forgotPassword({ email }),
         showSuccessToast: true,
         successMessage: 'Email khôi phục mật khẩu đã được gửi!',
         showErrorToast: true,
@@ -231,7 +229,12 @@ export const useForgotPassword = () => {
  */
 export const useResetPassword = () => {
     return useBaseMutation({
-        mutationFn: (data: { token: string; password: string }) => authService.resetPassword(data),
+        mutationFn: (data: { token: string; password: string }) =>
+            authService.resetPassword({
+                token: data.token,
+                password: data.password,
+                passwordConfirmation: data.password
+            }),
         showSuccessToast: true,
         successMessage: 'Đặt lại mật khẩu thành công!',
         showErrorToast: true,

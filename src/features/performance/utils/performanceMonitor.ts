@@ -4,6 +4,8 @@
 
 import { logger, logPerformance } from '@/shared/utils/logger';
 
+declare const performance: any;
+
 // Interface cho performance metric
 interface PerformanceMetric {
     name: string;
@@ -58,8 +60,9 @@ class PerformanceMonitor {
             return null;
         }
 
-        metric.endTime = performance.now();
-        metric.duration = metric.endTime - metric.startTime;
+        const endTime = performance.now();
+        metric.endTime = endTime;
+        metric.duration = endTime - metric.startTime;
 
         // Log performance nếu quá chậm (> 100ms)
         if (metric.duration > 100) {

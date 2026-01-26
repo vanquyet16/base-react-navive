@@ -130,10 +130,4 @@ export interface AuthSession {
     isAuthenticated: boolean;
     /** Current user - null nếu chưa login */
     user: User | null;
-    /** Access token - null nếu chưa login */
-    accessToken: string | null;
-    /** Refresh token - null nếu chưa login */
-    refreshToken: string | null;
-    /** Token expiry timestamp */
-    expiresAt: number | null;
 }

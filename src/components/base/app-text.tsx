@@ -15,12 +15,26 @@ import { createStyles } from '@/shared/theme/create-styles';
 /**
  * Text variant types
  */
-export type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'body' | 'bodySmall' | 'caption' | 'label';
+export type TextVariant =
+  | 'h1'
+  | 'h2'
+  | 'h3'
+  | 'h4'
+  | 'body'
+  | 'bodySmall'
+  | 'caption'
+  | 'label';
 
 /**
  * Text color variants
  */
-export type TextColor = 'primary' | 'secondary' | 'tertiary' | 'inverse' | 'error' | 'success';
+export type TextColor =
+  | 'primary'
+  | 'secondary'
+  | 'tertiary'
+  | 'inverse'
+  | 'error'
+  | 'success';
 
 /**
  * AppText Props
@@ -31,7 +45,7 @@ export interface AppTextProps extends TextProps {
   /** Text color variant */
   color?: TextColor;
   /** Font weight override */
-  weight?: keyof typeof import('@/theme/tokens').typography.fontWeights;
+  weight?: keyof typeof import('@/shared/theme/tokens').typography.fontWeights;
   /** Text align */
   align?: TextStyle['textAlign'];
   /** Children text */
@@ -60,13 +74,18 @@ export const AppText: React.FC<AppTextProps> = ({
   const colorStyle = getColorStyle(theme, color);
 
   // Weight override
-  const weightStyle = weight ? { fontWeight: theme.typography.fontWeights[weight] } : undefined;
+  const weightStyle = weight
+    ? { fontWeight: theme.typography.fontWeights[weight] }
+    : undefined;
 
   // Align override
   const alignStyle = align ? { textAlign: align } : undefined;
 
   return (
-    <Text style={[variantStyle, colorStyle, weightStyle, alignStyle, style]} {...rest}>
+    <Text
+      style={[variantStyle, colorStyle, weightStyle, alignStyle, style]}
+      {...rest}
+    >
       {children}
     </Text>
   );
@@ -101,25 +120,29 @@ const useStyles = createStyles(theme => ({
   // Headings
   h1: {
     fontSize: theme.typography.fontSizes['4xl'],
-    lineHeight: theme.typography.fontSizes['4xl'] * theme.typography.lineHeights.tight,
+    lineHeight:
+      theme.typography.fontSizes['4xl'] * theme.typography.lineHeights.tight,
     fontWeight: theme.typography.fontWeights.bold,
     color: theme.colors.text,
   },
   h2: {
     fontSize: theme.typography.fontSizes['3xl'],
-    lineHeight: theme.typography.fontSizes['3xl'] * theme.typography.lineHeights.tight,
+    lineHeight:
+      theme.typography.fontSizes['3xl'] * theme.typography.lineHeights.tight,
     fontWeight: theme.typography.fontWeights.bold,
     color: theme.colors.text,
   },
   h3: {
     fontSize: theme.typography.fontSizes['2xl'],
-    lineHeight: theme.typography.fontSizes['2xl'] * theme.typography.lineHeights.normal,
+    lineHeight:
+      theme.typography.fontSizes['2xl'] * theme.typography.lineHeights.normal,
     fontWeight: theme.typography.fontWeights.semibold,
     color: theme.colors.text,
   },
   h4: {
     fontSize: theme.typography.fontSizes.xl,
-    lineHeight: theme.typography.fontSizes.xl * theme.typography.lineHeights.normal,
+    lineHeight:
+      theme.typography.fontSizes.xl * theme.typography.lineHeights.normal,
     fontWeight: theme.typography.fontWeights.semibold,
     color: theme.colors.text,
   },
@@ -127,13 +150,15 @@ const useStyles = createStyles(theme => ({
   // Body text
   body: {
     fontSize: theme.typography.fontSizes.base,
-    lineHeight: theme.typography.fontSizes.base * theme.typography.lineHeights.normal,
+    lineHeight:
+      theme.typography.fontSizes.base * theme.typography.lineHeights.normal,
     fontWeight: theme.typography.fontWeights.normal,
     color: theme.colors.text,
   },
   bodySmall: {
     fontSize: theme.typography.fontSizes.sm,
-    lineHeight: theme.typography.fontSizes.sm * theme.typography.lineHeights.normal,
+    lineHeight:
+      theme.typography.fontSizes.sm * theme.typography.lineHeights.normal,
     fontWeight: theme.typography.fontWeights.normal,
     color: theme.colors.text,
   },
@@ -141,7 +166,8 @@ const useStyles = createStyles(theme => ({
   // Caption
   caption: {
     fontSize: theme.typography.fontSizes.xs,
-    lineHeight: theme.typography.fontSizes.xs * theme.typography.lineHeights.normal,
+    lineHeight:
+      theme.typography.fontSizes.xs * theme.typography.lineHeights.normal,
     fontWeight: theme.typography.fontWeights.normal,
     color: theme.colors.textSecondary,
   },
@@ -149,7 +175,8 @@ const useStyles = createStyles(theme => ({
   // Label
   label: {
     fontSize: theme.typography.fontSizes.sm,
-    lineHeight: theme.typography.fontSizes.sm * theme.typography.lineHeights.normal,
+    lineHeight:
+      theme.typography.fontSizes.sm * theme.typography.lineHeights.normal,
     fontWeight: theme.typography.fontWeights.medium,
     color: theme.colors.text,
   },

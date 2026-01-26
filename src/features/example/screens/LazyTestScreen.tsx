@@ -25,7 +25,7 @@ const HeavyComponent: React.FC = () => {
   useEffect(() => {
     // Mô phỏng load data nặng
     const loadHeavyData = async () => {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise<void>(resolve => setTimeout(resolve, 2000));
       setData(
         Array.from({ length: 100 }, (_, i) => ({
           id: i,

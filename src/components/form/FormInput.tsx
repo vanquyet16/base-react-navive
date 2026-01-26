@@ -26,7 +26,13 @@
 
 import React from 'react';
 import { View, Text, TextInput, TextInputProps } from 'react-native';
-import { Controller, Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
+import {
+  Controller,
+  Control,
+  FieldValues,
+  Path,
+  RegisterOptions,
+} from 'react-hook-form';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 
@@ -84,7 +90,11 @@ const FormInput = <T extends FieldValues = FieldValues>({
               onBlur={onBlur}
               value={fieldValue}
               placeholderTextColor={theme.colors.textTertiary}
-              style={[styles.input, error || fieldError ? styles.inputError : null, style]}
+              style={[
+                styles.input,
+                error || fieldError ? styles.inputError : null,
+                style,
+              ]}
             />
 
             {(error || fieldError?.message) && (

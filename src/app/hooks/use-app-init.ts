@@ -8,8 +8,8 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
-import { authService } from '@/shared/services/auth/auth.service';
-import { tokenStore } from '@/shared/services/auth/token-store';
+import { authService } from '@/features/auth/services/auth.service';
+import { tokenStore } from '@/shared/store/token-store';
 import { useSessionActions } from '@/shared/store/selectors';
 
 /**
@@ -58,8 +58,6 @@ export const useAppInit = (): AppInitState => {
                     setSession({
                         isAuthenticated: true,
                         user,
-                        accessToken: tokens.accessToken,
-                        refreshToken: tokens.refreshToken,
                     });
                 } catch (error) {
                     // Token invalid - clear tokens

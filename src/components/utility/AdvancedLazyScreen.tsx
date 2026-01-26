@@ -6,12 +6,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  ActivityIndicator,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -49,7 +44,7 @@ const AdvancedLazyScreen: React.FC<AdvancedLazyScreenProps> = ({
       onLoadStart?.();
 
       // Mô phỏng thời gian load component
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise<void>(resolve => setTimeout(resolve, 1000));
 
       const module = await component();
       setComponent(() => module.default);
@@ -126,7 +121,7 @@ const AdvancedLazyScreen: React.FC<AdvancedLazyScreenProps> = ({
   return null;
 };
 
-const useStyles = createStyles((theme) => ({
+const useStyles = createStyles(theme => ({
   container: {
     flex: 1,
     backgroundColor: theme.colors.backgroundSecondary,

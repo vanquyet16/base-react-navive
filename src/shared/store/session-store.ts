@@ -7,8 +7,8 @@
  * @senior-pattern Zustand slice pattern với typed selectors
  */
 
-import type { User } from '@/types/domain/user';
-import type { AuthSession } from '@/types/domain/auth';
+import type { User } from '@/shared/types/domain/user';
+import type { AuthSession } from '@/shared/types/domain/auth';
 
 /**
  * Session Store State
@@ -17,9 +17,6 @@ export interface SessionState {
     // State
     isAuthenticated: boolean;
     user: User | null;
-    accessToken: string | null;
-    refreshToken: string | null;
-    expiresAt: number | null;
 
     // Actions
     setSession: (session: Partial<AuthSession>) => void;
@@ -32,13 +29,10 @@ export interface SessionState {
  */
 const initialState: Pick<
     SessionState,
-    'isAuthenticated' | 'user' | 'accessToken' | 'refreshToken' | 'expiresAt'
+    'isAuthenticated' | 'user'
 > = {
     isAuthenticated: false,
     user: null,
-    accessToken: null,
-    refreshToken: null,
-    expiresAt: null,
 };
 
 /**
@@ -92,5 +86,4 @@ export const sessionSelectors = {
     user: (state: SessionState) => state.user,
     userId: (state: SessionState) => state.user?.id ?? null,
     userRole: (state: SessionState) => state.user?.role ?? null,
-    accessToken: (state: SessionState) => state.accessToken,
 };

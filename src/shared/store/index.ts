@@ -6,3 +6,4 @@ export * from './app-store';
 export * from './session-store';
 export * from './settings-store';
 export * from './selectors';
+export * from './token-store';

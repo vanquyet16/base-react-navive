@@ -7,7 +7,8 @@
  * @senior-pattern Theme hook với type-safe access
  */
 
-import { useTheme as useStoreTheme } from '@/store/selectors';
+import { useAppStore } from '../store/app-store';
+import { settingsSelectors } from '../store/settings-store';
 import { getTheme, type Theme } from './theme';
 
 /**
@@ -19,7 +20,7 @@ import { getTheme, type Theme } from './theme';
  * const { colors, spacing } = theme;
  */
 export const useTheme = (): Theme => {
-    const themeName = useStoreTheme();
+    const themeName = useAppStore(settingsSelectors.theme);
     return getTheme(themeName);
 };
 

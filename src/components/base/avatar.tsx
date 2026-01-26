@@ -41,7 +41,7 @@ const Avatar: React.FC<AvatarProps> = ({ user, size = 40 }) => {
       <Image
         source={{ uri: user.avatar }}
         style={[styles.avatar, avatarStyle]}
-        resizeMode='cover'
+        resizeMode="cover"
       />
     );
   }

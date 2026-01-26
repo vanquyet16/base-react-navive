@@ -17,7 +17,7 @@ interface CustomCardProps extends CardProps {
 /**
  * CustomCard - Wrapper cho Ant Design Card
  * Thêm shadow/elevation và theme colors
- * 
+ *
  * @example
  * <CustomCard elevation={2}>
  *   <Text>Card content</Text>
@@ -41,10 +41,7 @@ export const CustomCard: React.FC<CustomCardProps> = ({
   };
 
   return (
-    <Card
-      style={[styles.card, elevationStyle, style]}
-      {...props}
-    >
+    <Card style={[styles.card, elevationStyle, style]} {...props}>
       {children}
     </Card>
   );

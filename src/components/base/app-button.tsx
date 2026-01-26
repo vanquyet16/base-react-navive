@@ -21,7 +21,12 @@ import { createStyles } from '@/shared/theme/create-styles';
 /**
  * Button variant types
  */
-export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
+export type ButtonVariant =
+  | 'primary'
+  | 'secondary'
+  | 'outline'
+  | 'ghost'
+  | 'danger';
 
 /**
  * Button size types
@@ -100,13 +105,17 @@ export const AppButton: React.FC<AppButtonProps> = ({
       ]}
       disabled={isDisabled}
       activeOpacity={0.7}
-      {...rest}>
+      {...rest}
+    >
       {loading ? (
         <ActivityIndicator color={getTextColor()} />
       ) : (
         <View style={styles.content}>
           {leftIcon && <View style={styles.iconLeft}>{leftIcon}</View>}
-          <AppText variant='label' style={[styles.text, { color: getTextColor() }]}>
+          <AppText
+            variant="label"
+            style={[styles.text, { color: getTextColor() }]}
+          >
             {title}
           </AppText>
           {rightIcon && <View style={styles.iconRight}>{rightIcon}</View>}

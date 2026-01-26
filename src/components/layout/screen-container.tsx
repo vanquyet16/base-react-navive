@@ -19,6 +19,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
+import { spacing } from '@/shared/theme/tokens';
 
 /**
  * ScreenContainer Props
@@ -35,7 +36,7 @@ export interface ScreenContainerProps extends ViewProps {
   /** Background color override */
   backgroundColor?: string;
   /** Padding size (spacing scale) */
-  padding?: keyof typeof import('@/theme/tokens').spacing;
+  padding?: keyof typeof spacing;
 }
 
 /**
@@ -68,16 +69,22 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
   const KeyboardWrapper = avoidKeyboard ? KeyboardAvoidingView : View;
 
   return (
-    <SafeAreaView style={[styles.safeArea, containerStyle, style]} edges={edges} {...rest}>
+    <SafeAreaView
+      style={[styles.safeArea, containerStyle, style]}
+      edges={edges}
+      {...rest}
+    >
       <KeyboardWrapper
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+      >
         <ContentComponent
           style={styles.content}
           contentContainerStyle={scroll ? styles.scrollContent : undefined}
           showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps='handled'>
+          keyboardShouldPersistTaps="handled"
+        >
           {children}
         </ContentComponent>
       </KeyboardWrapper>

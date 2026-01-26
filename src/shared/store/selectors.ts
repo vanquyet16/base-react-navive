@@ -11,8 +11,8 @@ import { useShallow } from 'zustand/react/shallow';
 import { useAppStore } from './app-store';
 import { sessionSelectors } from './session-store';
 import { settingsSelectors } from './settings-store';
-import type { User } from '@/types/domain/user';
-import type { Theme, Language } from '@/types/common';
+import type { User } from '@/shared/types/domain/user';
+import type { Theme, Language } from '@/shared/types/common';
 
 /**
  * Session Selectors
@@ -30,13 +30,14 @@ export const useUserId = () =>
 export const useUserRole = () =>
     useAppStore(sessionSelectors.userRole);
 
-export const useAccessToken = () =>
-    useAppStore(sessionSelectors.accessToken);
+
 
 /**
  * Settings Selectors
+ * NOTE: useThemePreference returns theme preference string ("light" | "dark" | "auto").
+ * For actual theme object, use useTheme() from '@/shared/theme'
  */
-export const useTheme = (): Theme =>
+export const useThemePreference = (): Theme =>
     useAppStore(settingsSelectors.theme);
 
 export const useLanguage = (): Language =>
@@ -45,7 +46,11 @@ export const useLanguage = (): Language =>
 export const useNotificationsEnabled = () =>
     useAppStore(settingsSelectors.notificationsEnabled);
 
-export const useIsDarkMode = () =>
+/**
+ * Returns dark mode preference from settings.
+ * For computed dark mode based on current theme, use useIsDarkMode() from '@/shared/theme'
+ */
+export const useIsDarkModePreference = () =>
     useAppStore(settingsSelectors.isDarkMode);
 
 /**

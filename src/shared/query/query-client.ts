@@ -11,8 +11,8 @@ import { QueryClient } from '@tanstack/react-query';
 import {
     DEFAULT_QUERY_OPTIONS,
     DEFAULT_MUTATION_OPTIONS,
-} from '@/constants/query-defaults';
-import { createHttpError, AppHttpError } from '@/services/http/http-error';
+} from '@/shared/constants/query-defaults';
+import { createHttpError, AppHttpError } from '@/shared/services/http/http-error';
 
 /**
  * Create Query Client với custom configuration

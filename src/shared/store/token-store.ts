@@ -8,8 +8,8 @@
  */
 
 import { MMKV } from 'react-native-mmkv';
-import { STORAGE_KEYS } from '@/constants/storage-keys';
-import type { TokenPair } from '@/types/domain/auth';
+import { STORAGE_KEYS } from '@/shared/constants/storage-keys';
+import type { TokenPair } from '@/shared/types/domain/auth';
 
 /**
  * MMKV storage instance

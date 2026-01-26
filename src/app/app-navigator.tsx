@@ -45,8 +45,8 @@ const Stack = createStackNavigator<RootStackParamList>();
 
 const HomeScreen = () => (
   <ScreenContainer>
-    <AppText variant='h1'>Home Screen</AppText>
-    <AppText variant='body' color='secondary'>
+    <AppText variant="h1">Home Screen</AppText>
+    <AppText variant="body" color="secondary">
       Welcome! Theme system working ✅
     </AppText>
   </ScreenContainer>

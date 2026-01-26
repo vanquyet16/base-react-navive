@@ -113,12 +113,8 @@ export class PdfUtils {
      * Validate PDF URL
      */
     static isValidPdfUrl(url: string): boolean {
-        try {
-            const urlObj = new URL(url);
-            return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
-        } catch {
-            return false;
-        }
+        // Simple regex check for http/https
+        return /^(http|https):\/\/[^ "]+$/.test(url);
     }
 
     /**
@@ -126,8 +122,8 @@ export class PdfUtils {
      */
     static getFilenameFromUrl(url: string): string {
         try {
-            const urlObj = new URL(url);
-            const pathname = urlObj.pathname;
+            // Basic string parsing to avoid URL type issues
+            const pathname = url.split('?')[0]; // Remove query params
             const filename = pathname.split('/').pop();
             return filename && filename.endsWith('.pdf') ? filename : 'document.pdf';
         } catch {

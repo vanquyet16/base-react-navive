@@ -3,6 +3,8 @@
 // ============================================================================
 
 // Environment Configuration
+declare const process: any;
+
 export const ENV = {
     DEV: __DEV__,
     PROD: !__DEV__,

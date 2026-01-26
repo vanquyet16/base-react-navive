@@ -7,8 +7,8 @@
  * @senior-pattern Query keys factory với hierarchical structure
  */
 
-import type { ID } from '@/types/common';
-import type { ListRequest } from '@/types/api';
+import type { ID } from '@/shared/types/common';
+import type { ListRequest } from '@/shared/types/api';
 
 /**
  * Query Keys Structure
@@ -22,6 +22,8 @@ import type { ListRequest } from '@/types/api';
 export const authKeys = {
     all: ['auth'] as const,
     me: () => [...authKeys.all, 'me'] as const,
+    profile: () => [...authKeys.all, 'profile'] as const,
+    tokens: () => [...authKeys.all, 'tokens'] as const,
 } as const;
 
 /**

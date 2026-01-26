@@ -52,8 +52,8 @@ export class AppHttpError extends Error implements HttpError {
             this.statusCode === HTTP_STATUS.FORBIDDEN;
 
         // Maintain proper stack trace (only V8 engines)
-        if (Error.captureStackTrace) {
-            Error.captureStackTrace(this, AppHttpError);
+        if ((Error as any).captureStackTrace) {
+            (Error as any).captureStackTrace(this, AppHttpError);
         }
     }
 

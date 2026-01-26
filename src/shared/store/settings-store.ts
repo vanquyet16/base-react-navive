@@ -7,7 +7,7 @@
  * @senior-pattern Settings với persistence
  */
 
-import type { Theme, Language } from '@/types/common';
+import type { Theme, Language } from '@/shared/types/common';
 
 /**
  * Settings Store State

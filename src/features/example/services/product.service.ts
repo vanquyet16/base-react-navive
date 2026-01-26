@@ -83,7 +83,7 @@ let mockProducts: Product[] = [
 ];
 
 // Hàm delay để mô phỏng API call
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const delay = (ms: number) => new Promise<void>(resolve => setTimeout(resolve, ms));
 
 // Service object
 export const productService = {

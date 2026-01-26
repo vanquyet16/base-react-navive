@@ -45,7 +45,7 @@ const PerformanceTest: React.FC = () => {
 
     // Test 4: Sử dụng measureAsync
     measureAsync('test4', async () => {
-      await new Promise(resolve => setTimeout(resolve, 200));
+      await new Promise<void>(resolve => setTimeout(resolve, 200));
       return 'async result';
     }).then(result => {
       addResult(`Test 4 result: ${result}`);

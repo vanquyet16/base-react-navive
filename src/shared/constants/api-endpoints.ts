@@ -88,6 +88,13 @@ export const AUTH_ENDPOINTS = {
      * Body: { currentPassword: string, newPassword: string }
      */
     CHANGE_PASSWORD: '/auth/change-password',
+
+    /** 
+     * Xác thực email
+     * POST /auth/verify-email
+     * Body: { token: string }
+     */
+    VERIFY_EMAIL: '/auth/verify-email',
 } as const;
 
 // ============================================
