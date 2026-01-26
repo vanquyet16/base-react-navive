@@ -260,6 +260,12 @@ export const AUTH_SCREENS: AuthScreenConfig[] = [
 // NAVIGATION KEYS - CÁC HẰNG SỐ CHO TÊN SCREEN
 // ============================================================================
 
+const MAIN_STACK_KEYS = Object.keys(MAIN_STACK_SCREENS).reduce((acc, key) => {
+    const k = key as keyof typeof MAIN_STACK_SCREENS;
+    acc[k] = k;
+    return acc;
+}, {} as { [K in keyof typeof MAIN_STACK_SCREENS]: K });
+
 /**
  * Các hằng số cho tên screen để tránh hardcode
  * Được tổ chức theo từng navigator
@@ -274,11 +280,20 @@ export const NAVIGATION_KEYS = {
     // Main Stack - Stack navigation chính
     MAIN_STACK: {
         MAIN_TABS: 'MainTabs', // Main tabs screen
-        // Tự động tạo keys cho tất cả main stack screens
-        ...Object.keys(MAIN_STACK_SCREENS).reduce((acc, key) => {
-            acc[key] = key;
-            return acc;
-        }, {} as Record<string, string>),
+        ...MAIN_STACK_KEYS,
+    } as { MAIN_TABS: 'MainTabs' } & typeof MAIN_STACK_KEYS,
+
+    // Drawer Stack - các route hiển thị trong Drawer menu
+    // Lưu ý: DrawerStack routes là "shortcut" để mở MainStackNavigator với initialParams tương ứng
+    DRAWER_STACK: {
+        MAIN_TABS: 'MainTabs',
+        PRODUCT: 'ProductScreen',
+        LAZY_DEMO: 'LazyDemoScreen',
+        API_DEMO: 'ApiLazyDemoScreen',
+        CACHE_DEMO: 'CacheDemoScreen',
+        PDF_DEMO: 'PdfDemoScreen',
+        PERFORMANCE_DEMO: 'PerformanceDemoScreen',
+        RESPONSIVE_DEMO: 'ResponsiveDemoScreen',
     },
 
     // Tab Navigator - Bottom tabs

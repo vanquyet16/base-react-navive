@@ -7,3 +7,4 @@
 export { AuthStackNavigator } from './AuthStackNavigator';
 export { MainStackNavigator } from './MainStackNavigator';
 export { DrawerNavigator } from './DrawerNavigator';
+export { DrawerStackNavigator } from './DrawerStackNavigator';

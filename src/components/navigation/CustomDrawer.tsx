@@ -7,9 +7,16 @@ import {
   DrawerItem,
 } from '@react-navigation/drawer';
 import { COLORS } from '@/shared/constants';
-import { useNavigation } from '@react-navigation/native';
 import { useSessionActions } from '@/shared/store/selectors';
 import { NAVIGATION_KEYS } from '@/navigation/config';
+import { ROOT_STACKS } from '@/shared/constants/routes';
+import type { DrawerStackParamList } from '@/shared/types';
+
+type DrawerMenuItem = {
+  label: string;
+  icon: string;
+  screen: keyof DrawerStackParamList;
+};
 
 /**
  * CUSTOM DRAWER COMPONENT
@@ -20,7 +27,6 @@ import { NAVIGATION_KEYS } from '@/navigation/config';
  * @param props - Drawer content props từ React Navigation
  */
 const CustomDrawer: React.FC<DrawerContentComponentProps> = props => {
-  const navigation = useNavigation();
   const { clearSession } = useSessionActions();
 
   const handleLogout = () => {
@@ -28,51 +34,52 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = props => {
     // Navigate ve Auth stack (được handle bởi AppNavigator state)
   };
 
-  const handleNavigation = (screenName: string) => {
-    navigation.navigate(screenName as never);
+  const handleNavigation = (screenName: keyof DrawerStackParamList) => {
+    // Drawer structure: Drawer -> DrawerStack -> (shortcut) -> MainStackNavigator
+    props.navigation.navigate(ROOT_STACKS.DRAWER_STACK, { screen: screenName });
     props.navigation.closeDrawer();
   };
 
-  const menuItems = [
+  const menuItems: DrawerMenuItem[] = [
     {
       label: 'Trang chủ',
       icon: 'home',
-      screen: NAVIGATION_KEYS.MAIN_STACK.MAIN_TABS,
+      screen: NAVIGATION_KEYS.DRAWER_STACK.MAIN_TABS,
     },
     {
       label: 'Quản lý sản phẩm',
       icon: 'inventory',
-      screen: 'ProductScreen',
+      screen: NAVIGATION_KEYS.DRAWER_STACK.PRODUCT,
     },
     {
       label: 'Lazy Loading Demo',
       icon: 'speed',
-      screen: 'LazyDemoScreen',
+      screen: NAVIGATION_KEYS.DRAWER_STACK.LAZY_DEMO,
     },
     {
       label: 'API Demo',
       icon: 'api',
-      screen: 'ApiLazyDemoScreen',
+      screen: NAVIGATION_KEYS.DRAWER_STACK.API_DEMO,
     },
     {
       label: 'Cache Demo',
       icon: 'cached',
-      screen: 'CacheDemoScreen',
+      screen: NAVIGATION_KEYS.DRAWER_STACK.CACHE_DEMO,
     },
     {
       label: 'PDF Demo',
       icon: 'picture-as-pdf',
-      screen: 'PdfDemoScreen',
+      screen: NAVIGATION_KEYS.DRAWER_STACK.PDF_DEMO,
     },
     {
       label: 'Performance Demo',
       icon: 'analytics',
-      screen: 'PerformanceDemoScreen',
+      screen: NAVIGATION_KEYS.DRAWER_STACK.PERFORMANCE_DEMO,
     },
     {
       label: 'Responsive Demo',
       icon: 'aspect-ratio',
-      screen: 'ResponsiveDemoScreen',
+      screen: NAVIGATION_KEYS.DRAWER_STACK.RESPONSIVE_DEMO,
     },
   ];
 

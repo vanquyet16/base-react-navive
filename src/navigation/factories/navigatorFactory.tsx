@@ -22,6 +22,7 @@ import {
  * Typed Navigator interface từ React Navigation
  */
 interface TypedNavigator<
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ParamList extends ParamListBase,
   ScreenOptions extends StackNavigationOptions = StackNavigationOptions,
   EventMap extends StackNavigationEventMap = StackNavigationEventMap,

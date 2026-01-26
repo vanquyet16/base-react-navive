@@ -1,4 +1,5 @@
 import { AxiosRequestConfig } from 'axios';
+import type { NavigatorScreenParams } from '@react-navigation/native';
 
 // Auth types
 export interface User {
@@ -46,6 +47,7 @@ export type MainStackParamList = {
     PdfFileManagerScreen: undefined;
     PdfDownloadGuideScreen: undefined;
     PerformanceDemoScreen: undefined;
+    ResponsiveDemoScreen: undefined;
     DemoNewScreen: undefined;
     // Có thể thêm các màn hình khác ở đây
     // DetailScreen: { id: string };
@@ -60,8 +62,19 @@ export type MainTabParamList = {
     ResponsiveDemo: undefined;
 };
 
+export type DrawerStackParamList = {
+    MainTabs: NavigatorScreenParams<MainStackParamList>;
+    ProductScreen: NavigatorScreenParams<MainStackParamList>;
+    LazyDemoScreen: NavigatorScreenParams<MainStackParamList>;
+    ApiLazyDemoScreen: NavigatorScreenParams<MainStackParamList>;
+    CacheDemoScreen: NavigatorScreenParams<MainStackParamList>;
+    PdfDemoScreen: NavigatorScreenParams<MainStackParamList>;
+    PerformanceDemoScreen: NavigatorScreenParams<MainStackParamList>;
+    ResponsiveDemoScreen: NavigatorScreenParams<MainStackParamList>;
+};
+
 export type DrawerParamList = {
-    MainStack: undefined;
+    DrawerStack: NavigatorScreenParams<DrawerStackParamList>;
 };
 
 // API Response types

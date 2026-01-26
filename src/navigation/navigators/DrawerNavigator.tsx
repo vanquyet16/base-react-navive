@@ -2,34 +2,60 @@
  * DRAWER NAVIGATOR
  * ================
  * Navigator xử lý side menu drawer.
- * Bao bọc MainStackNavigator.
+ * Bao bọc DrawerStackNavigator để có drawer UI.
+ *
+ * Sử dụng separation of concerns pattern:
+ * - DrawerNavigator: UI layer (drawer menu, swipe gesture)
+ * - DrawerStackNavigator: Content layer (screens trong drawer)
+ * - Type-safe navigation với DrawerParamList
+ *
+ * @senior-pattern Separation of concerns và type-safe navigation
  */
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import type { DrawerContentComponentProps } from '@react-navigation/drawer';
 import { DrawerParamList } from '@/shared/types';
-import { MainStackNavigator } from './MainStackNavigator';
+import { DrawerStackNavigator } from './DrawerStackNavigator';
 import CustomDrawer from '@/components/navigation/CustomDrawer';
 import { ROOT_STACKS } from '@/shared/constants/routes';
 
 /**
  * Drawer Navigator instance
- * Typed với DrawerParamList
+ * Typed với DrawerParamList cho type safety
  */
 const Drawer = createDrawerNavigator<DrawerParamList>();
 
 /**
  * Drawer Navigator Component
  *
- * Pattern:
- * - Wrap MainStack làm content chính
+ * Chức năng:
+ * - Wrap DrawerStackNavigator làm content chính
  * - Sử dụng CustomDrawerComponent để render menu
  * - Config style drawer tại đây
+ *
+ * Features:
+ * - Type-safe navigation
+ * - Custom drawer content với user info và menu items
+ * - Drawer style config (width, type, overlay)
+ * - Header hidden (handled by nested navigators)
+ *
+ * Structure:
+ * - DrawerNavigator (UI) -> DrawerStackNavigator (Stack) -> MainStackNavigator
+ *
+ * @example
+ * // Sử dụng trong Root Navigation
+ * <Stack.Screen name="Drawer" component={DrawerNavigator} />
  */
 export const DrawerNavigator: React.FC = () => {
+  const renderDrawerContent = useCallback(
+    (props: DrawerContentComponentProps) => <CustomDrawer {...props} />,
+    [],
+  );
+
   return (
     <Drawer.Navigator
-      drawerContent={props => <CustomDrawer {...props} />}
+      drawerContent={renderDrawerContent}
       screenOptions={{
         headerShown: false,
         drawerStyle: {
@@ -40,8 +66,8 @@ export const DrawerNavigator: React.FC = () => {
       }}
     >
       <Drawer.Screen
-        name={ROOT_STACKS.MAIN_STACK}
-        component={MainStackNavigator}
+        name={ROOT_STACKS.DRAWER_STACK}
+        component={DrawerStackNavigator}
       />
     </Drawer.Navigator>
   );

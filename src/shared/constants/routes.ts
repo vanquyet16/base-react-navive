@@ -38,7 +38,7 @@ export const ROUTES = {
 export const ROOT_STACKS = {
     AUTH_STACK: 'AuthStack',
     MAIN_STACK: 'MainStack',
-    DRAWER: 'Drawer',
+    DRAWER_STACK: 'DrawerStack',
     EXAMPLE_STACK: 'ExampleStack',
 } as const;
 
