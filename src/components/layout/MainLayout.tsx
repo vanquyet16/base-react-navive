@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
-import { useTheme } from '@/theme/use-theme';
+import { useTheme } from '@/shared/theme/use-theme';
 import CustomHeader from './CustomHeader';
 import CustomTabBar from '@/components/navigation/CustomTabBar';
 import { COLORS } from '@/shared/constants';

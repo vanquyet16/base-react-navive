@@ -4,7 +4,7 @@ import { useBaseMutation } from '@/shared/hooks/useBaseMutation';
 import { useBaseQuery } from '@/shared/hooks/useBaseQuery';
 import { LoginRequest } from '@/shared/types';
 import { authService } from '../../services';
-import { useIsAuthenticated, useSessionActions } from '@/store/selectors';
+import { useIsAuthenticated, useSessionActions } from '@/shared/store/selectors';
 
 // ============================================================================
 // QUERY KEYS

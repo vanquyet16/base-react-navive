@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
 
-import { useTheme, useSettingsActions } from '@/store/selectors';
+import { useTheme, useSettingsActions } from '@/shared/store/selectors';
 import { COLORS, SCREEN_PADDING } from '@/shared/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 

@@ -7,7 +7,7 @@
 import React from 'react';
 import { Picker } from '@ant-design/react-native';
 import type { PickerPropsType } from '@ant-design/react-native/lib/picker/PropsType';
-import { useTheme } from '@/theme/use-theme';
+import { useTheme } from '@/shared/theme/use-theme';
 import { Text } from 'react-native';
 
 interface CustomPickerProps extends Omit<PickerPropsType, 'error'> {

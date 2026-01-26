@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { COLORS } from '@/shared/constants';
 import { useNavigation } from '@react-navigation/native';
-import { useSessionActions } from '@/store/selectors';
+import { useSessionActions } from '@/shared/store/selectors';
 
 interface CustomDrawerProps {
   props: any;

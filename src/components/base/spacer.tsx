@@ -9,7 +9,7 @@
 
 import React from 'react';
 import { View, type ViewStyle } from 'react-native';
-import { spacing as spacingScale } from '@/theme/tokens';
+import { spacing as spacingScale } from '@/shared/theme/tokens';
 
 /**
  * Spacing size từ theme scale

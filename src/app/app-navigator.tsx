@@ -10,8 +10,8 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useIsAuthenticated } from '@/store/selectors';
-import { ROUTES, ROOT_STACKS } from '@/constants/routes';
+import { useIsAuthenticated } from '@/shared/store/selectors';
+import { ROUTES, ROOT_STACKS } from '@/shared/constants/routes';
 import { AppText, ScreenContainer } from '@/components';
 import { LoginScreen } from '@/features/auth';
 

@@ -6,8 +6,8 @@
 
 import React from 'react';
 import { List, type ListProps } from '@ant-design/react-native';
-import { useTheme } from '@/theme/use-theme';
-import { createStyles } from '@/theme/create-styles';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 
 interface CustomListProps extends ListProps {
   /** Thêm padding */

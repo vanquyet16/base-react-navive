@@ -2,7 +2,7 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet,
+  StyleSheet, 
   ScrollView,
   TouchableOpacity,
   Alert,
@@ -19,7 +19,7 @@ import {
 } from '@/features/performance/components';
 import TestDocumentPicker from '@/features/performance/components/TestDocumentPicker';
 import { MainStackParamList } from '@/shared/types';
-import { useSessionActions } from '@/store/selectors';
+import { useSessionActions } from '@/shared/store/selectors';
 
 type NavigationProp = StackNavigationProp<MainStackParamList>;
 

@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { Switch, type SwitchProps } from '@ant-design/react-native';
-import { useTheme } from '@/theme/use-theme';
+import { useTheme } from '@/shared/theme/use-theme';
 
 interface CustomSwitchProps extends SwitchProps {
   /** Custom label */

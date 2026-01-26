@@ -3,7 +3,7 @@
 // ============================================================================
 
 import { logger, logError } from './logger';
-import { ERROR_MESSAGES } from '@/config/app.config';
+import { ERROR_MESSAGES } from '@/shared/config/app.config';
 import Toast from 'react-native-toast-message';
 
 // Định nghĩa các loại lỗi

@@ -15,8 +15,8 @@ import {
   View,
 } from 'react-native';
 import { AppText } from './app-text';
-import { useTheme } from '@/theme/use-theme';
-import { createStyles } from '@/theme/create-styles';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 
 /**
  * Button variant types

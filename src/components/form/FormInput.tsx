@@ -27,8 +27,8 @@
 import React from 'react';
 import { View, Text, TextInput, TextInputProps } from 'react-native';
 import { Controller, Control, FieldValues, Path, RegisterOptions } from 'react-hook-form';
-import { useTheme } from '@/theme/use-theme';
-import { createStyles } from '@/theme/create-styles';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 
 interface FormInputProps<T extends FieldValues = FieldValues>
   extends Omit<TextInputProps, 'onChangeText' | 'value'> {

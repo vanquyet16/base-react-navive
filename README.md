@@ -1,84 +1,85 @@
-# Base React Native 0.83
+# App CBS Mobile
 
-> **Production-ready** React Native boilerplate với New Architecture (Fabric + TurboModules), feature-based architecture, và enterprise-grade tooling.
+> **Production-ready** React Native application với New Architecture (Fabric + TurboModules), feature-based architecture, và enterprise-grade tooling.
 
 [![React Native](https://img.shields.io/badge/React%20Native-0.83.1-blue.svg)](https://reactnative.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)](https://www.typescriptlang.org/)
 [![New Architecture](https://img.shields.io/badge/New%20Architecture-Enabled-green)](https://reactnative.dev/docs/the-new-architecture/landing-page)
 
+## 📑 Table of Contents
+
+- [Introduction](#-introduction)
+- [Features](#-features)
+- [Prerequisites](#-prerequisites)
+- [Quick Start](#-quick-start)
+- [Project Structure](#-project-structure)
+- [Configuration](#-configuration)
+- [Dependencies](#-key-dependencies)
+- [Development](#-development)
+- [Troubleshooting](#-troubleshooting)
+
+---
+
+## 📖 Introduction
+
+Đây là ứng dụng mobile client cho hệ thống CBS, được xây dựng bằng React Native mới nhất, tối ưu hiệu năng và khả năng mở rộng. Dự án áp dụng các best practices hàng đầu như Feature-based architecture, Strict TypeScript, và New Architecture (Fabric).
+
 ## 🌟 Features
 
 - ✅ **React Native 0.83.1** với New Architecture (Fabric + TurboModules)
-- ✅ **TypeScript** strict mode với senior-level code standards
-- ✅ **Feature-based Architecture** - modular, scalable, maintainable
-- ✅ **TanStack Query** (React Query) cho data fetching & caching
-- ✅ **Zustand** cho global state management
-- ✅ **React Navigation v7** với custom Bottom Tabs, Drawer, Stack
-- ✅ **Ant Design Mobile** components với custom wrappers
-- ✅ **Axios** với interceptors, error handling, retry logic
+- ✅ **TypeScript Strict Mode** - Type safety 100%
+- ✅ **Feature-based Architecture** - Modular, scalable, maintainable
+- ✅ **TanStack Query** - Server state management & Caching
+- ✅ **Zustand** - Client state management (nhẹ nhàng, hiệu quả)
+- ✅ **React Navigation v7** - Routing mới nhất
+- ✅ **Ant Design Mobile** - UI Components chuẩn design system
+- ✅ **React Hook Form** - Form validation hiệu năng cao
+- ✅ **SVG & Vector Icons** - Hỗ trợ tốt graphics
 - ✅ **Path Aliases** (`@/components`, `@/features`, etc.)
-- ✅ **Yoga API Patch** - fixed compatibility issue với New Architecture
-- ✅ **Enterprise tooling**: ESLint, Prettier, patch-package
+- ✅ **React Hook Form** cho form management và validation
 
 ## 📋 Prerequisites
 
+Trước khi bắt đầu, hãy đảm bảo bạn đã cài đặt môi trường:
+
 - **Node.js**: >= 20.x
-- **npm** hoặc **Yarn**: Latest version
+- **Yarn**: Latest version (Recommended)
 - **Xcode**: 15+ (cho iOS)
 - **Android Studio**: Latest (cho Android)
 - **Ruby**: 2.7+ (cho CocoaPods)
 - **CocoaPods**: 1.15+
 
-Xem [React Native Environment Setup](https://reactnative.dev/docs/environment-setup) để setup đầy đủ.
+Xem hướng dẫn chi tiết tại [React Native Environment Setup](https://reactnative.dev/docs/environment-setup).
 
 ## 🚀 Quick Start
 
-### 1. Clone và Install Dependencies
+### 1. Clone & Install
 
 ```bash
 # Clone repository
-git clone https://github.com/vanquyet16/base-react-navive.git
-cd base-react-navive
+git clone http://gitlab.zamiga.org/zmg-dev-training/app_cbs_mobile.git
+cd app_cbs_mobile
 
 # Install JavaScript dependencies
-npm install --legacy-peer-deps
-# hoặc
 yarn install
 
-# Install iOS dependencies (macOS only)
-cd ios
-pod install
-cd ..
+# Install iOS dependencies (Required for macOS)
+cd ios && pod install && cd ..
 ```
-
-> **Lưu ý**: Sử dụng `--legacy-peer-deps` để tránh peer dependency conflicts.
 
 ### 2. Start Metro Bundler
 
 ```bash
-# Start Metro với cache reset
-npm start
-# hoặc
 yarn start
-
-# Metro sẽ chạy trên http://localhost:8081
 ```
 
-**Metro Shortcuts:**
-
-- Press `r` - Reload app
-- Press `d` - Open Dev Menu
-- Press `j` - Open React Native DevTools
-
-### 3. Run App
+### 3. Run Application
 
 **iOS:**
 
 ```bash
-# Run trên iPhone Xs simulator
 yarn ios
-
-# Run trên simulator khác
+# Hoặc chạy trên simulator cụ thể:
 yarn ios --simulator="iPhone 15 Pro"
 ```
 
@@ -90,272 +91,151 @@ yarn android
 
 ## 📁 Project Structure
 
+Cấu trúc dự án theo hướng Feature-based architecture:
+
 ```
 src/
-├── app/                    # App root & providers
-├── components/             # Shared UI components
-│   ├── base/              # Atomic components (Button, Text, etc.)
-│   ├── custom-antd/       # Wrapped Ant Design components
-│   ├── form/              # Form components
-│   ├── layout/            # Layout components
-│   ├── navigation/        # Custom navigation components
-│   └── utility/           # Utility components (ErrorBoundary, LazyScreen)
-├── config/                # App configuration
-│   ├── app.config.ts      # App constants
-│   ├── env.ts             # Environment variables
-│   └── build-info.ts      # Build information
-├── constants/             # Constants & enums
-│   ├── api-endpoints.ts   # API endpoints
-│   ├── routes.ts          # Route names
-│   └── storage-keys.ts    # AsyncStorage keys
-├── features/              # Feature modules (by domain)
-│   ├── auth/              # Authentication feature
-│   │   ├── screens/       # Auth screens (Login, Register)
-│   │   ├── hooks/         # Auth-specific hooks & queries
-│   │   ├── services/      # Auth API services
-│   │   └── types/         # Auth types
-│   ├── home/              # Home feature
-│   ├── profile/           # Profile feature
-│   ├── example/           # Example/demo features
-│   └── performance/       # Performance monitoring
-├── hooks/                 # Global custom hooks
-├── navigation/            # Navigation configuration
-│   ├── MainTabs.tsx       # Main tab navigator
-│   ├── config/            # Navigation configs
-│   └── factories/         # Screen factory patterns
-├── query/                 # TanStack Query setup
-│   ├── query-client.ts    # Query client configuration
-│   ├── query-keys.ts      # Query key factories
-│   └── query-provider.tsx # Query provider wrapper
-├── services/              # Global services
-│   ├── http/              # HTTP client (Axios)
-│   ├── auth/              # Auth service & token management
-│   └── user/              # User service
-├── shared/                # Shared utilities
-│   ├── hooks/             # Shared hooks (useBaseQuery, useBaseMutation)
-│   ├── types/             # Global TypeScript types
-│   └── utils/             # Utility functions
-├── store/                 # Zustand stores
-│   ├── app-store.ts       # App state
-│   ├── session-store.ts   # Session/auth state
-│   └── settings-store.ts  # User settings
-├── theme/                 # Theme system
-│   ├── theme.ts           # Theme configuration
-│   ├── tokens.ts          # Design tokens
-│   └── use-theme.ts       # Theme hook
-└── types/                 # Shared TypeScript types
-    ├── api.ts             # API response types
-    ├── common.ts          # Common types
-    └── domain/            # Domain models
+├── app/                      # App entry, providers & root navigation
+│   ├── app-navigator.tsx    # Root navigation container
+│   ├── app-providers.tsx    # Global providers (Query, Theme, etc.)
+│   ├── app-root.tsx         # App entry point
+│   └── hooks/               # App-level hooks (useAppInit, etc.)
+│
+├── assets/                   # Static resources
+│   ├── fonts/               # Font files
+│   ├── icons/               # SVG icons & icon components
+│   └── images/              # Image assets
+│
+├── components/               # Shared UI components (domain-agnostic)
+│   ├── antd/                # Ant Design custom wrappers
+│   ├── base/                # Base atomic components
+│   │   ├── CustomButton.tsx
+│   │   ├── CustomInput.tsx
+│   │   ├── CustomText.tsx
+│   │   ├── CustomCard.tsx
+│   │   ├── CustomBadge.tsx
+│   │   ├── Avatar.tsx
+│   │   ├── Logo.tsx
+│   │   └── ...
+│   ├── form/                # Form wrapper components
+│   ├── layout/              # Layout components (Screen, Container, etc.)
+│   ├── navigation/          # Navigation UI components (TabBar, Header)
+│   └── utility/             # Utility components (ErrorBoundary, etc.)
+│
+├── features/                 # Feature modules (domain-driven)
+│   ├── auth/                # Authentication feature
+│   │   ├── components/      # Auth-specific UI components
+│   │   ├── hooks/           # Auth hooks (useLogin, useAuth)
+│   │   ├── screens/         # Auth screens (LoginScreen, etc.)
+│   │   ├── services/        # Auth API services
+│   │   ├── store/           # Auth state (Zustand)
+│   │   └── types/           # Auth TypeScript types
+│   │
+│   ├── home/                # Home feature
+│   ├── profile/             # Profile feature
+│   ├── performance/         # Performance feature
+│   └── example/             # Example/Demo feature
+│
+├── navigation/               # Navigation configuration & factories
+│   ├── MainTabs.tsx         # Tab navigator definition
+│   ├── config/              # Navigation config & types
+│   └── factories/           # Screen factory functions
+│
+├── shared/                   # Shared utilities & configurations
+│   ├── config/              # App configuration (env, API URLs, etc.)
+│   ├── constants/           # App constants (enums, keys, etc.)
+│   ├── hooks/               # Shared hooks (useDebounce, useNetwork, etc.)
+│   ├── query/               # TanStack Query setup & utilities
+│   ├── services/            # Shared services (API client, Storage, etc.)
+│   ├── store/               # Shared Zustand stores
+│   ├── theme/               # Design system (colors, spacing, typography)
+│   │   ├── tokens.ts        # Design tokens
+│   │   ├── theme.ts         # Theme configuration
+│   │   ├── create-styles.ts # StyleSheet helper with theme
+│   │   └── use-theme.ts     # useTheme hook
+│   ├── types/               # Shared TypeScript types & models
+│   └── utils/               # Utility functions
 ```
 
-## 🔧 Important Configuration
+### Nguyên tắc tổ chức
+
+- **`shared/`**: Code dùng chung, không phụ thuộc domain cụ thể
+- **`components/`**: UI components có thể tái sử dụng, không chứa business logic
+- **`features/`**: Module theo domain, chứa đầy đủ components/hooks/services/screens riêng
+- **`app/`**: Entry point, global setup, root navigation
+
+## 🔧 Configuration
 
 ### Path Aliases
 
-`babel.config.js` đã được config với path aliases:
-
-```javascript
-'@': './src',
-'@components': './src/components',
-'@features': './src/features',
-'@services': './src/services',
-// ... etc
-```
-
-**Sử dụng:**
+Dự án sử dụng `babel-plugin-module-resolver` để import gọn gàng:
 
 ```typescript
-import { CustomButton } from '@/components';
-import { useAuth } from '@/features/auth';
+import { CustomButton } from '@/components'; // thay vì ../../../components
+import { useAuth } from '@/features/auth'; // thay vì ../../features/auth
+import { API_URL } from '@/config';
 ```
-
-### Yoga API Patch
-
-Project có patch quan trọng cho `react-native-safe-area-context` để fix lỗi yoga API với New Architecture:
-
-**File patch:** `patches/react-native-safe-area-context+4.14.1.patch`
-
-Patch này thay đổi yoga API từ `.unit()` sang `.isDefined()` để tương thích với Yoga 3.0 trong RN 0.83.
-
-**Patch được tự động apply** sau `npm install` nhờ `postinstall` script.
-
-> ⚠️ **QUAN TRỌNG**: Không xóa thư mục `patches/` và package `patch-package`.
 
 ## 📦 Key Dependencies
 
-### Core
-
-- `react-native`: 0.83.1
-- `react`: 19.2.0
-- `typescript`: 5.8.3
-
-### State Management & Data Fetching
-
-- `@tanstack/react-query`: 5.90.19 - Server state management
-- `zustand`: 5.0.10 - Client state management
-- `axios`: 1.13.2 - HTTP client
-
-### Navigation
-
-- `@react-navigation/native`: 7.1.14
-- `@react-navigation/stack`: 7.4.0
-- `@react-navigation/bottom-tabs`: 7.4.0
-- `@react-navigation/drawer`: 7.5.0
-
-### UI Components
-
-- `@ant-design/react-native`: 5.4.3
-- `react-native-vector-icons`: 10.3.0
-- `react-native-size-matters`: 0.4.2 - Responsive sizing
-
-### Storage & Utilities
-
-- `react-native-mmkv`: 3.3.3 - Fast key-value storage
-- `react-hook-form`: 7.71.1 - Form management
-
-### Development
-
-- `patch-package`: 8.0.1 - Patch node_modules
-- `babel-plugin-module-resolver`: 5.0.2 - Path aliases
+| Package                    | Version | Usage            |
+| -------------------------- | ------- | ---------------- |
+| `react-native`             | 0.83.1  | Core             |
+| `@tanstack/react-query`    | v5      | Data Fetching    |
+| `zustand`                  | v5      | State Management |
+| `react-hook-form`          | v7      | Form Handling    |
+| `react-native-mmkv`        | v3      | Fast Storage     |
+| `@ant-design/react-native` | v5      | UI Framework     |
+| `react-native-svg`         | Latest  | SVG Support      |
 
 ## 🛠️ Development
 
-### Commands
+### Scripts
 
 ```bash
-# Start Metro bundler
-yarn start
-
-# Run iOS
-yarn ios
-
-# Run Android
-yarn android
-
-# Run tests
-yarn test
-
-# Lint code
-yarn lint
-
-# Type check
-npx tsc --noEmit
+yarn start          # Start Metro
+yarn ios            # Run iOS
+yarn android        # Run Android
+yarn test           # Run Jest Tests
+yarn lint           # Run ESLint
+yarn type-check     # Run TypeScript check
 ```
 
-### Adding New Features
+### Adding New Feature
 
-1. Tạo folder mới trong `src/features/<feature-name>/`
-2. Cấu trúc feature:
-   ```
-   features/my-feature/
-   ├── screens/
-   ├── hooks/
-   ├── services/
-   ├── types/
-   └── index.ts
-   ```
-3. Export public API qua `index.ts`
-4. Sử dụng feature qua path alias: `@/features/my-feature`
-
-### Code Standards
-
-- **TypeScript strict mode** - Tránh `any`, sử dụng proper types
-- **Senior-level code** - Clean, scalable, maintainable
-- **Comments required** - Giải thích logic, trade-offs, edge cases
-- **Defensive programming** - Validate inputs, handle errors gracefully
-- **Consistent patterns** - Follow existing patterns trong codebase
+1. Tạo thư mục trong `src/features/<feature-name>`.
+2. Tuân thủ cấu trúc: `components`, `screens`, `hooks`, `services`.
+3. Export public API qua `index.ts`.
 
 ## 🐛 Troubleshooting
 
-### iOS Build Errors
+<details>
+<summary><b>Lỗi: "Unrecognized View" hoặc "Uni" (hộp màu hồng)</b></summary>
 
-**Lỗi: `No member named 'unit' in 'facebook::yoga::StyleLength'`**
+- Nguyên nhân: Native module chưa được link/build.
+- Khắc phục:
+  ```bash
+  cd ios && pod install && cd ..
+  yarn ios (hoặc yarn android)
+  ```
+  </details>
 
-✅ **Đã fix** với patch trong `patches/react-native-safe-area-context+4.14.1.patch`
+<details>
+<summary><b>Lỗi Metro Bundler</b></summary>
 
-Nếu vẫn gặp lỗi:
-
-```bash
-# Re-apply patches
-npx patch-package
-
-# Reinstall pods
-cd ios
-rm -rf Pods Podfile.lock
-pod install
-cd ..
-
-# Clean và rebuild
-rm -rf ~/Library/Developer/Xcode/DerivedData/*
-yarn ios
-```
-
-### Metro Bundler Issues
-
-**Lỗi: `Cannot find module 'babel-plugin-module-resolver'`**
-
-```bash
-# Reinstall dependencies
-rm -rf node_modules package-lock.json yarn.lock
-npm install --legacy-peer-deps
-
-# Restart Metro with cache reset
-yarn start --reset-cache
-```
-
-### Android Build Issues
-
-```bash
-# Clean Android build
-cd android
-./gradlew clean
-cd ..
-
-# Rebuild
-yarn android
-```
-
-## 📝 New Architecture Notes
-
-Project này sử dụng **New Architecture** (Fabric + TurboModules):
-
-**Enabled trong:** `ios/BaseReactNative083/Info.plist`
-
-```xml
-<key>RCTNewArchEnabled</key>
-<true/>
-```
-
-**Benefits:**
-
-- ⚡ Faster rendering với Fabric
-- 🚀 Better performance với TurboModules
-- 🔄 Synchronous access to native modules
-- 📦 Smaller bundle sizes
-
-**Trade-offs:**
-
-- Cần patches cho một số libraries chưa tương thích
-- Debugging phức tạp hơn (sử dụng Bridgeless mode)
+- Khắc phục: Reset cache
+  ```bash
+  yarn start --reset-cache
+  ```
+  </details>
 
 ## 🤝 Contributing
 
-1. Create feature branch: `git checkout -b feature/my-feature`
-2. Commit changes: `git commit -m 'feat: add my feature'`
-3. Push branch: `git push origin feature/my-feature`
-4. Create Pull Request
-
-## 📄 License
-
-MIT
-
-## 👥 Author
-
-**vanquyet16**
-
-GitHub: [@vanquyet16](https://github.com/vanquyet16)
+1. Tạo branch: `git checkout -b feature/tên-tính-năng`.
+2. Commit: `git commit -m "feat: mô tả tính năng"`.
+3. Push: `git push origin feature/tên-tính-năng`.
+4. Tạo Merge Request.
 
 ---
 
-Made with ❤️ using React Native 0.83 + New Architecture
+**Made with ❤️ by Zamiga Team**

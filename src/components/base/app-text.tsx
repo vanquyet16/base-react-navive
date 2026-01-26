@@ -9,8 +9,8 @@
 
 import React from 'react';
 import { Text, type TextProps, type TextStyle } from 'react-native';
-import { useTheme } from '@/theme/use-theme';
-import { createStyles } from '@/theme/create-styles';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 
 /**
  * Text variant types

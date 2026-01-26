@@ -2,7 +2,7 @@
 // LOGGER UTILITY - THAY THẾ CONSOLE.LOG VỚI CẤU HÌNH CHUYÊN NGHIỆP
 // ============================================================================
 
-import { ENV } from '@/config/app.config';
+import { ENV } from '@/shared/config/app.config';
 
 // Định nghĩa các level log
 export enum LogLevel {

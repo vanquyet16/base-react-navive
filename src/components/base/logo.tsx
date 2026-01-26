@@ -7,8 +7,8 @@
 
 import React from 'react';
 import { View, Text } from 'react-native';
-import { useTheme } from '@/theme/use-theme';
-import { createStyles } from '@/theme/create-styles';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 
 const Logo: React.FC = () => {
   const theme = useTheme();

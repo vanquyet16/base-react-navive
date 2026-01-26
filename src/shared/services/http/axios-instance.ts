@@ -8,8 +8,8 @@
  */
 
 import axios, { AxiosInstance } from 'axios';
-import { ENV } from '@/config';
-import { TIMEOUT, HEADERS } from '@/constants/http';
+import { ENV } from '@/shared/config';
+import { TIMEOUT, HEADERS } from '@/shared/constants/http';
 
 /**
  * Create và configure axios instance

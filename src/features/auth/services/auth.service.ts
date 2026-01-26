@@ -1,6 +1,6 @@
-import { httpClient } from '@/services/http/http-client';
+import { httpClient } from '@/shared/services/http/http-client';
 import { LoginRequest, LoginResponse, User, AuthTokens } from '@/shared/types';
-import { API_ENDPOINTS } from '@/constants/api-endpoints';
+import { API_ENDPOINTS } from '@/shared/constants/api-endpoints';
 
 // Mock data cho development
 // const MOCK_USER: User = {

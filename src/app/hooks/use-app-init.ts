@@ -8,9 +8,9 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
-import { authService } from '@/services/auth/auth.service';
-import { tokenStore } from '@/services/auth/token-store';
-import { useSessionActions } from '@/store/selectors';
+import { authService } from '@/shared/services/auth/auth.service';
+import { tokenStore } from '@/shared/services/auth/token-store';
+import { useSessionActions } from '@/shared/store/selectors';
 
 /**
  * App init state

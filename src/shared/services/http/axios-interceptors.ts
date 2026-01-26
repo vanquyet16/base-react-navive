@@ -15,7 +15,7 @@ import type {
 import { axiosInstance } from './axios-instance';
 import type { HttpRequestConfig } from './http-types';
 import { createHttpError } from './http-error';
-import { HTTP_STATUS } from '@/constants/http';
+import { HTTP_STATUS } from '@/shared/constants/http';
 
 /**
  * Token storage - sẽ được inject từ auth service

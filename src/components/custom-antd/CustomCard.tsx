@@ -6,8 +6,8 @@
 
 import React from 'react';
 import { Card, type CardProps } from '@ant-design/react-native';
-import { useTheme } from '@/theme/use-theme';
-import { createStyles } from '@/theme/create-styles';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 
 interface CustomCardProps extends CardProps {
   /** Card elevation (shadow) */

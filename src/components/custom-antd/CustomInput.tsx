@@ -7,7 +7,7 @@
 import React from 'react';
 import { InputItem } from '@ant-design/react-native';
 import type { InputItemPropsType } from '@ant-design/react-native/lib/input-item/PropsType';
-import { useTheme } from '@/theme/use-theme';
+import { useTheme } from '@/shared/theme/use-theme';
 import { Text } from 'react-native';
 
 interface CustomInputProps extends Omit<InputItemPropsType, 'error'> {

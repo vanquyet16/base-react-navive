@@ -8,7 +8,7 @@
 import React from 'react';
 import { Button, type ButtonProps } from '@ant-design/react-native';
 import { StyleSheet } from 'react-native';
-import { useTheme } from '@/theme/use-theme';
+import { useTheme } from '@/shared/theme/use-theme';
 
 interface CustomButtonProps extends ButtonProps {
   /** Thêm custom variant nếu cần */

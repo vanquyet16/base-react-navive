@@ -12,8 +12,8 @@ import { View, ActivityIndicator, StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppProviders } from './app-providers';
 import { AppNavigator } from './app-navigator';
-import { useAppInit } from '@/hooks/use-app-init';
-import { useTheme } from '@/theme/use-theme';
+import { useAppInit } from '@/app/hooks/use-app-init';
+import { useTheme } from '@/shared/theme/use-theme';
 import { AppText, ScreenContainer } from '@/components';
 
 /**
@@ -26,9 +26,9 @@ const LoadingScreen: React.FC = () => {
   return (
     <ScreenContainer>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator size='large' color={theme.colors.primary} />
+        <ActivityIndicator size="large" color={theme.colors.primary} />
         <View style={{ height: theme.spacing[4] }} />
-        <AppText variant='body' color='secondary'>
+        <AppText variant="body" color="secondary">
           Đang khởi tạo...
         </AppText>
       </View>
@@ -44,11 +44,11 @@ const ErrorScreen: React.FC<{ error: Error }> = ({ error }) => {
   return (
     <ScreenContainer>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <AppText variant='h3' color='error'>
+        <AppText variant="h3" color="error">
           Lỗi khởi tạo
         </AppText>
         <View style={{ height: 16 }} />
-        <AppText variant='body' color='secondary' align='center'>
+        <AppText variant="body" color="secondary" align="center">
           {error.message}
         </AppText>
       </View>

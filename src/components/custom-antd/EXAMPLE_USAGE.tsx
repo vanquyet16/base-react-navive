@@ -18,8 +18,8 @@ import {
   WhiteSpace,
 } from '@/components/custom-antd';
 import { AppText } from '@/components/base';
-import { createStyles } from '@/theme/create-styles';
-import { useTheme } from '@/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
+import { useTheme } from '@/shared/theme/use-theme';
 
 /**
  * Example Screen - Demo tất cả custom components

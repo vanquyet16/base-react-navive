@@ -8,7 +8,7 @@
  */
 
 import React from 'react';
-import { QueryProvider } from '@/query/query-provider';
+import { QueryProvider } from '@/shared/query/query-provider';
 
 /**
  * AppProviders Props

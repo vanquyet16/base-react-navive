@@ -7,8 +7,8 @@
 
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { useTheme } from '@/theme/use-theme';
-import { createStyles } from '@/theme/create-styles';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 
 const LoadingScreen: React.FC = () => {
   const theme = useTheme();

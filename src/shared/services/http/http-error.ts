@@ -8,8 +8,8 @@
  */
 
 import type { AxiosError } from 'axios';
-import { HTTP_STATUS } from '@/constants/http';
-import { ERROR_MESSAGES } from '@/config';
+import { HTTP_STATUS } from '@/shared/constants/http';
+import { ERROR_MESSAGES } from '@/shared/config';
 import type { HttpError, HttpErrorType } from './http-types';
 
 /**

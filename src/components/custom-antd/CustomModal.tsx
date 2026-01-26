@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { Modal, type ModalProps } from '@ant-design/react-native';
-import { useTheme } from '@/theme/use-theme';
+import { useTheme } from '@/shared/theme/use-theme';
 
 interface CustomModalProps extends ModalProps {
   /** Custom title style */

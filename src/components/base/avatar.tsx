@@ -8,9 +8,9 @@
 
 import React from 'react';
 import { View, Text, Image } from 'react-native';
-import { useTheme } from '@/theme/use-theme';
-import { createStyles } from '@/theme/create-styles';
-import type { User } from '@/types/domain/user';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
+import type { User } from '@/shared/types/domain/user';
 
 interface AvatarProps {
   user: User | null;
