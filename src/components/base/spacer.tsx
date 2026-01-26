@@ -4,10 +4,9 @@
  * Flexible spacer component cho layout.
  * Supports horizontal và vertical spacing từ theme.
  *
- * @senior-pattern Layout helper với theme spacing scale
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, type ViewStyle } from 'react-native';
 import { spacing as spacingScale } from '@/shared/theme/tokens';
 
@@ -29,6 +28,7 @@ export interface SpacerProps {
 /**
  * Spacer Component
  *
+ * @optimized React.memo, useMemo
  * @example
  * // Vertical spacer 16px
  * <Spacer size={4} />
@@ -36,26 +36,39 @@ export interface SpacerProps {
  * // Horizontal spacer 24px
  * <Spacer size={6} horizontal />
  */
-export const Spacer: React.FC<SpacerProps> = ({ size = 4, horizontal = false }) => {
+export const Spacer: React.FC<SpacerProps> = ({
+  size = 4,
+  horizontal = false,
+}) => {
   const spacingValue = spacingScale[size];
 
-  const style: ViewStyle = horizontal ? { width: spacingValue } : { height: spacingValue };
+  // Memoize style để avoid tạo object mới mỗi render
+  const style = useMemo(
+    () => (horizontal ? { width: spacingValue } : { height: spacingValue }),
+    [horizontal, spacingValue],
+  );
 
   return <View style={style} />;
 };
 
 /**
+ * Memoized Spacer export
+ */
+const MemoizedSpacer = React.memo(Spacer);
+export default MemoizedSpacer;
+
+/**
  * Convenience components
  */
 
-/** Small vertical space (8px) */
-export const SpacerSm: React.FC = () => <Spacer size={2} />;
+/** Small vertical space (8px) - Memoized */
+export const SpacerSm: React.FC = React.memo(() => <Spacer size={2} />);
 
-/** Medium vertical space (16px) */
-export const SpacerMd: React.FC = () => <Spacer size={4} />;
+/** Medium vertical space (16px) - Memoized */
+export const SpacerMd: React.FC = React.memo(() => <Spacer size={4} />);
 
-/** Large vertical space (24px) */
-export const SpacerLg: React.FC = () => <Spacer size={6} />;
+/** Large vertical space (24px) - Memoized */
+export const SpacerLg: React.FC = React.memo(() => <Spacer size={6} />);
 
-/** XLarge vertical space (32px) */
-export const SpacerXl: React.FC = () => <Spacer size={8} />;
+/** XLarge vertical space (32px) - Memoized */
+export const SpacerXl: React.FC = React.memo(() => <Spacer size={8} />);

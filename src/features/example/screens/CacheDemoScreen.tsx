@@ -1,5 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { COLORS, SCREEN_PADDING } from '@/shared/constants';
@@ -12,7 +19,7 @@ type NavigationProp = StackNavigationProp<MainStackParamList>;
 // Mock API service
 const apiService = {
   getProductById: async (id: string) => {
-    await new Promise<void>(resolve => setTimeout(resolve, 1000)); // Mô phỏng delay
+    await new Promise(resolve => setTimeout(() => resolve(undefined), 1000)); // Mô phỏng delay
     return {
       id,
       name: `Product ${id}`,
@@ -28,7 +35,9 @@ const apiService = {
 
 const CacheDemoScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
-  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null,
+  );
   const [apiCallCount, setApiCallCount] = useState(0);
 
   // Hook với cache theo ID
@@ -58,7 +67,9 @@ const CacheDemoScreen: React.FC = () => {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Cache Demo</Text>
-        <Text style={styles.subtitle}>Test cache behavior với detail navigation</Text>
+        <Text style={styles.subtitle}>
+          Test cache behavior với detail navigation
+        </Text>
       </View>
 
       {/* Cache Info */}
@@ -66,15 +77,21 @@ const CacheDemoScreen: React.FC = () => {
         <Text style={styles.infoTitle}>Cache Information:</Text>
         <View style={styles.infoGrid}>
           <View style={styles.infoItem}>
-            <Icon name='api' size={16} color={COLORS.primary} />
+            <Icon name="api" size={16} color={COLORS.primary} />
             <Text style={styles.infoText}>API Calls: {apiCallCount}</Text>
           </View>
           <View style={styles.infoItem}>
-            <Icon name='cached' size={16} color={isFetching ? COLORS.warning : COLORS.success} />
-            <Text style={styles.infoText}>{isFetching ? 'Fetching...' : 'Cached'}</Text>
+            <Icon
+              name="cached"
+              size={16}
+              color={isFetching ? COLORS.warning : COLORS.success}
+            />
+            <Text style={styles.infoText}>
+              {isFetching ? 'Fetching...' : 'Cached'}
+            </Text>
           </View>
           <View style={styles.infoItem}>
-            <Icon name='timer' size={16} color={COLORS.info} />
+            <Icon name="timer" size={16} color={COLORS.info} />
             <Text style={styles.infoText}>Cache: 5 phút</Text>
           </View>
         </View>
@@ -87,10 +104,14 @@ const CacheDemoScreen: React.FC = () => {
           {productIds.map(id => (
             <TouchableOpacity
               key={id}
-              style={[styles.productButton, selectedProductId === id && styles.selectedProduct]}
-              onPress={() => handleSelectProduct(id)}>
+              style={[
+                styles.productButton,
+                selectedProductId === id && styles.selectedProduct,
+              ]}
+              onPress={() => handleSelectProduct(id)}
+            >
               <Icon
-                name='inventory'
+                name="inventory"
                 size={20}
                 color={selectedProductId === id ? '#fff' : COLORS.primary}
               />
@@ -98,7 +119,8 @@ const CacheDemoScreen: React.FC = () => {
                 style={[
                   styles.productText,
                   selectedProductId === id && styles.selectedProductText,
-                ]}>
+                ]}
+              >
                 Product {id}
               </Text>
             </TouchableOpacity>
@@ -109,14 +131,18 @@ const CacheDemoScreen: React.FC = () => {
       {/* Product Detail */}
       {selectedProductId && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Product Detail (ID: {selectedProductId})</Text>
+          <Text style={styles.sectionTitle}>
+            Product Detail (ID: {selectedProductId})
+          </Text>
 
           {isLoading ? (
             <View style={styles.loadingContainer}>
-              <Icon name='hourglass-empty' size={48} color={COLORS.primary} />
+              <Icon name="hourglass-empty" size={48} color={COLORS.primary} />
               <Text style={styles.loadingText}>Đang load product...</Text>
               <Text style={styles.loadingSubtext}>
-                {apiCallCount === 1 ? 'Lần đầu: Gọi API' : 'Lần sau: Load từ cache'}
+                {apiCallCount === 1
+                  ? 'Lần đầu: Gọi API'
+                  : 'Lần sau: Load từ cache'}
               </Text>
             </View>
           ) : data ? (
@@ -127,7 +153,9 @@ const CacheDemoScreen: React.FC = () => {
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Giá:</Text>
-                <Text style={styles.detailValue}>{data.price.toLocaleString('vi-VN')} VNĐ</Text>
+                <Text style={styles.detailValue}>
+                  {data.price.toLocaleString('vi-VN')} VNĐ
+                </Text>
               </View>
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>Danh mục:</Text>
@@ -145,7 +173,7 @@ const CacheDemoScreen: React.FC = () => {
             </View>
           ) : error ? (
             <View style={styles.errorContainer}>
-              <Icon name='error' size={48} color={COLORS.error} />
+              <Icon name="error" size={48} color={COLORS.error} />
               <Text style={styles.errorText}>Lỗi load product</Text>
             </View>
           ) : null}
@@ -162,15 +190,17 @@ const CacheDemoScreen: React.FC = () => {
               if (selectedProductId) {
                 handleSelectProduct(selectedProductId); // Re-fetch
               }
-            }}>
-            <Icon name='refresh' size={20} color='#fff' />
+            }}
+          >
+            <Icon name="refresh" size={20} color="#fff" />
             <Text style={styles.buttonText}>Re-fetch</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.actionButton, styles.secondaryButton]}
-            onPress={handleClearCache}>
-            <Icon name='clear' size={20} color='#fff' />
+            onPress={handleClearCache}
+          >
+            <Icon name="clear" size={20} color="#fff" />
             <Text style={styles.buttonText}>Clear Cache</Text>
           </TouchableOpacity>
         </View>
@@ -182,19 +212,27 @@ const CacheDemoScreen: React.FC = () => {
         <View style={styles.instructionList}>
           <View style={styles.instructionItem}>
             <Text style={styles.instructionNumber}>1.</Text>
-            <Text style={styles.instructionText}>Chọn một Product ID (ví dụ: 123)</Text>
+            <Text style={styles.instructionText}>
+              Chọn một Product ID (ví dụ: 123)
+            </Text>
           </View>
           <View style={styles.instructionItem}>
             <Text style={styles.instructionNumber}>2.</Text>
-            <Text style={styles.instructionText}>Quan sát API call count tăng lên</Text>
+            <Text style={styles.instructionText}>
+              Quan sát API call count tăng lên
+            </Text>
           </View>
           <View style={styles.instructionItem}>
             <Text style={styles.instructionNumber}>3.</Text>
-            <Text style={styles.instructionText}>Chọn Product ID khác (ví dụ: 456)</Text>
+            <Text style={styles.instructionText}>
+              Chọn Product ID khác (ví dụ: 456)
+            </Text>
           </View>
           <View style={styles.instructionItem}>
             <Text style={styles.instructionNumber}>4.</Text>
-            <Text style={styles.instructionText}>Quay lại Product ID đầu tiên (123)</Text>
+            <Text style={styles.instructionText}>
+              Quay lại Product ID đầu tiên (123)
+            </Text>
           </View>
           <View style={styles.instructionItem}>
             <Text style={styles.instructionNumber}>5.</Text>
@@ -209,8 +247,9 @@ const CacheDemoScreen: React.FC = () => {
       <View style={styles.navigationSection}>
         <TouchableOpacity
           style={[styles.actionButton, styles.successButton]}
-          onPress={() => navigation.navigate('ProductScreen')}>
-          <Icon name='navigate-next' size={20} color='#fff' />
+          onPress={() => navigation.navigate('ProductScreen')}
+        >
+          <Icon name="navigate-next" size={20} color="#fff" />
           <Text style={styles.buttonText}>Go to ProductScreen</Text>
         </TouchableOpacity>
       </View>

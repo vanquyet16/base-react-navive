@@ -1,22 +1,12 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  Switch,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
 
-import {
-  useThemePreference,
-  useSettingsActions,
-} from '@/shared/store/selectors';
+import { useTheme, useSettingsActions } from '@/shared/store/selectors';
 import { COLORS, SCREEN_PADDING } from '@/shared/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const SettingsScreen: React.FC = () => {
-  const currentTheme = useThemePreference();
+  const currentTheme = useTheme();
   const { setTheme } = useSettingsActions();
   const [notifications, setNotifications] = useState(true);
   const [autoUpdate, setAutoUpdate] = useState(false);
@@ -117,8 +107,7 @@ const SettingsScreen: React.FC = () => {
       key={index}
       style={styles.settingItem}
       onPress={item.onPress}
-      disabled={item.type === 'switch'}
-    >
+      disabled={item.type === 'switch'}>
       <View style={styles.settingLeft}>
         <View style={styles.iconContainer}>
           <Icon name={item.icon} size={24} color={COLORS.primary} />
@@ -141,7 +130,7 @@ const SettingsScreen: React.FC = () => {
             thumbColor={item.value ? COLORS.primary : COLORS.textSecondary}
           />
         ) : (
-          <Icon name="chevron-right" size={24} color={COLORS.textSecondary} />
+          <Icon name='chevron-right' size={24} color={COLORS.textSecondary} />
         )}
       </View>
     </TouchableOpacity>
@@ -152,9 +141,7 @@ const SettingsScreen: React.FC = () => {
       {settingsSections.map((section, sectionIndex) => (
         <View key={sectionIndex} style={styles.section}>
           <Text style={styles.sectionTitle}>{section.title}</Text>
-          <View style={styles.sectionContent}>
-            {section.items.map(renderSettingItem)}
-          </View>
+          <View style={styles.sectionContent}>{section.items.map(renderSettingItem)}</View>
         </View>
       ))}
 
@@ -162,7 +149,7 @@ const SettingsScreen: React.FC = () => {
       <View style={styles.dangerZone}>
         <Text style={styles.dangerTitle}>Vùng nguy hiểm</Text>
         <TouchableOpacity style={styles.dangerItem}>
-          <Icon name="delete-forever" size={24} color={COLORS.error} />
+          <Icon name='delete-forever' size={24} color={COLORS.error} />
           <Text style={styles.dangerText}>Xóa tài khoản</Text>
         </TouchableOpacity>
       </View>

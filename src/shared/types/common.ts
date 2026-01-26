@@ -4,7 +4,6 @@
  * Utility types dùng chung trong toàn bộ app.
  * Tránh duplicate type definitions.
  * 
- * @senior-pattern Reusable utility types cho DRY code
  */
 
 /**

@@ -2,12 +2,9 @@
 // MAIN TABS NAVIGATOR - BOTTOM TABS NAVIGATION
 // ============================================================================
 
-import React, { useCallback } from 'react';
-import {
-  createBottomTabNavigator,
-  BottomTabBarProps,
-} from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Icon from '@ant-design/react-native/lib/icon';
 import { COLORS } from '@/shared/constants';
 import { MainTabParamList } from '@/shared/types';
 import { CustomTabBar } from '@/components/navigation';
@@ -47,6 +44,12 @@ const TAB_WRAPPERS = createTabScreenWrappers(TAB_SCREENS);
  * - Settings: Cài đặt ứng dụng
  * - ResponsiveDemo: Demo responsive design
  */
+// ... imports
+import { useCallback } from 'react';
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+
+// ... const Tab = ...
+
 const MainTabs: React.FC = () => {
   const renderTabBar = useCallback(
     (props: BottomTabBarProps) => <CustomTabBar {...props} />,
@@ -56,7 +59,7 @@ const MainTabs: React.FC = () => {
   const renderIcon = useCallback(
     (iconName: string) =>
       ({ color, size }: { color: string; size: number }) =>
-        <Icon name={iconName} size={size} color={color} />,
+        <Icon name={iconName as any} size={size} color={color} />,
     [],
   );
 
@@ -90,6 +93,7 @@ const MainTabs: React.FC = () => {
             options={{
               tabBarLabel: cfg.title,
               tabBarIcon: renderIcon(cfg.icon),
+              tabBarBadge: cfg.badge,
             }}
           />
         );

@@ -25,7 +25,7 @@ const HeavyComponent: React.FC = () => {
   useEffect(() => {
     // Mô phỏng load data nặng
     const loadHeavyData = async () => {
-      await new Promise<void>(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(() => resolve(undefined), 2000));
       setData(
         Array.from({ length: 100 }, (_, i) => ({
           id: i,
@@ -41,7 +41,9 @@ const HeavyComponent: React.FC = () => {
   return (
     <View style={styles.heavyContainer}>
       <Text style={styles.heavyTitle}>Component Nặng đã load!</Text>
-      <Text style={styles.heavySubtitle}>Đã load {data.length} items với hình ảnh</Text>
+      <Text style={styles.heavySubtitle}>
+        Đã load {data.length} items với hình ảnh
+      </Text>
       <FlatList
         data={data.slice(0, 10)} // Chỉ hiển thị 10 items đầu
         keyExtractor={item => item.id.toString()}
@@ -108,24 +110,34 @@ const LazyTestScreen: React.FC = () => {
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Bài Test Lazy Loading</Text>
-        <Text style={styles.subtitle}>Thử nghiệm các tình huống lazy loading thực tế</Text>
+        <Text style={styles.subtitle}>
+          Thử nghiệm các tình huống lazy loading thực tế
+        </Text>
       </View>
 
       {/* Test 1: Basic Lazy Loading */}
       <View style={styles.testSection}>
         <Text style={styles.testTitle}>Test 1: Basic Lazy Loading</Text>
-        <Text style={styles.testDescription}>Load component đơn giản với LazyScreen</Text>
+        <Text style={styles.testDescription}>
+          Load component đơn giản với LazyScreen
+        </Text>
 
         <TouchableOpacity
-          style={[styles.testButton, testResults.basicLazy && styles.activeButton]}
-          onPress={() => runTest('basicLazy')}>
-          <Icon name='play-arrow' size={20} color='#fff' />
+          style={[
+            styles.testButton,
+            testResults.basicLazy && styles.activeButton,
+          ]}
+          onPress={() => runTest('basicLazy')}
+        >
+          <Icon name="play-arrow" size={20} color="#fff" />
           <Text style={styles.buttonText}>Chạy Test</Text>
         </TouchableOpacity>
 
         {testResults.basicLazy && (
           <View style={styles.resultContainer}>
-            <LazyScreen component={() => Promise.resolve({ default: HeavyComponent })} />
+            <LazyScreen
+              component={() => Promise.resolve({ default: HeavyComponent })}
+            />
           </View>
         )}
       </View>
@@ -133,7 +145,9 @@ const LazyTestScreen: React.FC = () => {
       {/* Test 2: Advanced Lazy Loading */}
       <View style={styles.testSection}>
         <Text style={styles.testTitle}>Test 2: Advanced Lazy Loading</Text>
-        <Text style={styles.testDescription}>Load component với error handling và retry</Text>
+        <Text style={styles.testDescription}>
+          Load component với error handling và retry
+        </Text>
 
         <TouchableOpacity
           style={[
@@ -141,8 +155,9 @@ const LazyTestScreen: React.FC = () => {
             styles.secondaryButton,
             testResults.advancedLazy && styles.activeButton,
           ]}
-          onPress={() => runTest('advancedLazy')}>
-          <Icon name='settings' size={20} color='#fff' />
+          onPress={() => runTest('advancedLazy')}
+        >
+          <Icon name="settings" size={20} color="#fff" />
           <Text style={styles.buttonText}>Chạy Test</Text>
         </TouchableOpacity>
 
@@ -161,7 +176,9 @@ const LazyTestScreen: React.FC = () => {
       {/* Test 3: Error Handling */}
       <View style={styles.testSection}>
         <Text style={styles.testTitle}>Test 3: Error Handling</Text>
-        <Text style={styles.testDescription}>Test xử lý lỗi khi load component</Text>
+        <Text style={styles.testDescription}>
+          Test xử lý lỗi khi load component
+        </Text>
 
         <TouchableOpacity
           style={[
@@ -169,15 +186,20 @@ const LazyTestScreen: React.FC = () => {
             styles.errorButton,
             testResults.errorLazy && styles.activeButton,
           ]}
-          onPress={() => runTest('errorLazy')}>
-          <Icon name='error' size={20} color='#fff' />
+          onPress={() => runTest('errorLazy')}
+        >
+          <Icon name="error" size={20} color="#fff" />
           <Text style={styles.buttonText}>Chạy Test Lỗi</Text>
         </TouchableOpacity>
 
         {testResults.errorLazy && (
           <View style={styles.resultContainer}>
             <AdvancedLazyScreen
-              component={() => Promise.reject(new Error('Lỗi mô phỏng: Component không tồn tại'))}
+              component={() =>
+                Promise.reject(
+                  new Error('Lỗi mô phỏng: Component không tồn tại'),
+                )
+              }
               onError={handleTestError}
               retryCount={2}
             />
@@ -188,12 +210,19 @@ const LazyTestScreen: React.FC = () => {
       {/* Test 4: Conditional Loading */}
       <View style={styles.testSection}>
         <Text style={styles.testTitle}>Test 4: Conditional Loading</Text>
-        <Text style={styles.testDescription}>Load component chỉ khi cần thiết</Text>
+        <Text style={styles.testDescription}>
+          Load component chỉ khi cần thiết
+        </Text>
 
         <TouchableOpacity
           style={[styles.testButton, styles.successButton]}
-          onPress={() => setShowConditional(!showConditional)}>
-          <Icon name={showConditional ? 'visibility-off' : 'visibility'} size={20} color='#fff' />
+          onPress={() => setShowConditional(!showConditional)}
+        >
+          <Icon
+            name={showConditional ? 'visibility-off' : 'visibility'}
+            size={20}
+            color="#fff"
+          />
           <Text style={styles.buttonText}>
             {showConditional ? 'Ẩn Component' : 'Hiện Component'}
           </Text>
@@ -201,7 +230,9 @@ const LazyTestScreen: React.FC = () => {
 
         {showConditional && (
           <View style={styles.resultContainer}>
-            <LazyScreen component={() => Promise.resolve({ default: HeavyComponent })} />
+            <LazyScreen
+              component={() => Promise.resolve({ default: HeavyComponent })}
+            />
           </View>
         )}
       </View>
@@ -209,7 +240,9 @@ const LazyTestScreen: React.FC = () => {
       {/* Test 5: Performance Test */}
       <View style={styles.testSection}>
         <Text style={styles.testTitle}>Test 5: Performance Test</Text>
-        <Text style={styles.testDescription}>So sánh performance với và không có lazy loading</Text>
+        <Text style={styles.testDescription}>
+          So sánh performance với và không có lazy loading
+        </Text>
 
         <View style={styles.performanceButtons}>
           <TouchableOpacity
@@ -219,19 +252,27 @@ const LazyTestScreen: React.FC = () => {
               // Mô phỏng load component nặng
               setTimeout(() => {
                 const end = Date.now();
-                Alert.alert('Performance Test', `Thời gian load: ${end - start}ms`);
+                Alert.alert(
+                  'Performance Test',
+                  `Thời gian load: ${end - start}ms`,
+                );
               }, 1000);
-            }}>
-            <Icon name='speed' size={20} color='#fff' />
+            }}
+          >
+            <Icon name="speed" size={20} color="#fff" />
             <Text style={styles.buttonText}>Test Performance</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.testButton, styles.infoButton]}
             onPress={() => {
-              Alert.alert('Memory Test', 'Kiểm tra memory usage trong DevTools');
-            }}>
-            <Icon name='memory' size={20} color='#fff' />
+              Alert.alert(
+                'Memory Test',
+                'Kiểm tra memory usage trong DevTools',
+              );
+            }}
+          >
+            <Icon name="memory" size={20} color="#fff" />
             <Text style={styles.buttonText}>Memory Test</Text>
           </TouchableOpacity>
         </View>
@@ -242,22 +283,22 @@ const LazyTestScreen: React.FC = () => {
         <Text style={styles.statsTitle}>Thống kê Test</Text>
         <View style={styles.statsGrid}>
           <View style={styles.statItem}>
-            <Icon name='check-circle' size={24} color={COLORS.success} />
+            <Icon name="check-circle" size={24} color={COLORS.success} />
             <Text style={styles.statNumber}>4</Text>
             <Text style={styles.statLabel}>Test thành công</Text>
           </View>
           <View style={styles.statItem}>
-            <Icon name='error' size={24} color={COLORS.error} />
+            <Icon name="error" size={24} color={COLORS.error} />
             <Text style={styles.statNumber}>1</Text>
             <Text style={styles.statLabel}>Test lỗi</Text>
           </View>
           <View style={styles.statItem}>
-            <Icon name='timer' size={24} color={COLORS.primary} />
+            <Icon name="timer" size={24} color={COLORS.primary} />
             <Text style={styles.statNumber}>~2s</Text>
             <Text style={styles.statLabel}>Thời gian load</Text>
           </View>
           <View style={styles.statItem}>
-            <Icon name='memory' size={24} color={COLORS.info} />
+            <Icon name="memory" size={24} color={COLORS.info} />
             <Text style={styles.statNumber}>-50%</Text>
             <Text style={styles.statLabel}>Tiết kiệm RAM</Text>
           </View>
@@ -268,8 +309,9 @@ const LazyTestScreen: React.FC = () => {
       <View style={styles.navigationSection}>
         <TouchableOpacity
           style={[styles.testButton, styles.primaryButton]}
-          onPress={() => navigation.navigate('ProductScreen')}>
-          <Icon name='navigate-next' size={20} color='#fff' />
+          onPress={() => navigation.navigate('ProductScreen')}
+        >
+          <Icon name="navigate-next" size={20} color="#fff" />
           <Text style={styles.buttonText}>Đi đến ProductScreen</Text>
         </TouchableOpacity>
       </View>

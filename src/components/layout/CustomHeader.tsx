@@ -8,11 +8,15 @@ import {
   Animated,
   SafeAreaView,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from '@ant-design/react-native/lib/icon';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import { SCREEN_PADDING } from '@/shared/constants';
-import { Avatar } from '@/components/base';
+import {
+  moderateScale,
+  moderateVerticalScale,
+  scale,
+} from 'react-native-size-matters';
 
 interface CustomHeaderProps {
   title?: string;
@@ -109,7 +113,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({
       ]}
     >
       <View style={styles.searchInputContainer}>
-        <Icon name="search" size={20} color={theme.colors.textSecondary} />
+        <Icon name={'search'} size={20} color={theme.colors.textSecondary} />
         <TextInput
           style={styles.searchInput}
           placeholder="Tìm kiếm..."
@@ -122,7 +126,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({
           onPress={toggleSearch}
           style={styles.searchCloseButton}
         >
-          <Icon name="close" size={20} color={theme.colors.textSecondary} />
+          <Icon name={'close'} size={20} color={theme.colors.textSecondary} />
         </TouchableOpacity>
       </View>
     </Animated.View>
@@ -134,11 +138,11 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({
       <View style={styles.leftSection}>
         {showBack ? (
           <TouchableOpacity onPress={onBack} style={styles.iconButton}>
-            <Icon name="arrow-back" size={24} color={textColor} />
+            <Icon name={'arrow-left'} size={24} color={textColor} />
           </TouchableOpacity>
         ) : showMenu ? (
           <TouchableOpacity onPress={onMenuPress} style={styles.iconButton}>
-            <Icon name="menu" size={24} color={textColor} />
+            <Icon name={'menu'} size={24} color={textColor} />
           </TouchableOpacity>
         ) : null}
       </View>
@@ -162,7 +166,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({
       <View style={styles.rightSection}>
         {showSearch && (
           <TouchableOpacity onPress={toggleSearch} style={styles.iconButton}>
-            <Icon name="search" size={24} color={textColor} />
+            <Icon name={'search'} size={24} color={textColor} />
           </TouchableOpacity>
         )}
 
@@ -171,7 +175,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({
             onPress={onNotificationPress}
             style={styles.iconButton}
           >
-            <Icon name="notifications" size={24} color={textColor} />
+            <Icon name={'bell'} size={24} color={textColor} />
             {notificationCount > 0 && (
               <View style={styles.notificationBadge}>
                 <Text style={styles.notificationText}>
@@ -197,7 +201,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({
     <View style={styles.minimalContainer}>
       {showBack && (
         <TouchableOpacity onPress={onBack} style={styles.iconButton}>
-          <Icon name="arrow-back" size={24} color={textColor} />
+          <Icon name={'arrow-left'} size={24} color={textColor} />
         </TouchableOpacity>
       )}
       <Text style={[styles.minimalTitle, { color: textColor }]}>{title}</Text>
@@ -230,98 +234,129 @@ const CustomHeader: React.FC<CustomHeaderProps> = ({
  */
 const useStyles = createStyles(theme => ({
   container: {
-    paddingTop: StatusBar.currentHeight || 0,
+    // ✅ StatusBar height đã là px thực tế -> không scale thêm, chỉ fallback an toàn
+    paddingTop: StatusBar.currentHeight ?? 0,
   },
+
   headerContent: {
-    height: 56,
+    // ✅ height hardcode -> scale theo dọc
+    height: moderateVerticalScale(56),
+
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: SCREEN_PADDING,
+    // paddingHorizontal: SCREEN_PADDING, // ✅ giữ token hiện có
   },
+
   leftSection: {
-    width: 40,
+    // ✅ width hardcode -> scale ngang
+    width: scale(40),
     justifyContent: 'center',
   },
+
   centerSection: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   rightSection: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
+
   title: {
+    // ✅ đã dùng theme typography -> giữ
     fontSize: theme.typography.fontSizes.lg,
     fontWeight: theme.typography.fontWeights.semibold,
   },
+
   subtitle: {
     fontSize: theme.typography.fontSizes.xs,
     fontWeight: theme.typography.fontWeights.normal,
     opacity: 0.8,
-    marginTop: theme.spacing[1],
+    marginTop: theme.spacing[1], // ✅ token -> giữ
   },
+
   iconButton: {
     padding: theme.spacing[2],
     marginHorizontal: theme.spacing[1],
     borderRadius: theme.radius.full,
   },
+
   profileButton: {
     marginLeft: theme.spacing[2],
   },
+
   notificationBadge: {
     position: 'absolute',
-    top: 2,
-    right: 2,
+
+    // ✅ hardcode -> scale
+    top: moderateVerticalScale(2),
+    right: scale(2),
+
     backgroundColor: theme.colors.error,
     borderRadius: theme.radius.full,
-    minWidth: 20,
-    height: 20,
+
+    // ✅ size hardcode -> scale
+    minWidth: scale(20),
+    height: scale(20),
+
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: theme.spacing[1],
+    paddingHorizontal: theme.spacing[1], // ✅ token -> giữ
   },
+
   notificationText: {
     color: theme.colors.white,
     fontSize: theme.typography.fontSizes.xs,
     fontWeight: theme.typography.fontWeights.semibold,
   },
+
   searchContainer: {
     paddingHorizontal: SCREEN_PADDING,
     paddingVertical: theme.spacing[2],
   },
+
   searchInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.white,
     borderRadius: theme.radius.full,
     paddingHorizontal: theme.spacing[4],
-    height: 40,
-    elevation: 2,
+
+    // ✅ height hardcode -> scale
+    height: scale(40),
+
+    /**
+     * ✅ Shadow/elevation nhẹ để giảm GPU cost trên low-end devices
+     * (giữ hiệu ứng nhưng không quá nặng)
+     */
+    elevation: 1,
     shadowColor: theme.colors.black,
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    shadowOffset: { width: 0, height: moderateVerticalScale(1) },
+    shadowOpacity: 0.08,
+    shadowRadius: moderateScale(2),
   },
+
   searchInput: {
     flex: 1,
     marginLeft: theme.spacing[2],
     fontSize: theme.typography.fontSizes.base,
     color: theme.colors.text,
   },
+
   searchCloseButton: {
     padding: theme.spacing[1],
   },
+
   minimalContainer: {
-    height: 56,
+    height: moderateVerticalScale(56),
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: SCREEN_PADDING,
+    // paddingHorizontal: SCREEN_PADDING,
   },
+
   minimalTitle: {
     fontSize: theme.typography.fontSizes.lg,
     fontWeight: theme.typography.fontWeights.semibold,

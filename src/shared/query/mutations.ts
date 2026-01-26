@@ -4,7 +4,6 @@
  * Helper utilities cho mutations: optimistic updates, error handling.
  * Reusable patterns để DRY mutations code.
  * 
- * @senior-pattern Mutation helpers với optimistic updates
  */
 
 import type { UseMutationOptions } from '@tanstack/react-query';

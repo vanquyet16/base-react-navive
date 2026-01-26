@@ -8,8 +8,6 @@
  * - DrawerNavigator: UI layer (drawer menu, swipe gesture)
  * - DrawerStackNavigator: Content layer (screens trong drawer)
  * - Type-safe navigation với DrawerParamList
- *
- * @senior-pattern Separation of concerns và type-safe navigation
  */
 
 import React, { useCallback } from 'react';

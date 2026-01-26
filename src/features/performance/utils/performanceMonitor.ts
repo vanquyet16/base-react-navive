@@ -2,9 +2,10 @@
 // PERFORMANCE MONITOR - THEO DÕI HIỆU SUẤT ỨNG DỤNG
 // ============================================================================
 
-import { logger, logPerformance } from '@/shared/utils/logger';
-
+// Declare global performance to avoid TS errors
 declare const performance: any;
+
+import { logger, logPerformance } from '@/shared/utils/logger';
 
 // Interface cho performance metric
 interface PerformanceMetric {
@@ -41,11 +42,19 @@ class PerformanceMonitor {
         return PerformanceMonitor.instance;
     }
 
+    // Safe performance.now() helper
+    private now(): number {
+        if (typeof performance !== 'undefined' && performance.now) {
+            return performance.now();
+        }
+        return Date.now();
+    }
+
     // Bắt đầu đo performance
     startMeasure(name: string, metadata?: Record<string, any>): void {
         const metric: PerformanceMetric = {
             name,
-            startTime: performance.now(),
+            startTime: this.now(),
             metadata,
         };
 
@@ -60,9 +69,8 @@ class PerformanceMonitor {
             return null;
         }
 
-        const endTime = performance.now();
-        metric.endTime = endTime;
-        metric.duration = endTime - metric.startTime;
+        metric.endTime = this.now();
+        metric.duration = metric.endTime - metric.startTime;
 
         // Log performance nếu quá chậm (> 100ms)
         if (metric.duration > 100) {

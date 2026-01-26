@@ -1,12 +1,13 @@
-import React, { memo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { memo, useCallback } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   DrawerContentComponentProps,
   DrawerContentScrollView,
   DrawerItem,
 } from '@react-navigation/drawer';
-import { COLORS } from '@/shared/constants';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 import { useSessionActions } from '@/shared/store/selectors';
 import { NAVIGATION_KEYS } from '@/navigation/config';
 import { ROOT_STACKS } from '@/shared/constants/routes';
@@ -27,18 +28,25 @@ type DrawerMenuItem = {
  * @param props - Drawer content props từ React Navigation
  */
 const CustomDrawer: React.FC<DrawerContentComponentProps> = props => {
+  const theme = useTheme();
   const { clearSession } = useSessionActions();
+  const styles = useStyles();
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     clearSession();
     // Navigate ve Auth stack (được handle bởi AppNavigator state)
-  };
+  }, [clearSession]);
 
-  const handleNavigation = (screenName: keyof DrawerStackParamList) => {
-    // Drawer structure: Drawer -> DrawerStack -> (shortcut) -> MainStackNavigator
-    props.navigation.navigate(ROOT_STACKS.DRAWER_STACK, { screen: screenName });
-    props.navigation.closeDrawer();
-  };
+  const handleNavigation = useCallback(
+    (screenName: keyof DrawerStackParamList) => {
+      // Drawer structure: Drawer -> DrawerStack -> (shortcut) -> MainStackNavigator
+      props.navigation.navigate(ROOT_STACKS.DRAWER_STACK, {
+        screen: screenName,
+      });
+      props.navigation.closeDrawer();
+    },
+    [props.navigation],
+  );
 
   const menuItems: DrawerMenuItem[] = [
     {
@@ -89,7 +97,7 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = props => {
       <View style={styles.header}>
         <View style={styles.userInfo}>
           <View style={styles.avatar}>
-            <Icon name="person" size={40} color={COLORS.primary} />
+            <Icon name="person" size={40} color={theme.colors.primary} />
           </View>
           <View style={styles.userDetails}>
             <Text style={styles.userName}>Người dùng</Text>
@@ -104,12 +112,13 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = props => {
           <DrawerItem
             key={index}
             label={item.label}
+            // eslint-disable-next-line react/no-unstable-nested-components
             icon={({ color, size }) => (
               <Icon name={item.icon} size={size} color={color} />
             )}
             onPress={() => handleNavigation(item.screen)}
-            activeTintColor={COLORS.primary}
-            inactiveTintColor={COLORS.text}
+            activeTintColor={theme.colors.primary}
+            inactiveTintColor={theme.colors.text}
             labelStyle={styles.menuText}
             style={styles.menuItem}
           />
@@ -119,7 +128,7 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = props => {
       {/* Footer */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Icon name="logout" size={24} color={COLORS.error} />
+          <Icon name="logout" size={24} color={theme.colors.error} />
           <Text style={styles.logoutText}>Đăng xuất</Text>
         </TouchableOpacity>
       </View>
@@ -127,72 +136,75 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = props => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  header: {
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-    backgroundColor: COLORS.primary,
-  },
-  userInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: COLORS.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 15,
-  },
-  userDetails: {
-    flex: 1,
-  },
-  userName: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: COLORS.background,
-    marginBottom: 4,
-  },
-  userEmail: {
-    fontSize: 14,
-    color: COLORS.background,
-    opacity: 0.8,
-  },
-  menuContainer: {
-    flex: 1,
-    paddingTop: 10,
-  },
-  menuItem: {
-    marginHorizontal: 10,
-    marginVertical: 2,
-  },
-  menuText: {
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  footer: {
-    padding: 20,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  logoutText: {
-    fontSize: 16,
-    color: COLORS.error,
-    marginLeft: 15,
-    fontWeight: '500',
-  },
-});
-
 export default memo(CustomDrawer);
+
+const useStyles = createStyles(
+  theme => ({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    header: {
+      padding: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+      backgroundColor: theme.colors.primary,
+    },
+    userInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    avatar: {
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      backgroundColor: theme.colors.background,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 15,
+    },
+    userDetails: {
+      flex: 1,
+    },
+    userName: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: theme.colors.background,
+      marginBottom: 4,
+    },
+    userEmail: {
+      fontSize: 14,
+      color: theme.colors.background,
+      opacity: 0.8,
+    },
+    menuContainer: {
+      flex: 1,
+      paddingTop: 10,
+    },
+    menuItem: {
+      marginHorizontal: 10,
+      marginVertical: 2,
+    },
+    menuText: {
+      fontSize: 16,
+      fontWeight: '500',
+    },
+    footer: {
+      padding: 20,
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.border,
+    },
+    logoutButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 10,
+    },
+    logoutText: {
+      fontSize: 16,
+      color: theme.colors.error,
+      marginLeft: 15,
+      fontWeight: '500',
+    },
+  }),
+  true,
+);

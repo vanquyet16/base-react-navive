@@ -4,7 +4,6 @@
  * Centralized providers wrapper cho toàn app.
  * Wrap QueryProvider, custom providers nếu cần.
  *
- * @senior-pattern Provider composition với clear order
  */
 
 import React from 'react';

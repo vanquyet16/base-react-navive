@@ -4,7 +4,6 @@
  * Quản lý app settings: theme, language, preferences.
  * Persist vào storage để maintain across app restarts.
  * 
- * @senior-pattern Settings với persistence
  */
 
 import type { Theme, Language } from '@/shared/types/common';

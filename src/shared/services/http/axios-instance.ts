@@ -4,11 +4,10 @@
  * Configured axios instance với base URL, timeout, headers.
  * Singleton pattern - chỉ 1 instance trong toàn app.
  * 
- * @senior-pattern Singleton axios instance với typed config
  */
 
 import axios, { AxiosInstance } from 'axios';
-import { ENV } from '@/shared/config';
+import { API_CONFIG } from '@/shared/config/app.config';
 import { TIMEOUT, HEADERS } from '@/shared/constants/http';
 
 /**
@@ -17,7 +16,7 @@ import { TIMEOUT, HEADERS } from '@/shared/constants/http';
 const createAxiosInstance = (): AxiosInstance => {
     const instance = axios.create({
         // Base URL từ environment config
-        baseURL: ENV.API_BASE_URL,
+        baseURL: API_CONFIG.BASE_URL,
 
         // Timeout
         timeout: TIMEOUT.DEFAULT,

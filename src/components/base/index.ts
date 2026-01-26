@@ -4,8 +4,15 @@
  * Export tất cả base components.
  */
 
-export * from './app-text';
-export * from './app-button';
-export * from './spacer';
-export { default as Avatar } from './avatar';
-export { default as Logo } from './logo';
+export * from './CustomText';
+export * from './CustomButton';
+export * from './CustomCard';
+export * from './CustomInput';
+export * from './CustomBadge';
+export * from './Spacer';
+export * from './LabelDivider';
+export { default as LoginOther } from './LoginOther';
+// Re-export Avatar as default import
+export { default as Avatar } from './Avatar';
+// Re-export Logo as named export (khớp với export const Logo trong logo.tsx)
+export { Logo } from './Logo';

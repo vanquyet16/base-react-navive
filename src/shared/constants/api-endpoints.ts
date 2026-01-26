@@ -4,11 +4,10 @@
  * Centralized management cho tất cả API endpoints trong application.
  * 
  * @pattern Feature-based organization - Endpoints được nhóm theo features
- * @senior-level Type-safe với 'as const', environment-aware, easy to maintain
  * 
  * Usage:
  * ```typescript
- * import { API_ENDPOINTS } from '@/constants/api-endpoints';
+ * import { API_ENDPOINTS } from '@/shared/constants/api-endpoints';
  * 
  * // Static endpoint
  * httpClient.post(API_ENDPOINTS.AUTH.LOGIN, credentials);
@@ -88,13 +87,6 @@ export const AUTH_ENDPOINTS = {
      * Body: { currentPassword: string, newPassword: string }
      */
     CHANGE_PASSWORD: '/auth/change-password',
-
-    /** 
-     * Xác thực email
-     * POST /auth/verify-email
-     * Body: { token: string }
-     */
-    VERIFY_EMAIL: '/auth/verify-email',
 } as const;
 
 // ============================================

@@ -4,7 +4,6 @@
  * Type-safe HTTP client wrapper around axios.
  * Provides clean API với generics cho request/response types.
  * 
- * @senior-pattern Facade pattern để abstract axios details
  */
 
 import type { AxiosInstance } from 'axios';
@@ -120,7 +119,7 @@ class HttpClient {
 
 /**
  * Singleton HTTP client instance
- * Sử dụng: import { httpClient } from '@/services/http/http-client';
+ * Sử dụng: import { httpClient } from '@/shared/services/http/http-client';
  */
 export const httpClient = new HttpClient(axiosInstance);
 

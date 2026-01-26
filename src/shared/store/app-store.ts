@@ -4,7 +4,6 @@
  * Root Zustand store combining all slices.
  * Module pattern để organize state theo domains.
  * 
- * @senior-pattern Modular store với slices composition
  */
 
 import { create } from 'zustand';

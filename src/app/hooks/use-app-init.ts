@@ -4,7 +4,6 @@
  * App initialization logic: load stored data, restore session, etc.
  * Chạy 1 lần khi app mount.
  * 
- * @senior-pattern Initialization hook với async operations
  */
 
 import { useEffect, useState, useCallback } from 'react';

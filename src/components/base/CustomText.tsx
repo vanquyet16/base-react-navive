@@ -4,10 +4,9 @@
  * Base text component với theme integration.
  * Provides consistent typography across app.
  *
- * @senior-pattern Themed component với variant pattern
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Text, type TextProps, type TextStyle } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
@@ -37,9 +36,9 @@ export type TextColor =
   | 'success';
 
 /**
- * AppText Props
+ * CustomText Props
  */
-export interface AppTextProps extends TextProps {
+export interface CustomTextProps extends TextProps {
   /** Text variant */
   variant?: TextVariant;
   /** Text color variant */
@@ -50,18 +49,23 @@ export interface AppTextProps extends TextProps {
   align?: TextStyle['textAlign'];
   /** Children text */
   children: React.ReactNode;
+  /** Text transform */
+  transform?: TextStyle['textTransform'];
 }
 
 /**
- * AppText Component
+ * CustomText Component
+ *
+ * @optimized React.memo, useMemo
  */
-export const AppText: React.FC<AppTextProps> = ({
+export const CustomText: React.FC<CustomTextProps> = ({
   variant = 'body',
   color = 'primary',
   weight,
   align,
   style,
   children,
+  transform,
   ...rest
 }) => {
   const theme = useTheme();
@@ -70,26 +74,51 @@ export const AppText: React.FC<AppTextProps> = ({
   // Get variant style
   const variantStyle = styles[variant];
 
-  // Get color style
-  const colorStyle = getColorStyle(theme, color);
+  // Memoize color style để avoid recalculation
+  const colorStyle = useMemo(() => getColorStyle(theme, color), [theme, color]);
 
-  // Weight override
-  const weightStyle = weight
-    ? { fontWeight: theme.typography.fontWeights[weight] }
-    : undefined;
+  // Memoize weight override
+  const weightStyle = useMemo(
+    () =>
+      weight ? { fontWeight: theme.typography.fontWeights[weight] } : undefined,
+    [weight, theme.typography.fontWeights],
+  );
 
-  // Align override
-  const alignStyle = align ? { textAlign: align } : undefined;
+  // Memoize align override
+  const alignStyle = useMemo(
+    () => (align ? { textAlign: align } : undefined),
+    [align],
+  );
+
+  const transformStyle = useMemo(
+    () => (transform ? { textTransform: transform } : undefined),
+    [transform],
+  );
+
+  // Memoize combined text styles
+  const textStyles = useMemo(
+    () => [
+      variantStyle,
+      colorStyle,
+      weightStyle,
+      alignStyle,
+      transformStyle,
+      style,
+    ],
+    [variantStyle, colorStyle, weightStyle, alignStyle, transformStyle, style],
+  );
 
   return (
-    <Text
-      style={[variantStyle, colorStyle, weightStyle, alignStyle, style]}
-      {...rest}
-    >
+    <Text style={textStyles} {...rest}>
       {children}
     </Text>
   );
 };
+
+/**
+ * Memoized export để prevent unnecessary re-renders
+ */
+export default React.memo(CustomText);
 
 /**
  * Get color style helper

@@ -4,7 +4,6 @@
  * Centralized route names cho React Navigation.
  * Tránh typo và dễ refactor khi đổi tên route.
  * 
- * @senior-pattern Type-safe navigation với const assertions
  */
 
 /**
@@ -25,11 +24,15 @@ export const ROUTES = {
         SETTINGS: 'Settings',
     },
 
+
+
     // Feature Stacks
     EXAMPLE: {
         LIST: 'ExampleList',
         DETAIL: 'ExampleDetail',
     },
+
+
 } as const;
 
 /**
@@ -38,8 +41,8 @@ export const ROUTES = {
 export const ROOT_STACKS = {
     AUTH_STACK: 'AuthStack',
     MAIN_STACK: 'MainStack',
+    DRAWER: 'Drawer',
     DRAWER_STACK: 'DrawerStack',
-    EXAMPLE_STACK: 'ExampleStack',
 } as const;
 
 /**
@@ -48,3 +51,4 @@ export const ROOT_STACKS = {
  */
 export type RouteNames = typeof ROUTES;
 export type RootStackNames = typeof ROOT_STACKS;
+

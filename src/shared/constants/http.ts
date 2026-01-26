@@ -4,7 +4,6 @@
  * HTTP-related constants: timeouts, headers, status codes.
  * Centralized để dễ adjust cho performance.
  * 
- * @senior-pattern Magic numbers thành named constants
  */
 
 /**

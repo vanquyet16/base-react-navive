@@ -8,8 +8,6 @@
  * - DrawerStack chứa MainStack và các screens khác trong drawer
  * - Type-safe với DrawerStackParamList
  * - Separation of concerns: drawer UI (DrawerNavigator) vs drawer content (DrawerStackNavigator)
- *
- * @senior-pattern Separation of concerns và type-safe navigation
  */
 
 import React from 'react';

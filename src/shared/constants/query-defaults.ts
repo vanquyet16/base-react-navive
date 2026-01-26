@@ -4,7 +4,6 @@
  * Default configuration cho TanStack Query.
  * Centralized để dễ tune performance.
  * 
- * @senior-pattern Separate concerns: query config riêng biệt
  */
 
 /**

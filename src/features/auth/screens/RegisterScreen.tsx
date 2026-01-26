@@ -40,8 +40,13 @@ const RegisterScreen = ({ navigation }: any) => {
   const password = watch('password');
 
   const onSubmit = (data: RegisterFormData) => {
-    const { confirmPassword, ...registerData } = data;
-    registerMutation.mutate(registerData);
+    registerMutation.mutate({
+      username: data.email, // Use email as username for now
+      email: data.email,
+      password: data.password,
+      passwordConfirmation: data.confirmPassword, // Map confirmPassword to passwordConfirmation
+      displayName: data.name, // Map name to displayName
+    });
   };
 
   const navigateToLogin = () => {

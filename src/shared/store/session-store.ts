@@ -4,12 +4,14 @@
  * Quản lý auth session state: user, tokens, authentication status.
  * Client-side state cho session management.
  * 
- * @senior-pattern Zustand slice pattern với typed selectors
  */
 
 import type { User } from '@/shared/types/domain/user';
 import type { AuthSession } from '@/shared/types/domain/auth';
 
+/**
+ * Session Store State
+ */
 /**
  * Session Store State
  */

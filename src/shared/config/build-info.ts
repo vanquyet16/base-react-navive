@@ -4,7 +4,6 @@
  * App version, build number từ native modules.
  * Fallback values nếu chưa có native module.
  * 
- * @senior-pattern Build info với graceful fallbacks
  */
 
 import { Platform } from 'react-native';

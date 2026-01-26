@@ -3,8 +3,8 @@
  * ====================
  * Type-safe form input với theme integration.
  * Supports react-hook-form và standalone usage.
+ * Uses CustomInput component for consistent styling.
  *
- * @senior-pattern Dual-mode form input với proper validation
  *
  * @example
  * // With react-hook-form
@@ -25,7 +25,7 @@
  */
 
 import React from 'react';
-import { View, Text, TextInput, TextInputProps } from 'react-native';
+import { View, Text, type TextInputProps } from 'react-native';
 import {
   Controller,
   Control,
@@ -33,11 +33,13 @@ import {
   Path,
   RegisterOptions,
 } from 'react-hook-form';
+import { CustomInput, type CustomInputProps } from '@/components/base';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 
 interface FormInputProps<T extends FieldValues = FieldValues>
-  extends Omit<TextInputProps, 'onChangeText' | 'value'> {
+  extends Omit<CustomInputProps, 'onChangeText' | 'value' | 'error'> {
+  // Override label to be optional (inherited from CustomInput)
   label?: string;
   error?: string;
   required?: boolean;
@@ -48,22 +50,40 @@ interface FormInputProps<T extends FieldValues = FieldValues>
   // Regular props
   onChangeText?: (text: string) => void;
   value?: string;
+  // UI control props
+  disabled?: boolean;
+  hidden?: boolean;
+  // Icon props (pass through to CustomInput)
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
 }
 
 const FormInput = <T extends FieldValues = FieldValues>({
   label,
   error,
   required = false,
-  style,
   control,
   name,
   rules,
   onChangeText,
   value,
+  disabled = false,
+  hidden = false,
+  leftIcon,
+  rightIcon,
+  containerStyle,
   ...props
 }: FormInputProps<T>) => {
   const theme = useTheme();
   const styles = useStyles(theme);
+
+  // Format label với required indicator
+  const formattedLabel = label && required ? `${label} *` : label;
+
+  // Nếu hidden, không render gì cả
+  if (hidden) {
+    return null;
+  }
 
   // If using with react-hook-form
   if (control && name) {
@@ -77,29 +97,18 @@ const FormInput = <T extends FieldValues = FieldValues>({
           fieldState: { error: fieldError },
         }) => (
           <View style={styles.container}>
-            {label && (
-              <Text style={styles.label}>
-                {label}
-                {required && <Text style={styles.required}> *</Text>}
-              </Text>
-            )}
-
-            <TextInput
+            <CustomInput
               {...props}
+              label={formattedLabel}
+              error={error || fieldError?.message}
               onChangeText={onChange}
               onBlur={onBlur}
               value={fieldValue}
-              placeholderTextColor={theme.colors.textTertiary}
-              style={[
-                styles.input,
-                error || fieldError ? styles.inputError : null,
-                style,
-              ]}
+              editable={!disabled}
+              leftIcon={leftIcon}
+              rightIcon={rightIcon}
+              containerStyle={containerStyle}
             />
-
-            {(error || fieldError?.message) && (
-              <Text style={styles.error}>{error || fieldError?.message}</Text>
-            )}
           </View>
         )}
       />
@@ -109,58 +118,27 @@ const FormInput = <T extends FieldValues = FieldValues>({
   // Regular usage without react-hook-form
   return (
     <View style={styles.container}>
-      {label && (
-        <Text style={styles.label}>
-          {label}
-          {required && <Text style={styles.required}> *</Text>}
-        </Text>
-      )}
-
-      <TextInput
+      <CustomInput
         {...props}
+        label={formattedLabel}
+        error={error}
         onChangeText={onChangeText}
         value={value}
-        placeholderTextColor={theme.colors.textTertiary}
-        style={[styles.input, error ? styles.inputError : null, style]}
+        editable={!disabled}
+        leftIcon={leftIcon}
+        rightIcon={rightIcon}
+        containerStyle={containerStyle}
       />
-
-      {error && <Text style={styles.error}>{error}</Text>}
     </View>
   );
 };
 
 /**
- * Styles với theme integration
+ * Minimal styles - most styling is handled by CustomInput
  */
 const useStyles = createStyles(theme => ({
   container: {
-    marginBottom: theme.spacing[2],
-  },
-  label: {
-    fontSize: theme.typography.fontSizes.sm,
-    fontWeight: theme.typography.fontWeights.medium,
-    color: theme.colors.text,
-    marginBottom: theme.spacing[2],
-  },
-  required: {
-    color: theme.colors.error,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
-    padding: theme.spacing[3],
-    fontSize: theme.typography.fontSizes.base,
-    color: theme.colors.text,
-    backgroundColor: theme.colors.background,
-  },
-  inputError: {
-    borderColor: theme.colors.error,
-  },
-  error: {
-    fontSize: theme.typography.fontSizes.xs,
-    color: theme.colors.error,
-    marginTop: theme.spacing[1],
+    marginBottom: theme.spacing[1], // Gap between form fields
   },
 }));
 

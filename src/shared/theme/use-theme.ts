@@ -4,11 +4,9 @@
  * Hook để access current theme trong components.
  * Integrates với Zustand store cho theme switching.
  * 
- * @senior-pattern Theme hook với type-safe access
  */
 
-import { useAppStore } from '../store/app-store';
-import { settingsSelectors } from '../store/settings-store';
+import { useTheme as useStoreTheme } from '@/shared/store/selectors';
 import { getTheme, type Theme } from './theme';
 
 /**
@@ -20,7 +18,7 @@ import { getTheme, type Theme } from './theme';
  * const { colors, spacing } = theme;
  */
 export const useTheme = (): Theme => {
-    const themeName = useAppStore(settingsSelectors.theme);
+    const themeName = useStoreTheme();
     return getTheme(themeName);
 };
 

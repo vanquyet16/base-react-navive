@@ -232,6 +232,7 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
             {...headerProps}
             showMenu={headerProps?.showMenu ?? true}
             onMenuPress={openDrawer}
+            onBack={headerProps?.onBack ?? navigation.goBack}
           />
         )}
 

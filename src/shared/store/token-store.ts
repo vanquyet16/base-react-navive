@@ -4,7 +4,6 @@
  * Quản lý tokens trong AsyncStorage (MMKV).
  * Single source of truth cho access/refresh tokens.
  * 
- * @senior-pattern Storage abstraction để dễ migrate storage backend
  */
 
 import { MMKV } from 'react-native-mmkv';

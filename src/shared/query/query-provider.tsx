@@ -4,7 +4,6 @@
  * QueryClientProvider wrapper component.
  * Setup TanStack Query cho toàn app.
  *
- * @senior-pattern Provider pattern với error boundaries
  */
 
 import React from 'react';
@@ -23,7 +22,9 @@ interface QueryProviderProps {
  * Wrap app với TanStack Query
  */
 export const QueryProvider: React.FC<QueryProviderProps> = ({ children }) => {
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
 };
 
 /**

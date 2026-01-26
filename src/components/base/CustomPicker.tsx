@@ -4,7 +4,7 @@
  * Custom wrapper cho Ant Design Picker với theme integration
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Picker } from '@ant-design/react-native';
 import type { PickerPropsType } from '@ant-design/react-native/lib/picker/PropsType';
 import { useTheme } from '@/shared/theme/use-theme';
@@ -17,7 +17,8 @@ interface CustomPickerProps extends Omit<PickerPropsType, 'error'> {
 
 /**
  * CustomPicker - Wrapper cho Ant Design Picker
- * 
+ *
+ * @optimized React.memo, useMemo
  * @example
  * <CustomPicker
  *   data={options}
@@ -32,19 +33,21 @@ export const CustomPicker: React.FC<CustomPickerProps> = ({
 }) => {
   const theme = useTheme();
 
+  // Memoize error text style
+  const errorTextStyle = useMemo(
+    () => ({ color: theme.colors.error, fontSize: 12, marginTop: 4 }),
+    [theme.colors.error],
+  );
+
   return (
     <>
-      <Picker
-        style={style}
-        {...props}
-      />
-      {errorMessage && (
-        <Text style={{ color: theme.colors.error, fontSize: 12, marginTop: 4 }}>
-          {errorMessage}
-        </Text>
-      )}
+      <Picker style={style} {...props} />
+      {errorMessage && <Text style={errorTextStyle}>{errorMessage}</Text>}
     </>
   );
 };
 
-export default CustomPicker;
+/**
+ * Memoized export để prevent unnecessary re-renders
+ */
+export default React.memo(CustomPicker);

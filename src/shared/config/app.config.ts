@@ -3,12 +3,10 @@
 // ============================================================================
 
 // Environment Configuration
-declare const process: any;
-
 export const ENV = {
     DEV: __DEV__,
     PROD: !__DEV__,
-    TEST: process.env.NODE_ENV === 'test',
+    TEST: false, // Hardcode false for React Native to avoid process.env issues
 } as const;
 
 // API Configuration

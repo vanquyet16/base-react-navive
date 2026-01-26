@@ -4,7 +4,6 @@
  * Types cho HTTP layer: request config, response, errors.
  * Tách riêng để axios-specific types không leak ra domain layer.
  * 
- * @senior-pattern Layered types để isolate thirdparty dependencies
  */
 
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';

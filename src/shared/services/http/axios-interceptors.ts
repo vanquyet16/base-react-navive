@@ -4,7 +4,6 @@
  * Request interceptor: Attach access token
  * Response interceptor: Handle refresh token, normalize errors
  * 
- * @senior-pattern Token refresh với retry mechanism
  */
 
 import type {

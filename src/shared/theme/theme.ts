@@ -4,7 +4,6 @@
  * Light và Dark theme definitions.
  * Semantic color mappings từ design tokens.
  * 
- * @senior-pattern Semantic theme với accessibility
  */
 
 import { colors, spacing, radius, typography, shadows, zIndex } from './tokens';
@@ -20,12 +19,14 @@ export interface Theme {
         background: string;
         backgroundSecondary: string;
         backgroundTertiary: string;
+        inputBackground: string; // Added for input fields
 
         // Text
         text: string;
         textSecondary: string;
         textTertiary: string;
         textInverse: string;
+        textTertiarySeccon: string;
 
         // Borders
         border: string;
@@ -40,6 +41,10 @@ export interface Theme {
         secondaryLight: string;
         secondaryDark: string;
 
+        // Gradient colors for headers
+        gradientStart: string;
+        gradientEnd: string;
+
         // Semantic colors
         success: string;
         successLight: string;
@@ -49,6 +54,12 @@ export interface Theme {
         errorLight: string;
         info: string;
         infoLight: string;
+
+        // Special UI elements
+        avatarBorder: string;
+        orangeAccent: string;
+        blueAccent: string;
+        redNotification: string;
 
         // Common
         white: string;
@@ -72,29 +83,36 @@ export interface Theme {
  */
 export const lightTheme: Theme = {
     colors: {
-        // Backgrounds
-        background: colors.white,
-        backgroundSecondary: colors.gray[50],
-        backgroundTertiary: colors.gray[100],
+        // Backgrounds - Match UI mockups
+        background: '#f5f7fa',        // Main app background (light gray)
+        backgroundSecondary: '#f9fafb', // Secondary surfaces
+        backgroundTertiary: '#ffffff',  // Cards, elevated surfaces
+        inputBackground: '#f8f9fb',     // Input fields
 
         // Text
-        text: colors.gray[900],
-        textSecondary: colors.gray[700],
-        textTertiary: colors.gray[500],
+        text: colors.gray[900],         // #1a1f36 - Primary text
+        textSecondary: colors.gray[500], // #6b7280 - Secondary text, labels
+        textTertiary: colors.gray[400],  // #9ca3af - Tertiary text, placeholders
         textInverse: colors.white,
+        textTertiarySeccon: colors.blue.blueText,
+
 
         // Borders
-        border: colors.gray[300],
-        borderLight: colors.gray[200],
+        border: colors.gray[100],       // #f3f4f6 - Main borders
+        borderLight: colors.gray[50],   // #f9fafb - Subtle borders
 
-        // Brand
-        primary: colors.primary[500],
-        primaryLight: colors.primary[100],
-        primaryDark: colors.primary[700],
+        // Brand - Government Blue
+        primary: colors.primary[500],      // #2B4B9B - Main primary (buttons)
+        primaryLight: colors.primary[100], // Light tint
+        primaryDark: colors.primary[700],  // #001f4d - Darker shade
 
         secondary: colors.secondary[500],
         secondaryLight: colors.secondary[100],
         secondaryDark: colors.secondary[700],
+
+        // Gradient colors for headers
+        gradientStart: colors.primary[600], // #00235a - Dark navy
+        gradientEnd: colors.primary[800],   // #003d8f - Mid blue
 
         // Semantic
         success: colors.success.main,
@@ -105,6 +123,12 @@ export const lightTheme: Theme = {
         errorLight: colors.error.light,
         info: colors.info.main,
         infoLight: colors.info.light,
+
+        // Special UI elements
+        avatarBorder: colors.special.avatarBorder,
+        orangeAccent: colors.special.orangeAccent,
+        blueAccent: colors.special.blueAccent,
+        redNotification: colors.special.redNotification,
 
         // Common
         white: colors.white,
@@ -131,13 +155,14 @@ export const darkTheme: Theme = {
         background: colors.gray[900],
         backgroundSecondary: colors.gray[800],
         backgroundTertiary: colors.gray[700],
+        inputBackground: colors.gray[800], // Dark input background
 
         // Text - inverted
         text: colors.gray[50],
         textSecondary: colors.gray[300],
         textTertiary: colors.gray[400],
         textInverse: colors.gray[900],
-
+        textTertiarySeccon: colors.blue.blueText,
         // Borders
         border: colors.gray[700],
         borderLight: colors.gray[600],
@@ -151,6 +176,10 @@ export const darkTheme: Theme = {
         secondaryLight: colors.secondary[900],
         secondaryDark: colors.secondary[300],
 
+        // Gradient colors for headers (lighter in dark mode)
+        gradientStart: colors.primary[700],
+        gradientEnd: colors.primary[500],
+
         // Semantic - adjusted
         success: colors.success.main,
         successLight: '#1a4d2e',
@@ -160,6 +189,12 @@ export const darkTheme: Theme = {
         errorLight: '#4d1a1a',
         info: colors.info.main,
         infoLight: '#1a3d5c',
+
+        // Special UI elements (same in dark mode)
+        avatarBorder: colors.special.avatarBorder,
+        orangeAccent: colors.special.orangeAccent,
+        blueAccent: colors.special.blueAccent,
+        redNotification: colors.special.redNotification,
 
         // Common
         white: colors.white,

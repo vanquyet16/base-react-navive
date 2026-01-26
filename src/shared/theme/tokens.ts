@@ -4,26 +4,28 @@
  * Atomic design tokens: colors, spacing, typography, radius.
  * Single source of truth cho design decisions.
  * 
- * @senior-pattern Design tokens với semantic naming
+ * @responsive All spacing and typography values are responsive using sizeMatters
  */
+
+import { scale, verticalScale, moderateScale } from '@/shared/utils/sizeMatters';
 
 /**
  * Color Palette
  * HSL-based colors cho dễ customize và theme switching
  */
 export const colors = {
-    // Primary brand colors
+    // Primary brand colors - Government Blue
     primary: {
-        50: '#e6f2ff',
-        100: '#bfe0ff',
-        200: '#99cdff',
-        300: '#73baff',
-        400: '#4da8ff',
-        500: '#2695ff', // Main primary
-        600: '#0077e6',
-        700: '#005bb3',
-        800: '#003f80',
-        900: '#00234d',
+        50: '#e8eef7',
+        100: '#c5d3e9',
+        200: '#9fb6da',
+        300: '#7999cb',
+        400: '#5c83c0',
+        500: '#2B4B9B', // Main primary - Button navy
+        600: '#00235a', // Gradient dark
+        700: '#001f4d', // Darker navy
+        800: '#003d8f', // Gradient light
+        900: '#001233',
     },
 
     // Secondary colors
@@ -40,40 +42,53 @@ export const colors = {
         900: '#350080',
     },
 
-    // Neutrals (grayscale)
+    // Neutrals (grayscale) - Tailwind-based
     gray: {
-        50: '#f8f9fa',
-        100: '#f1f3f5',
-        200: '#e9ecef',
-        300: '#dee2e6',
-        400: '#ced4da',
-        500: '#adb5bd',
-        600: '#868e96',
-        700: '#495057',
-        800: '#343a40',
-        900: '#212529',
+        50: '#f9fafb', // Input backgrounds
+        100: '#f3f4f6', // Borders, hover states
+        200: '#e5e7eb',
+        300: '#d1d5db',
+        400: '#9ca3af', // Tertiary text, icons
+        500: '#6b7280', // Secondary text, labels
+        600: '#4b5563',
+        700: '#374151',
+        800: '#1f2937',
+        900: '#1a1f36', // Primary text (darker than standard)
     },
 
-    // Semantic colors
+    // Semantic colors - Match UI mockups
     success: {
-        light: '#d4f4dd',
-        main: '#52c41a',
-        dark: '#3a9613',
+        light: '#d1fae5', // emerald-100
+        main: '#10b981',  // emerald-500
+        dark: '#065f46',  // emerald-800
     },
     warning: {
-        light: '#fff7e6',
-        main: '#faad14',
-        dark: '#d48806',
+        light: '#fed7aa', // orange-200
+        main: '#f97316',  // orange-500
+        dark: '#c2410c',  // orange-700
     },
     error: {
-        light: '#ffebee',
-        main: '#ff4d4f',
-        dark: '#d32f2f',
+        light: '#fee2e2', // red-100
+        main: '#dc2626',  // red-600
+        dark: '#991b1b',  // red-800
     },
     info: {
-        light: '#e6f7ff',
-        main: '#1890ff',
-        dark: '#096dd9',
+        light: '#dbeafe', // blue-100
+        main: '#3b82f6',  // blue-500
+        dark: '#1e40af',  // blue-800
+    },
+
+    // Special colors - UI elements
+    special: {
+        avatarBorder: '#eab308',   // gold/yellow for avatar accent
+        orangeAccent: '#f97316',   // section indicators
+        blueAccent: '#2B4B9B',     // section indicators
+        redNotification: '#ef4444', // notification badge
+
+    },
+
+    blue: {
+        blueText: '#BFDBFE', // Primary text (darker than standard)
     },
 
     // Common
@@ -83,36 +98,55 @@ export const colors = {
 } as const;
 
 /**
- * Spacing Scale
- * 4px base unit
+ * Spacing Scale (Responsive)
+ * 4px base unit - scaled automatically theo width màn hình
+ * Dùng scale() để ensure consistent spacing across devices
  */
 export const spacing = {
     0: 0,
-    1: 4,
-    2: 8,
-    3: 12,
-    4: 16,
-    5: 20,
-    6: 24,
-    8: 32,
-    10: 40,
-    12: 48,
-    16: 64,
-    20: 80,
-    24: 96,
+    1: moderateScale(4, 0.3),
+    2: moderateScale(8, 0.3),
+    3: moderateScale(12, 0.3),
+    4: moderateScale(16, 0.3),
+    5: moderateScale(20, 0.3),
+    6: moderateScale(24, 0.3),
+    8: moderateScale(32, 0.3),
+    10: moderateScale(40, 0.3),
+    12: moderateScale(48, 0.3),
+    16: moderateScale(64, 0.3),
+    20: moderateScale(80, 0.3),
+    24: moderateScale(96, 0.3),
+} as const;
+
+// Optional: vertical spacing (khi cần chắc chắn theo height)
+export const spacingV = {
+    0: 0,
+    1: verticalScale(4),
+    2: verticalScale(8),
+    3: verticalScale(12),
+    4: verticalScale(16),
+    5: verticalScale(20),
+    6: verticalScale(24),
+    8: verticalScale(32),
+    10: verticalScale(40),
+    12: verticalScale(48),
+    16: verticalScale(64),
+    20: verticalScale(80),
+    24: verticalScale(96),
 } as const;
 
 /**
- * Border Radius Scale
+ * Border Radius Scale (Responsive)
+ * Scaled theo width để consistent trên mọi devices
  */
 export const radius = {
     none: 0,
-    sm: 4,
-    md: 8,
-    lg: 12,
-    xl: 16,
-    '2xl': 24,
-    '3xl': 32,
+    sm: moderateScale(4, 0.3),
+    md: moderateScale(8, 0.3),
+    lg: moderateScale(12, 0.3),
+    xl: moderateScale(16, 0.3),
+    '2xl': moderateScale(24, 0.3),
+    '3xl': moderateScale(32, 0.3),
     full: 9999,
 } as const;
 
@@ -122,16 +156,16 @@ export const radius = {
  */
 export const typography = {
     fontSizes: {
-        xs: 12,
-        sm: 14,
-        base: 16,
-        lg: 18,
-        xl: 20,
-        '2xl': 24,
-        '3xl': 30,
-        '4xl': 36,
-        '5xl': 48,
-        '6xl': 60,
+        xs: moderateScale(12, 0.3),   // Scale ít aggressive hơn cho text
+        sm: moderateScale(14, 0.3),
+        base: moderateScale(16, 0.3),
+        lg: moderateScale(18, 0.3),
+        xl: moderateScale(20, 0.3),
+        '2xl': moderateScale(24, 0.3),
+        '3xl': moderateScale(30, 0.3),
+        '4xl': moderateScale(36, 0.3),
+        '5xl': moderateScale(48, 0.3),
+        '6xl': moderateScale(60, 0.3),
     },
 
     lineHeights: {

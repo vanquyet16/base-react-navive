@@ -2,7 +2,7 @@
  * CONFIG MODULE EXPORTS
  * =====================
  * Centralized export cho tất cả config modules.
- * Import như: import { ENV, BUILD_INFO } from '@/config';
+ * Import như: import { ENV, BUILD_INFO } from '@/shared/config';
  */
 
 // App config (existing - keep for backwards compatibility)

@@ -4,7 +4,6 @@
  * Authentication & authorization domain models.
  * Login, register, token management types.
  * 
- * @senior-pattern Separate auth domain từ user domain
  */
 
 import type { User } from './user';

@@ -4,17 +4,16 @@
  * App root component - entry point cho app.
  * Wrap providers, handle initialization, render navigator.
  *
- * @senior-pattern Root component với loading state
  */
 
 import React from 'react';
 import { View, ActivityIndicator, StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppProviders } from './app-providers';
-import { AppNavigator } from './app-navigator';
 import { useAppInit } from '@/app/hooks/use-app-init';
 import { useTheme } from '@/shared/theme/use-theme';
-import { AppText, ScreenContainer } from '@/components';
+import { CustomText, ScreenContainer } from '@/components';
+import { AppNavigator } from './app-navigator';
 
 /**
  * Loading Screen
@@ -28,9 +27,9 @@ const LoadingScreen: React.FC = () => {
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator size="large" color={theme.colors.primary} />
         <View style={{ height: theme.spacing[4] }} />
-        <AppText variant="body" color="secondary">
+        <CustomText variant="body" color="secondary">
           Đang khởi tạo...
-        </AppText>
+        </CustomText>
       </View>
     </ScreenContainer>
   );
@@ -44,13 +43,13 @@ const ErrorScreen: React.FC<{ error: Error }> = ({ error }) => {
   return (
     <ScreenContainer>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <AppText variant="h3" color="error">
+        <CustomText variant="h3" color="error">
           Lỗi khởi tạo
-        </AppText>
+        </CustomText>
         <View style={{ height: 16 }} />
-        <AppText variant="body" color="secondary" align="center">
+        <CustomText variant="body" color="secondary" align="center">
           {error.message}
-        </AppText>
+        </CustomText>
       </View>
     </ScreenContainer>
   );

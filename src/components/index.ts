@@ -13,5 +13,3 @@ export { default as FormInput } from './form/FormInput';
 // Utility Components
 export * from './utility';
 
-// Custom Ant Design Components
-export * from './custom-antd';

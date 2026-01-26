@@ -2,7 +2,7 @@ import React from 'react';
 import {
   View,
   Text,
-  StyleSheet, 
+  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Alert,
@@ -20,11 +20,12 @@ import {
 import TestDocumentPicker from '@/features/performance/components/TestDocumentPicker';
 import { MainStackParamList } from '@/shared/types';
 import { useSessionActions } from '@/shared/store/selectors';
+import { useMainNavigation } from '@/shared/hooks/useNavigation';
 
 type NavigationProp = StackNavigationProp<MainStackParamList>;
 
 const HomeScreen: React.FC = () => {
-  const navigation = useNavigation<NavigationProp>();
+  const navigation = useMainNavigation();
   // const user = useUser();
   const { clearSession } = useSessionActions();
 

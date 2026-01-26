@@ -4,7 +4,6 @@
  * Consistent screen wrapper với safe area và theming.
  * Base container cho tất cả screens.
  *
- * @senior-pattern Screen wrapper với safe area và scroll support
  */
 
 import React from 'react';
@@ -19,7 +18,6 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
-import { spacing } from '@/shared/theme/tokens';
 
 /**
  * ScreenContainer Props
@@ -36,7 +34,7 @@ export interface ScreenContainerProps extends ViewProps {
   /** Background color override */
   backgroundColor?: string;
   /** Padding size (spacing scale) */
-  padding?: keyof typeof spacing;
+  padding?: keyof typeof import('@/shared/theme/tokens').spacing;
 }
 
 /**

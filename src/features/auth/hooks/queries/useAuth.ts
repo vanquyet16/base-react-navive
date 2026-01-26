@@ -2,11 +2,26 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useMemo, useCallback } from 'react';
 import { useBaseMutation } from '@/shared/hooks/useBaseMutation';
 import { useBaseQuery } from '@/shared/hooks/useBaseQuery';
-import { LoginRequest } from '@/shared/types';
+import {
+    LoginRequest,
+    RegisterRequest,
+    ChangePasswordRequest,
+    ResetPasswordRequest,
+    ForgotPasswordRequest
+} from '@/shared/types/domain/auth';
+import { authService } from '../../services/auth.service';
 import { useIsAuthenticated, useSessionActions } from '@/shared/store/selectors';
-import { authService } from '@/features/auth/services/auth.service';
-// Import authKeys từ shared query keys (nguồn chính thống)
-import { authKeys } from '@/shared/query/query-keys';
+
+// ============================================================================
+// QUERY KEYS
+// ============================================================================
+
+export const authKeys = {
+    all: ['auth'] as const,
+    me: () => [...authKeys.all, 'me'] as const,
+    profile: () => [...authKeys.all, 'profile'] as const,
+    tokens: () => [...authKeys.all, 'tokens'] as const,
+} as const;
 
 // ============================================================================
 // QUERIES
@@ -74,10 +89,7 @@ export const useLogin = () => {
 
     return useBaseMutation({
         mutationFn: (credentials: LoginRequest) => {
-            return authService.login({
-                username: credentials.userName,
-                password: credentials.password,
-            });
+            return authService.login(credentials);
         },
         showSuccessToast: false, // Không hiển thị toast success mặc định
         showErrorToast: true,
@@ -85,10 +97,10 @@ export const useLogin = () => {
         invalidateQueries,
         onSuccessCallback: (data) => {
             // Set session với user data và tokens
-            // Note: old LoginResponse has flat structure: { token, refreshToken, ...user fields }
+            const { user, tokens } = data;
             setSession({
                 isAuthenticated: true,
-                user: data.user,
+                user,
             });
         },
         // Note: Loading state được handle bởi mutation's isPending
@@ -105,24 +117,20 @@ export const useRegister = () => {
     const invalidateQueries = useMemo(() => [authKeys.me(), authKeys.profile()], []);
 
     return useBaseMutation({
-        mutationFn: (userData: { email: string; password: string; name: string }) =>
-            authService.register({
-                username: userData.email,
-                email: userData.email,
-                password: userData.password,
-                passwordConfirmation: userData.password,
-                displayName: userData.name,
-            }),
+        mutationFn: (userData: RegisterRequest) => authService.register(userData),
         showSuccessToast: true,
         successMessage: 'Đăng ký thành công!',
         showErrorToast: true,
         errorMessage: 'Đăng ký thất bại',
         invalidateQueries,
         onSuccessCallback: (data) => {
-            setSession({
-                isAuthenticated: true,
-                user: data as any,
-            });
+            // Only auto-login if tokens are returned
+            if (data.tokens && data.user) {
+                setSession({
+                    isAuthenticated: true,
+                    user: data.user,
+                });
+            }
         },
     });
 };
@@ -155,12 +163,7 @@ export const useLogout = () => {
  */
 export const useChangePassword = () => {
     return useBaseMutation({
-        mutationFn: (data: { currentPassword: string; newPassword: string }) =>
-            authService.changePassword({
-                currentPassword: data.currentPassword,
-                newPassword: data.newPassword,
-                passwordConfirmation: data.newPassword
-            }),
+        mutationFn: (data: ChangePasswordRequest) => authService.changePassword(data),
         showSuccessToast: true,
         successMessage: 'Đổi mật khẩu thành công!',
         showErrorToast: true,
@@ -168,6 +171,7 @@ export const useChangePassword = () => {
         // Không invalidate queries vì không ảnh hưởng đến user data
     });
 };
+
 
 /**
  * Cập nhật profile
@@ -203,8 +207,15 @@ export const useRefreshToken = () => {
         mutationFn: authService.refreshToken,
         showSuccessToast: false,
         showErrorToast: false,
-        onSuccessCallback: (data) => {
-            // Updated tokens automatically handled by interceptors/store
+        onSuccessCallback: (accessToken: string) => {
+            // Update tokens trong session
+            // Note: refreshToken service trả về string (new access token) hoặc object full tokens depending on implementation
+            // In auth.service.ts, refreshTokenInternal returns PROMISE<STRING> (access token)
+            // But we should update store mostly.
+            // Let's rely on tokenStore update inside service, here just update session state if needed
+            // Currently setSession takes partial update
+            // Token updated in disk by service, no need to update session store (which is RAM only now)
+
         },
         // Không retry refresh token để tránh loop vô hạn
         retry: false,
@@ -216,7 +227,7 @@ export const useRefreshToken = () => {
  */
 export const useForgotPassword = () => {
     return useBaseMutation({
-        mutationFn: (email: string) => authService.forgotPassword({ email }),
+        mutationFn: (data: ForgotPasswordRequest) => authService.forgotPassword(data),
         showSuccessToast: true,
         successMessage: 'Email khôi phục mật khẩu đã được gửi!',
         showErrorToast: true,
@@ -229,12 +240,7 @@ export const useForgotPassword = () => {
  */
 export const useResetPassword = () => {
     return useBaseMutation({
-        mutationFn: (data: { token: string; password: string }) =>
-            authService.resetPassword({
-                token: data.token,
-                password: data.password,
-                passwordConfirmation: data.password
-            }),
+        mutationFn: (data: ResetPasswordRequest) => authService.resetPassword(data),
         showSuccessToast: true,
         successMessage: 'Đặt lại mật khẩu thành công!',
         showErrorToast: true,

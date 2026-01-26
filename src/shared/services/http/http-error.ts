@@ -4,12 +4,11 @@
  * Normalized error class để consistent error handling.
  * Map từ axios errors sang business-friendly errors.
  * 
- * @senior-pattern Error normalization để decouple từ axios
  */
 
 import type { AxiosError } from 'axios';
 import { HTTP_STATUS } from '@/shared/constants/http';
-import { ERROR_MESSAGES } from '@/shared/config';
+import { ERROR_MESSAGES } from '@/shared/config/app.config';
 import type { HttpError, HttpErrorType } from './http-types';
 
 /**
@@ -51,8 +50,9 @@ export class AppHttpError extends Error implements HttpError {
             this.statusCode === HTTP_STATUS.UNAUTHORIZED ||
             this.statusCode === HTTP_STATUS.FORBIDDEN;
 
-        // Maintain proper stack trace (only V8 engines)
-        if ((Error as any).captureStackTrace) {
+        // Maintain proper stack trace (only available in V8/Node.js, not in RN JSC/Hermes)
+        // Type assertion để bypass TypeScript error trong React Native environment
+        if (typeof (Error as any).captureStackTrace === 'function') {
             (Error as any).captureStackTrace(this, AppHttpError);
         }
     }

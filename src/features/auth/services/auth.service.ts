@@ -4,7 +4,6 @@
  * Authentication service: login, register, logout, refresh token.
  * Integrates với HTTP client và token store.
  * 
- * @senior-pattern Service layer với single responsibility
  */
 
 import { httpClient } from '@/shared/services/http/http-client';
@@ -20,10 +19,10 @@ import type {
     RefreshTokenResponse,
     ForgotPasswordRequest,
     ChangePasswordRequest,
-    TokenPair,
+    ResetPasswordRequest,
 } from '@/shared/types/domain/auth';
-import type { ApiResponse } from '@/shared/types/api';
 import type { User } from '@/shared/types/domain/user';
+import type { ApiResponse } from '@/shared/types/api';
 
 /**
  * Auth Service class
@@ -44,6 +43,8 @@ class AuthService {
 
     /**
      * Login
+     * @param request - Login credentials
+     * @returns User + tokens
      */
     public async login(request: LoginRequest): Promise<LoginResponse> {
         // Call API với skipAuth vì chưa có token
@@ -60,7 +61,7 @@ class AuthService {
 
         const { tokens, user } = response.data;
 
-        // Store tokens directly to Disk
+        // Store tokens
         await tokenStore.setTokens(tokens);
 
         return { tokens, user };
@@ -68,6 +69,8 @@ class AuthService {
 
     /**
      * Register
+     * @param request - Registration data
+     * @returns Success response
      */
     public async register(
         request: RegisterRequest,
@@ -88,10 +91,11 @@ class AuthService {
 
     /**
      * Logout
+     * Clear tokens và gọi API logout nếu cần
      */
     public async logout(): Promise<void> {
         try {
-            // Call API logout (best effort)
+            // Call API logout (best effort - không care nếu fail)
             await httpClient.post(API_ENDPOINTS.AUTH.LOGOUT);
         } catch (error) {
             console.warn('[AuthService] Logout API error (ignored):', error);
@@ -131,16 +135,24 @@ class AuthService {
     }
 
     /**
+     * Public refresh token method
+     */
+    public async refreshToken(): Promise<string> {
+        return this.refreshTokenInternal();
+    }
+
+    /**
      * Handle refresh token failed
+     * Logout user khi refresh token expired/invalid
      */
     private async handleRefreshFailed(): Promise<void> {
         console.warn('[AuthService] Refresh token failed - logging out');
         await this.logout();
-        // Trigger generic "logout" event if utilizing EventBus
     }
 
     /**
      * Forgot password
+     * @param request - Email để gửi reset link
      */
     public async forgotPassword(
         request: ForgotPasswordRequest,
@@ -153,7 +165,8 @@ class AuthService {
     }
 
     /**
-     * Change password
+     * Change password (khi đã login)
+     * @param request - Current + new password
      */
     public async changePassword(
         request: ChangePasswordRequest,
@@ -162,9 +175,10 @@ class AuthService {
     }
 
     /**
-     * Get current user
+     * Get current user từ API
+     * Dùng để refresh user data
      */
-    public async getCurrentUser(): Promise<User> {
+    public async getCurrentUser() {
         const response = await httpClient.get<ApiResponse<any>>(
             API_ENDPOINTS.AUTH.GET_CURRENT_USER,
         );
@@ -172,46 +186,25 @@ class AuthService {
     }
 
     /**
-     * Refresh access token (public)
+     * Update profile
+     * @param request - Profile data to update
      */
-    public async refreshToken(refreshToken: string): Promise<TokenPair> {
-        const response = await httpClient.post<ApiResponse<RefreshTokenResponse>>(
-            API_ENDPOINTS.AUTH.REFRESH_TOKEN,
-            { refreshToken },
-            { skipAuth: true, skipRefresh: true }
-        );
-        return response.data.tokens;
-    }
-
-    /**
-     * Update user profile
-     */
-    public async updateProfile(data: Partial<User>): Promise<User> {
+    public async updateProfile(request: Partial<User>): Promise<User> {
         const response = await httpClient.put<ApiResponse<User>>(
             API_ENDPOINTS.AUTH.UPDATE_PROFILE,
-            data
+            request
         );
         return response.data;
     }
 
     /**
      * Reset password
+     * @param request - Token and new password
      */
-    public async resetPassword(data: { token: string; password: string; passwordConfirmation: string }): Promise<void> {
+    public async resetPassword(request: ResetPasswordRequest): Promise<void> {
         await httpClient.post(
             API_ENDPOINTS.AUTH.RESET_PASSWORD,
-            data,
-            { skipAuth: true }
-        );
-    }
-
-    /**
-     * Verify email
-     */
-    public async verifyEmail(token: string): Promise<void> {
-        await httpClient.post(
-            API_ENDPOINTS.AUTH.VERIFY_EMAIL,
-            { token },
+            request,
             { skipAuth: true }
         );
     }
@@ -224,5 +217,12 @@ class AuthService {
     }
 }
 
+/**
+ * Singleton auth service instance
+ */
 export const authService = new AuthService();
+
+/**
+ * Export class nếu cần testing
+ */
 export { AuthService };

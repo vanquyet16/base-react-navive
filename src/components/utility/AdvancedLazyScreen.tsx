@@ -44,7 +44,7 @@ const AdvancedLazyScreen: React.FC<AdvancedLazyScreenProps> = ({
       onLoadStart?.();
 
       // Mô phỏng thời gian load component
-      await new Promise<void>(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(() => resolve(undefined), 1000));
 
       const module = await component();
       setComponent(() => module.default);

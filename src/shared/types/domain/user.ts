@@ -4,7 +4,6 @@
  * User-related domain models.
  * Represent business entities, không phải API DTOs.
  * 
- * @senior-pattern Domain models tách biệt API DTOs
  */
 
 import type { ID, ISODateString, Nullable } from '../common';

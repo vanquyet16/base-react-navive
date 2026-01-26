@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import {
   performanceMonitor,
@@ -12,7 +12,10 @@ const PerformanceTest: React.FC = () => {
   const [results, setResults] = useState<string[]>([]);
 
   const addResult = (message: string) => {
-    setResults(prev => [...prev, `${new Date().toLocaleTimeString()}: ${message}`]);
+    setResults(prev => [
+      ...prev,
+      `${new Date().toLocaleTimeString()}: ${message}`,
+    ]);
   };
 
   const testPerformanceMonitor = () => {
@@ -33,7 +36,7 @@ const PerformanceTest: React.FC = () => {
     }, 50);
 
     // Test 3: Sử dụng measureSync
-    const result = measureSync('test3', () => {
+    const syncResult = measureSync('test3', () => {
       // Simulate some work
       let sum = 0;
       for (let i = 0; i < 100000; i++) {
@@ -41,11 +44,11 @@ const PerformanceTest: React.FC = () => {
       }
       return sum;
     });
-    addResult(`Test 3 result: ${result}`);
+    addResult(`Test 3 result: ${syncResult}`);
 
     // Test 4: Sử dụng measureAsync
     measureAsync('test4', async () => {
-      await new Promise<void>(resolve => setTimeout(resolve, 200));
+      await new Promise(resolve => setTimeout(() => resolve(undefined), 200));
       return 'async result';
     }).then(result => {
       addResult(`Test 4 result: ${result}`);
@@ -62,8 +65,8 @@ const PerformanceTest: React.FC = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Performance Monitor Test</Text>
 
-      <Button title='Run Tests' onPress={testPerformanceMonitor} />
-      <Button title='Clear Results' onPress={clearResults} />
+      <Button title="Run Tests" onPress={testPerformanceMonitor} />
+      <Button title="Clear Results" onPress={clearResults} />
 
       <View style={styles.resultsContainer}>
         <Text style={styles.resultsTitle}>Results:</Text>

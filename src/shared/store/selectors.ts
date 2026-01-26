@@ -4,7 +4,6 @@
  * Centralized selectors cho performance optimization.
  * Memoized selectors để avoid unnecessary re-renders.
  * 
- * @senior-pattern Selector pattern với shallow equality
  */
 
 import { useShallow } from 'zustand/react/shallow';
@@ -34,10 +33,8 @@ export const useUserRole = () =>
 
 /**
  * Settings Selectors
- * NOTE: useThemePreference returns theme preference string ("light" | "dark" | "auto").
- * For actual theme object, use useTheme() from '@/shared/theme'
  */
-export const useThemePreference = (): Theme =>
+export const useTheme = (): Theme =>
     useAppStore(settingsSelectors.theme);
 
 export const useLanguage = (): Language =>
@@ -46,11 +43,7 @@ export const useLanguage = (): Language =>
 export const useNotificationsEnabled = () =>
     useAppStore(settingsSelectors.notificationsEnabled);
 
-/**
- * Returns dark mode preference from settings.
- * For computed dark mode based on current theme, use useIsDarkMode() from '@/shared/theme'
- */
-export const useIsDarkModePreference = () =>
+export const useIsDarkMode = () =>
     useAppStore(settingsSelectors.isDarkMode);
 
 /**

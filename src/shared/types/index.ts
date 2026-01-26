@@ -28,7 +28,22 @@ export interface LoginResponse {
 // Navigation types
 export type RootStackParamList = {
     Auth: undefined;
-    Drawer: undefined; // Drawer wrap toàn bộ Main flow
+    Drawer: undefined;
+};
+
+export type DrawerStackParamList = {
+    MainTabs: NavigatorScreenParams<MainStackParamList>;
+    ProductScreen: NavigatorScreenParams<MainStackParamList>;
+    LazyDemoScreen: NavigatorScreenParams<MainStackParamList>;
+    ApiLazyDemoScreen: NavigatorScreenParams<MainStackParamList>;
+    CacheDemoScreen: NavigatorScreenParams<MainStackParamList>;
+    PdfDemoScreen: NavigatorScreenParams<MainStackParamList>;
+    PerformanceDemoScreen: NavigatorScreenParams<MainStackParamList>;
+    ResponsiveDemoScreen: NavigatorScreenParams<MainStackParamList>;
+};
+
+export type DrawerParamList = {
+    DrawerStack: NavigatorScreenParams<DrawerStackParamList>;
 };
 
 export type AuthStackParamList = {
@@ -57,25 +72,12 @@ export type MainStackParamList = {
 
 export type MainTabParamList = {
     Home: undefined;
-    Profile: undefined;
-    Settings: undefined;
-    ResponsiveDemo: undefined;
+    Contacts: undefined;     // Danh bạ
+    Notifications: undefined; // Thông báo
+    Apps: undefined;         // Ứng dụng
 };
 
-export type DrawerStackParamList = {
-    MainTabs: NavigatorScreenParams<MainStackParamList>;
-    ProductScreen: NavigatorScreenParams<MainStackParamList>;
-    LazyDemoScreen: NavigatorScreenParams<MainStackParamList>;
-    ApiLazyDemoScreen: NavigatorScreenParams<MainStackParamList>;
-    CacheDemoScreen: NavigatorScreenParams<MainStackParamList>;
-    PdfDemoScreen: NavigatorScreenParams<MainStackParamList>;
-    PerformanceDemoScreen: NavigatorScreenParams<MainStackParamList>;
-    ResponsiveDemoScreen: NavigatorScreenParams<MainStackParamList>;
-};
 
-export type DrawerParamList = {
-    DrawerStack: NavigatorScreenParams<DrawerStackParamList>;
-};
 
 // API Response types
 export interface ApiResponse<T = any> {

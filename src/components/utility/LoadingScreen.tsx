@@ -21,7 +21,7 @@ const LoadingScreen: React.FC = () => {
   );
 };
 
-const useStyles = createStyles(theme => ({
+const useStyles = createStyles((theme) => ({
   container: {
     flex: 1,
     justifyContent: 'center',

@@ -1,19 +1,18 @@
-import React, {useState} from 'react';
-import {View, StyleSheet, Alert} from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Alert } from 'react-native';
 import CustomHeader from '@/components/layout/CustomHeader';
-import CustomBottomBar, {BottomBarTab} from '@/components/navigation/CustomBottomBar';
-import {COLORS} from '@/shared/constants';
+import { COLORS } from '@/shared/constants';
 
 const ExampleUsage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('home');
 
   // Cấu hình tabs cho BottomBar
-  const bottomTabs = [
-    BottomBarTab.Home,
-    {...BottomBarTab.Search, badge: 3},
-    {...BottomBarTab.Favorites, badge: 12},
-    BottomBarTab.Profile,
-  ];
+  // const bottomTabs = [
+  //   BottomBarTab.Home,
+  //   {...BottomBarTab.Search, badge: 3},
+  //   {...BottomBarTab.Favorites, badge: 12},
+  //   BottomBarTab.Profile,
+  // ];
 
   // Xử lý sự kiện
   const handleSearch = (text: string) => {
@@ -56,13 +55,13 @@ const ExampleUsage: React.FC = () => {
       </View>
 
       {/* Custom Bottom Bar */}
-      <CustomBottomBar
+      {/* <CustomBottomBar
         tabs={bottomTabs}
         activeTab={activeTab}
         onTabPress={handleTabPress}
         showLabels={true}
         animationType="slide"
-      />
+      /> */}
     </View>
   );
 };

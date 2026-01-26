@@ -4,7 +4,6 @@
  * Centralized storage keys cho AsyncStorage/MMKV.
  * Prefix để tránh conflict với libraries khác.
  * 
- * @senior-pattern Namespace pattern cho storage keys
  */
 
 const PREFIX = '@rn_base:';

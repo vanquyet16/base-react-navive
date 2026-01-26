@@ -4,7 +4,10 @@
  * Navigation setup với React Navigation.
  * Auth-aware navigation: switch giữa Auth stack và Drawer navigator.
  *
- * @senior-pattern Auth-aware navigation với type-safe routes và separation of concerns
+ * Pattern:
+ * - Navigators được tạo trong dedicated files (navigators/)
+ * - app-navigator chỉ chứa root switching logic
+ * - Clean, concise, dễ maintain
  */
 
 import React from 'react';
@@ -18,20 +21,18 @@ import { AuthStackNavigator, DrawerNavigator } from '@/navigation/navigators';
 const Stack = createStackNavigator<RootStackParamList>();
 
 /**
- * AppNavigator
+ * AppNavigator - Root Navigation Component
  *
- * Mục đích:
- * - Root navigator của toàn bộ app
- * - Auto-switch giữa Auth và Drawer stack based on authentication status
+ * Chức năng:
+ * - Switch giữa Auth Stack và Drawer Stack dựa trên authentication state
+ * - AuthStack: Chứa Login, Register screens
+ * - Drawer: Chứa MainStack và Menu
  *
- * Flow:
- * 1. Check authentication status từ store
- * 2. Nếu authenticated -> hiển thị DrawerNavigator (Root -> Drawer -> MainStack)
- * 3. Nếu chưa authenticated -> hiển thị AuthStackNavigator
+ * Pattern:
+ * - Sử dụng useIsAuthenticated hook để get authentication state
+ * - Conditional rendering based on auth state
  *
- * @senior-pattern Separation of concerns
- * - Root navigator chỉ lo routing logic
- * - Root structure: Root -> Drawer -> Main -> Tabs/Screens
+ * @returns Root navigation container
  */
 export const AppNavigator: React.FC = () => {
   const isAuthenticated = useIsAuthenticated();
@@ -45,10 +46,7 @@ export const AppNavigator: React.FC = () => {
         {true ? (
           <Stack.Screen name={ROOT_STACKS.DRAWER} component={DrawerNavigator} />
         ) : (
-          <Stack.Screen
-            name="Auth" // Key trong RootStackParamList là "Auth", match với file definition
-            component={AuthStackNavigator}
-          />
+          <Stack.Screen name="Auth" component={AuthStackNavigator} />
         )}
       </Stack.Navigator>
     </NavigationContainer>

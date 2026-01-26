@@ -1,29 +1,82 @@
-import React from 'react';
+import React, { memo, useCallback } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
   TouchableOpacity,
   Animated,
-  Dimensions,
-  SafeAreaView,
+  type ViewStyle,
+  type TextStyle,
 } from 'react-native';
-import {BottomTabBarProps} from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import {COLORS} from '@/shared/constants';
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
+import type { MainTabParamList } from '@/shared/types';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  moderateScale,
+  moderateVerticalScale,
+  scale,
+} from 'react-native-size-matters';
 
-const {width: SCREEN_WIDTH} = Dimensions.get('screen');
+type TabRoute = {
+  key: string;
+  name: keyof MainTabParamList;
+  params: MainTabParamList[keyof MainTabParamList];
+};
 
 const CustomTabBar: React.FC<BottomTabBarProps> = ({
   state,
   descriptors,
   navigation,
 }) => {
+  const theme = useTheme();
+  const tabRoutes = state.routes as unknown as TabRoute[];
+
+  const typedNavigate = useCallback(
+    (routeName: keyof MainTabParamList) => {
+      // `BottomTabBarProps['navigation']` không generic theo ParamList trong version này,
+      // nên ta tạo wrapper type-safe cho `MainTabParamList`.
+      (
+        navigation as unknown as {
+          navigate: (name: keyof MainTabParamList) => void;
+        }
+      ).navigate(routeName);
+    },
+    [navigation],
+  );
+
+  const onTabPress = useCallback(
+    (route: TabRoute, isFocused: boolean) => {
+      const event = navigation.emit({
+        type: 'tabPress',
+        target: route.key,
+        canPreventDefault: true,
+      });
+
+      if (!isFocused && !event.defaultPrevented) {
+        typedNavigate(route.name);
+      }
+    },
+    [navigation, typedNavigate],
+  );
+
+  const onTabLongPress = useCallback(
+    (routeKey: string) => {
+      navigation.emit({
+        type: 'tabLongPress',
+        target: routeKey,
+      });
+    },
+    [navigation],
+  );
+
+  const baseStyles = useBaseStyles();
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.tabsContainer}>
-        {state.routes.map((route, index) => {
-          const {options} = descriptors[route.key];
+    <SafeAreaView edges={['bottom']} style={baseStyles.container}>
+      <View style={baseStyles.tabsContainer}>
+        {tabRoutes.map((route, index) => {
+          const { options } = descriptors[route.key];
           const label =
             typeof options.tabBarLabel === 'string'
               ? options.tabBarLabel
@@ -33,55 +86,55 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
 
           const isFocused = state.index === index;
 
-          const onPress = () => {
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true,
-            });
-
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name, route.params);
-            }
-          };
-
-          const onLongPress = () => {
-            navigation.emit({
-              type: 'tabLongPress',
-              target: route.key,
-            });
-          };
-
           // Lấy icon từ options
           const IconComponent = options.tabBarIcon;
-          const color = isFocused ? COLORS.primary : COLORS.textSecondary;
+          const badgeCount = options.tabBarBadge;
+
+          const styles = useStyles({ isActive: isFocused });
+          const color = isFocused
+            ? theme.colors.primary
+            : theme.colors.textSecondary;
 
           return (
             <TouchableOpacity
               key={route.key}
               style={styles.tab}
-              onPress={onPress}
-              onLongPress={onLongPress}
-              activeOpacity={0.7}>
+              onPress={() => onTabPress(route, isFocused)}
+              onLongPress={() => onTabLongPress(route.key)}
+              activeOpacity={0.7}
+            >
               <Animated.View
                 style={[
                   styles.tabContent,
                   {
-                    transform: [{scale: isFocused ? 1.1 : 1}],
+                    transform: [{ scale: isFocused ? 1.1 : 1 }],
                   },
-                ]}>
+                ]}
+              >
                 <View style={styles.iconContainer}>
                   {IconComponent &&
-                    IconComponent({focused: isFocused, color, size: 24})}
+                    IconComponent({ focused: isFocused, color, size: 24 })}
+
+                  {/* Badge */}
+                  {!!badgeCount && (
+                    <View style={styles.badge}>
+                      <Text style={styles.badgeText}>
+                        {typeof badgeCount === 'number' && badgeCount > 99
+                          ? '99+'
+                          : badgeCount}
+                      </Text>
+                    </View>
+                  )}
                 </View>
 
                 <Text
                   style={[
                     styles.tabLabel,
-                    {color},
+                    { color },
                     isFocused && styles.activeTabLabel,
                   ]}
-                  numberOfLines={1}>
+                  numberOfLines={1}
+                >
                   {label}
                 </Text>
               </Animated.View>
@@ -96,55 +149,168 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: COLORS.background,
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    height: 60,
-    paddingHorizontal: 8,
-  },
-  tab: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 8,
-    position: 'relative',
-  },
-  tabContent: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconContainer: {
-    marginBottom: 4,
-  },
-  tabLabel: {
-    fontSize: 12,
-    fontWeight: '500',
-    textAlign: 'center',
-  },
-  activeTabLabel: {
-    fontWeight: '600',
-  },
-  activeIndicator: {
-    position: 'absolute',
-    top: 0,
-    width: '60%',
-    height: 3,
-    backgroundColor: COLORS.primary,
-    borderRadius: 2,
-  },
-});
+export default memo(CustomTabBar);
 
-export default CustomTabBar;
+// Base styles không phụ thuộc vào props
+const useBaseStyles = createStyles(
+  theme => ({
+    container: {
+      backgroundColor: theme.colors.background,
+
+      // ✅ Bottom tab must be absolutely positioned
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+
+      // ✅ Radius phải scale theo chuẩn Resize Master
+      borderTopLeftRadius: moderateScale(40),
+      borderTopRightRadius: moderateScale(40),
+
+      /**
+       * ✅ Shadow (iOS)
+       * Keep lightweight → avoid expensive GPU shadows on low-end devices
+       */
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: moderateVerticalScale(-3),
+      },
+      shadowOpacity: 0.08,
+      shadowRadius: moderateScale(6),
+
+      /**
+       * ✅ Elevation (Android)
+       * Avoid too high elevation → smoother rendering
+       */
+      elevation: 6,
+
+      // ✅ Remove default border safely (allowed constant)
+      borderTopWidth: 0,
+
+      // ✅ Avoid redundant padding
+      paddingBottom: 0,
+    },
+
+    tabsContainer: {
+      flexDirection: 'row',
+
+      // ✅ Height phải scale → touch target chuẩn (>= 56dp)
+      height: moderateVerticalScale(50),
+
+      // ✅ Horizontal padding scale
+      paddingHorizontal: scale(8),
+
+      backgroundColor: 'transparent',
+
+      // ✅ Bottom spacing scale (safe-area visual balance)
+      paddingBottom: moderateVerticalScale(10),
+    },
+  }),
+  true,
+);
+
+// Styles phụ thuộc vào props (isActive)
+const useStyles = createStyles<
+  {
+    tab: ViewStyle;
+    tabContent: ViewStyle;
+    iconContainer: ViewStyle;
+    tabLabel: TextStyle;
+    activeTabLabel: TextStyle;
+    activeIndicator: ViewStyle;
+    badge: ViewStyle;
+    badgeText: TextStyle;
+  },
+  { isActive: boolean }
+>(
+  (theme, props) => ({
+    tab: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+
+      // ✅ vertical spacing phải scale theo dọc
+      paddingVertical: moderateVerticalScale(4),
+
+      position: 'relative',
+    },
+
+    tabContent: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+
+    iconContainer: {
+      // ✅ 25 là quá lớn cho bottom tab -> chuẩn thường 6~10
+      marginTop: '40%',
+      marginBottom: moderateVerticalScale(4),
+
+      position: 'relative',
+
+      // ✅ width/height nên đồng bộ scale (không mix moderateScale cho height)
+      width: scale(32),
+      height: scale(32),
+
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+
+    tabLabel: {
+      // ✅ fontSize dùng moderateScale
+      fontSize: moderateScale(10),
+
+      fontWeight: props.isActive ? '700' : '500',
+      textAlign: 'center',
+
+      // ✅ màu theo theme
+      color: props.isActive
+        ? theme.colors.primary
+        : theme.colors.textSecondary ?? theme.colors.text,
+
+      // ✅ giúp text cân hơn trên Android
+      lineHeight: moderateScale(12),
+    },
+
+    // ✅ giữ lại nếu bạn muốn apply riêng khi active
+    activeTabLabel: {
+      fontWeight: '700',
+      color: theme.colors.primary,
+    },
+
+    activeIndicator: {
+      // giữ đúng yêu cầu thiết kế: ẩn
+      display: 'none',
+    },
+
+    badge: {
+      position: 'absolute',
+
+      // ✅ offset scale chuẩn
+      top: moderateVerticalScale(-2),
+      right: scale(-6),
+
+      backgroundColor: theme.colors.error,
+
+      // ✅ radius/size/padding scale chuẩn
+      borderRadius: moderateScale(10),
+      minWidth: scale(16),
+      height: scale(16),
+
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingHorizontal: scale(4),
+
+      borderWidth: 1,
+      borderColor: theme.colors.background,
+    },
+
+    badgeText: {
+      color: '#FFFFFF',
+      fontSize: moderateScale(10),
+      fontWeight: '700',
+      lineHeight: moderateScale(12),
+    },
+  }),
+  true,
+);

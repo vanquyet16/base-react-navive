@@ -1,6 +1,3 @@
-// ============================================================================
-// CẤU HÌNH NAVIGATION - CHUẨN SENIOR
-// ============================================================================
 
 import { MainTabParamList, AuthStackParamList } from '@/shared/types';
 
@@ -96,7 +93,7 @@ export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
         showHeader: true,
         showTabs: false,
         headerType: 'minimal',
-        showBack: false,
+        showBack: true,
     },
 
     LazyTestScreen: {
@@ -179,6 +176,7 @@ export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
         showTabs: false,
         headerType: 'minimal',
     },
+
 };
 
 // ============================================================================
@@ -205,30 +203,36 @@ export const TAB_SCREENS: TabScreenConfig[] = [
         },
     },
     {
-        name: 'Profile',
-        title: 'Hồ sơ',
+        name: 'Contacts',
+        title: 'Danh bạ',
+        // TODO: Replace with actual Contacts screen or reuse Profile for demo
         component: () => import('@/features/profile/screens/ProfileScreen'),
-        icon: 'person',
+        icon: 'book', // AntDesign: book for contacts/directory
         header: {
-            type: 'minimal',
+            type: 'default',
             showMenu: true,
+            showSearch: true,
+            showNotification: true,
         },
     },
     {
-        name: 'Settings',
-        title: 'Cài đặt',
+        name: 'Notifications',
+        title: 'Thông báo',
+        // TODO: Replace with actual Notifications screen or reusable Settings for demo
         component: () => import('@/features/profile/screens/SettingsScreen'),
-        icon: 'settings',
+        icon: 'bell', // AntDesign: bell
+        badge: 5,
         header: {
             type: 'minimal',
             showMenu: true,
         },
     },
     {
-        name: 'ResponsiveDemo',
-        title: 'Responsive',
+        name: 'Apps',
+        title: 'Ứng dụng',
+        // TODO: Replace with Apps menu screen
         component: () => import('@/features/example/screens/ResponsiveDemoScreen'),
-        icon: 'aspect-ratio',
+        icon: 'appstore', // AntDesign: appstore
         header: {
             type: 'minimal',
             showMenu: true,
@@ -299,9 +303,9 @@ export const NAVIGATION_KEYS = {
     // Tab Navigator - Bottom tabs
     TAB: {
         HOME: 'Home', // Trang chủ
-        PROFILE: 'Profile', // Hồ sơ
-        SETTINGS: 'Settings', // Cài đặt
-        RESPONSIVE_DEMO: 'ResponsiveDemo', // Responsive demo
+        CONTACTS: 'Contacts', // Danh bạ
+        NOTIFICATIONS: 'Notifications', // Thông báo
+        APPS: 'Apps', // Ứng dụng
     },
 
     // Auth Stack - Xác thực

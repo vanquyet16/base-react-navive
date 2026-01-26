@@ -15,7 +15,8 @@ interface CustomSwitchProps extends SwitchProps {
 
 /**
  * CustomSwitch - Wrapper cho Ant Design Switch
- * 
+ *
+ * @optimized React.memo
  * @example
  * <CustomSwitch
  *   label="Dark Mode"
@@ -32,12 +33,10 @@ export const CustomSwitch: React.FC<CustomSwitchProps> = ({
   // Custom color based on theme
   const color = theme.colors.primary;
 
-  return (
-    <Switch
-      color={color}
-      {...props}
-    />
-  );
+  return <Switch color={color} {...props} />;
 };
 
-export default CustomSwitch;
+/**
+ * Memoized export để prevent unnecessary re-renders
+ */
+export default React.memo(CustomSwitch);

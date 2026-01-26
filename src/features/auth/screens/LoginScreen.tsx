@@ -1,55 +1,42 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
+import { FaceIdIcon } from '@/assets/icons';
 import {
   View,
   StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
 } from 'react-native';
-import { Button, WhiteSpace, WingBlank } from '@ant-design/react-native';
+import { Button, Icon, WhiteSpace, WingBlank } from '@ant-design/react-native';
 import { LoginRequest } from '@/shared/types';
 import {
   COLORS,
   SCREEN_PADDING,
-  VALIDATION,
   ERROR_MESSAGES,
+  VALIDATION,
 } from '@/shared/constants';
 import FormInput from '@/components/form/FormInput';
-import { Logo } from '@/components/base';
+import {
+  CustomButton,
+  LabelDivider,
+  LoginOther,
+  Logo,
+  Spacer,
+  SpacerLg,
+  SpacerSm,
+} from '@/components/base';
 import { useLogin } from '../hooks';
 import { useBaseForm } from '@/shared';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
+import Header from '../components/Header';
+import { spacing } from '@/shared/theme/tokens';
+import Main from '../components/Main';
+import Footer from '../components/Footer';
 
-const LoginScreen = ({ navigation }: any) => {
-  const loginMutation = useLogin();
-
-  const {
-    control,
-    handleSubmitWithLoading,
-    formState: { errors, isValid },
-    isSubmitting,
-  } = useBaseForm<LoginRequest>({
-    mode: 'onChange',
-    defaultValues: {
-      userName: '',
-      password: '',
-    },
-    onSubmit: async (data: LoginRequest) => {
-      try {
-        await loginMutation.mutateAsync(data);
-        // Có thể thêm logic xử lý sau khi đăng nhập thành công ở đây
-      } catch (error) {
-        // Lỗi sẽ được xử lý bởi useBaseForm
-        throw error;
-      }
-    },
-    successMessage: 'Đăng nhập thành công!',
-    errorMessage: 'Đăng nhập thất bại!',
-    resetOnSuccess: false,
-  });
-
-  const navigateToRegister = () => {
-    navigation.navigate('Register');
-  };
+const LoginScreen = () => {
+  const styles = useStyles();
 
   return (
     <KeyboardAvoidingView
@@ -63,88 +50,40 @@ const LoginScreen = ({ navigation }: any) => {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <WingBlank size="lg">
-          <View style={styles.header}>
-            <Logo />
-          </View>
-
-          <View style={styles.form}>
-            <FormInput
-              name="userName"
-              control={control}
-              label="Tài khoản"
-              placeholder="Nhập tài khoản 1"
-              rules={{
-                required: ERROR_MESSAGES.REQUIRED_FIELD,
-                pattern: {
-                  value: VALIDATION.USER_NAME_REGEX,
-                  message: ERROR_MESSAGES.USER_NAME_INVALID,
-                },
-              }}
-              keyboardType="default"
-              autoCapitalize="none"
-            />
-
-            <WhiteSpace size="lg" />
-
-            <FormInput
-              name="password"
-              control={control}
-              label="Mật khẩu"
-              placeholder="Nhập mật khẩu"
-              rules={{
-                required: ERROR_MESSAGES.REQUIRED_FIELD,
-                minLength: {
-                  value: VALIDATION.PASSWORD_MIN_LENGTH,
-                  message: ERROR_MESSAGES.PASSWORD_TOO_SHORT,
-                },
-              }}
-              secureTextEntry
-            />
-
-            <WhiteSpace size="xl" />
-
-            <Button
-              type="primary"
-              disabled={!isValid || isSubmitting}
-              loading={isSubmitting}
-              onPress={handleSubmitWithLoading}
-            >
-              Đăng nhập
-            </Button>
-
-            <WhiteSpace size="lg" />
-
-            <Button type="ghost" onPress={navigateToRegister}>
-              Chưa có tài khoản? Đăng ký ngay
-            </Button>
-          </View>
-        </WingBlank>
+        <Header />
+        <SpacerLg />
+        <Main />
+        <SpacerSm />
+        <LabelDivider text="Hoặc đăng nhập bằng" />
+        <Footer />
       </ScrollView>
+      <Spacer size={5} />
     </KeyboardAvoidingView>
   );
 };
-
-const styles = StyleSheet.create({
-  keyboardAvoidingView: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  scrollContent: {
-    flexGrow: 1,
-  },
-  header: {
-    alignItems: 'center',
-    paddingTop: 80,
-    paddingBottom: 40,
-  },
-  form: {
-    paddingHorizontal: SCREEN_PADDING,
-  },
-});
-
 export default LoginScreen;
+
+/**
+ * Styles với theme integration
+ */
+
+const useStyles = createStyles(
+  theme => ({
+    keyboardAvoidingView: {
+      flex: 1,
+      backgroundColor: theme.colors.background, // #f5f7fa từ theme
+    },
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    scrollContent: {
+      flexGrow: 1,
+    },
+
+    form: {
+      paddingHorizontal: SCREEN_PADDING,
+    },
+  }),
+  true,
+);

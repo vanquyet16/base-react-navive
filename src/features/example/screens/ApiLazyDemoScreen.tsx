@@ -23,7 +23,7 @@ type NavigationProp = StackNavigationProp<MainStackParamList>;
 const apiService = {
   // Lazy load users
   getUsers: async (page: number = 1, limit: number = 10) => {
-    await new Promise<void>(resolve => setTimeout(resolve, 1500)); // Mô phỏng delay
+    await new Promise(resolve => setTimeout(() => resolve(undefined), 1500)); // Mô phỏng delay
     const users = Array.from({ length: limit }, (_, i) => ({
       id: (page - 1) * limit + i + 1,
       name: `User ${(page - 1) * limit + i + 1}`,
@@ -38,7 +38,7 @@ const apiService = {
 
   // Lazy load posts
   getPosts: async (page: number = 1, limit: number = 10) => {
-    await new Promise<void>(resolve => setTimeout(resolve, 2000)); // Mô phỏng delay
+    await new Promise(resolve => setTimeout(() => resolve(undefined), 2000)); // Mô phỏng delay
     const posts = Array.from({ length: limit }, (_, i) => ({
       id: (page - 1) * limit + i + 1,
       title: `Post ${(page - 1) * limit + i + 1}`,
@@ -55,7 +55,7 @@ const apiService = {
 
   // Lazy load products
   getProducts: async (page: number = 1, limit: number = 10) => {
-    await new Promise<void>(resolve => setTimeout(resolve, 1000)); // Mô phỏng delay
+    await new Promise(resolve => setTimeout(() => resolve(undefined), 1000)); // Mô phỏng delay
     const products = Array.from({ length: limit }, (_, i) => ({
       id: (page - 1) * limit + i + 1,
       name: `Product ${(page - 1) * limit + i + 1}`,

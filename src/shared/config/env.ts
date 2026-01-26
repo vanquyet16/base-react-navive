@@ -4,7 +4,6 @@
  * Type-safe environment variables.
  * Validate và provide defaults để tránh runtime errors.
  * 
- * @senior-pattern Environment validation với defaults
  */
 
 /**

@@ -4,7 +4,6 @@
  * Types cho API responses, requests, errors.
  * Normalized structure cho consistency.
  * 
- * @senior-pattern Consistent API contract types
  */
 
 import type { PaginationMeta } from './common';

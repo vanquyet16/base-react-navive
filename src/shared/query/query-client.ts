@@ -4,7 +4,6 @@
  * TanStack Query client với optimized defaults.
  * Error handling, retry logic, caching strategy.
  * 
- * @senior-pattern Centralized query configuration
  */
 
 import { QueryClient } from '@tanstack/react-query';
