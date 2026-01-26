@@ -223,9 +223,41 @@ yarn type-check     # Run TypeScript check
 <details>
 <summary><b>Lỗi Metro Bundler</b></summary>
 
-- Khắc phục: Reset cache
-  ```bash
-  yarn start --reset-cache
+yarn start --reset-cache
+
+````
+</details>
+
+<details>
+<summary><b>Lỗi: "Immutable workspace modified" hoặc lỗi Gradle Cache bị hỏng</b></summary>
+
+- Nguyên nhân: Cache của Gradle hoặc file build native (.cxx) bị lỗi/xung đột.
+- Khắc phục (MacOS/Linux):
+```bash
+cd android
+./gradlew --stop
+# Xóa cache global (thay 9.0.0 bằng version tương ứng nếu khác)
+rm -rf ~/.gradle/caches/9.0.0/transforms
+# Xóa cache local project
+rm -rf .gradle .cxx app/build app/.cxx
+# Xóa cache build của module (nếu lỗi liên quan worklets)
+rm -rf ../node_modules/react-native-worklets/android/build
+cd ..
+yarn android
+````
+
+- Khắc phục (Windows - PowerShell):
+  ```powershell
+  cd android
+  ./gradlew --stop
+  # Xóa cache global
+  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$HOME/.gradle/caches/9.0.0/transforms"
+  # Xóa cache local
+  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue .gradle, .cxx, app/build, app/.cxx
+  # Xóa cache build module
+  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "../node_modules/react-native-worklets/android/build"
+  cd ..
+  yarn android
   ```
   </details>
 
