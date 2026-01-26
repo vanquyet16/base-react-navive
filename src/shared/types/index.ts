@@ -27,7 +27,7 @@ export interface LoginResponse {
 // Navigation types
 export type RootStackParamList = {
     Auth: undefined;
-    MainStack: undefined;
+    Drawer: undefined; // Drawer wrap toàn bộ Main flow
 };
 
 export type AuthStackParamList = {

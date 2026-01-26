@@ -1,88 +1,78 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import React, { memo } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
+import {
+  DrawerContentComponentProps,
+  DrawerContentScrollView,
+  DrawerItem,
+} from '@react-navigation/drawer';
 import { COLORS } from '@/shared/constants';
 import { useNavigation } from '@react-navigation/native';
 import { useSessionActions } from '@/shared/store/selectors';
+import { NAVIGATION_KEYS } from '@/navigation/config';
 
-interface CustomDrawerProps {
-  props: any;
-}
-
-const CustomDrawer: React.FC<CustomDrawerProps> = ({ props }) => {
+/**
+ * CUSTOM DRAWER COMPONENT
+ * =======================
+ * Drawer custom với header (user info) và footer (logout).
+ * Sử dụng DrawerContentScrollView để đảm bảo scroll behavior chuẩn.
+ *
+ * @param props - Drawer content props từ React Navigation
+ */
+const CustomDrawer: React.FC<DrawerContentComponentProps> = props => {
   const navigation = useNavigation();
   const { clearSession } = useSessionActions();
 
   const handleLogout = () => {
     clearSession();
-    navigation.navigate('Auth' as never);
+    // Navigate ve Auth stack (được handle bởi AppNavigator state)
+  };
+
+  const handleNavigation = (screenName: string) => {
+    navigation.navigate(screenName as never);
+    props.navigation.closeDrawer();
   };
 
   const menuItems = [
     {
       label: 'Trang chủ',
       icon: 'home',
-      onPress: () => {
-        navigation.navigate('MainTabs' as never);
-        props.navigation.closeDrawer();
-      },
+      screen: NAVIGATION_KEYS.MAIN_STACK.MAIN_TABS,
     },
     {
       label: 'Quản lý sản phẩm',
       icon: 'inventory',
-      onPress: () => {
-        navigation.navigate('ProductScreen' as never);
-        props.navigation.closeDrawer();
-      },
+      screen: 'ProductScreen',
     },
     {
       label: 'Lazy Loading Demo',
       icon: 'speed',
-      onPress: () => {
-        navigation.navigate('LazyDemoScreen' as never);
-        props.navigation.closeDrawer();
-      },
+      screen: 'LazyDemoScreen',
     },
     {
       label: 'API Demo',
       icon: 'api',
-      onPress: () => {
-        navigation.navigate('ApiLazyDemoScreen' as never);
-        props.navigation.closeDrawer();
-      },
+      screen: 'ApiLazyDemoScreen',
     },
     {
       label: 'Cache Demo',
       icon: 'cached',
-      onPress: () => {
-        navigation.navigate('CacheDemoScreen' as never);
-        props.navigation.closeDrawer();
-      },
+      screen: 'CacheDemoScreen',
     },
     {
       label: 'PDF Demo',
       icon: 'picture-as-pdf',
-      onPress: () => {
-        navigation.navigate('PdfDemoScreen' as never);
-        props.navigation.closeDrawer();
-      },
+      screen: 'PdfDemoScreen',
     },
     {
       label: 'Performance Demo',
       icon: 'analytics',
-      onPress: () => {
-        navigation.navigate('PerformanceDemoScreen' as never);
-        props.navigation.closeDrawer();
-      },
+      screen: 'PerformanceDemoScreen',
     },
     {
       label: 'Responsive Demo',
       icon: 'aspect-ratio',
-      onPress: () => {
-        navigation.navigate('ResponsiveDemoScreen' as never);
-        props.navigation.closeDrawer();
-      },
+      screen: 'ResponsiveDemoScreen',
     },
   ];
 
@@ -92,7 +82,7 @@ const CustomDrawer: React.FC<CustomDrawerProps> = ({ props }) => {
       <View style={styles.header}>
         <View style={styles.userInfo}>
           <View style={styles.avatar}>
-            <Icon name='person' size={40} color={COLORS.primary} />
+            <Icon name="person" size={40} color={COLORS.primary} />
           </View>
           <View style={styles.userDetails}>
             <Text style={styles.userName}>Người dùng</Text>
@@ -107,8 +97,10 @@ const CustomDrawer: React.FC<CustomDrawerProps> = ({ props }) => {
           <DrawerItem
             key={index}
             label={item.label}
-            icon={({ color, size }) => <Icon name={item.icon} size={size} color={color} />}
-            onPress={item.onPress}
+            icon={({ color, size }) => (
+              <Icon name={item.icon} size={size} color={color} />
+            )}
+            onPress={() => handleNavigation(item.screen)}
             activeTintColor={COLORS.primary}
             inactiveTintColor={COLORS.text}
             labelStyle={styles.menuText}
@@ -120,7 +112,7 @@ const CustomDrawer: React.FC<CustomDrawerProps> = ({ props }) => {
       {/* Footer */}
       <View style={styles.footer}>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Icon name='logout' size={24} color={COLORS.error} />
+          <Icon name="logout" size={24} color={COLORS.error} />
           <Text style={styles.logoutText}>Đăng xuất</Text>
         </TouchableOpacity>
       </View>
@@ -196,4 +188,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomDrawer;
+export default memo(CustomDrawer);

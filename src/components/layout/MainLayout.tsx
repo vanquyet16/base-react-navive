@@ -1,5 +1,11 @@
 import React, { ReactNode, useMemo, useCallback, memo } from 'react';
-import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
@@ -68,7 +74,10 @@ const areEqual = (prevProps: MainLayoutProps, nextProps: MainLayoutProps) => {
   }
 
   // So sánh headerProps (so sánh nông)
-  if (JSON.stringify(prevProps.headerProps) !== JSON.stringify(nextProps.headerProps)) {
+  if (
+    JSON.stringify(prevProps.headerProps) !==
+    JSON.stringify(nextProps.headerProps)
+  ) {
     return false;
   }
 
@@ -104,18 +113,46 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
     // Fix: Proper type (remove 'as any')
     const navigation = useNavigation<DrawerNavigationProp<any>>();
 
-    const openDrawer = () => {
-      navigation.openDrawer();
-    };
+    /**
+     * Open drawer nếu navigation hỗ trợ drawer
+     * Defensive programming: Check xem navigation có openDrawer method hay không
+     */
+    const openDrawer = useCallback(() => {
+      // Type guard: Check nếu navigation có openDrawer method
+      if (
+        'openDrawer' in navigation &&
+        typeof navigation.openDrawer === 'function'
+      ) {
+        navigation.openDrawer();
+      } else {
+        // Fallback: Log warning hoặc handle alternative action
+        console.warn(
+          'Drawer navigation not available. Consider adding Drawer Navigator.',
+        );
+        // TODO: Có thể navigate đến settings screen hoặc show modal menu
+      }
+    }, [navigation]);
 
     // Ghi nhớ tính toán hasBottomTabs
     const hasBottomTabs = useMemo(
-      () => showTabs && tabsProps?.state && tabsProps?.descriptors && tabsProps?.navigation,
-      [showTabs, tabsProps?.state, tabsProps?.descriptors, tabsProps?.navigation],
+      () =>
+        showTabs &&
+        tabsProps?.state &&
+        tabsProps?.descriptors &&
+        tabsProps?.navigation,
+      [
+        showTabs,
+        tabsProps?.state,
+        tabsProps?.descriptors,
+        tabsProps?.navigation,
+      ],
     );
 
     // Ghi nhớ tính toán padding
-    const contentPaddingBottom = useMemo(() => (hasBottomTabs ? 80 : 0), [hasBottomTabs]);
+    const contentPaddingBottom = useMemo(
+      () => (hasBottomTabs ? 80 : 0),
+      [hasBottomTabs],
+    );
 
     // Ghi nhớ style cho container
     const containerStyle = useMemo(
@@ -147,7 +184,8 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
         <ScrollView
           contentContainerStyle={scrollContentStyle}
           showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps='handled'>
+          keyboardShouldPersistTaps="handled"
+        >
           {children}
         </ScrollView>
       ),
@@ -172,7 +210,8 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
         <KeyboardAvoidingView
           style={styles.keyboardAvoidingView}
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={keyboardOffset}>
+          keyboardVerticalOffset={keyboardOffset}
+        >
           {renderContent()}
         </KeyboardAvoidingView>
       ),
@@ -180,7 +219,10 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
     );
 
     // Callback cho render layout thông thường
-    const renderNormalLayout = useCallback(() => renderContent(), [renderContent]);
+    const renderNormalLayout = useCallback(
+      () => renderContent(),
+      [renderContent],
+    );
 
     return (
       <View style={containerStyle}>
@@ -196,16 +238,22 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
         {/* Nội dung */}
         {showHeader ? (
           <View style={styles.content}>
-            {enableKeyboardAvoiding ? renderWithKeyboardAvoiding() : renderNormalLayout()}
+            {enableKeyboardAvoiding
+              ? renderWithKeyboardAvoiding()
+              : renderNormalLayout()}
           </View>
         ) : (
           <SafeAreaView style={styles.content} edges={['top']}>
-            {enableKeyboardAvoiding ? renderWithKeyboardAvoiding() : renderNormalLayout()}
+            {enableKeyboardAvoiding
+              ? renderWithKeyboardAvoiding()
+              : renderNormalLayout()}
           </SafeAreaView>
         )}
 
         {/* Bottom Tabs */}
-        {hasBottomTabs && <CustomTabBar {...(tabsProps as BottomTabBarProps)} />}
+        {hasBottomTabs && (
+          <CustomTabBar {...(tabsProps as BottomTabBarProps)} />
+        )}
       </View>
     );
   },

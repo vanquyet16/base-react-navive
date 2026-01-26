@@ -2,14 +2,17 @@
 // MAIN TABS NAVIGATOR - BOTTOM TABS NAVIGATION
 // ============================================================================
 
-import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React, { useCallback } from 'react';
+import {
+  createBottomTabNavigator,
+  BottomTabBarProps,
+} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '@/shared/constants';
 import { MainTabParamList } from '@/shared/types';
 import { CustomTabBar } from '@/components/navigation';
 import { logger } from '@/shared/utils/logger';
-import { NAVIGATION_KEYS, TAB_SCREENS } from './config';
+import { TAB_SCREENS } from './config';
 import { createTabScreenWrappers } from './factories/screenFactory';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -45,10 +48,21 @@ const TAB_WRAPPERS = createTabScreenWrappers(TAB_SCREENS);
  * - ResponsiveDemo: Demo responsive design
  */
 const MainTabs: React.FC = () => {
+  const renderTabBar = useCallback(
+    (props: BottomTabBarProps) => <CustomTabBar {...props} />,
+    [],
+  );
+
+  const renderIcon = useCallback(
+    (iconName: string) =>
+      ({ color, size }: { color: string; size: number }) =>
+        <Icon name={iconName} size={size} color={color} />,
+    [],
+  );
+
   return (
     <Tab.Navigator
-      id="MainTabs" // Required by React Navigation v6+ for TypeScript strict mode
-      tabBar={props => <CustomTabBar {...props} />}
+      tabBar={renderTabBar}
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: COLORS.primary,
@@ -75,9 +89,7 @@ const MainTabs: React.FC = () => {
             component={Wrapper}
             options={{
               tabBarLabel: cfg.title,
-              tabBarIcon: ({ color, size }) => (
-                <Icon name={cfg.icon} size={size} color={color} />
-              ),
+              tabBarIcon: renderIcon(cfg.icon),
             }}
           />
         );

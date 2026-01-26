@@ -3,6 +3,7 @@
 // ============================================================================
 
 /**
+ * SCREEN WRAPPER FACTORIES
  * Export tất cả factory functions từ screenFactory
  * 
  * Bao gồm:
@@ -12,14 +13,17 @@
  * - createMainStackScreenWrappers: Tạo hàng loạt main stack wrappers
  * - createTabScreenWrappers: Tạo hàng loạt tab wrappers
  * - createAuthScreenWrappers: Tạo hàng loạt auth wrappers
- * - createHomeScreenWrapper: Tạo wrapper đặc biệt cho Home screen
- * - createProfileScreenWrapper: Tạo wrapper đặc biệt cho Profile screen
- * - createSettingsScreenWrapper: Tạo wrapper đặc biệt cho Settings screen
  */
-/**
- * FACTORY EXPORTS
- * Exports factory functions for creating screen wrappers and navigators
- */
-
 export * from './screenFactory';
+
+/**
+ * NAVIGATOR FACTORIES
+ * Export tất cả generic navigator factory functions
+ * 
+ * Bao gồm:
+ * - createMainStackNavigatorComponent: Tạo Main Stack Navigator với generic types
+ * - createAuthStackNavigatorComponent: Tạo Auth Stack Navigator với generic types
+ * - AdditionalScreen: Type cho additional screens
+ * - NavigatorOptions: Type cho navigator options
+ */
 export * from './navigatorFactory';

@@ -73,7 +73,7 @@ const LoginScreen = ({ navigation }: any) => {
               name="userName"
               control={control}
               label="Tài khoản"
-              placeholder="Nhập tài khoản"
+              placeholder="Nhập tài khoản 1"
               rules={{
                 required: ERROR_MESSAGES.REQUIRED_FIELD,
                 pattern: {

@@ -1,70 +1,43 @@
-// ============================================================================
-// AUTH STACK NAVIGATOR - AUTHENTICATION FLOW
-// ============================================================================
-
 /**
- * Auth Stack Navigator
+ * AUTH STACK NAVIGATOR
+ * ====================
+ * Navigator cho authentication flow (Login, Register)
  *
- * Mục đích:
- * - Chứa tất cả screens liên quan đến authentication (Login, Register)
- * - Được hiển thị khi user chưa đăng nhập
- * - Sử dụng generic factory để tạo navigator
- *
- * Cấu trúc:
- * - Login Screen: Màn hình đăng nhập
- * - Register Screen: Màn hình đăng ký
- *
- * @senior-pattern Separation of concerns - dedicated navigator file
+ * Sử dụng generic navigator factory để tạo navigator component
+ * từ config, đảm bảo type-safe và tuân thủ separation of concerns.
  */
 
-import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
 import { AuthStackParamList } from '@/shared/types';
-import { AUTH_SCREENS } from '../config/navigationConfig';
-import { createStackNavigatorComponent } from '../factories/navigatorFactory';
-import { logger } from '@/shared/utils/logger';
-
-// ============================================================================
-// LOGGER INSTANCE
-// ============================================================================
-
-const authNavLogger = logger;
-
-// ============================================================================
-// AUTH STACK NAVIGATOR COMPONENT
-// ============================================================================
+import { AUTH_SCREENS } from '@/navigation/config';
+import { createAuthStackNavigatorComponent } from '@/navigation/factories/navigatorFactory';
 
 /**
- * AuthStackNavigator - Stack navigator cho authentication flow
+ * Auth Stack Navigator instance
+ * Typed với AuthStackParamList cho type safety
+ */
+const AuthStack = createStackNavigator<AuthStackParamList>();
+
+/**
+ * Auth Stack Navigator Component
+ *
+ * Tự động tạo từ AUTH_SCREENS config sử dụng generic factory.
+ * Chứa tất cả auth screens: Login, Register, etc.
  *
  * Features:
- * - Type-safe với AuthStackParamList
- * - Tự động tạo screens từ AUTH_SCREENS config
- * - Initial route: Login
- * - Không có additional screens
+ * - Lazy loading screens qua LazyScreen wrapper
+ * - Type-safe navigation
+ * - Không có MainLayout (full screen auth UI)
  *
- * @returns Configured Auth Stack Navigator component
+ * @example
+ * // Sử dụng trong Root Navigation
+ * <Stack.Screen name="AuthStack" component={AuthStackNavigator} />
  */
-export const AuthStackNavigator: React.FC = () => {
-  // Logging cho debugging
-  authNavLogger.debug('AuthStackNavigator: Rendering', {
-    screenCount: AUTH_SCREENS.length,
-    initialRoute: 'Login',
-  });
-
-  // Sử dụng generic factory để tạo navigator
-  const Navigator = React.useMemo(
-    () =>
-      createStackNavigatorComponent<AuthStackParamList>(
-        AUTH_SCREENS,
-        'Login', // Initial route name
-        [], // Không có additional screens
-        true, // isAuthStack = true
-      ),
-    [],
-  );
-
-  return <Navigator />;
-};
-
-// Set display name cho debugging
-AuthStackNavigator.displayName = 'AuthStackNavigator';
+export const AuthStackNavigator = createAuthStackNavigatorComponent(
+  AuthStack,
+  AUTH_SCREENS,
+  {
+    initialRouteName: 'Login',
+    screenOptions: { headerShown: false },
+  },
+);

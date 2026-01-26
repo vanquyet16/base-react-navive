@@ -91,12 +91,12 @@ yarn android
 
 ## 📁 Project Structure
 
-Cấu trúc dự án theo hướng Feature-based architecture:
+Cấu trúc dự án theo hướng Feature-based architecture với **Generic Factory Pattern** cho navigation:
 
 ```
 src/
 ├── app/                      # App entry, providers & root navigation
-│   ├── app-navigator.tsx    # Root navigation container
+│   ├── app-navigator.tsx    # Root navigation (Auth/Main switching only)
 │   ├── app-providers.tsx    # Global providers (Query, Theme, etc.)
 │   ├── app-root.tsx         # App entry point
 │   └── hooks/               # App-level hooks (useAppInit, etc.)
@@ -136,24 +136,26 @@ src/
 │   ├── performance/         # Performance feature
 │   └── example/             # Example/Demo feature
 │
-├── navigation/               # Navigation configuration & factories (SENIOR PATTERN)
-│   ├── MainTabs.tsx         # Bottom tabs navigator
-│   ├── config/              # Navigation configurations
-│   │   ├── index.ts
-│   │   └── navigationConfig.ts
-│   ├── factories/           # Generic factory pattern
-│   │   ├── index.ts
-│   │   ├── navigatorFactory.tsx  # Generic navigator factory (CORE)
-│   │   └── screenFactory.tsx
-│   ├── navigators/          # Dedicated navigator components
-│   │   ├── index.ts
-│   │   ├── AuthStackNavigator.tsx
-│   │   └── MainStackNavigator.tsx
+├── navigation/               # Navigation configuration & factories
+│   ├── config/              # ⚙️ Screen configs & route constants
+│   │   └── navigationConfig.ts  # Screen definitions
+│   │
+│   ├── factories/           # 🏭 Generic factory functions
+│   │   ├── screenFactory.tsx    # Screen wrapper factories
+│   │   ├── navigatorFactory.tsx # Navigator factories (type-safe)
+│   │   └── index.ts
+│   │
+│   ├── navigators/          # 🧭 Dedicated navigator components
+│   │   ├── AuthStackNavigator.tsx   # Auth flow navigator
+│   │   ├── MainStackNavigator.tsx   # Main app navigator
+│   │   └── index.ts
+│   │
+│   ├── MainTabs.tsx         # Bottom tab navigator
 │   └── index.ts
 │
 ├── shared/                   # Shared utilities & configurations
 │   ├── config/              # App configuration (env, API URLs, etc.)
-│   ├── constants/           # App constants (enums, keys, etc.)
+│   ├── constants/           # App constants (enums, keys, routes)
 │   ├── hooks/               # Shared hooks (useDebounce, useNetwork, etc.)
 │   ├── query/               # TanStack Query setup & utilities
 │   ├── services/            # Shared services (API client, Storage, etc.)
@@ -172,6 +174,7 @@ src/
 - **`shared/`**: Code dùng chung, không phụ thuộc domain cụ thể
 - **`components/`**: UI components có thể tái sử dụng, không chứa business logic
 - **`features/`**: Module theo domain, chứa đầy đủ components/hooks/services/screens riêng
+- **`navigation/`**: Navigation architecture với generic factories (type-safe, no `any`)
 - **`app/`**: Entry point, global setup, root navigation
 
 ## 🔧 Configuration
@@ -211,11 +214,390 @@ yarn lint           # Run ESLint
 yarn type-check     # Run TypeScript check
 ```
 
-### Adding New Feature
+---
 
-1. Tạo thư mục trong `src/features/<feature-name>`.
-2. Tuân thủ cấu trúc: `components`, `screens`, `hooks`, `services`.
-3. Export public API qua `index.ts`.
+## 📱 Adding New Screens & Stacks
+
+### ✅ CASE 1: Thêm màn hình mới vào Main Stack
+
+> **Khi nào dùng:** Thêm một màn hình đơn lẻ vào ứng dụng chính (sau khi đã login)
+
+#### Bước 1: Tạo Screen Component
+
+**File:** `src/features/<feature-name>/screens/NewScreen.tsx`
+
+```tsx
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+/**
+ * NewScreen - Mô tả màn hình
+ */
+const NewScreen: React.FC = () => {
+  return (
+    <View style={styles.container}>
+      <Text>New Screen Content</Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
+
+export default NewScreen;
+```
+
+#### Bước 2: Thêm vào Navigation Config
+
+**File:** `src/navigation/config/navigationConfig.ts`
+
+```typescript
+export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
+  // ... existing screens
+
+  // ✨ Thêm màn hình mới
+  NewScreen: {
+    title: 'Tiêu đề màn hình',
+    component: () => import('@/features/<feature-name>/screens/NewScreen'),
+    showHeader: true, // Hiển thị header
+    showTabs: false, // Ẩn bottom tabs
+    headerType: 'minimal', // Loại header: 'minimal' | 'default' | 'search'
+    showBack: true, // Hiển thị nút back
+  },
+};
+```
+
+#### Bước 3: Thêm Type Definition
+
+**File:** `src/shared/types/index.ts`
+
+```typescript
+export type MainStackParamList = {
+  MainTabs: undefined;
+  ProductScreen: undefined;
+  // ... existing screens
+
+  // ✨ Thêm type cho screen mới
+  NewScreen: undefined; // Không có params
+  // Hoặc nếu cần params:
+  // ProductDetail: { productId: string; categoryId?: number };
+};
+```
+
+#### Bước 4: Navigate đến màn hình
+
+```tsx
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { MainStackParamList } from '@/shared/types';
+
+const MyComponent = () => {
+  const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
+
+  const handlePress = () => {
+    // Navigate đến màn hình mới
+    navigation.navigate('NewScreen');
+
+    // Hoặc với params (nếu có):
+    // navigation.navigate('ProductDetail', {
+    //   productId: '123',
+    //   categoryId: 5
+    // });
+  };
+
+  return <Button onPress={handlePress}>Go to New Screen</Button>;
+};
+```
+
+#### ✅ Xong! Không cần code thêm
+
+Màn hình sẽ **tự động:**
+
+- ✅ Được wrap với `MainLayout` (header + layout)
+- ✅ Lazy loading khi cần
+- ✅ Type-safe navigation
+- ✅ Header được quản lý theo config
+
+---
+
+### 🚀 CASE 2: Thêm Stack Navigator mới
+
+> **Khi nào dùng:** Tạo một nhóm màn hình liên quan (flow riêng biệt), ví dụ: Settings Stack, Onboarding Stack, Checkout Stack
+
+**Ví dụ:** Tạo Settings Stack với 3 màn hình (Settings Home, Account, Privacy)
+
+#### Bước 1: Định nghĩa ParamList Types
+
+**File:** `src/shared/types/index.ts`
+
+```typescript
+// ✨ Thêm Settings Stack ParamList
+export type SettingsStackParamList = {
+  SettingsHome: undefined;
+  AccountSettings: undefined;
+  PrivacySettings: undefined;
+  NotificationSettings: { enabled: boolean }; // Với params
+};
+
+// Update RootStackParamList
+export type RootStackParamList = {
+  Auth: undefined;
+  MainStack: undefined;
+  SettingsStack: undefined; // ← Thêm stack mới
+};
+```
+
+#### Bước 2: Tạo Screen Components
+
+**File:** `src/features/settings/screens/SettingsHomeScreen.tsx`
+
+```tsx
+import React from 'react';
+import { View, Text } from 'react-native';
+
+const SettingsHomeScreen: React.FC = () => {
+  return (
+    <View>
+      <Text>Settings Home</Text>
+    </View>
+  );
+};
+
+export default SettingsHomeScreen;
+```
+
+**Lặp lại cho:** `AccountSettingsScreen.tsx`, `PrivacySettingsScreen.tsx`, etc.
+
+#### Bước 3: Định nghĩa Screen Configs
+
+**File:** `src/navigation/config/navigationConfig.ts`
+
+```typescript
+// ✨ Thêm config cho Settings screens
+export const SETTINGS_STACK_SCREENS: Record<string, ScreenConfig> = {
+  SettingsHome: {
+    title: 'Cài đặt',
+    component: () => import('@/features/settings/screens/SettingsHomeScreen'),
+    showHeader: true,
+    headerType: 'default',
+  },
+  AccountSettings: {
+    title: 'Tài khoản',
+    component: () =>
+      import('@/features/settings/screens/AccountSettingsScreen'),
+    showHeader: true,
+    showBack: true,
+  },
+  PrivacySettings: {
+    title: 'Quyền riêng tư',
+    component: () =>
+      import('@/features/settings/screens/PrivacySettingsScreen'),
+    showHeader: true,
+    showBack: true,
+  },
+};
+```
+
+#### Bước 4: Tạo Navigator Component
+
+**File:** `src/navigation/navigators/SettingsStackNavigator.tsx`
+
+```tsx
+/**
+ * SETTINGS STACK NAVIGATOR
+ * =========================
+ * Navigator cho settings flow
+ */
+
+import { createStackNavigator } from '@react-navigation/stack';
+import { SettingsStackParamList } from '@/shared/types';
+import { SETTINGS_STACK_SCREENS } from '@/navigation/config';
+import { createMainStackNavigatorComponent } from '@/navigation/factories/navigatorFactory';
+
+/**
+ * Settings Stack Navigator instance
+ * Typed với SettingsStackParamList
+ */
+const SettingsStack = createStackNavigator<SettingsStackParamList>();
+
+/**
+ * Settings Stack Navigator Component
+ * Tự động tạo từ config sử dụng generic factory
+ */
+export const SettingsStackNavigator = createMainStackNavigatorComponent(
+  SettingsStack,
+  SETTINGS_STACK_SCREENS,
+  {
+    initialRouteName: 'SettingsHome',
+    screenOptions: { headerShown: false },
+  },
+);
+```
+
+#### Bước 5: Export Navigator
+
+**File:** `src/navigation/navigators/index.ts`
+
+```typescript
+export { AuthStackNavigator } from './AuthStackNavigator';
+export { MainStackNavigator } from './MainStackNavigator';
+export { SettingsStackNavigator } from './SettingsStackNavigator'; // ← Thêm
+```
+
+#### Bước 6: Thêm vào Root Navigation
+
+**File:** `src/app/app-navigator.tsx`
+
+```tsx
+import {
+  AuthStackNavigator,
+  MainStackNavigator,
+  SettingsStackNavigator, // ← Import
+} from '@/navigation/navigators';
+
+export const AppNavigator: React.FC = () => {
+  const isAuthenticated = useIsAuthenticated();
+
+  return (
+    <NavigationContainer>
+      <RootStack.Navigator screenOptions={{ headerShown: false }}>
+        {isAuthenticated ? (
+          <>
+            <RootStack.Screen name="MainStack" component={MainStackNavigator} />
+            {/* ✨ Thêm Settings Stack */}
+            <RootStack.Screen
+              name="SettingsStack"
+              component={SettingsStackNavigator}
+            />
+          </>
+        ) : (
+          <RootStack.Screen name="Auth" component={AuthStackNavigator} />
+        )}
+      </RootStack.Navigator>
+    </NavigationContainer>
+  );
+};
+```
+
+#### Bước 7: Navigate to Settings Stack
+
+```tsx
+// Từ Main Stack navigate sang Settings Stack
+navigation.navigate('SettingsStack', {
+  screen: 'SettingsHome', // Initial screen
+});
+
+// Hoặc navigate trực tiếp đến specific screen
+navigation.navigate('SettingsStack', {
+  screen: 'AccountSettings',
+});
+
+// Với params
+navigation.navigate('SettingsStack', {
+  screen: 'NotificationSettings',
+  params: { enabled: true },
+});
+```
+
+---
+
+### 📋 Quick Reference
+
+#### Checklist: Thêm màn hình mới
+
+- [ ] Tạo screen component trong `features/<name>/screens/`
+- [ ] Thêm config vào `MAIN_STACK_SCREENS` (navigationConfig.ts)
+- [ ] Thêm type vào `MainStackParamList` (types/index.ts)
+- [ ] Navigate: `navigation.navigate('ScreenName')`
+
+#### Checklist: Thêm stack mới
+
+- [ ] Định nghĩa `<Stack>ParamList` type (types/index.ts)
+- [ ] Thêm stack name vào `RootStackParamList`
+- [ ] Tạo screen components
+- [ ] Tạo screen configs `<STACK>_SCREENS` (navigationConfig.ts)
+- [ ] Tạo `<Stack>Navigator.tsx` trong `navigators/`
+- [ ] Export từ `navigators/index.ts`
+- [ ] Thêm `<RootStack.Screen>` vào `app-navigator.tsx`
+
+---
+
+### 💡 Best Practices
+
+**1. Type-safe Navigation**
+
+```tsx
+// ✅ ĐÚNG - Type-safe với autocomplete
+type NavigationProp = StackNavigationProp<MainStackParamList>;
+const navigation = useNavigation<NavigationProp>();
+navigation.navigate('ProductDetail', { productId: '123' }); // ← Type-checked
+
+// ❌ SAI - Không type-safe
+navigation.navigate('ProductDetail'); // Missing params, no error!
+```
+
+**2. Screen với Params**
+
+```typescript
+// Define types
+export type MainStackParamList = {
+  ProductDetail: { productId: string; variant?: string };
+};
+
+// Navigate với params
+navigation.navigate('ProductDetail', {
+  productId: '123',
+  variant: 'blue',
+});
+
+// Access params trong screen
+import { RouteProp } from '@react-navigation/native';
+
+type ProductDetailRouteProp = RouteProp<MainStackParamList, 'ProductDetail'>;
+
+const ProductDetailScreen = () => {
+  const route = useRoute<ProductDetailRouteProp>();
+  const { productId, variant } = route.params; // ← Type-safe
+
+  return <Text>Product: {productId}</Text>;
+};
+```
+
+**3. Reuse Generic Factory**
+
+```tsx
+// Generic factory tự động handle mọi stack type
+export const MyStackNavigator = createMainStackNavigatorComponent(
+  MyStack,
+  MY_SCREENS,
+  { initialRouteName: 'Home' },
+);
+// ✅ Type-safe, no `any`, reusable
+```
+
+---
+
+### Adding New Feature Module
+
+1. Tạo thư mục trong `src/features/<feature-name>`
+2. Tuân thủ cấu trúc:
+   ```
+   features/
+   └── <feature-name>/
+       ├── components/    # Feature-specific components
+       ├── screens/       # Screen components
+       ├── hooks/         # Custom hooks
+       ├── services/      # API services
+       ├── types/         # TypeScript types
+       └── index.ts       # Public exports
+   ```
+3. Export public API qua `index.ts`
+4. Follow navigation guides above để thêm screens
 
 ## 🐛 Troubleshooting
 
@@ -233,41 +615,9 @@ yarn type-check     # Run TypeScript check
 <details>
 <summary><b>Lỗi Metro Bundler</b></summary>
 
-yarn start --reset-cache
-
-````
-</details>
-
-<details>
-<summary><b>Lỗi: "Immutable workspace modified" hoặc lỗi Gradle Cache bị hỏng</b></summary>
-
-- Nguyên nhân: Cache của Gradle hoặc file build native (.cxx) bị lỗi/xung đột.
-- Khắc phục (MacOS/Linux):
-```bash
-cd android
-./gradlew --stop
-# Xóa cache global (thay 9.0.0 bằng version tương ứng nếu khác)
-rm -rf ~/.gradle/caches/9.0.0/transforms
-# Xóa cache local project
-rm -rf .gradle .cxx app/build app/.cxx
-# Xóa cache build của module (nếu lỗi liên quan worklets)
-rm -rf ../node_modules/react-native-worklets/android/build
-cd ..
-yarn android
-````
-
-- Khắc phục (Windows - PowerShell):
-  ```powershell
-  cd android
-  ./gradlew --stop
-  # Xóa cache global
-  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$HOME/.gradle/caches/9.0.0/transforms"
-  # Xóa cache local
-  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue .gradle, .cxx, app/build, app/.cxx
-  # Xóa cache build module
-  Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "../node_modules/react-native-worklets/android/build"
-  cd ..
-  yarn android
+- Khắc phục: Reset cache
+  ```bash
+  yarn start --reset-cache
   ```
   </details>
 
@@ -281,153 +631,3 @@ yarn android
 ---
 
 **Made with ❤️ by Zamiga Team**
-
----
-
-## 🏗️ Navigation Architecture (Senior Pattern)
-
-Dự án sử dụng **Generic Factory Pattern** cho navigation để đạt senior-level code.
-
-### Kiến trúc Flow
-
-```
-navigationConfig.ts (định nghĩa screens)
-    ↓
-screenFactory.tsx (tạo screen wrappers)
-navigatorFactory.tsx (generic factory)
-    ↓
-AuthStackNavigator.tsx / MainStackNavigator.tsx
-    ↓
-app-navigator.tsx (root navigation)
-```
-
-### Benefits
-
-- ✅ **Type-safe 100%** với TypeScript generics
-- ✅ **Separation of Concerns** - Config → Factories → Navigators → Root
-- ✅ **Reusable & Scalable** - Một factory cho tất cả navigators
-- ✅ **Config-driven** - Thêm screens chỉ cần update config
-- ✅ **DRY Principle** - No code duplication
-
----
-
-## 📘 Development Guides
-
-### 🎯 Cách thêm màn hình mới (New Screen)
-
-#### 1. Tạo Screen Component
-
-```typescript
-// src/features/product/screens/ProductDetailScreen.tsx
-import React from 'react';
-import { View, Text } from 'react-native';
-
-export const ProductDetailScreen: React.FC = () => {
-  return (
-    <View>
-      <Text>Product Detail Screen</Text>
-    </View>
-  );
-};
-```
-
-#### 2. Thêm vào Navigation Config
-
-```typescript
-// src/navigation/config/navigationConfig.ts
-export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
-  // ... existing screens
-  ProductDetailScreen: {
-    title: 'Chi tiết sản phẩm',
-    component: () => import('@/features/product/screens/ProductDetailScreen'),
-    showHeader: true,
-    showTabs: false,
-    headerType: 'minimal',
-  },
-};
-```
-
-#### 3. Thêm Type Definition
-
-```typescript
-// src/shared/types/index.ts
-export type MainStackParamList = {
-  // ... existing types
-  ProductDetailScreen: { id: string }; // Với params
-};
-```
-
-#### 4. Done! Sử dụng
-
-```typescript
-navigation.navigate('ProductDetailScreen', { id: '123' });
-```
-
----
-
-### 🚀 Cách thêm Stack Navigator mới
-
-#### 1. Define Screen Configs
-
-```typescript
-// src/navigation/config/navigationConfig.ts
-export const ONBOARDING_SCREENS: OnboardingScreenConfig[] = [
-  {
-    name: 'Welcome',
-    title: 'Welcome',
-    component: () => import('@/features/onboarding/screens/WelcomeScreen'),
-  },
-];
-```
-
-#### 2. Tạo Type Definition
-
-```typescript
-// src/shared/types/index.ts
-export type OnboardingStackParamList = {
-  Welcome: undefined;
-  Tutorial: undefined;
-};
-```
-
-#### 3. Tạo Navigator Component
-
-```typescript
-// src/navigation/navigators/OnboardingStackNavigator.tsx
-import React from 'react';
-import { createStackNavigatorComponent } from '../factories/navigatorFactory';
-
-export const OnboardingStackNavigator: React.FC = () => {
-  const Navigator = React.useMemo(
-    () =>
-      createStackNavigatorComponent<OnboardingStackParamList>(
-        ONBOARDING_SCREENS,
-        'Welcome',  // Initial route
-        [],         // Additional screens
-        false       // isAuthStack
-      ),
-    []
-  );
-  return <Navigator />;
-};
-```
-
-#### 4. Export và sử dụng
-
-```typescript
-// src/navigation/navigators/index.ts
-export { OnboardingStackNavigator } from './OnboardingStackNavigator';
-
-// src/app/app-navigator.tsx
-<Stack.Screen name="OnboardingStack" component={OnboardingStackNavigator} />
-```
-
----
-
-### 💡 Best Practices
-
-1. **Luôn define types trước khi code**
-2. **Sử dụng config thay vì hardcode**
-3. **Feature-based structure**
-4. **No `any` - Strict TypeScript**
-
