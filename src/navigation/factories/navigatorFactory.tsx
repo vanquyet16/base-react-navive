@@ -7,6 +7,10 @@ import {
   StackNavigationOptions,
   StackNavigationEventMap,
 } from '@react-navigation/stack';
+import {
+  DrawerNavigationOptions,
+  DrawerNavigationEventMap,
+} from '@react-navigation/drawer';
 import type { ParamListBase } from '@react-navigation/native';
 import { ScreenConfig, AuthScreenConfig } from '../config/navigationConfig';
 import {
@@ -22,10 +26,9 @@ import {
  * Typed Navigator interface từ React Navigation
  */
 interface TypedNavigator<
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ParamList extends ParamListBase,
-  ScreenOptions extends StackNavigationOptions = StackNavigationOptions,
-  EventMap extends StackNavigationEventMap = StackNavigationEventMap,
+  ScreenOptions extends object = any,
+  EventMap extends object = any,
 > {
   Navigator: React.ComponentType<any>;
   Screen: React.ComponentType<any>;
@@ -43,9 +46,12 @@ export interface AdditionalScreen<ParamList extends ParamListBase> {
 /**
  * Navigator config options
  */
-export interface NavigatorOptions<ParamList extends ParamListBase> {
+export interface NavigatorOptions<
+  ParamList extends ParamListBase,
+  ScreenOptions extends object = StackNavigationOptions,
+> {
   initialRouteName: keyof ParamList;
-  screenOptions?: StackNavigationOptions;
+  screenOptions?: ScreenOptions;
 }
 
 // ============================================================================
@@ -76,7 +82,7 @@ export const createMainStackNavigatorComponent = <
 >(
   Navigator: TypedNavigator<ParamList>,
   screenConfigs: Record<string, ScreenConfig>,
-  options: NavigatorOptions<ParamList>,
+  options: NavigatorOptions<ParamList, StackNavigationOptions>,
   additionalScreens?: AdditionalScreen<ParamList>[],
 ): React.FC => {
   /**
@@ -152,7 +158,7 @@ export const createAuthStackNavigatorComponent = <
 >(
   Navigator: TypedNavigator<ParamList>,
   screenConfigs: AuthScreenConfig[],
-  options: NavigatorOptions<ParamList>,
+  options: NavigatorOptions<ParamList, StackNavigationOptions>,
 ): React.FC => {
   /**
    * Auth Navigator Component
@@ -186,4 +192,73 @@ export const createAuthStackNavigatorComponent = <
 
   AuthNavigatorComponent.displayName = 'AuthStackNavigator';
   return AuthNavigatorComponent;
+};
+
+/**
+ * Tạo Drawer Navigator Component
+ *
+ * @template ParamList - Type của navigation param list
+ * @param Navigator - Drawer Navigator instance đã được typed
+ * @param options - Navigator options (drawerContent, screenOptions)
+ * @param additionalScreens - Additional screens (thường là Drawers main stack)
+ * @returns Configured Drawer Navigator component
+ */
+export const createDrawerNavigatorComponent = <ParamList extends ParamListBase>(
+  Navigator: TypedNavigator<
+    ParamList,
+    DrawerNavigationOptions,
+    DrawerNavigationEventMap
+  >,
+  options: NavigatorOptions<ParamList, DrawerNavigationOptions> & {
+    drawerContent?: (props: any) => React.ReactNode;
+  },
+  additionalScreens?: AdditionalScreen<ParamList>[],
+  screenConfigs?: Record<string, ScreenConfig>,
+): React.FC => {
+  const DrawerNavigatorComponent: React.FC = () => {
+    // Render additional screens (như Drawer Stack)
+    const additionalScreenComponents = React.useMemo(() => {
+      if (!additionalScreens) return null;
+      return additionalScreens.map(screen => (
+        <Navigator.Screen
+          key={screen.name as string}
+          name={screen.name}
+          component={screen.component}
+          options={screen.options as DrawerNavigationOptions}
+        />
+      ));
+    }, []);
+
+    // Render configured screens (nếu có)
+    const configuredScreens = React.useMemo(() => {
+      if (!screenConfigs) return null;
+      return Object.entries(screenConfigs).map(([screenName, config]) => {
+        // Sử dụng createMainStackScreenWrapper vì Drawer screen cũng cần MainLayout
+        // Hoặc có thể cần 1 wrapper riêng nếu logic khác biệt
+        const ScreenWrapper = createMainStackScreenWrapper(screenName, config);
+        return (
+          <Navigator.Screen
+            key={screenName}
+            name={screenName as keyof ParamList}
+            component={ScreenWrapper}
+            options={{ headerShown: false }}
+          />
+        );
+      });
+    }, []);
+
+    return (
+      <Navigator.Navigator
+        initialRouteName={options.initialRouteName}
+        drawerContent={options.drawerContent}
+        screenOptions={options.screenOptions as DrawerNavigationOptions}
+      >
+        {additionalScreenComponents}
+        {configuredScreens}
+      </Navigator.Navigator>
+    );
+  };
+
+  DrawerNavigatorComponent.displayName = 'DrawerNavigator';
+  return DrawerNavigatorComponent;
 };

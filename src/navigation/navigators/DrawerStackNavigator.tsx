@@ -14,6 +14,7 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { DrawerStackParamList } from '@/shared/types';
 import { MainStackNavigator } from './MainStackNavigator';
+import { NAVIGATION_KEYS } from '@/navigation/config';
 
 /**
  * Drawer Stack Navigator instance
@@ -44,53 +45,18 @@ export const DrawerStackNavigator: React.FC = () => {
         headerShown: false,
       }}
     >
-      <DrawerStack.Screen
-        name="MainTabs"
-        component={MainStackNavigator}
-        initialParams={{ screen: 'MainTabs' }}
-      />
-
-      <DrawerStack.Screen
-        name="ProductScreen"
-        component={MainStackNavigator}
-        initialParams={{ screen: 'ProductScreen' }}
-      />
-
-      <DrawerStack.Screen
-        name="LazyDemoScreen"
-        component={MainStackNavigator}
-        initialParams={{ screen: 'LazyDemoScreen' }}
-      />
-
-      <DrawerStack.Screen
-        name="ApiLazyDemoScreen"
-        component={MainStackNavigator}
-        initialParams={{ screen: 'ApiLazyDemoScreen' }}
-      />
-
-      <DrawerStack.Screen
-        name="CacheDemoScreen"
-        component={MainStackNavigator}
-        initialParams={{ screen: 'CacheDemoScreen' }}
-      />
-
-      <DrawerStack.Screen
-        name="PdfDemoScreen"
-        component={MainStackNavigator}
-        initialParams={{ screen: 'PdfDemoScreen' }}
-      />
-
-      <DrawerStack.Screen
-        name="PerformanceDemoScreen"
-        component={MainStackNavigator}
-        initialParams={{ screen: 'PerformanceDemoScreen' }}
-      />
-
-      <DrawerStack.Screen
-        name="ResponsiveDemoScreen"
-        component={MainStackNavigator}
-        initialParams={{ screen: 'ResponsiveDemoScreen' }}
-      />
+      {/* 
+        Sử dụng NAVIGATION_KEYS.DRAWER_STACK để tạo dynamic screens 
+        Giúp dễ dàng maintain và mở rộng
+      */}
+      {Object.entries(NAVIGATION_KEYS.DRAWER_STACK).map(([key, routeName]) => (
+        <DrawerStack.Screen
+          key={key}
+          name={routeName as keyof DrawerStackParamList}
+          component={MainStackNavigator}
+          initialParams={{ screen: routeName }}
+        />
+      ))}
     </DrawerStack.Navigator>
   );
 };

@@ -16,7 +16,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { useIsAuthenticated } from '@/shared/store/selectors';
 import { ROOT_STACKS } from '@/shared/constants/routes';
 import { RootStackParamList } from '@/shared/types';
-import { AuthStackNavigator, DrawerNavigator } from '@/navigation/navigators';
+import { AuthStackNavigator, MainDrawer } from '@/navigation/navigators';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -31,6 +31,7 @@ const Stack = createStackNavigator<RootStackParamList>();
  * Pattern:
  * - Sử dụng useIsAuthenticated hook để get authentication state
  * - Conditional rendering based on auth state
+ * - Sử dụng MainDrawer khi authenticated
  *
  * @returns Root navigation container
  */
@@ -43,8 +44,8 @@ export const AppNavigator: React.FC = () => {
         id="RootNavigator"
         screenOptions={{ headerShown: false }}
       >
-        {true ? (
-          <Stack.Screen name={ROOT_STACKS.DRAWER} component={DrawerNavigator} />
+        {isAuthenticated ? (
+          <Stack.Screen name={ROOT_STACKS.DRAWER} component={MainDrawer} />
         ) : (
           <Stack.Screen name="Auth" component={AuthStackNavigator} />
         )}

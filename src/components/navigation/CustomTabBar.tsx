@@ -156,21 +156,13 @@ const useBaseStyles = createStyles(
   theme => ({
     container: {
       backgroundColor: theme.colors.background,
-
-      // ✅ Bottom tab must be absolutely positioned
       position: 'absolute',
       bottom: 0,
       left: 0,
       right: 0,
-
-      // ✅ Radius phải scale theo chuẩn Resize Master
       borderTopLeftRadius: moderateScale(40),
       borderTopRightRadius: moderateScale(40),
 
-      /**
-       * ✅ Shadow (iOS)
-       * Keep lightweight → avoid expensive GPU shadows on low-end devices
-       */
       shadowColor: '#000',
       shadowOffset: {
         width: 0,
@@ -178,32 +170,18 @@ const useBaseStyles = createStyles(
       },
       shadowOpacity: 0.08,
       shadowRadius: moderateScale(6),
-
-      /**
-       * ✅ Elevation (Android)
-       * Avoid too high elevation → smoother rendering
-       */
       elevation: 6,
-
-      // ✅ Remove default border safely (allowed constant)
       borderTopWidth: 0,
-
-      // ✅ Avoid redundant padding
       paddingBottom: 0,
     },
 
     tabsContainer: {
       flexDirection: 'row',
-
-      // ✅ Height phải scale → touch target chuẩn (>= 56dp)
       height: moderateVerticalScale(50),
-
-      // ✅ Horizontal padding scale
       paddingHorizontal: scale(8),
 
       backgroundColor: 'transparent',
 
-      // ✅ Bottom spacing scale (safe-area visual balance)
       paddingBottom: moderateVerticalScale(10),
     },
   }),
@@ -230,7 +208,6 @@ const useStyles = createStyles<
       justifyContent: 'center',
       alignItems: 'center',
 
-      // ✅ vertical spacing phải scale theo dọc
       paddingVertical: moderateVerticalScale(4),
 
       position: 'relative',
@@ -242,13 +219,11 @@ const useStyles = createStyles<
     },
 
     iconContainer: {
-      // ✅ 25 là quá lớn cho bottom tab -> chuẩn thường 6~10
       marginTop: '40%',
       marginBottom: moderateVerticalScale(4),
 
       position: 'relative',
 
-      // ✅ width/height nên đồng bộ scale (không mix moderateScale cho height)
       width: scale(32),
       height: scale(32),
 
@@ -257,13 +232,11 @@ const useStyles = createStyles<
     },
 
     tabLabel: {
-      // ✅ fontSize dùng moderateScale
       fontSize: moderateScale(10),
 
       fontWeight: props.isActive ? '700' : '500',
       textAlign: 'center',
 
-      // ✅ màu theo theme
       color: props.isActive
         ? theme.colors.primary
         : theme.colors.textSecondary ?? theme.colors.text,
@@ -272,27 +245,20 @@ const useStyles = createStyles<
       lineHeight: moderateScale(12),
     },
 
-    // ✅ giữ lại nếu bạn muốn apply riêng khi active
     activeTabLabel: {
       fontWeight: '700',
       color: theme.colors.primary,
     },
 
     activeIndicator: {
-      // giữ đúng yêu cầu thiết kế: ẩn
       display: 'none',
     },
 
     badge: {
       position: 'absolute',
-
-      // ✅ offset scale chuẩn
       top: moderateVerticalScale(-2),
       right: scale(-6),
-
       backgroundColor: theme.colors.error,
-
-      // ✅ radius/size/padding scale chuẩn
       borderRadius: moderateScale(10),
       minWidth: scale(16),
       height: scale(16),
