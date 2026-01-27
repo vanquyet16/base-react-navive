@@ -1,5 +1,7 @@
 
 import { MainTabParamList, AuthStackParamList } from '@/shared/types';
+import LoginScreen from '@/features/auth/screens/LoginScreen';
+import React from 'react';
 
 // ============================================================================
 // ĐỊNH NGHĨA TYPES CHO SCREEN CONFIGURATION
@@ -46,7 +48,8 @@ export interface TabScreenConfig {
 export interface AuthScreenConfig {
     name: keyof AuthStackParamList; // Tên screen trong auth navigator
     title: string; // Tiêu đề hiển thị
-    component: () => Promise<any>; // Component được lazy load
+    component?: () => Promise<any>; // Component được lazy load
+    componentDirect?: React.ComponentType<any>; // Component import trực tiếp (không lazy)
 }
 
 // ============================================================================
@@ -251,7 +254,7 @@ export const AUTH_SCREENS: AuthScreenConfig[] = [
     {
         name: 'Login',
         title: 'Đăng nhập',
-        component: () => import('@/features/auth/screens/LoginScreen'),
+        componentDirect: LoginScreen, // Import trực tiếp để tránh loading screen
     },
     {
         name: 'Register',

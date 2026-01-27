@@ -1,0 +1,15 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="512" cy="512" r="400" fill="#61DAFB" opacity="0.1"/>
+  
+  <!-- React logo atom paths -->
+  <g transform="translate(512, 512)">
+    <!-- Center dot -->
+    <circle cx="0" cy="0" r="30" fill="#61DAFB"/>
+    
+    <!-- Electron orbits -->
+    <ellipse cx="0" cy="0" rx="300" ry="110" fill="none" stroke="#61DAFB" stroke-width="16" opacity="0.8"/>
+    <ellipse cx="0" cy="0" rx="300" ry="110" fill="none" stroke="#61DAFB" stroke-width="16" opacity="0.8" transform="rotate(60)"/>
+    <ellipse cx="0" cy="0" rx="300" ry="110" fill="none" stroke="#61DAFB" stroke-width="16" opacity="0.8" transform="rotate(120)"/>
+  </g>
+</svg>

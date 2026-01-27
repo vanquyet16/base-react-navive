@@ -6,34 +6,15 @@
  *
  */
 
-import React from 'react';
-import { View, ActivityIndicator, StatusBar } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppProviders } from './app-providers';
 import { useAppInit } from '@/app/hooks/use-app-init';
 import { useTheme } from '@/shared/theme/use-theme';
 import { CustomText, ScreenContainer } from '@/components';
 import { AppNavigator } from './app-navigator';
-
-/**
- * Loading Screen
- * Show khi app đang initialize
- */
-const LoadingScreen: React.FC = () => {
-  const theme = useTheme();
-
-  return (
-    <ScreenContainer>
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
-        <View style={{ height: theme.spacing[4] }} />
-        <CustomText variant="body" color="secondary">
-          Đang khởi tạo...
-        </CustomText>
-      </View>
-    </ScreenContainer>
-  );
-};
+import { useSplashScreen } from '@/shared/hooks';
 
 /**
  * Error Screen
@@ -57,23 +38,32 @@ const ErrorScreen: React.FC<{ error: Error }> = ({ error }) => {
 
 /**
  * App Content
- * Rendered sau khi initialization complete
+ * Rendered với splash screen integration
  */
 const AppContent: React.FC = () => {
   const { isLoading, isReady, error } = useAppInit();
   const theme = useTheme();
+  const { hideSplash } = useSplashScreen();
 
-  // Show loading
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
+  /**
+   * Auto hide splash khi app ready
+   * Splash screen native sẽ thay thế LoadingScreen
+   */
+  useEffect(() => {
+    if (isReady && !error) {
+      // Hide splash với fade animation mượt mà
+      hideSplash();
+    }
+  }, [isReady, error, hideSplash]);
 
-  // Show error
+  // Show error (sau khi hide splash)
   if (error) {
+    // Đảm bảo splash đã ẩn khi show error
+    hideSplash();
     return <ErrorScreen error={error} />;
   }
 
-  // Show app
+  // Show app khi ready
   if (isReady) {
     return (
       <>
@@ -86,8 +76,9 @@ const AppContent: React.FC = () => {
     );
   }
 
-  // Fallback
-  return <LoadingScreen />;
+  // Trong khi loading, splash screen native sẽ hiển thị
+  // Không cần LoadingScreen component nữa
+  return null;
 };
 
 /**

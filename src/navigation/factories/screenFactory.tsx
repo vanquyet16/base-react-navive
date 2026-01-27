@@ -96,22 +96,43 @@ export const createTabScreenWrapper = (config: TabScreenConfig): React.FC => {
  * Tạo wrapper component cho auth screen với LazyScreen
  *
  * @param config - Cấu hình auth screen
- * @returns React component đã được wrap với LazyScreen
+ * @returns React component đã được wrap với LazyScreen hoặc direct component
  *
  * @example
  * const LoginWrapper = createAuthScreenWrapper({
  *   name: 'Login',
  *   title: 'Login',
- *   component: () => import('./LoginScreen')
+ *   componentDirect: LoginScreen // Direct import - không lazy
+ * });
+ *
+ * const RegisterWrapper = createAuthScreenWrapper({
+ *   name: 'Register',
+ *   title: 'Register',
+ *   component: () => import('./RegisterScreen') // Lazy import
  * });
  */
 export const createAuthScreenWrapper = (config: AuthScreenConfig): React.FC => {
-  const AuthScreenWrapper: React.FC = () => (
-    <LazyScreen component={config.component} />
-  );
+  // Nếu có componentDirect, render trực tiếp không cần LazyScreen
+  if (config.componentDirect) {
+    const DirectComponent = config.componentDirect;
+    const AuthScreenDirectWrapper: React.FC = () => <DirectComponent />;
+    AuthScreenDirectWrapper.displayName = `${config.name}AuthDirectWrapper`;
+    return AuthScreenDirectWrapper;
+  }
 
-  AuthScreenWrapper.displayName = `${config.name}AuthWrapper`;
-  return AuthScreenWrapper;
+  // Nếu chỉ có component (lazy), dùng LazyScreen như cũ
+  if (config.component) {
+    const AuthScreenWrapper: React.FC = () => (
+      <LazyScreen component={config.component!} />
+    );
+    AuthScreenWrapper.displayName = `${config.name}AuthWrapper`;
+    return AuthScreenWrapper;
+  }
+
+  // Fallback: throw error nếu không có component nào
+  throw new Error(
+    `AuthScreen ${config.name} must have either component or componentDirect`,
+  );
 };
 
 // ============================================================================
