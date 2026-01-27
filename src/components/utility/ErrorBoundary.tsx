@@ -9,7 +9,8 @@ import React, { Component, ReactNode } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 interface Props {
-  children: ReactNode;
+  children?: ReactNode;
+  error?: Error;
 }
 
 interface State {
@@ -38,12 +39,15 @@ class ErrorBoundary extends Component<Props, State> {
   };
 
   render() {
-    if (this.state.hasError) {
+    const error = this.state.error || this.props.error;
+    const hasError = this.state.hasError || !!this.props.error;
+
+    if (hasError) {
       return (
         <View style={styles.container}>
           <Text style={styles.title}>Có lỗi xảy ra!</Text>
           <Text style={styles.message}>
-            Ứng dụng gặp phải một lỗi không mong muốn.
+            {error?.message || 'Ứng dụng gặp phải một lỗi không mong muốn.'}
           </Text>
           <TouchableOpacity style={styles.button} onPress={this.handleRetry}>
             <Text style={styles.buttonText}>Thử lại</Text>
