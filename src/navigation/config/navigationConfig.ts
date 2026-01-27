@@ -2,6 +2,10 @@
 import { MainTabParamList, AuthStackParamList } from '@/shared/types';
 import LoginScreen from '@/features/auth/screens/LoginScreen';
 import React from 'react';
+import { RegisterScreen } from '@/features/auth';
+import { HomeScreen } from '@/features/home';
+import { ProfileScreen, SettingsScreen } from '@/features/profile';
+import { ResponsiveDemoScreen } from '@/features/example';
 
 // ============================================================================
 // ĐỊNH NGHĨA TYPES CHO SCREEN CONFIGURATION
@@ -12,7 +16,8 @@ import React from 'react';
  */
 export interface ScreenConfig {
     title: string; // Tiêu đề hiển thị trên header
-    component: () => Promise<any>; // Component được lazy load
+    component?: () => Promise<any>; // Component được lazy load
+    componentDirect?: React.ComponentType<any>; // Component import trực tiếp
     showHeader?: boolean; // Có hiển thị header không
     showTabs?: boolean; // Có hiển thị bottom tabs không
     headerType?: 'minimal' | 'default' | 'search'; // Loại header
@@ -28,7 +33,8 @@ export interface ScreenConfig {
 export interface TabScreenConfig {
     name: keyof MainTabParamList; // Tên screen trong tab navigator
     title: string; // Tiêu đề hiển thị
-    component: () => Promise<any>; // Component được lazy load
+    component?: () => Promise<any>; // Component được lazy load
+    componentDirect?: React.ComponentType<any>; // Component import trực tiếp (không lazy)
     icon: string; // Icon cho tab
     badge?: number; // Số badge hiển thị trên tab
     header?: {
@@ -193,7 +199,7 @@ export const TAB_SCREENS: TabScreenConfig[] = [
     {
         name: 'Home',
         title: 'Trang chủ',
-        component: () => import('@/features/home/screens/HomeScreen'),
+        componentDirect: HomeScreen,
         icon: 'home',
         header: {
             subtitle: 'Chào mừng trở lại!',
@@ -209,7 +215,7 @@ export const TAB_SCREENS: TabScreenConfig[] = [
         name: 'Contacts',
         title: 'Danh bạ',
         // TODO: Replace with actual Contacts screen or reuse Profile for demo
-        component: () => import('@/features/profile/screens/ProfileScreen'),
+        componentDirect: ProfileScreen,
         icon: 'book', // AntDesign: book for contacts/directory
         header: {
             type: 'default',
@@ -222,7 +228,7 @@ export const TAB_SCREENS: TabScreenConfig[] = [
         name: 'Notifications',
         title: 'Thông báo',
         // TODO: Replace with actual Notifications screen or reusable Settings for demo
-        component: () => import('@/features/profile/screens/SettingsScreen'),
+        componentDirect: SettingsScreen,
         icon: 'bell', // AntDesign: bell
         badge: 5,
         header: {
@@ -234,7 +240,7 @@ export const TAB_SCREENS: TabScreenConfig[] = [
         name: 'Apps',
         title: 'Ứng dụng',
         // TODO: Replace with Apps menu screen
-        component: () => import('@/features/example/screens/ResponsiveDemoScreen'),
+        componentDirect: ResponsiveDemoScreen,
         icon: 'appstore', // AntDesign: appstore
         header: {
             type: 'minimal',
@@ -254,12 +260,12 @@ export const AUTH_SCREENS: AuthScreenConfig[] = [
     {
         name: 'Login',
         title: 'Đăng nhập',
-        componentDirect: LoginScreen, // Import trực tiếp để tránh loading screen
+        componentDirect: LoginScreen,
     },
     {
         name: 'Register',
         title: 'Đăng ký',
-        component: () => import('@/features/auth/screens/RegisterScreen'),
+        componentDirect: RegisterScreen,
     },
 ];
 

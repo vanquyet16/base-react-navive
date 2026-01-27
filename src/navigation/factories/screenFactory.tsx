@@ -43,7 +43,11 @@ export const createMainStackScreenWrapper = (
         showBack: config.showBack ?? false,
       }}
     >
-      <LazyScreen component={config.component} />
+      {config.componentDirect ? (
+        <config.componentDirect />
+      ) : (
+        <LazyScreen component={config.component!} />
+      )}
     </MainLayout>
   );
 
@@ -84,7 +88,11 @@ export const createTabScreenWrapper = (config: TabScreenConfig): React.FC => {
         showMenu: header?.showMenu ?? true,
       }}
     >
-      <LazyScreen component={config.component} />
+      {config.componentDirect ? (
+        <config.componentDirect />
+      ) : (
+        <LazyScreen component={config.component!} />
+      )}
     </MainLayout>
   );
 
