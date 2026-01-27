@@ -1,17 +1,18 @@
 /**
  * DESIGN TOKENS
  * =============
- * Atomic design tokens: colors, spacing, typography, radius.
- * Single source of truth cho design decisions.
+ * Single source of truth for design decisions.
+ * Includes: Colors, Spacing, Typography, Radius, Shadows, zIndex.
  * 
- * @responsive All spacing and typography values are responsive using sizeMatters
+ * @system Atomic Design
+ * @responsive Uses react-native-size-matters for scaling
  */
 
 import { scale, verticalScale, moderateScale } from '@/shared/utils/sizeMatters';
 
 /**
  * Color Palette
- * HSL-based colors cho dễ customize và theme switching
+ * Defined using HSL-based or Tailwind-like scales for flexibility.
  */
 export const colors = {
     // Primary brand colors - Government Blue
@@ -21,10 +22,10 @@ export const colors = {
         200: '#9fb6da',
         300: '#7999cb',
         400: '#5c83c0',
-        500: '#2B4B9B', // Main primary - Button navy
-        600: '#00235a', // Gradient dark
-        700: '#001f4d', // Darker navy
-        800: '#003d8f', // Gradient light
+        500: '#2B4B9B', // Brand Primary
+        600: '#00235a',
+        700: '#001f4d',
+        800: '#003d8f',
         900: '#001233',
     },
 
@@ -35,60 +36,60 @@ export const colors = {
         200: '#cca3ff',
         300: '#b980ff',
         400: '#a55dff',
-        500: '#923BFF', // Main secondary
+        500: '#923BFF', // Brand Secondary
         600: '#7a1fff',
         700: '#6300e6',
         800: '#4c00b3',
         900: '#350080',
     },
 
-    // Neutrals (grayscale) - Tailwind-based
+    // Neutrals (grayscale)
     gray: {
-        50: '#f9fafb', // Input backgrounds
-        100: '#f3f4f6', // Borders, hover states
+        50: '#f9fafb',
+        100: '#f3f4f6',
         200: '#e5e7eb',
         300: '#d1d5db',
-        400: '#9ca3af', // Tertiary text, icons
-        500: '#6b7280', // Secondary text, labels
+        400: '#9ca3af',
+        500: '#6b7280',
         600: '#4b5563',
         700: '#374151',
         800: '#1f2937',
-        900: '#1a1f36', // Primary text (darker than standard)
+        900: '#1a1f36',
     },
 
-    // Semantic colors - Match UI mockups
+    // Semantic colors
     success: {
-        light: '#d1fae5', // emerald-100
-        main: '#10b981',  // emerald-500
-        dark: '#065f46',  // emerald-800
+        light: '#d1fae5',
+        main: '#10b981',
+        dark: '#065f46',
     },
     warning: {
-        light: '#fed7aa', // orange-200
-        main: '#f97316',  // orange-500
-        dark: '#c2410c',  // orange-700
+        light: '#fed7aa',
+        main: '#f97316',
+        dark: '#c2410c',
     },
     error: {
-        light: '#fee2e2', // red-100
-        main: '#dc2626',  // red-600
-        dark: '#991b1b',  // red-800
+        light: '#fee2e2',
+        main: '#dc2626',
+        dark: '#991b1b',
     },
     info: {
-        light: '#dbeafe', // blue-100
-        main: '#3b82f6',  // blue-500
-        dark: '#1e40af',  // blue-800
+        light: '#dbeafe',
+        main: '#3b82f6',
+        dark: '#1e40af',
     },
 
-    // Special colors - UI elements
+    // Special UI elements
     special: {
-        avatarBorder: '#eab308',   // gold/yellow for avatar accent
-        orangeAccent: '#f97316',   // section indicators
-        blueAccent: '#2B4B9B',     // section indicators
-        redNotification: '#ef4444', // notification badge
-
+        avatarBorder: '#eab308',
+        orangeAccent: '#f97316',
+        blueAccent: '#2B4B9B',
+        redNotification: '#ef4444',
     },
 
+    // Additional palettes (legacy or specific use-cases)
     blue: {
-        blueText: '#BFDBFE', // Primary text (darker than standard)
+        blueText: '#BFDBFE',
     },
 
     // Common
@@ -98,9 +99,8 @@ export const colors = {
 } as const;
 
 /**
- * Spacing Scale (Responsive)
- * 4px base unit - scaled automatically theo width màn hình
- * Dùng scale() để ensure consistent spacing across devices
+ * Spacing Scale
+ * Base unit: 4px. Scaled responsively.
  */
 export const spacing = {
     0: 0,
@@ -118,7 +118,10 @@ export const spacing = {
     24: moderateScale(96, 0.3),
 } as const;
 
-// Optional: vertical spacing (khi cần chắc chắn theo height)
+/**
+ * Vertical Spacing Scale
+ * Used for strict vertical rhythm.
+ */
 export const spacingV = {
     0: 0,
     1: verticalScale(4),
@@ -136,8 +139,7 @@ export const spacingV = {
 } as const;
 
 /**
- * Border Radius Scale (Responsive)
- * Scaled theo width để consistent trên mọi devices
+ * Border Radius
  */
 export const radius = {
     none: 0,
@@ -152,11 +154,10 @@ export const radius = {
 
 /**
  * Typography Scale
- * Font sizes, line heights, font weights
  */
 export const typography = {
     fontSizes: {
-        xs: moderateScale(12, 0.3),   // Scale ít aggressive hơn cho text
+        xs: moderateScale(12, 0.3),
         sm: moderateScale(14, 0.3),
         base: moderateScale(16, 0.3),
         lg: moderateScale(18, 0.3),
@@ -167,14 +168,12 @@ export const typography = {
         '5xl': moderateScale(48, 0.3),
         '6xl': moderateScale(60, 0.3),
     },
-
     lineHeights: {
         tight: 1.25,
         normal: 1.5,
         relaxed: 1.75,
         loose: 2,
     },
-
     fontWeights: {
         light: '300',
         normal: '400',
@@ -183,8 +182,6 @@ export const typography = {
         bold: '700',
         extrabold: '800',
     },
-
-    // Font families - có thể customize khi add custom fonts
     fontFamilies: {
         sans: 'System',
         mono: 'Courier',
@@ -192,7 +189,7 @@ export const typography = {
 } as const;
 
 /**
- * Shadows (Elevation)
+ * Elevation / Shadows
  */
 export const shadows = {
     sm: {
@@ -226,7 +223,7 @@ export const shadows = {
 } as const;
 
 /**
- * Z-index Scale
+ * Z-Index
  */
 export const zIndex = {
     base: 0,
@@ -238,7 +235,7 @@ export const zIndex = {
 } as const;
 
 /**
- * Breakpoints (cho responsive nếu cần)
+ * Breakpoints
  */
 export const breakpoints = {
     sm: 320,
