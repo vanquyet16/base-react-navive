@@ -16,3 +16,6 @@ export { default as LoginOther } from './LoginOther';
 export { default as Avatar } from './Avatar';
 // Re-export Logo as named export (khớp với export const Logo trong logo.tsx)
 export { Logo } from './Logo';
+export * from './CustomTabs';
+export * from './CustomSwiper';
+export * from './CustomFlashList';

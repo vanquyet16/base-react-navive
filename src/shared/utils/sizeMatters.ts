@@ -2,6 +2,7 @@ import {
     scale,           // Scale theo width - dùng cho font, padding, margin, width, height
     verticalScale,   // Scale theo height - dùng cho height, top, bottom, marginVertical
     moderateScale,   // Scale với factor có thể điều chỉnh - ít aggressive hơn scale
+    moderateVerticalScale, // Scale vertical với factor
 } from 'react-native-size-matters';
 import { Dimensions, PixelRatio } from 'react-native';
 
@@ -29,6 +30,11 @@ export { verticalScale };
  * Ví dụ: fontSize: moderateScale(16, 0.3) - scale ít hơn
  */
 export { moderateScale };
+
+/**
+ * moderateVerticalScale(size: number, factor: number = 0.5)
+ */
+export { moderateVerticalScale };
 
 // Export Dimensions và PixelRatio từ react-native
 export { Dimensions, PixelRatio };
