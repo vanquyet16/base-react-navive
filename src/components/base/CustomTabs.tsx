@@ -1,56 +1,119 @@
-import React, { useMemo } from 'react';
+import React, { useCallback } from 'react';
 import { Tabs, TabsProps } from '@ant-design/react-native';
-import { useTheme } from '@/shared/theme/use-theme';
+import { colors } from '@/shared/theme/tokens';
+import { createStyles } from '@/shared/theme/create-styles';
 import {
   moderateScale,
   moderateVerticalScale,
 } from '@/shared/utils/sizeMatters';
-import { TextStyle, ViewStyle } from 'react-native';
+import {
+  ScrollView,
+  TouchableOpacity,
+  Text,
+  View,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
+
+interface TabBarPropsType {
+  activeTab: number;
+  tabs: any[];
+  goToTab: (index: number) => void;
+  [key: string]: any;
+}
 
 /**
  * CustomTabs Component
  * Wraps @ant-design/react-native Tabs with project-specific styling and theme support.
- * Optimized with React.memo and polished styles.
+ * Implements a "Pill" style tab bar with Green active state (success color).
  *
  * @param props - Standard Ant Design Tabs props
  */
 export const CustomTabs = React.memo<TabsProps>(props => {
-  const theme = useTheme();
+  const styles = useStyles();
 
-  // Memoize styles to prevent unnecessary calculations on re-render
-  const styles = useMemo(() => {
-    return {
-      tabBarUnderlineStyle: {
-        backgroundColor: theme.colors.primary,
-        height: moderateVerticalScale(4), // Slightly thicker for modern look
-        borderRadius: moderateScale(4), // Rounded pills look
-        marginBottom: moderateVerticalScale(2), // Spacing from bottom
-      } as ViewStyle,
-      tabBarTextStyle: {
-        fontSize: theme.typography.fontSizes.base,
-        fontWeight: '600', // Semi-bold for better readability
-        textTransform: 'none', // Allow natural case
-        paddingVertical: moderateVerticalScale(2),
-      } as TextStyle,
-      tabBarStyle: {
-        backgroundColor: theme.colors.backgroundTertiary, // Card background usually
-        borderBottomWidth: 1,
-        borderBottomColor: theme.colors.borderLight,
-        elevation: 0, // Flat design
-      } as ViewStyle,
-    };
-  }, [theme]);
-
-  return (
-    <Tabs
-      tabBarUnderlineStyle={styles.tabBarUnderlineStyle}
-      tabBarTextStyle={styles.tabBarTextStyle}
-      tabBarActiveTextColor={theme.colors.primary}
-      tabBarInactiveTextColor={theme.colors.textSecondary}
-      tabBarBackgroundColor={theme.colors.backgroundTertiary}
-      {...props}
-    />
+  const renderTabBar = useCallback(
+    (tabProps: TabBarPropsType) => {
+      return (
+        <View style={styles.container}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.scrollViewContent}
+          >
+            {tabProps.tabs.map((tab: any, i: number) => {
+              const isActive = tabProps.activeTab === i;
+              return (
+                <TouchableOpacity
+                  key={tab.title || i}
+                  activeOpacity={0.8}
+                  onPress={() => tabProps.goToTab(i)}
+                  style={[
+                    styles.tabItem,
+                    isActive ? styles.activeTab : styles.inactiveTab,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.tabText,
+                      isActive ? styles.activeText : styles.inactiveText,
+                    ]}
+                  >
+                    {tab.title}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+      );
+    },
+    [styles],
   );
+
+  // Destructure to avoid passing legacy style props if they were passed
+  const { tabBarUnderlineStyle, tabBarTextStyle, ...restProps } = props;
+
+  return <Tabs renderTabBar={renderTabBar} {...restProps} />;
 });
 
 CustomTabs.displayName = 'CustomTabs';
+
+const useStyles = createStyles(
+  theme => ({
+    container: {
+      marginBottom: moderateVerticalScale(12),
+    } as ViewStyle,
+    scrollViewContent: {
+      paddingHorizontal: moderateScale(16),
+      gap: moderateScale(8),
+    } as ViewStyle,
+    tabItem: {
+      paddingHorizontal: moderateScale(16),
+      paddingVertical: moderateVerticalScale(8),
+      borderRadius: moderateScale(20), // Pill shape
+    } as ViewStyle,
+    tabText: {
+      fontSize: theme.typography.fontSizes.sm,
+    } as TextStyle,
+    activeTab: {
+      backgroundColor: theme.colors.success, // Green active state
+      borderWidth: 0,
+      borderColor: 'transparent',
+    } as ViewStyle,
+    inactiveTab: {
+      backgroundColor: theme.colors.white, // White for better contrast
+      borderWidth: 1,
+      borderColor: theme.isDark ? theme.colors.border : colors.gray[200],
+    } as ViewStyle,
+    activeText: {
+      color: theme.colors.white,
+      fontWeight: '600',
+    } as TextStyle,
+    inactiveText: {
+      color: theme.colors.textSecondary,
+      fontWeight: '500',
+    } as TextStyle,
+  }),
+  true,
+);

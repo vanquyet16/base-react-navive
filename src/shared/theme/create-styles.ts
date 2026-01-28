@@ -22,15 +22,15 @@ type NamedStyles<T> = {
  * Style factory function type
  * Function nhận theme và return styles object
  */
-export type StyleFactory<T extends NamedStyles<T>> = (theme: Theme) => T;
+export type StyleFactory<T> = (theme: Theme) => T;
 
 /**
  * Style factory function type với props
  * Function nhận theme và props, return styles object
  */
-export type StyleFactoryWithProps<T extends NamedStyles<T>, P = Record<string, unknown>> = (
-  theme: Theme,
-  props: P,
+export type StyleFactoryWithProps<T, P = Record<string, unknown>> = (
+    theme: Theme,
+    props: P,
 ) => T;
 
 /**
@@ -52,7 +52,7 @@ export type StyleFactoryWithProps<T extends NamedStyles<T>, P = Record<string, u
  * const theme = useTheme();
  * const styles = useStyles(theme);
  */
-export function createStyles<T extends NamedStyles<T>>(
+export function createStyles<T extends NamedStyles<any>>(
     styleFactory: StyleFactory<T>,
 ): (theme: Theme) => T;
 
@@ -75,7 +75,7 @@ export function createStyles<T extends NamedStyles<T>>(
  * // In component (cách mới - chỉ 1 dòng):
  * const styles = useStyles();
  */
-export function createStyles<T extends NamedStyles<T>>(
+export function createStyles<T extends NamedStyles<any>>(
     styleFactory: StyleFactory<T>,
     autoInject: true,
 ): () => T;
@@ -100,13 +100,13 @@ export function createStyles<T extends NamedStyles<T>>(
  * // In component:
  * const styles = useStyles({ isActive: true });
  */
-export function createStyles<T extends NamedStyles<T>, P = Record<string, unknown>>(
+export function createStyles<T extends NamedStyles<any>, P = Record<string, unknown>>(
     styleFactory: StyleFactoryWithProps<T, P>,
     autoInject: true,
 ): (props: P) => T;
 
 // Implementation
-export function createStyles<T extends NamedStyles<T>, P = Record<string, unknown>>(
+export function createStyles<T extends NamedStyles<any>, P = Record<string, unknown>>(
     styleFactory: StyleFactory<T> | StyleFactoryWithProps<T, P>,
     autoInject?: boolean,
 ) {

@@ -7,7 +7,7 @@ Thư mục này chứa tất cả các React components được tổ chức the
 ```
 src/components/
 ├── 🧭 navigation/          # Navigation Components
-│   ├── CustomTabBar.tsx    # Custom tab bar cho React Navigation
+│   ├── CustomBottomTabBar.tsx    # Custom tab bar cho React Navigation
 │   ├── CustomBottomBar.tsx # Standalone bottom bar component
 │   └── index.ts
 ├── 🎨 layout/              # Layout Components
@@ -37,26 +37,26 @@ src/components/
 
 ```typescript
 // Navigation components
-import {CustomTabBar, CustomBottomBar} from '@/components/navigation';
+import { CustomBottomTabBar, CustomBottomBar } from '@/components/navigation';
 
 // Layout components
-import {CustomHeader, Header} from '@/components/layout';
+import { CustomHeader, Header } from '@/components/layout';
 
 // Common components
-import {Avatar, Logo, LoadingScreen} from '@/components/common';
+import { Avatar, Logo, LoadingScreen } from '@/components/common';
 
 // Form components
-import {FormInput} from '@/components/form';
+import { FormInput } from '@/components/form';
 
 // UI components
-import {ErrorBoundary} from '@/components/ui';
+import { ErrorBoundary } from '@/components/ui';
 ```
 
 ### Import trực tiếp
 
 ```typescript
 // Navigation
-import CustomTabBar from '@/components/navigation/CustomTabBar';
+import CustomBottomTabBar from '@/components/navigation/CustomBottomTabBar';
 
 // Layout
 import CustomHeader from '@/components/layout/CustomHeader';
@@ -82,7 +82,7 @@ import {
 
 ### 🧭 Navigation Components
 
-- **CustomTabBar**: Custom tab bar tích hợp với React Navigation
+- **CustomBottomTabBar**: Custom tab bar tích hợp với React Navigation
 - **CustomBottomBar**: Standalone bottom navigation với animations
 
 ### 🎨 Layout Components
@@ -133,6 +133,6 @@ import CustomHeader from '@/components/layout/CustomHeader';
 import Avatar from '@/components/common/Avatar';
 
 // Hoặc sử dụng category import
-import {CustomHeader} from '@/components/layout';
-import {Avatar} from '@/components/common';
+import { CustomHeader } from '@/components/layout';
+import { Avatar } from '@/components/common';
 ```

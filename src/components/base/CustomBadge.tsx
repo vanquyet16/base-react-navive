@@ -1,164 +1,177 @@
 /**
  * CUSTOM BADGE COMPONENT
  * =======================
- * Status badge component với variants cho success, warning, error, info.
- * Match UI mockup design với rounded corners và uppercase text.
+ * Status badge component với support cho wrapper (notification badge) hoặc standalone status.
  *
- * @senior-pattern Small status indicators với semantic colors
+ * @features
+ * - Wrapper mode: Wrap icon/content và hiện badge góc trên phải
+ * - Standalone mode: Hiện badge status (như tags)
+ * - Variants: success, warning, error, info, primary
  */
 
 import React, { useMemo } from 'react';
-import { View, type ViewStyle, type StyleProp } from 'react-native';
+import { View, type ViewStyle, type StyleProp, TextStyle } from 'react-native';
 import { CustomText } from './CustomText';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import { colors } from '@/shared/theme/tokens';
+import { scale } from 'react-native-size-matters';
 
-/**
- * Badge variant types
- */
 export type BadgeVariant = 'success' | 'warning' | 'error' | 'info' | 'primary';
+export type BadgeSize = 'sm' | 'md' | 'lg';
 
-/**
- * Badge size types
- */
-export type BadgeSize = 'sm' | 'md';
-
-/**
- * CustomBadge Props
- */
 export interface CustomBadgeProps {
-  /** Badge variant for color theming */
-  variant: BadgeVariant;
+  /** Badge variant */
+  variant?: BadgeVariant;
   /** Badge size */
   size?: BadgeSize;
-  /** Text to display */
-  text: string;
-  /** Optional container style */
+  /** Text display (standalone mode) */
+  text?: string;
+  /** Number display (notification mode) */
+  badgeCount?: number;
+  /** Show 0 count */
+  showZero?: boolean;
+  /** Container style */
   style?: StyleProp<ViewStyle>;
+  /** Children (Icon, etc.) */
+  children?: React.ReactNode;
 }
 
-/**
- * CustomBadge Component
- *
- * @optimized React.memo, useMemo
- */
 export const CustomBadge: React.FC<CustomBadgeProps> = ({
-  variant,
+  variant = 'error',
   size = 'sm',
   text,
+  badgeCount,
+  showZero = false,
   style,
+  children,
 }) => {
   const theme = useTheme();
   const styles = useStyles(theme);
+
+  // Determind content
+  const content = useMemo(() => {
+    if (text) return text;
+    if (typeof badgeCount === 'number') {
+      if (badgeCount > 99) return '99+';
+      return badgeCount.toString();
+    }
+    return '';
+  }, [text, badgeCount]);
+
+  // Visibility check
+  const isVisible = useMemo(() => {
+    if (text) return true;
+    if (typeof badgeCount === 'number') {
+      return badgeCount > 0 || showZero;
+    }
+    return false;
+  }, [text, badgeCount, showZero]);
 
   // Get variant styles
   const variantKey = `${variant}Badge` as const;
   const variantStyle = (styles as any)[variantKey];
 
-  // Get size styles
-  const sizeKey = `${size}Badge` as const;
-  const sizeStyle = (styles as any)[sizeKey];
-
-  // Memoize text color để avoid recalculation
+  // Get text color
   const textColor = useMemo(
     () => getTextColor(theme, variant),
     [theme, variant],
   );
 
-  // Memoize combined badge styles
-  const badgeStyles = useMemo(
-    () => [styles.container, variantStyle, sizeStyle, style],
-    [styles.container, variantStyle, sizeStyle, style],
-  );
+  // Wrapper Mode (Notification Badge)
+  if (children) {
+    return (
+      <View style={styles.wrapper}>
+        {children}
+        {isVisible && (
+          <View style={[styles.badgeAbsolute, variantStyle, style]}>
+            <CustomText style={[styles.badgeText, { color: textColor }]}>
+              {content}
+            </CustomText>
+          </View>
+        )}
+      </View>
+    );
+  }
 
-  // Memoize text style
-  const textStyles = useMemo(
-    () => [styles.text, { color: textColor }],
-    [styles.text, textColor],
-  );
+  // Standalone Mode (Tags/Status)
+  if (!isVisible) return null;
 
   return (
-    <View style={badgeStyles}>
-      <CustomText style={textStyles}>{text}</CustomText>
+    <View style={[styles.container, variantStyle, style]}>
+      <CustomText style={[styles.text, { color: textColor }]}>
+        {content}
+      </CustomText>
     </View>
   );
 };
 
-/**
- * Memoized export để prevent unnecessary re-renders
- */
 export default React.memo(CustomBadge);
 
-/**
- * Helper to get text color per variant
- */
 const getTextColor = (theme: any, variant: BadgeVariant): string => {
   switch (variant) {
     case 'success':
-      return colors.success.dark; // #065f46
+      return colors.success.dark;
     case 'warning':
-      return colors.warning.dark; // #c2410c
+      return colors.warning.dark;
     case 'error':
-      return theme.colors.white; // White text on red bg
+      return theme.colors.white;
     case 'info':
-      return colors.info.dark; // #1e40af
+      return colors.info.dark;
     case 'primary':
-      return theme.colors.white; // White text on primary bg
+      return theme.colors.white;
     default:
       return theme.colors.text;
   }
 };
 
-/**
- * Styles
- */
 const useStyles = createStyles(theme => ({
+  // Standalone styles
   container: {
-    flexDirection: 'row',
+    paddingHorizontal: theme.spacing[2],
+    paddingVertical: theme.spacing[1] / 2,
+    borderRadius: theme.radius.full,
+    alignSelf: 'flex-start',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 12, // Rounded-full look
-    alignSelf: 'flex-start', // Don't stretch
   },
-
   text: {
-    fontSize: 9,
+    fontSize: theme.typography.fontSizes.xs,
     fontWeight: theme.typography.fontWeights.bold,
     textTransform: 'uppercase',
-    letterSpacing: 0.5,
   },
 
-  // Variant styles
-  successBadge: {
-    backgroundColor: colors.success.light, // #d1fae5 emerald-100
+  // Wrapper styles
+  wrapper: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  warningBadge: {
-    backgroundColor: colors.warning.light, // #fed7aa orange-200
+  badgeAbsolute: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    minWidth: scale(14),
+    height: scale(14),
+    borderRadius: scale(7),
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: theme.colors.white,
+    zIndex: 10,
+    paddingHorizontal: 2,
   },
-  errorBadge: {
-    backgroundColor: colors.error.main, // #dc2626 red-600
-    shadowColor: theme.colors.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 1,
-  },
-  infoBadge: {
-    backgroundColor: colors.info.light, // #dbeafe blue-100
-  },
-  primaryBadge: {
-    backgroundColor: theme.colors.primary, // #2B4B9B
+  badgeText: {
+    fontSize: 8,
+    fontWeight: 'bold',
+    lineHeight: 10,
+    textAlign: 'center',
   },
 
-  // Size styles
-  smBadge: {
-    paddingHorizontal: 8, // px-2
-    paddingVertical: 4, // py-0.5
-  },
-  mdBadge: {
-    paddingHorizontal: 12, // px-3
-    paddingVertical: 6, // py-1
-    fontSize: 11,
-  },
+  // Variants
+  successBadge: { backgroundColor: colors.success.light },
+  warningBadge: { backgroundColor: colors.warning.light },
+  errorBadge: { backgroundColor: colors.error.main },
+  infoBadge: { backgroundColor: colors.info.light },
+  primaryBadge: { backgroundColor: theme.colors.primary },
 }));

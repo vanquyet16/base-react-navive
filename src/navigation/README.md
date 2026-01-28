@@ -46,7 +46,7 @@ const AppNavigator = () => {
 // src/navigation/MainTabs.tsx
 const MainTabs = () => {
   return (
-    <Tab.Navigator tabBar={CustomTabBar}>
+    <Tab.Navigator tabBar={CustomBottomTabBar}>
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
@@ -126,7 +126,7 @@ Or use in tabs:
   component={NewScreen}
   options={{
     tabBarLabel: 'New',
-    tabBarIcon: ({ color }) => <Icon name="star" color={color} />
+    tabBarIcon: ({ color }) => <Icon name="star" color={color} />,
   }}
 />
 ```

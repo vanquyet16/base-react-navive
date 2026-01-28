@@ -30,6 +30,10 @@ export interface ScreenConfig {
 /**
  * Cấu hình cho tab screen
  */
+import { CustomHeaderProps } from '@/components/layout/CustomHeader';
+
+
+
 export interface TabScreenConfig {
     name: keyof MainTabParamList; // Tên screen trong tab navigator
     title: string; // Tiêu đề hiển thị
@@ -37,15 +41,10 @@ export interface TabScreenConfig {
     componentDirect?: React.ComponentType<any>; // Component import trực tiếp (không lazy)
     icon: string; // Icon cho tab
     badge?: number; // Số badge hiển thị trên tab
-    header?: {
-        type?: 'default' | 'search' | 'minimal';
-        subtitle?: string;
-        showProfile?: boolean;
-        showSearch?: boolean;
-        showNotification?: boolean;
-        notificationCount?: number;
-        showMenu?: boolean;
-    };
+    header?: Partial<CustomHeaderProps>;
+    showHeader?: boolean; // Cho phép ẩn header (default: true)
+    disableSafeArea?: boolean; // Tắt SafeAreaView khi ẩn header (immersive mode)
+    disableScroll?: boolean; // Tắt scroll (default: false -> enableScroll: true)
 }
 
 /**

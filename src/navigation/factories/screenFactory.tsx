@@ -10,6 +10,7 @@ import {
   TabScreenConfig,
   AuthScreenConfig,
 } from '../config/navigationConfig';
+import { CustomHeaderProps } from '@/components/layout/CustomHeader';
 
 // ============================================================================
 // FACTORY FUNCTIONS CHO SCREEN WRAPPERS
@@ -75,7 +76,9 @@ export const createTabScreenWrapper = (config: TabScreenConfig): React.FC => {
 
   const TabScreenWrapper: React.FC = () => (
     <MainLayout
-      showHeader={true}
+      showHeader={config.showHeader ?? true}
+      disableSafeArea={config.disableSafeArea}
+      enableScroll={!config.disableScroll}
       showTabs={false}
       headerProps={{
         title: config.title,
@@ -86,6 +89,7 @@ export const createTabScreenWrapper = (config: TabScreenConfig): React.FC => {
         showNotification: header?.showNotification,
         notificationCount: header?.notificationCount,
         showMenu: header?.showMenu ?? true,
+        ...header,
       }}
     >
       {config.componentDirect ? (
@@ -96,7 +100,7 @@ export const createTabScreenWrapper = (config: TabScreenConfig): React.FC => {
     </MainLayout>
   );
 
-  TabScreenWrapper.displayName = `${config.name}TabWrapper`;
+  TabScreenWrapper.displayName = `${String(config.name)}TabWrapper`;
   return TabScreenWrapper;
 };
 
@@ -124,7 +128,9 @@ export const createAuthScreenWrapper = (config: AuthScreenConfig): React.FC => {
   if (config.componentDirect) {
     const DirectComponent = config.componentDirect;
     const AuthScreenDirectWrapper: React.FC = () => <DirectComponent />;
-    AuthScreenDirectWrapper.displayName = `${config.name}AuthDirectWrapper`;
+    AuthScreenDirectWrapper.displayName = `${String(
+      config.name,
+    )}AuthDirectWrapper`;
     return AuthScreenDirectWrapper;
   }
 
@@ -133,13 +139,15 @@ export const createAuthScreenWrapper = (config: AuthScreenConfig): React.FC => {
     const AuthScreenWrapper: React.FC = () => (
       <LazyScreen component={config.component!} />
     );
-    AuthScreenWrapper.displayName = `${config.name}AuthWrapper`;
+    AuthScreenWrapper.displayName = `${String(config.name)}AuthWrapper`;
     return AuthScreenWrapper;
   }
 
   // Fallback: throw error nếu không có component nào
   throw new Error(
-    `AuthScreen ${config.name} must have either component or componentDirect`,
+    `AuthScreen ${String(
+      config.name,
+    )} must have either component or componentDirect`,
   );
 };
 
@@ -184,7 +192,7 @@ export const createTabScreenWrappers = (
   tabConfigs: TabScreenConfig[],
 ): Record<string, React.FC> => {
   return tabConfigs.reduce((acc, config) => {
-    acc[config.name] = createTabScreenWrapper(config);
+    acc[String(config.name)] = createTabScreenWrapper(config);
     return acc;
   }, {} as Record<string, React.FC>);
 };
@@ -205,7 +213,7 @@ export const createAuthScreenWrappers = (
   authConfigs: AuthScreenConfig[],
 ): Record<string, React.FC> => {
   return authConfigs.reduce((acc, config) => {
-    acc[config.name] = createAuthScreenWrapper(config);
+    acc[String(config.name)] = createAuthScreenWrapper(config);
     return acc;
   }, {} as Record<string, React.FC>);
 };

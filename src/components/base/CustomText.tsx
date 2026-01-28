@@ -10,6 +10,7 @@ import React, { useMemo } from 'react';
 import { Text, type TextProps, type TextStyle } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
+import { moderateScale } from 'react-native-size-matters';
 
 /**
  * Text variant types
@@ -19,6 +20,12 @@ export type TextVariant =
   | 'h2'
   | 'h3'
   | 'h4'
+  | 'h5'
+  | 'h6'
+  | 'h7'
+  | 'h8'
+  | 'h9'
+  | 'h10'
   | 'body'
   | 'bodySmall'
   | 'caption'
@@ -173,6 +180,46 @@ const useStyles = createStyles(theme => ({
     lineHeight:
       theme.typography.fontSizes.xl * theme.typography.lineHeights.normal,
     fontWeight: theme.typography.fontWeights.semibold,
+    color: theme.colors.text,
+  },
+  h5: {
+    fontSize: theme.typography.fontSizes.lg,
+    lineHeight:
+      theme.typography.fontSizes.lg * theme.typography.lineHeights.normal,
+    fontWeight: theme.typography.fontWeights.semibold,
+    color: theme.colors.text,
+  },
+  h6: {
+    fontSize: theme.typography.fontSizes.base,
+    lineHeight:
+      theme.typography.fontSizes.base * theme.typography.lineHeights.normal,
+    fontWeight: theme.typography.fontWeights.semibold,
+    color: theme.colors.text,
+  },
+  h7: {
+    fontSize: theme.typography.fontSizes.sm,
+    lineHeight:
+      theme.typography.fontSizes.sm * theme.typography.lineHeights.normal,
+    fontWeight: theme.typography.fontWeights.semibold,
+    color: theme.colors.text,
+  },
+  h8: {
+    fontSize: theme.typography.fontSizes.xs,
+    lineHeight:
+      theme.typography.fontSizes.xs * theme.typography.lineHeights.normal,
+    fontWeight: theme.typography.fontWeights.semibold,
+    color: theme.colors.text,
+  },
+  h9: {
+    fontSize: moderateScale(11),
+    lineHeight: moderateScale(11) * theme.typography.lineHeights.normal,
+    fontWeight: theme.typography.fontWeights.bold,
+    color: theme.colors.text,
+  },
+  h10: {
+    fontSize: moderateScale(10),
+    lineHeight: moderateScale(10) * theme.typography.lineHeights.normal,
+    fontWeight: theme.typography.fontWeights.bold,
     color: theme.colors.text,
   },
 

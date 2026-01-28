@@ -1,3 +1,4 @@
 // Navigation Components
-export { default as CustomTabBar } from './CustomTabBar';
-export { default as CustomDrawer } from './CustomDrawer'; 
+export { default as CustomBottomTabBar } from './CustomBottomTabBar';
+export { default as CustomDrawer } from './CustomDrawer';
+export * from './CustomTabNavigator';

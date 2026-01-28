@@ -7,7 +7,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from '@ant-design/react-native/lib/icon';
 import { COLORS } from '@/shared/constants';
 import { MainTabParamList } from '@/shared/types';
-import { CustomTabBar } from '@/components/navigation';
+import { CustomBottomTabBar } from '@/components/navigation';
 import { logger } from '@/shared/utils/logger';
 import { TAB_SCREENS } from './config';
 import { createTabScreenWrappers } from './factories/screenFactory';
@@ -52,7 +52,7 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 
 const MainTabs: React.FC = () => {
   const renderTabBar = useCallback(
-    (props: BottomTabBarProps) => <CustomTabBar {...props} />,
+    (props: BottomTabBarProps) => <CustomBottomTabBar {...props} />,
     [],
   );
 

@@ -24,7 +24,7 @@ type TabRoute = {
   params: MainTabParamList[keyof MainTabParamList];
 };
 
-const CustomTabBar: React.FC<BottomTabBarProps> = ({
+const CustomBottomTabBar: React.FC<BottomTabBarProps> = ({
   state,
   descriptors,
   navigation,
@@ -149,7 +149,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({
   );
 };
 
-export default memo(CustomTabBar);
+export default memo(CustomBottomTabBar);
 
 // Base styles không phụ thuộc vào props
 const useBaseStyles = createStyles(

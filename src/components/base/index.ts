@@ -4,6 +4,7 @@
  * Export tất cả base components.
  */
 
+export { default as AppIcon } from './AppIcon';
 export * from './CustomText';
 export * from './CustomButton';
 export * from './CustomCard';

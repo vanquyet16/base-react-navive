@@ -40,7 +40,7 @@ import {
 /**
  * Props interface
  */
-interface CustomHeaderProps {
+export interface CustomHeaderProps {
   title?: string;
   subtitle?: string;
   showProfile?: boolean;

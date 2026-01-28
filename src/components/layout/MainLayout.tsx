@@ -12,7 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useTheme } from '@/shared/theme/use-theme';
 import CustomHeader from './CustomHeader';
-import CustomTabBar from '@/components/navigation/CustomTabBar';
+import { CustomBottomTabBar } from '@/components/navigation';
 import { COLORS } from '@/shared/constants';
 
 /**
@@ -57,6 +57,7 @@ interface MainLayoutProps {
   // Thuộc tính Keyboard
   enableKeyboardAvoiding?: boolean;
   keyboardVerticalOffset?: number;
+  disableSafeArea?: boolean;
 }
 
 // Hàm so sánh tùy chỉnh cho React.memo
@@ -68,7 +69,8 @@ const areEqual = (prevProps: MainLayoutProps, nextProps: MainLayoutProps) => {
     prevProps.backgroundColor !== nextProps.backgroundColor ||
     prevProps.enableScroll !== nextProps.enableScroll ||
     prevProps.enableKeyboardAvoiding !== nextProps.enableKeyboardAvoiding ||
-    prevProps.keyboardVerticalOffset !== nextProps.keyboardVerticalOffset
+    prevProps.keyboardVerticalOffset !== nextProps.keyboardVerticalOffset ||
+    prevProps.disableSafeArea !== nextProps.disableSafeArea
   ) {
     return false;
   }
@@ -105,6 +107,7 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
     enableScroll = true,
     enableKeyboardAvoiding = true,
     keyboardVerticalOffset,
+    disableSafeArea = false,
   }) => {
     // Get theme for fallback backgroundColor
     const theme = useTheme();
@@ -168,7 +171,7 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
 
     // Ghi nhớ nonScrollContent style
     const nonScrollStyle = useMemo(
-      () => ({ paddingBottom: contentPaddingBottom }),
+      () => ({ flex: 1, paddingBottom: contentPaddingBottom }),
       [contentPaddingBottom],
     );
 
@@ -237,23 +240,23 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
         )}
 
         {/* Nội dung */}
-        {showHeader ? (
-          <View style={styles.content}>
-            {enableKeyboardAvoiding
-              ? renderWithKeyboardAvoiding()
-              : renderNormalLayout()}
-          </View>
-        ) : (
+        {!showHeader && !disableSafeArea ? (
           <SafeAreaView style={styles.content} edges={['top']}>
             {enableKeyboardAvoiding
               ? renderWithKeyboardAvoiding()
               : renderNormalLayout()}
           </SafeAreaView>
+        ) : (
+          <View style={styles.content}>
+            {enableKeyboardAvoiding
+              ? renderWithKeyboardAvoiding()
+              : renderNormalLayout()}
+          </View>
         )}
 
         {/* Bottom Tabs */}
         {hasBottomTabs && (
-          <CustomTabBar {...(tabsProps as BottomTabBarProps)} />
+          <CustomBottomTabBar {...(tabsProps as BottomTabBarProps)} />
         )}
       </View>
     );
