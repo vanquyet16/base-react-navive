@@ -34,6 +34,8 @@ export const createMainStackScreenWrapper = (
   screenName: string,
   config: ScreenConfig,
 ): React.FC => {
+  const header = config.header;
+
   const ScreenWrapper: React.FC = () => (
     <MainLayout
       showHeader={config.showHeader ?? true}
@@ -42,6 +44,17 @@ export const createMainStackScreenWrapper = (
         title: config.title,
         type: config.headerType ?? 'minimal',
         showBack: config.showBack ?? false,
+        // Merge custom header config nếu có
+        ...(header && {
+          subtitle: header.subtitle,
+          showProfile: header.showProfile,
+          showSearch: header.showSearch,
+          showNotification: header.showNotification,
+          notificationCount: header.notificationCount,
+          showMenu: header.showMenu,
+          backgroundImage: header.backgroundImage,
+          ...header,
+        }),
       }}
     >
       {config.componentDirect ? (

@@ -26,6 +26,7 @@ import {
   StatusBar,
   Animated,
   SafeAreaView,
+  ImageSourcePropType,
 } from 'react-native';
 import Icon from '@ant-design/react-native/lib/icon';
 import { useTheme } from '@/shared/theme/use-theme';
@@ -54,6 +55,7 @@ export interface CustomHeaderProps {
   onMenuPress?: () => void;
   rightComponent?: React.ReactNode;
   backgroundColor?: string;
+  backgroundImage?: ImageSourcePropType;
   textColor?: string;
   type?: 'default' | 'search' | 'minimal';
   notificationCount?: number;
@@ -250,8 +252,8 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
           {/* Phần trái */}
           <View style={styles.leftSection}>
             {showBack ? (
-              <TouchableOpacity onPress={onBack} style={styles.iconButton}>
-                <Icon name={'arrow-left'} size={24} color={headerTextColor} />
+              <TouchableOpacity onPress={onBack} style={styles.backButton}>
+                <Icon name={'arrow-left'} size={20} color={headerTextColor} />
               </TouchableOpacity>
             ) : showMenu ? (
               <TouchableOpacity onPress={onMenuPress} style={styles.iconButton}>
@@ -261,7 +263,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
           </View>
 
           {/* Phần giữa */}
-          <View style={styles.centerSection}>
+          <View style={styles.centerSection} pointerEvents="box-none">
             <Text style={titleStyle} numberOfLines={1}>
               {title}
             </Text>
@@ -338,8 +340,8 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
       () => (
         <View style={styles.minimalContainer}>
           {showBack && (
-            <TouchableOpacity onPress={onBack} style={styles.iconButton}>
-              <Icon name={'arrow-left'} size={24} color={headerTextColor} />
+            <TouchableOpacity onPress={onBack} style={styles.backButton}>
+              <Icon name={'arrow-left'} size={20} color={headerTextColor} />
             </TouchableOpacity>
           )}
           <Text style={minimalTitleStyle}>{title}</Text>
@@ -390,23 +392,31 @@ const useStyles = createStyles(theme => ({
     height: moderateVerticalScale(56),
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
 
   leftSection: {
     width: scale(40),
     justifyContent: 'center',
+    zIndex: 1,
   },
 
   centerSection: {
-    flex: 1,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 0,
   },
 
   rightSection: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
+    zIndex: 1,
   },
 
   title: {
@@ -425,6 +435,16 @@ const useStyles = createStyles(theme => ({
     padding: theme.spacing[2],
     marginHorizontal: theme.spacing[1],
     borderRadius: theme.radius.full,
+  },
+  backButton: {
+    padding: moderateScale(8),
+    marginHorizontal: scale(4),
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    borderRadius: moderateScale(20),
+    width: scale(40),
+    height: scale(40),
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   profileButton: {

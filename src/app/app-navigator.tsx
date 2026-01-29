@@ -15,7 +15,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { useIsAuthenticated } from '@/shared/store/selectors';
 import { ROOT_STACKS } from '@/shared/constants/routes';
-import { RootStackParamList } from '@/shared/types';
+import { RootStackParamList } from '@/shared/types/navigation.types';
 import { AuthStackNavigator, MainDrawer } from '@/navigation/navigators';
 
 const Stack = createStackNavigator<RootStackParamList>();

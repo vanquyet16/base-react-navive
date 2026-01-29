@@ -11,7 +11,7 @@ import { createStyles } from '@/shared/theme/create-styles';
 import { useSessionActions } from '@/shared/store/selectors';
 import { NAVIGATION_KEYS } from '@/navigation/config';
 import { ROOT_STACKS } from '@/shared/constants/routes';
-import type { DrawerStackParamList } from '@/shared/types';
+import type { DrawerStackParamList } from '@/shared/types/navigation.types';
 
 type DrawerMenuItem = {
   label: string;

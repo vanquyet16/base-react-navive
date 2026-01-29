@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { DrawerStackParamList } from '@/shared/types';
+import { DrawerStackParamList } from '@/shared/types/navigation.types';
 import { MainStackNavigator } from './MainStackNavigator';
 import { NAVIGATION_KEYS } from '@/navigation/config';
 

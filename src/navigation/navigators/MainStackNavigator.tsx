@@ -8,7 +8,7 @@
  */
 
 import { createStackNavigator } from '@react-navigation/stack';
-import { MainStackParamList } from '@/shared/types';
+import { MainStackParamList } from '@/shared/types/navigation.types';
 import { MAIN_STACK_SCREENS } from '@/navigation/config';
 import { createMainStackNavigatorComponent } from '@/navigation/factories/navigatorFactory';
 import MainTabs from '@/navigation/MainTabs';

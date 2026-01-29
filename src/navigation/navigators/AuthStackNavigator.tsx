@@ -8,7 +8,7 @@
  */
 
 import { createStackNavigator } from '@react-navigation/stack';
-import { AuthStackParamList } from '@/shared/types';
+import { AuthStackParamList } from '@/shared/types/navigation.types';
 import { AUTH_SCREENS } from '@/navigation/config';
 import { createAuthStackNavigatorComponent } from '@/navigation/factories/navigatorFactory';
 

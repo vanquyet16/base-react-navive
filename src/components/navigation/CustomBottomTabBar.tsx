@@ -10,7 +10,7 @@ import {
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
-import type { MainTabParamList } from '@/shared/types';
+import type { MainTabParamList } from '@/shared/types/navigation.types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   moderateScale,

@@ -1,5 +1,5 @@
 
-import { MainTabParamList, AuthStackParamList } from '@/shared/types';
+import { MainTabParamList, AuthStackParamList, MainStackParamList } from '@/shared/types/navigation.types';
 import LoginScreen from '@/features/auth/screens/LoginScreen';
 import React from 'react';
 import { RegisterScreen } from '@/features/auth';
@@ -12,6 +12,14 @@ import { ResponsiveDemoScreen } from '@/features/example';
 // ============================================================================
 
 /**
+ * Utility type để validate rằng tất cả screens trong config
+ * đều phải có type definition tương ứng trong MainStackParamList
+ */
+type ValidateScreenKeys<T extends Record<string, ScreenConfig>> = {
+    [K in keyof T]: K extends keyof MainStackParamList ? T[K] : never;
+};
+
+/**
  * Cấu hình cho main stack screen
  */
 export interface ScreenConfig {
@@ -21,6 +29,7 @@ export interface ScreenConfig {
     showHeader?: boolean; // Có hiển thị header không
     showTabs?: boolean; // Có hiển thị bottom tabs không
     headerType?: 'minimal' | 'default' | 'search'; // Loại header
+    header?: Partial<CustomHeaderProps>; // Custom header props (background image, etc.)
     gestureEnabled?: boolean; // Có cho phép gesture navigation không
     gestureDirection?: 'horizontal' | 'vertical'; // Hướng gesture
     animationEnabled?: boolean; // Có animation khi chuyển screen không
@@ -64,8 +73,12 @@ export interface AuthScreenConfig {
 /**
  * Cấu hình tất cả screens trong main stack
  * Được tổ chức theo categories để dễ quản lý
+ * 
+ * QUAN TRỌNG: Mọi screen được thêm vào đây BẮT BUỘC phải có type definition
+ * tương ứng trong MainStackParamList (src/shared/types/index.ts)
+ * Nếu thiếu, TypeScript sẽ báo lỗi ngay lập tức.
  */
-export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
+export const MAIN_STACK_SCREENS = {
     // ============================================================================
     // QUẢN LÝ SẢN PHẨM
     // ============================================================================
@@ -185,7 +198,7 @@ export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
         headerType: 'minimal',
     },
 
-};
+} satisfies Record<keyof MainStackParamList, ScreenConfig>;
 
 // ============================================================================
 // CẤU HÌNH TAB SCREENS - CÁC MÀN HÌNH TRONG BOTTOM TABS
@@ -272,28 +285,25 @@ export const AUTH_SCREENS: AuthScreenConfig[] = [
 // NAVIGATION KEYS - CÁC HẰNG SỐ CHO TÊN SCREEN
 // ============================================================================
 
-const MAIN_STACK_KEYS = Object.keys(MAIN_STACK_SCREENS).reduce((acc, key) => {
-    const k = key as keyof typeof MAIN_STACK_SCREENS;
-    acc[k] = k;
-    return acc;
-}, {} as { [K in keyof typeof MAIN_STACK_SCREENS]: K });
-
 /**
  * Các hằng số cho tên screen để tránh hardcode
  * Được tổ chức theo từng navigator
+ * 
+ * QUAN TRỌNG: MAIN_STACK keys được tự động đồng bộ với MainStackParamList
  */
 export const NAVIGATION_KEYS = {
     // Root Navigator - Navigator gốc
     ROOT: {
         DRAWER: 'Drawer', // Drawer navigation
         AUTH: 'Auth', // Auth navigation
-    },
+    } as const,
 
     // Main Stack - Stack navigation chính
-    MAIN_STACK: {
-        MAIN_TABS: 'MainTabs', // Main tabs screen
-        ...MAIN_STACK_KEYS,
-    } as { MAIN_TABS: 'MainTabs' } & typeof MAIN_STACK_KEYS,
+    // Sử dụng keyof MainStackParamList để đảm bảo type-safe
+    MAIN_STACK: Object.keys(MAIN_STACK_SCREENS).reduce((acc, key) => {
+        acc[key] = key;
+        return acc;
+    }, {} as Record<string, string>) as { [K in keyof MainStackParamList]: K },
 
     // Drawer Stack - các route hiển thị trong Drawer menu
     // Lưu ý: DrawerStack routes là "shortcut" để mở MainStackNavigator với initialParams tương ứng
@@ -306,7 +316,7 @@ export const NAVIGATION_KEYS = {
         PDF_DEMO: 'PdfDemoScreen',
         PERFORMANCE_DEMO: 'PerformanceDemoScreen',
         RESPONSIVE_DEMO: 'ResponsiveDemoScreen',
-    },
+    } as const,
 
     // Tab Navigator - Bottom tabs
     TAB: {
@@ -314,13 +324,13 @@ export const NAVIGATION_KEYS = {
         CONTACTS: 'Contacts', // Danh bạ
         NOTIFICATIONS: 'Notifications', // Thông báo
         APPS: 'Apps', // Ứng dụng
-    },
+    } as const,
 
     // Auth Stack - Xác thực
     AUTH: {
         LOGIN: 'Login', // Đăng nhập
         REGISTER: 'Register', // Đăng ký
-    },
+    } as const,
 } as const;
 
 // ============================================================================
@@ -333,7 +343,7 @@ export const NAVIGATION_KEYS = {
  * @returns ScreenConfig hoặc undefined nếu không tìm thấy
  */
 export const getScreenConfig = (screenName: string): ScreenConfig | undefined => {
-    return MAIN_STACK_SCREENS[screenName];
+    return MAIN_STACK_SCREENS[screenName as keyof typeof MAIN_STACK_SCREENS];
 };
 
 /**

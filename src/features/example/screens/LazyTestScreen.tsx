@@ -13,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { COLORS, SCREEN_PADDING } from '@/shared/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { MainStackParamList } from '@/shared/types';
+import { MainStackParamList } from '@/shared/types/navigation.types';
 import { LazyScreen, AdvancedLazyScreen } from '@/components/utility';
 
 type NavigationProp = StackNavigationProp<MainStackParamList>;

@@ -7,7 +7,7 @@
 
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import type { AuthStackParamList, MainStackParamList } from '@/shared/types';
+import type { AuthStackParamList, MainStackParamList } from '@/shared/types/navigation.types';
 
 /**
  * useAuthNavigation

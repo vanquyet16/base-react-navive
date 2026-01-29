@@ -18,7 +18,7 @@ import {
   PdfIosDownloader,
 } from '@/features/performance/components';
 import TestDocumentPicker from '@/features/performance/components/TestDocumentPicker';
-import { MainStackParamList } from '@/shared/types';
+import { MainStackParamList } from '@/shared/types/navigation.types';
 import { useSessionActions } from '@/shared/store/selectors';
 import { useMainNavigation } from '@/shared/hooks/useNavigation';
 

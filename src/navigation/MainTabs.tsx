@@ -6,7 +6,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from '@ant-design/react-native/lib/icon';
 import { COLORS } from '@/shared/constants';
-import { MainTabParamList } from '@/shared/types';
+import { MainTabParamList } from '@/shared/types/navigation.types';
 import { CustomBottomTabBar } from '@/components/navigation';
 import { logger } from '@/shared/utils/logger';
 import { TAB_SCREENS } from './config';

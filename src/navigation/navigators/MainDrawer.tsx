@@ -13,7 +13,7 @@
 import React, { useCallback } from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import type { DrawerContentComponentProps } from '@react-navigation/drawer';
-import { DrawerParamList } from '@/shared/types';
+import { DrawerParamList } from '@/shared/types/navigation.types';
 import { DrawerStackNavigator } from './DrawerStackNavigator';
 import CustomDrawer from '@/components/navigation/CustomDrawer';
 import { ROOT_STACKS } from '@/shared/constants/routes';
