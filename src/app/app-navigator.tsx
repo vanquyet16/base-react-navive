@@ -47,7 +47,10 @@ export const AppNavigator: React.FC = () => {
         {isAuthenticated ? (
           <Stack.Screen name={ROOT_STACKS.DRAWER} component={MainDrawer} />
         ) : (
-          <Stack.Screen name="Auth" component={AuthStackNavigator} />
+          <Stack.Screen
+            name={ROOT_STACKS.AUTH_STACK}
+            component={AuthStackNavigator}
+          />
         )}
       </Stack.Navigator>
     </NavigationContainer>

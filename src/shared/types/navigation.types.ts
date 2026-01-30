@@ -27,7 +27,7 @@ export interface LoginResponse {
 
 // Navigation types
 export type RootStackParamList = {
-    Auth: undefined;
+    AuthStack: undefined;
     Drawer: undefined;
 };
 

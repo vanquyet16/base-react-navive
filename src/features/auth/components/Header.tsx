@@ -1,7 +1,7 @@
 import { CustomText, Logo, Spacer, SpacerLg } from '@/components';
 import { createStyles } from '@/shared/theme/create-styles';
 import { memo } from 'react';
-import { View } from 'react-native';
+import { ImageBackground, View } from 'react-native';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
 /**
@@ -13,7 +13,10 @@ const Header = () => {
   const styles = useStyles();
 
   return (
-    <View style={styles.header}>
+    <ImageBackground
+      source={require('@/assets/images/auth/header.png')}
+      style={styles.header}
+    >
       <View style={styles.logoContainer}>
         <Logo size={80} />
       </View>
@@ -30,7 +33,7 @@ const Header = () => {
           Hệ thống định danh điện tử
         </CustomText>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
