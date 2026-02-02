@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, Alert } from 'react-native';
 import CustomHeader from '@/components/layout/CustomHeader';
-import { COLORS } from '@/shared/constants';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 
 const ExampleUsage: React.FC = () => {
+  const theme = useTheme();
+  const styles = useStyles();
   const [activeTab, setActiveTab] = useState('home');
 
   // Cấu hình tabs cho BottomBar
@@ -46,7 +49,7 @@ const ExampleUsage: React.FC = () => {
         onSearch={handleSearch}
         onNotificationPress={handleNotificationPress}
         onMenuPress={handleMenuPress}
-        backgroundColor={COLORS.primary}
+        backgroundColor={theme.colors.primary}
       />
 
       {/* Nội dung chính */}
@@ -66,16 +69,19 @@ const ExampleUsage: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
+const useStyles = createStyles(
+  theme => ({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    content: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  }),
+  true,
+);
 
 export default ExampleUsage;

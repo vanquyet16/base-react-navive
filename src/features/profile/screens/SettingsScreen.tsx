@@ -1,13 +1,28 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Switch,
+} from 'react-native';
 
-import { useTheme, useSettingsActions } from '@/shared/store/selectors';
-import { COLORS, SCREEN_PADDING } from '@/shared/constants';
+import {
+  useTheme as useThemeSelector,
+  useSettingsActions,
+} from '@/shared/store/selectors';
+import { useTheme } from '@/shared/theme/use-theme';
+import { SCREEN_PADDING } from '@/shared/constants';
+import { createStyles } from '@/shared/theme/create-styles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const SettingsScreen: React.FC = () => {
-  const currentTheme = useTheme();
+  const currentTheme = useThemeSelector();
   const { setTheme } = useSettingsActions();
+  const theme = useTheme();
+  const styles = useStyles();
+
   const [notifications, setNotifications] = useState(true);
   const [autoUpdate, setAutoUpdate] = useState(false);
   const [biometric, setBiometric] = useState(true);
@@ -107,10 +122,11 @@ const SettingsScreen: React.FC = () => {
       key={index}
       style={styles.settingItem}
       onPress={item.onPress}
-      disabled={item.type === 'switch'}>
+      disabled={item.type === 'switch'}
+    >
       <View style={styles.settingLeft}>
         <View style={styles.iconContainer}>
-          <Icon name={item.icon} size={24} color={COLORS.primary} />
+          <Icon name={item.icon} size={24} color={theme.colors.primary} />
         </View>
         <View style={styles.settingContent}>
           <Text style={styles.settingTitle}>{item.title}</Text>
@@ -124,13 +140,19 @@ const SettingsScreen: React.FC = () => {
             value={item.value}
             onValueChange={item.onValueChange}
             trackColor={{
-              false: COLORS.border,
-              true: COLORS.primary + '40',
+              false: theme.colors.border,
+              true: theme.colors.primary + '40',
             }}
-            thumbColor={item.value ? COLORS.primary : COLORS.textSecondary}
+            thumbColor={
+              item.value ? theme.colors.primary : theme.colors.textSecondary
+            }
           />
         ) : (
-          <Icon name='chevron-right' size={24} color={COLORS.textSecondary} />
+          <Icon
+            name="chevron-right"
+            size={24}
+            color={theme.colors.textSecondary}
+          />
         )}
       </View>
     </TouchableOpacity>
@@ -141,7 +163,9 @@ const SettingsScreen: React.FC = () => {
       {settingsSections.map((section, sectionIndex) => (
         <View key={sectionIndex} style={styles.section}>
           <Text style={styles.sectionTitle}>{section.title}</Text>
-          <View style={styles.sectionContent}>{section.items.map(renderSettingItem)}</View>
+          <View style={styles.sectionContent}>
+            {section.items.map(renderSettingItem)}
+          </View>
         </View>
       ))}
 
@@ -149,7 +173,7 @@ const SettingsScreen: React.FC = () => {
       <View style={styles.dangerZone}>
         <Text style={styles.dangerTitle}>Vùng nguy hiểm</Text>
         <TouchableOpacity style={styles.dangerItem}>
-          <Icon name='delete-forever' size={24} color={COLORS.error} />
+          <Icon name="delete-forever" size={24} color={theme.colors.error} />
           <Text style={styles.dangerText}>Xóa tài khoản</Text>
         </TouchableOpacity>
       </View>
@@ -157,90 +181,93 @@ const SettingsScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-    padding: SCREEN_PADDING,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: 12,
-    paddingHorizontal: 4,
-  },
-  sectionContent: {
-    backgroundColor: COLORS.background,
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
-  settingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  settingLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.primary + '20',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  settingContent: {
-    flex: 1,
-  },
-  settingTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: COLORS.text,
-  },
-  settingSubtitle: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    marginTop: 2,
-  },
-  settingRight: {
-    marginLeft: 12,
-  },
-  dangerZone: {
-    marginTop: 24,
-    marginBottom: 40,
-  },
-  dangerTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.error,
-    marginBottom: 12,
-    paddingHorizontal: 4,
-  },
-  dangerItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.background,
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: COLORS.error + '40',
-  },
-  dangerText: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: COLORS.error,
-    marginLeft: 12,
-  },
-});
+const useStyles = createStyles(
+  theme => ({
+    content: {
+      flex: 1,
+      padding: SCREEN_PADDING,
+    },
+    section: {
+      marginBottom: 24,
+    },
+    sectionTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: 12,
+      paddingHorizontal: 4,
+    },
+    sectionContent: {
+      backgroundColor: theme.colors.background,
+      borderRadius: 12,
+      overflow: 'hidden',
+    },
+    settingItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+    },
+    settingLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    iconContainer: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: theme.colors.primary + '20',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 12,
+    },
+    settingContent: {
+      flex: 1,
+    },
+    settingTitle: {
+      fontSize: 16,
+      fontWeight: '500',
+      color: theme.colors.text,
+    },
+    settingSubtitle: {
+      fontSize: 12,
+      color: theme.colors.textSecondary,
+      marginTop: 2,
+    },
+    settingRight: {
+      marginLeft: 12,
+    },
+    dangerZone: {
+      marginTop: 24,
+      marginBottom: 40,
+    },
+    dangerTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: theme.colors.error,
+      marginBottom: 12,
+      paddingHorizontal: 4,
+    },
+    dangerItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: theme.colors.background,
+      padding: 16,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: theme.colors.error + '40',
+    },
+    dangerText: {
+      fontSize: 16,
+      fontWeight: '500',
+      color: theme.colors.error,
+      marginLeft: 12,
+    },
+  }),
+  true,
+);
 
 export default SettingsScreen;

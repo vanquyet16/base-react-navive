@@ -11,15 +11,18 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { COLORS, SCREEN_PADDING } from '@/shared/constants';
+import { SCREEN_PADDING } from '@/shared/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { MainStackParamList } from '@/shared/types/navigation.types';
 import { LazyScreen, AdvancedLazyScreen } from '@/components/utility';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 
 type NavigationProp = StackNavigationProp<MainStackParamList>;
 
 // Component nặng để test lazy loading
 const HeavyComponent: React.FC = () => {
+  const styles = useStyles();
   const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
@@ -64,6 +67,7 @@ const HeavyComponent: React.FC = () => {
 
 // Component với error để test error handling
 const ErrorComponent: React.FC = () => {
+  const styles = useStyles();
   useEffect(() => {
     // Mô phỏng lỗi
     setTimeout(() => {
@@ -80,6 +84,8 @@ const ErrorComponent: React.FC = () => {
 
 const LazyTestScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
+  const theme = useTheme();
+  const styles = useStyles();
   const [testResults, setTestResults] = useState({
     basicLazy: false,
     advancedLazy: false,
@@ -283,22 +289,22 @@ const LazyTestScreen: React.FC = () => {
         <Text style={styles.statsTitle}>Thống kê Test</Text>
         <View style={styles.statsGrid}>
           <View style={styles.statItem}>
-            <Icon name="check-circle" size={24} color={COLORS.success} />
+            <Icon name="check-circle" size={24} color={theme.colors.success} />
             <Text style={styles.statNumber}>4</Text>
             <Text style={styles.statLabel}>Test thành công</Text>
           </View>
           <View style={styles.statItem}>
-            <Icon name="error" size={24} color={COLORS.error} />
+            <Icon name="error" size={24} color={theme.colors.error} />
             <Text style={styles.statNumber}>1</Text>
             <Text style={styles.statLabel}>Test lỗi</Text>
           </View>
           <View style={styles.statItem}>
-            <Icon name="timer" size={24} color={COLORS.primary} />
+            <Icon name="timer" size={24} color={theme.colors.primary} />
             <Text style={styles.statNumber}>~2s</Text>
             <Text style={styles.statLabel}>Thời gian load</Text>
           </View>
           <View style={styles.statItem}>
-            <Icon name="memory" size={24} color={COLORS.info} />
+            <Icon name="memory" size={24} color={theme.colors.info} />
             <Text style={styles.statNumber}>-50%</Text>
             <Text style={styles.statLabel}>Tiết kiệm RAM</Text>
           </View>
@@ -319,182 +325,185 @@ const LazyTestScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
-    padding: SCREEN_PADDING,
-    backgroundColor: COLORS.primary,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#fff',
-    opacity: 0.9,
-  },
-  testSection: {
-    margin: SCREEN_PADDING,
-    padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  testTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: 8,
-  },
-  testDescription: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    marginBottom: 16,
-    lineHeight: 20,
-  },
-  testButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-    borderRadius: 8,
-    backgroundColor: COLORS.primary,
-  },
-  secondaryButton: {
-    backgroundColor: COLORS.secondary,
-  },
-  errorButton: {
-    backgroundColor: COLORS.error,
-  },
-  successButton: {
-    backgroundColor: COLORS.success,
-  },
-  warningButton: {
-    backgroundColor: COLORS.warning,
-  },
-  infoButton: {
-    backgroundColor: COLORS.info,
-  },
-  primaryButton: {
-    backgroundColor: COLORS.primary,
-  },
-  activeButton: {
-    backgroundColor: '#4CAF50',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
-  resultContainer: {
-    marginTop: 16,
-    minHeight: 200,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
-    padding: 12,
-  },
-  performanceButtons: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  heavyContainer: {
-    flex: 1,
-    padding: 16,
-  },
-  heavyTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: COLORS.text,
-    marginBottom: 8,
-  },
-  heavySubtitle: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    marginBottom: 16,
-  },
-  itemContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    padding: 12,
-    marginBottom: 8,
-    borderRadius: 8,
-    elevation: 1,
-  },
-  itemImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 8,
-    marginRight: 12,
-  },
-  itemContent: {
-    flex: 1,
-  },
-  itemTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.text,
-  },
-  itemDescription: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    marginTop: 4,
-  },
-  errorContainer: {
-    padding: 20,
-    alignItems: 'center',
-  },
-  statsSection: {
-    margin: SCREEN_PADDING,
-    padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    elevation: 2,
-  },
-  statsTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  statItem: {
-    width: '48%',
-    alignItems: 'center',
-    padding: 12,
-    marginBottom: 12,
-  },
-  statNumber: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: COLORS.text,
-    marginTop: 4,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    marginTop: 4,
-  },
-  navigationSection: {
-    margin: SCREEN_PADDING,
-    marginBottom: 20,
-  },
-});
+const useStyles = createStyles(
+  theme => ({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.backgroundSecondary,
+    },
+    header: {
+      padding: SCREEN_PADDING,
+      backgroundColor: theme.colors.primary,
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#fff',
+      marginBottom: 8,
+    },
+    subtitle: {
+      fontSize: 16,
+      color: '#fff',
+      opacity: 0.9,
+    },
+    testSection: {
+      margin: SCREEN_PADDING,
+      padding: 16,
+      backgroundColor: '#fff',
+      borderRadius: 12,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    testTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: 8,
+    },
+    testDescription: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+      marginBottom: 16,
+      lineHeight: 20,
+    },
+    testButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 16,
+      borderRadius: 8,
+      backgroundColor: theme.colors.primary,
+    },
+    secondaryButton: {
+      backgroundColor: theme.colors.secondary,
+    },
+    errorButton: {
+      backgroundColor: theme.colors.error,
+    },
+    successButton: {
+      backgroundColor: theme.colors.success,
+    },
+    warningButton: {
+      backgroundColor: theme.colors.warning,
+    },
+    infoButton: {
+      backgroundColor: theme.colors.info,
+    },
+    primaryButton: {
+      backgroundColor: theme.colors.primary,
+    },
+    activeButton: {
+      backgroundColor: '#4CAF50',
+    },
+    buttonText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: '600',
+      marginLeft: 8,
+    },
+    resultContainer: {
+      marginTop: 16,
+      minHeight: 200,
+      backgroundColor: '#f9f9f9',
+      borderRadius: 8,
+      padding: 12,
+    },
+    performanceButtons: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    heavyContainer: {
+      flex: 1,
+      padding: 16,
+    },
+    heavyTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: theme.colors.text,
+      marginBottom: 8,
+    },
+    heavySubtitle: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+      marginBottom: 16,
+    },
+    itemContainer: {
+      flexDirection: 'row',
+      backgroundColor: '#fff',
+      padding: 12,
+      marginBottom: 8,
+      borderRadius: 8,
+      elevation: 1,
+    },
+    itemImage: {
+      width: 50,
+      height: 50,
+      borderRadius: 8,
+      marginRight: 12,
+    },
+    itemContent: {
+      flex: 1,
+    },
+    itemTitle: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: theme.colors.text,
+    },
+    itemDescription: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+      marginTop: 4,
+    },
+    errorContainer: {
+      padding: 20,
+      alignItems: 'center',
+    },
+    statsSection: {
+      margin: SCREEN_PADDING,
+      padding: 16,
+      backgroundColor: '#fff',
+      borderRadius: 12,
+      elevation: 2,
+    },
+    statsTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: 16,
+      textAlign: 'center',
+    },
+    statsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    statItem: {
+      width: '48%',
+      alignItems: 'center',
+      padding: 12,
+      marginBottom: 12,
+    },
+    statNumber: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: theme.colors.text,
+      marginTop: 4,
+    },
+    statLabel: {
+      fontSize: 12,
+      color: theme.colors.textSecondary,
+      textAlign: 'center',
+      marginTop: 4,
+    },
+    navigationSection: {
+      margin: SCREEN_PADDING,
+      marginBottom: 20,
+    },
+  }),
+  true,
+);
 
 export default LazyTestScreen;

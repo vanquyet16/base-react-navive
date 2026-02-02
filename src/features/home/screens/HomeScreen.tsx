@@ -9,9 +9,11 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { COLORS, SCREEN_PADDING } from '@/shared/constants';
+import { SCREEN_PADDING } from '@/shared/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { MainLayout } from '@/components';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 import {
   SimplePdfDownloader,
   PdfPhoneDownloader,
@@ -26,8 +28,9 @@ type NavigationProp = StackNavigationProp<MainStackParamList>;
 
 const HomeScreen: React.FC = () => {
   const navigation = useMainNavigation();
-  // const user = useUser();
   const { clearSession } = useSessionActions();
+  const theme = useTheme();
+  const styles = useStyles();
 
   const handleLogout = () => {
     clearSession();
@@ -53,12 +56,12 @@ const HomeScreen: React.FC = () => {
 
         <View style={styles.actionsGrid}>
           <TouchableOpacity style={styles.actionCard}>
-            <Icon name="dashboard" size={24} color={COLORS.primary} />
+            <Icon name="dashboard" size={24} color={theme.colors.primary} />
             <Text style={styles.actionText}>Dashboard</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.actionCard}>
-            <Icon name="analytics" size={24} color={COLORS.primary} />
+            <Icon name="analytics" size={24} color={theme.colors.primary} />
             <Text style={styles.actionText}>Thống kê</Text>
           </TouchableOpacity>
 
@@ -66,7 +69,7 @@ const HomeScreen: React.FC = () => {
             style={styles.actionCard}
             onPress={handleNavigateToProduct}
           >
-            <Icon name="inventory" size={24} color={COLORS.primary} />
+            <Icon name="inventory" size={24} color={theme.colors.primary} />
             <Text style={styles.actionText}>Quản lý</Text>
           </TouchableOpacity>
 
@@ -74,7 +77,7 @@ const HomeScreen: React.FC = () => {
             style={styles.actionCard}
             onPress={() => navigation.navigate('LazyDemoScreen')}
           >
-            <Icon name="speed" size={24} color={COLORS.primary} />
+            <Icon name="speed" size={24} color={theme.colors.primary} />
             <Text style={styles.actionText}>Lazy Demo</Text>
           </TouchableOpacity>
 
@@ -82,7 +85,7 @@ const HomeScreen: React.FC = () => {
             style={styles.actionCard}
             onPress={() => navigation.navigate('DemoNewScreen')}
           >
-            <Icon name="dashboard" size={24} color={COLORS.primary} />
+            <Icon name="dashboard" size={24} color={theme.colors.primary} />
             <Text style={styles.actionText}>New demo</Text>
           </TouchableOpacity>
 
@@ -90,7 +93,7 @@ const HomeScreen: React.FC = () => {
             style={styles.actionCard}
             onPress={() => navigation.navigate('LazyTestScreen')}
           >
-            <Icon name="quiz" size={24} color={COLORS.primary} />
+            <Icon name="quiz" size={24} color={theme.colors.primary} />
             <Text style={styles.actionText}>Lazy Test</Text>
           </TouchableOpacity>
 
@@ -98,7 +101,7 @@ const HomeScreen: React.FC = () => {
             style={styles.actionCard}
             onPress={() => navigation.navigate('ApiLazyDemoScreen')}
           >
-            <Icon name="api" size={24} color={COLORS.primary} />
+            <Icon name="api" size={24} color={theme.colors.primary} />
             <Text style={styles.actionText}>API Demo</Text>
           </TouchableOpacity>
 
@@ -106,7 +109,7 @@ const HomeScreen: React.FC = () => {
             style={styles.actionCard}
             onPress={() => navigation.navigate('CacheDemoScreen')}
           >
-            <Icon name="cached" size={24} color={COLORS.primary} />
+            <Icon name="cached" size={24} color={theme.colors.primary} />
             <Text style={styles.actionText}>Cache Demo</Text>
           </TouchableOpacity>
 
@@ -114,7 +117,7 @@ const HomeScreen: React.FC = () => {
             style={styles.actionCard}
             onPress={() => navigation.navigate('PerformanceDemoScreen')}
           >
-            <Icon name="speed" size={24} color={COLORS.primary} />
+            <Icon name="speed" size={24} color={theme.colors.primary} />
             <Text style={styles.actionText}>Performance</Text>
           </TouchableOpacity>
 
@@ -122,7 +125,11 @@ const HomeScreen: React.FC = () => {
             style={styles.actionCard}
             onPress={() => navigation.navigate('PdfDemoScreen')}
           >
-            <Icon name="picture-as-pdf" size={24} color={COLORS.primary} />
+            <Icon
+              name="picture-as-pdf"
+              size={24}
+              color={theme.colors.primary}
+            />
             <Text style={styles.actionText}>PDF Demo</Text>
           </TouchableOpacity>
 
@@ -130,12 +137,12 @@ const HomeScreen: React.FC = () => {
             style={styles.actionCard}
             onPress={() => navigation.navigate('PdfFileManagerScreen')}
           >
-            <Icon name="folder" size={24} color={COLORS.primary} />
+            <Icon name="folder" size={24} color={theme.colors.primary} />
             <Text style={styles.actionText}>Quản lý PDF</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.actionCard}>
-            <Icon name="support" size={24} color={COLORS.primary} />
+            <Icon name="support" size={24} color={theme.colors.primary} />
             <Text style={styles.actionText}>Hỗ trợ</Text>
           </TouchableOpacity>
         </View>
@@ -262,7 +269,7 @@ const HomeScreen: React.FC = () => {
               <Icon
                 name="notifications"
                 size={20}
-                color={COLORS.textSecondary}
+                color={theme.colors.textSecondary}
               />
               <View style={styles.activityContent}>
                 <Text style={styles.activityTitle}>Hoạt động số {item}</Text>
@@ -281,140 +288,143 @@ const HomeScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-    padding: SCREEN_PADDING,
-  },
-  welcomeCard: {
-    backgroundColor: COLORS.background,
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 24,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  welcomeText: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: 4,
-  },
-  welcomeSubtext: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-  },
-  quickActions: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: 16,
-  },
-  actionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  actionCard: {
-    width: '48%',
-    backgroundColor: COLORS.background,
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 12,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  actionText: {
-    marginTop: 8,
-    fontSize: 14,
-    fontWeight: '500',
-    color: COLORS.text,
-  },
-  recentActivity: {
-    marginBottom: 24,
-  },
-  activityList: {
-    backgroundColor: COLORS.background,
-    borderRadius: 12,
-    padding: 16,
-  },
-  activityItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  activityContent: {
-    marginLeft: 12,
-    flex: 1,
-  },
-  activityTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: COLORS.text,
-  },
-  activityTime: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    marginTop: 2,
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    backgroundColor: COLORS.error,
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 20,
-  },
-  logoutText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
-  pdfDownloadSection: {
-    marginBottom: 24,
-  },
-  sectionSubtitle: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    marginBottom: 16,
-  },
-  pdfDownloadGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  pdfDownloadItem: {
-    width: '48%',
-    backgroundColor: COLORS.background,
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  pdfDownloadTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: COLORS.text,
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-});
+const useStyles = createStyles(
+  theme => ({
+    content: {
+      flex: 1,
+      padding: SCREEN_PADDING,
+    },
+    welcomeCard: {
+      backgroundColor: theme.colors.background,
+      padding: 20,
+      borderRadius: 12,
+      marginBottom: 24,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    welcomeText: {
+      fontSize: 20,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: 4,
+    },
+    welcomeSubtext: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+    },
+    quickActions: {
+      marginBottom: 24,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: 16,
+    },
+    actionsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    actionCard: {
+      width: '48%',
+      backgroundColor: theme.colors.background,
+      padding: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      marginBottom: 12,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    actionText: {
+      marginTop: 8,
+      fontSize: 14,
+      fontWeight: '500',
+      color: theme.colors.text,
+    },
+    recentActivity: {
+      marginBottom: 24,
+    },
+    activityList: {
+      backgroundColor: theme.colors.background,
+      borderRadius: 12,
+      padding: 16,
+    },
+    activityItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+    },
+    activityContent: {
+      marginLeft: 12,
+      flex: 1,
+    },
+    activityTitle: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: theme.colors.text,
+    },
+    activityTime: {
+      fontSize: 12,
+      color: theme.colors.textSecondary,
+      marginTop: 2,
+    },
+    logoutButton: {
+      flexDirection: 'row',
+      backgroundColor: theme.colors.error,
+      padding: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: 20,
+    },
+    logoutText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: '600',
+      marginLeft: 8,
+    },
+    pdfDownloadSection: {
+      marginBottom: 24,
+    },
+    sectionSubtitle: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+      marginBottom: 16,
+    },
+    pdfDownloadGrid: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    pdfDownloadItem: {
+      width: '48%',
+      backgroundColor: theme.colors.background,
+      padding: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    pdfDownloadTitle: {
+      fontSize: 14,
+      fontWeight: '500',
+      color: theme.colors.text,
+      marginBottom: 12,
+      textAlign: 'center',
+    },
+  }),
+  true,
+);
 
 export default HomeScreen;

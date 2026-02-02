@@ -23,38 +23,7 @@ export const APP_CONFIG = {
     BUNDLE_ID: 'com.reactnativebase.app',
 };
 
-/**
- * Theme Colors
- * 
- * @deprecated Use theme system instead (`useTheme` hook from `@/theme/use-theme`)
- * This constant will be removed in v2.0
- * 
- * Migration guide:
- * ```typescript
- * // ❌ Old way
- * import { COLORS } from '@/shared/constants';
- * color: COLORS.primary
- * 
- * // ✅ New way
- * import { useTheme } from '@/shared/theme/use-theme';
- * const theme = useTheme();
- * color: theme.colors.primary
- * ```
- */
-export const COLORS = {
-    primary: '#1890ff',
-    secondary: '#722ed1',
-    success: '#52c41a',
-    warning: '#faad14',
-    error: '#ff4d4f',
-    info: '#13c2c2',
-    text: '#262626',
-    textSecondary: '#8c8c8c',
-    background: '#ffffff',
-    backgroundSecondary: '#f5f5f5',
-    border: '#d9d9d9',
-    placeholder: '#bfbfbf',
-};
+
 
 // Screen Dimensions
 export const SCREEN_PADDING = 16;

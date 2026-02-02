@@ -1,16 +1,13 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Button, WhiteSpace, WingBlank } from '@ant-design/react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { useRegister } from '@/features/auth/hooks/queries/useAuth';
-import {
-  COLORS,
-  SCREEN_PADDING,
-  VALIDATION,
-  ERROR_MESSAGES,
-} from '@/shared/constants';
+import { SCREEN_PADDING, VALIDATION, ERROR_MESSAGES } from '@/shared/constants';
 import FormInput from '@/components/form/FormInput';
 import { Logo } from '@/components/base';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 
 interface RegisterFormData {
   name: string;
@@ -21,6 +18,8 @@ interface RegisterFormData {
 
 const RegisterScreen = ({ navigation }: any) => {
   const registerMutation = useRegister();
+  const theme = useTheme();
+  const styles = useStyles();
 
   const {
     control,
@@ -179,19 +178,22 @@ const RegisterScreen = ({ navigation }: any) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.background,
-  },
-  header: {
-    alignItems: 'center',
-    paddingTop: 80,
-    paddingBottom: 40,
-  },
-  form: {
-    paddingHorizontal: SCREEN_PADDING,
-  },
-});
+const useStyles = createStyles(
+  theme => ({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    header: {
+      alignItems: 'center',
+      paddingTop: 80,
+      paddingBottom: 40,
+    },
+    form: {
+      paddingHorizontal: SCREEN_PADDING,
+    },
+  }),
+  true,
+);
 
 export default RegisterScreen;

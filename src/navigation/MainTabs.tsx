@@ -5,7 +5,8 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from '@ant-design/react-native/lib/icon';
-import { COLORS } from '@/shared/constants';
+
+import { useTheme } from '@/shared/theme/use-theme';
 import { MainTabParamList } from '@/shared/types/navigation.types';
 import { CustomBottomTabBar } from '@/components/navigation';
 import { logger } from '@/shared/utils/logger';
@@ -51,6 +52,7 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 // ... const Tab = ...
 
 const MainTabs: React.FC = () => {
+  const theme = useTheme();
   const renderTabBar = useCallback(
     (props: BottomTabBarProps) => <CustomBottomTabBar {...props} />,
     [],
@@ -68,8 +70,8 @@ const MainTabs: React.FC = () => {
       tabBar={renderTabBar}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: COLORS.primary,
-        tabBarInactiveTintColor: COLORS.textSecondary,
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.textSecondary,
       }}
     >
       {TAB_SCREENS.map(cfg => {

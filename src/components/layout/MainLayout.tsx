@@ -13,7 +13,7 @@ import type { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useTheme } from '@/shared/theme/use-theme';
 import CustomHeader from './CustomHeader';
 import { CustomBottomTabBar } from '@/components/navigation';
-import { COLORS } from '@/shared/constants';
+import { createStyles } from '@/shared/theme/create-styles';
 
 /**
  * MainLayout Component - Tối ưu hiệu suất với memo và callback
@@ -111,6 +111,7 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
   }) => {
     // Get theme for fallback backgroundColor
     const theme = useTheme();
+    const styles = useStyles();
     const bgColor = backgroundColor ?? theme.colors.background;
 
     // Fix: Proper type (remove 'as any')
@@ -267,19 +268,22 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
 // Đặt tên cho component để debug dễ dàng hơn
 MainLayout.displayName = 'MainLayout';
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  content: {
-    flex: 1,
-  },
-  keyboardAvoidingView: {
-    flex: 1,
-  },
-  scrollContent: {
-    flexGrow: 1, // Thay đổi từ flex: 1 thành flexGrow: 1 để tương thích với paddingBottom
-  },
-});
+const useStyles = createStyles(
+  theme => ({
+    container: {
+      flex: 1,
+    },
+    content: {
+      flex: 1,
+    },
+    keyboardAvoidingView: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1, // Thay đổi từ flex: 1 thành flexGrow: 1 để tương thích với paddingBottom
+    },
+  }),
+  true,
+);
 
 export default MainLayout;

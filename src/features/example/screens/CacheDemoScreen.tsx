@@ -9,10 +9,12 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { COLORS, SCREEN_PADDING } from '@/shared/constants';
+import { SCREEN_PADDING } from '@/shared/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { MainStackParamList } from '@/shared/types/navigation.types';
 import { useBaseQuery } from '@/shared/hooks/useBaseQuery';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 
 type NavigationProp = StackNavigationProp<MainStackParamList>;
 
@@ -35,6 +37,8 @@ const apiService = {
 
 const CacheDemoScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
+  const theme = useTheme();
+  const styles = useStyles();
   const [selectedProductId, setSelectedProductId] = useState<string | null>(
     null,
   );
@@ -77,21 +81,21 @@ const CacheDemoScreen: React.FC = () => {
         <Text style={styles.infoTitle}>Cache Information:</Text>
         <View style={styles.infoGrid}>
           <View style={styles.infoItem}>
-            <Icon name="api" size={16} color={COLORS.primary} />
+            <Icon name="api" size={16} color={theme.colors.primary} />
             <Text style={styles.infoText}>API Calls: {apiCallCount}</Text>
           </View>
           <View style={styles.infoItem}>
             <Icon
               name="cached"
               size={16}
-              color={isFetching ? COLORS.warning : COLORS.success}
+              color={isFetching ? theme.colors.warning : theme.colors.success}
             />
             <Text style={styles.infoText}>
               {isFetching ? 'Fetching...' : 'Cached'}
             </Text>
           </View>
           <View style={styles.infoItem}>
-            <Icon name="timer" size={16} color={COLORS.info} />
+            <Icon name="timer" size={16} color={theme.colors.info} />
             <Text style={styles.infoText}>Cache: 5 phút</Text>
           </View>
         </View>
@@ -113,7 +117,7 @@ const CacheDemoScreen: React.FC = () => {
               <Icon
                 name="inventory"
                 size={20}
-                color={selectedProductId === id ? '#fff' : COLORS.primary}
+                color={selectedProductId === id ? '#fff' : theme.colors.primary}
               />
               <Text
                 style={[
@@ -137,7 +141,11 @@ const CacheDemoScreen: React.FC = () => {
 
           {isLoading ? (
             <View style={styles.loadingContainer}>
-              <Icon name="hourglass-empty" size={48} color={COLORS.primary} />
+              <Icon
+                name="hourglass-empty"
+                size={48}
+                color={theme.colors.primary}
+              />
               <Text style={styles.loadingText}>Đang load product...</Text>
               <Text style={styles.loadingSubtext}>
                 {apiCallCount === 1
@@ -173,7 +181,7 @@ const CacheDemoScreen: React.FC = () => {
             </View>
           ) : error ? (
             <View style={styles.errorContainer}>
-              <Icon name="error" size={48} color={COLORS.error} />
+              <Icon name="error" size={48} color={theme.colors.error} />
               <Text style={styles.errorText}>Lỗi load product</Text>
             </View>
           ) : null}
@@ -257,204 +265,207 @@ const CacheDemoScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  header: {
-    padding: SCREEN_PADDING,
-    backgroundColor: COLORS.primary,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#fff',
-    opacity: 0.9,
-  },
-  infoSection: {
-    margin: SCREEN_PADDING,
-    padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    elevation: 2,
-  },
-  infoTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: 16,
-  },
-  infoGrid: {
-    gap: 12,
-  },
-  infoItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  infoText: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    marginLeft: 8,
-  },
-  section: {
-    margin: SCREEN_PADDING,
-    padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    elevation: 2,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: 16,
-  },
-  productGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  productButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: COLORS.primary,
-    backgroundColor: '#fff',
-  },
-  selectedProduct: {
-    backgroundColor: COLORS.primary,
-  },
-  productText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.primary,
-    marginLeft: 8,
-  },
-  selectedProductText: {
-    color: '#fff',
-  },
-  loadingContainer: {
-    alignItems: 'center',
-    padding: 20,
-  },
-  loadingText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginTop: 12,
-  },
-  loadingSubtext: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    marginTop: 4,
-    textAlign: 'center',
-  },
-  productDetail: {
-    padding: 16,
-    backgroundColor: '#f9f9f9',
-    borderRadius: 8,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 8,
-  },
-  detailLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: COLORS.text,
-  },
-  detailValue: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-  },
-  description: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    marginTop: 12,
-    lineHeight: 20,
-  },
-  errorContainer: {
-    alignItems: 'center',
-    padding: 20,
-  },
-  errorText: {
-    fontSize: 16,
-    color: COLORS.error,
-    marginTop: 12,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  actionButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 12,
-    borderRadius: 8,
-  },
-  primaryButton: {
-    backgroundColor: COLORS.primary,
-  },
-  secondaryButton: {
-    backgroundColor: COLORS.secondary,
-  },
-  successButton: {
-    backgroundColor: COLORS.success,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
-  instructionsSection: {
-    margin: SCREEN_PADDING,
-    padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    elevation: 2,
-  },
-  instructionsTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginBottom: 16,
-  },
-  instructionList: {
-    gap: 8,
-  },
-  instructionItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  instructionNumber: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: COLORS.primary,
-    marginRight: 8,
-    minWidth: 20,
-  },
-  instructionText: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    flex: 1,
-    lineHeight: 20,
-  },
-  navigationSection: {
-    margin: SCREEN_PADDING,
-    marginBottom: 20,
-  },
-});
+const useStyles = createStyles(
+  theme => ({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.backgroundSecondary,
+    },
+    header: {
+      padding: SCREEN_PADDING,
+      backgroundColor: theme.colors.primary,
+    },
+    title: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#fff',
+      marginBottom: 8,
+    },
+    subtitle: {
+      fontSize: 16,
+      color: '#fff',
+      opacity: 0.9,
+    },
+    infoSection: {
+      margin: SCREEN_PADDING,
+      padding: 16,
+      backgroundColor: '#fff',
+      borderRadius: 12,
+      elevation: 2,
+    },
+    infoTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: 16,
+    },
+    infoGrid: {
+      gap: 12,
+    },
+    infoItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    infoText: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+      marginLeft: 8,
+    },
+    section: {
+      margin: SCREEN_PADDING,
+      padding: 16,
+      backgroundColor: '#fff',
+      borderRadius: 12,
+      elevation: 2,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: 16,
+    },
+    productGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 12,
+    },
+    productButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 12,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: theme.colors.primary,
+      backgroundColor: '#fff',
+    },
+    selectedProduct: {
+      backgroundColor: theme.colors.primary,
+    },
+    productText: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: theme.colors.primary,
+      marginLeft: 8,
+    },
+    selectedProductText: {
+      color: '#fff',
+    },
+    loadingContainer: {
+      alignItems: 'center',
+      padding: 20,
+    },
+    loadingText: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginTop: 12,
+    },
+    loadingSubtext: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+      marginTop: 4,
+      textAlign: 'center',
+    },
+    productDetail: {
+      padding: 16,
+      backgroundColor: '#f9f9f9',
+      borderRadius: 8,
+    },
+    detailRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 8,
+    },
+    detailLabel: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: theme.colors.text,
+    },
+    detailValue: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+    },
+    description: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+      marginTop: 12,
+      lineHeight: 20,
+    },
+    errorContainer: {
+      alignItems: 'center',
+      padding: 20,
+    },
+    errorText: {
+      fontSize: 16,
+      color: theme.colors.error,
+      marginTop: 12,
+    },
+    actionButtons: {
+      flexDirection: 'row',
+      gap: 12,
+    },
+    actionButton: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: 12,
+      borderRadius: 8,
+    },
+    primaryButton: {
+      backgroundColor: theme.colors.primary,
+    },
+    secondaryButton: {
+      backgroundColor: theme.colors.secondary,
+    },
+    successButton: {
+      backgroundColor: theme.colors.success,
+    },
+    buttonText: {
+      color: '#fff',
+      fontSize: 14,
+      fontWeight: '600',
+      marginLeft: 8,
+    },
+    instructionsSection: {
+      margin: SCREEN_PADDING,
+      padding: 16,
+      backgroundColor: '#fff',
+      borderRadius: 12,
+      elevation: 2,
+    },
+    instructionsTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: 16,
+    },
+    instructionList: {
+      gap: 8,
+    },
+    instructionItem: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+    },
+    instructionNumber: {
+      fontSize: 14,
+      fontWeight: 'bold',
+      color: theme.colors.primary,
+      marginRight: 8,
+      minWidth: 20,
+    },
+    instructionText: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+      flex: 1,
+      lineHeight: 20,
+    },
+    navigationSection: {
+      margin: SCREEN_PADDING,
+      marginBottom: 20,
+    },
+  }),
+  true,
+);
 
 export default CacheDemoScreen;

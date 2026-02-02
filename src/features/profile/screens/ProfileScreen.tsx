@@ -1,12 +1,22 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 
 import { Avatar } from '@/components/base';
-import { COLORS, SCREEN_PADDING } from '@/shared/constants';
+import { SCREEN_PADDING } from '@/shared/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 
 const ProfileScreen: React.FC = () => {
   // const user = useUser();
+  const theme = useTheme();
+  const styles = useStyles();
 
   const profileMenuItems = [
     {
@@ -47,7 +57,9 @@ const ProfileScreen: React.FC = () => {
       <View style={styles.userCard}>
         {/* <Avatar user={user} size={80} /> */}
         {/* <Text style={styles.userName}>{user?.name || 'Người dùng'}</Text> */}
-        <Text style={styles.userEmail}>{/* {user?.email || 'email@example.com'} */}</Text>
+        <Text style={styles.userEmail}>
+          {/* {user?.email || 'email@example.com'} */}
+        </Text>
         {/* <Text style={styles.userRole}>Vai trò: {user?.role || 'User'}</Text> */}
       </View>
 
@@ -70,17 +82,25 @@ const ProfileScreen: React.FC = () => {
       {/* Menu Items */}
       <View style={styles.menuContainer}>
         {profileMenuItems.map((item, index) => (
-          <TouchableOpacity key={index} style={styles.menuItem} onPress={item.onPress}>
+          <TouchableOpacity
+            key={index}
+            style={styles.menuItem}
+            onPress={item.onPress}
+          >
             <View style={styles.menuLeft}>
               <View style={styles.iconContainer}>
-                <Icon name={item.icon} size={24} color={COLORS.primary} />
+                <Icon name={item.icon} size={24} color={theme.colors.primary} />
               </View>
               <View style={styles.menuContent}>
                 <Text style={styles.menuTitle}>{item.title}</Text>
                 <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
               </View>
             </View>
-            <Icon name='chevron-right' size={24} color={COLORS.textSecondary} />
+            <Icon
+              name="chevron-right"
+              size={24}
+              color={theme.colors.textSecondary}
+            />
           </TouchableOpacity>
         ))}
       </View>
@@ -93,118 +113,121 @@ const ProfileScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  content: {
-    flex: 1,
-    padding: SCREEN_PADDING,
-  },
-  userCard: {
-    backgroundColor: COLORS.background,
-    padding: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 16,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  userName: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: COLORS.text,
-    marginTop: 12,
-  },
-  userEmail: {
-    fontSize: 14,
-    color: COLORS.textSecondary,
-    marginTop: 4,
-  },
-  userRole: {
-    fontSize: 12,
-    color: COLORS.primary,
-    marginTop: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    backgroundColor: COLORS.primary + '20',
-    borderRadius: 12,
-  },
-  statsCard: {
-    backgroundColor: COLORS.background,
-    padding: 20,
-    borderRadius: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginBottom: 16,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  statItem: {
-    alignItems: 'center',
-  },
-  statValue: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: COLORS.primary,
-  },
-  statLabel: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    marginTop: 4,
-  },
-  menuContainer: {
-    backgroundColor: COLORS.background,
-    borderRadius: 12,
-    marginBottom: 24,
-    overflow: 'hidden',
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.border,
-  },
-  menuLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: COLORS.primary + '20',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
-  menuContent: {
-    flex: 1,
-  },
-  menuTitle: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: COLORS.text,
-  },
-  menuSubtitle: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    marginTop: 2,
-  },
-  versionInfo: {
-    alignItems: 'center',
-    paddingVertical: 16,
-  },
-  versionText: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-  },
-});
+const useStyles = createStyles(
+  theme => ({
+    content: {
+      flex: 1,
+      padding: SCREEN_PADDING,
+    },
+    userCard: {
+      backgroundColor: theme.colors.background,
+      padding: 24,
+      borderRadius: 12,
+      alignItems: 'center',
+      marginBottom: 16,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    userName: {
+      fontSize: 20,
+      fontWeight: '600',
+      color: theme.colors.text,
+      marginTop: 12,
+    },
+    userEmail: {
+      fontSize: 14,
+      color: theme.colors.textSecondary,
+      marginTop: 4,
+    },
+    userRole: {
+      fontSize: 12,
+      color: theme.colors.primary,
+      marginTop: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 4,
+      backgroundColor: theme.colors.primary + '20',
+      borderRadius: 12,
+    },
+    statsCard: {
+      backgroundColor: theme.colors.background,
+      padding: 20,
+      borderRadius: 12,
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      marginBottom: 16,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+    },
+    statItem: {
+      alignItems: 'center',
+    },
+    statValue: {
+      fontSize: 24,
+      fontWeight: '700',
+      color: theme.colors.primary,
+    },
+    statLabel: {
+      fontSize: 12,
+      color: theme.colors.textSecondary,
+      marginTop: 4,
+    },
+    menuContainer: {
+      backgroundColor: theme.colors.background,
+      borderRadius: 12,
+      marginBottom: 24,
+      overflow: 'hidden',
+    },
+    menuItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.border,
+    },
+    menuLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    iconContainer: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: theme.colors.primary + '20',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 12,
+    },
+    menuContent: {
+      flex: 1,
+    },
+    menuTitle: {
+      fontSize: 16,
+      fontWeight: '500',
+      color: theme.colors.text,
+    },
+    menuSubtitle: {
+      fontSize: 12,
+      color: theme.colors.textSecondary,
+      marginTop: 2,
+    },
+    versionInfo: {
+      alignItems: 'center',
+      paddingVertical: 16,
+    },
+    versionText: {
+      fontSize: 12,
+      color: theme.colors.textSecondary,
+    },
+  }),
+  true,
+);
 
 export default ProfileScreen;
