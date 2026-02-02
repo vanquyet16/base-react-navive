@@ -134,14 +134,6 @@ const HomeScreen: React.FC = () => {
             <Text style={styles.actionText}>Quản lý PDF</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.actionCard}
-            onPress={() => navigation.navigate('PdfDownloadGuideScreen')}
-          >
-            <Icon name="help" size={24} color={COLORS.primary} />
-            <Text style={styles.actionText}>Hướng dẫn</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity style={styles.actionCard}>
             <Icon name="support" size={24} color={COLORS.primary} />
             <Text style={styles.actionText}>Hỗ trợ</Text>

@@ -59,7 +59,6 @@ export const COLORS = {
 // Screen Dimensions
 export const SCREEN_PADDING = 16;
 export const BORDER_RADIUS = 8;
-export const HEADER_HEIGHT = 56;
 
 // Error Messages
 export const ERROR_MESSAGES = {

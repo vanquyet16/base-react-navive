@@ -198,7 +198,10 @@ export const MAIN_STACK_SCREENS = {
         headerType: 'minimal',
     },
 
-} satisfies Record<keyof MainStackParamList, ScreenConfig>;
+} satisfies Record<
+    Exclude<keyof MainStackParamList, 'MainTabs'>,
+    ScreenConfig
+>;
 
 // ============================================================================
 // CẤU HÌNH TAB SCREENS - CÁC MÀN HÌNH TRONG BOTTOM TABS

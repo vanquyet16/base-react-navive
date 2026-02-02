@@ -68,6 +68,7 @@ export type MainStackParamList = {
     // DetailScreen: { id: string };
     // SearchScreen: { query?: string };
     // NotificationScreen: undefined;
+    MainTabs: undefined;
 };
 
 export type MainTabParamList = {

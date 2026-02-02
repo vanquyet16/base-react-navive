@@ -44,7 +44,7 @@ interface MainLayoutProps {
     rightComponent?: ReactNode;
     backgroundColor?: string;
     textColor?: string;
-    type?: 'default' | 'search' | 'minimal';
+    type?: 'default' | 'search' | 'minimal' | 'dashboard';
     notificationCount?: number;
   };
   // Thuộc tính Bottom tabs

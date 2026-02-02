@@ -243,3 +243,10 @@ export const breakpoints = {
     lg: 1024,
     xl: 1280,
 } as const;
+
+/**
+ * Layout Constants
+ */
+export const layout = {
+    headerHeight: 56,
+} as const;
