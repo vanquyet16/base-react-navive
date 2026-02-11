@@ -4,9 +4,12 @@
  * Authentication service: login, register, logout, refresh token.
  * Integrates với HTTP client và token store.
  * 
+ * ✨ Multi-Domain Support:
+ * Service này sử dụng dedicated AUTH domain client.
+ * Auth API có thể nằm ở domain riêng (e.g., https://auth.production.com).
  */
 
-import { httpClient } from '@/shared/services/http/http-client';
+import { createHttpClient } from '@/shared/services/http/http-client';
 import { tokenStore } from '@/shared/store/token-store';
 import { setupTokenHandlers } from '@/shared/services/http/axios-interceptors';
 import { API_ENDPOINTS } from '@/shared/constants/api-endpoints';
@@ -26,8 +29,20 @@ import type { ApiResponse } from '@/shared/types/api';
 
 /**
  * Auth Service class
+ * 
+ * Pattern: Dedicated HTTP client cho AUTH domain
+ * - authApiClient gọi tới AUTH domain (cấu hình trong app.config.ts)
+ * - Cho phép Auth API scale riêng, deploy riêng infrastructure
+ * - Dễ dàng chuyển đổi giữa dev/staging/prod environments
  */
 class AuthService {
+    /**
+     * HTTP client riêng cho AUTH domain
+     * 
+     * Production: Sẽ gọi tới https://auth.production.com
+     * Development: Gọi tới http://172.20.20.175:40000
+     */
+    private authApiClient = createHttpClient('AUTH');
     /**
      * Initialize auth service
      * Setup interceptors với token handlers
@@ -48,7 +63,7 @@ class AuthService {
      */
     public async login(request: LoginRequest): Promise<LoginResponse> {
         // Call API với skipAuth vì chưa có token
-        const response = await httpClient.post<ApiResponse<LoginResponse>>(
+        const response = await this.authApiClient.post<ApiResponse<LoginResponse>>(
             API_ENDPOINTS.AUTH.LOGIN,
             request,
             { skipAuth: true },
@@ -75,7 +90,7 @@ class AuthService {
     public async register(
         request: RegisterRequest,
     ): Promise<RegisterResponse> {
-        const response = await httpClient.post<ApiResponse<RegisterResponse>>(
+        const response = await this.authApiClient.post<ApiResponse<RegisterResponse>>(
             API_ENDPOINTS.AUTH.REGISTER,
             request,
             { skipAuth: true },
@@ -96,7 +111,7 @@ class AuthService {
     public async logout(): Promise<void> {
         try {
             // Call API logout (best effort - không care nếu fail)
-            await httpClient.post(API_ENDPOINTS.AUTH.LOGOUT);
+            await this.authApiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
         } catch (error) {
             console.warn('[AuthService] Logout API error (ignored):', error);
         } finally {
@@ -117,7 +132,7 @@ class AuthService {
 
         const request: RefreshTokenRequest = { refreshToken };
 
-        const response = await httpClient.post<ApiResponse<RefreshTokenResponse>>(
+        const response = await this.authApiClient.post<ApiResponse<RefreshTokenResponse>>(
             API_ENDPOINTS.AUTH.REFRESH_TOKEN,
             request,
             {
@@ -157,7 +172,7 @@ class AuthService {
     public async forgotPassword(
         request: ForgotPasswordRequest,
     ): Promise<void> {
-        await httpClient.post(
+        await this.authApiClient.post(
             API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
             request,
             { skipAuth: true },
@@ -171,7 +186,7 @@ class AuthService {
     public async changePassword(
         request: ChangePasswordRequest,
     ): Promise<void> {
-        await httpClient.post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, request);
+        await this.authApiClient.post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, request);
     }
 
     /**
@@ -179,7 +194,7 @@ class AuthService {
      * Dùng để refresh user data
      */
     public async getCurrentUser() {
-        const response = await httpClient.get<ApiResponse<any>>(
+        const response = await this.authApiClient.get<ApiResponse<any>>(
             API_ENDPOINTS.AUTH.GET_CURRENT_USER,
         );
         return response.data;
@@ -190,7 +205,7 @@ class AuthService {
      * @param request - Profile data to update
      */
     public async updateProfile(request: Partial<User>): Promise<User> {
-        const response = await httpClient.put<ApiResponse<User>>(
+        const response = await this.authApiClient.put<ApiResponse<User>>(
             API_ENDPOINTS.AUTH.UPDATE_PROFILE,
             request
         );
@@ -202,7 +217,7 @@ class AuthService {
      * @param request - Token and new password
      */
     public async resetPassword(request: ResetPasswordRequest): Promise<void> {
-        await httpClient.post(
+        await this.authApiClient.post(
             API_ENDPOINTS.AUTH.RESET_PASSWORD,
             request,
             { skipAuth: true }

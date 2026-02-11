@@ -9,9 +9,8 @@ export * from './base';
 
 // Form Components
 export { default as FormInput } from './form/FormInput';
+export { default as FormDropdown } from './form/FormDropdown';
 
 // Utility Components
 export * from './utility';
-
-
 

@@ -40,13 +40,13 @@ export const MainStackNavigator = createMainStackNavigatorComponent(
   MainStack,
   MAIN_STACK_SCREENS,
   {
-    initialRouteName: 'MainTabs',
+    initialRouteName: 'MainTabsScreen',
     screenOptions: { headerShown: false },
   },
   // Additional screens không có trong MAIN_STACK_SCREENS config
   [
     {
-      name: 'MainTabs',
+      name: 'MainTabsScreen',
       component: MainTabs,
       options: { headerShown: false },
     },

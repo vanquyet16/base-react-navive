@@ -24,8 +24,8 @@
  * />
  */
 
-import React from 'react';
-import { View, Text, type TextInputProps } from 'react-native';
+import React, { memo } from 'react';
+import { View, type TextInputProps } from 'react-native';
 import {
   Controller,
   Control,
@@ -36,6 +36,7 @@ import {
 import { CustomInput, type CustomInputProps } from '@/components/base';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
+import { moderateVerticalScale } from 'react-native-size-matters';
 
 interface FormInputProps<T extends FieldValues = FieldValues>
   extends Omit<CustomInputProps, 'onChangeText' | 'value' | 'error'> {
@@ -56,9 +57,12 @@ interface FormInputProps<T extends FieldValues = FieldValues>
   // Icon props (pass through to CustomInput)
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  // Input type
+  type?: 'text' | 'textarea';
+  height?: number;
 }
 
-const FormInput = <T extends FieldValues = FieldValues>({
+const FormInputBase = <T extends FieldValues = FieldValues>({
   label,
   error,
   required = false,
@@ -72,13 +76,30 @@ const FormInput = <T extends FieldValues = FieldValues>({
   leftIcon,
   rightIcon,
   containerStyle,
+  type = 'text',
+  height,
   ...props
 }: FormInputProps<T>) => {
   const theme = useTheme();
-  const styles = useStyles(theme);
+  const styles = useStyles();
 
   // Format label với required indicator
   const formattedLabel = label && required ? `${label} *` : label;
+
+  const isTextArea = type === 'textarea';
+
+  const textAreaProps = isTextArea
+    ? {
+        multiline: true,
+        numberOfLines: 4,
+        textAlignVertical: 'top' as const,
+        inputStyle: {
+          height: moderateVerticalScale(height || 70),
+          textAlignVertical: 'top',
+          paddingTop: moderateVerticalScale(4), // Add padding for text area
+        },
+      }
+    : {};
 
   // Nếu hidden, không render gì cả
   if (hidden) {
@@ -99,6 +120,7 @@ const FormInput = <T extends FieldValues = FieldValues>({
           <View style={styles.container}>
             <CustomInput
               {...props}
+              {...textAreaProps}
               label={formattedLabel}
               error={error || fieldError?.message}
               onChangeText={onChange}
@@ -120,6 +142,7 @@ const FormInput = <T extends FieldValues = FieldValues>({
     <View style={styles.container}>
       <CustomInput
         {...props}
+        {...textAreaProps}
         label={formattedLabel}
         error={error}
         onChangeText={onChangeText}
@@ -136,10 +159,14 @@ const FormInput = <T extends FieldValues = FieldValues>({
 /**
  * Minimal styles - most styling is handled by CustomInput
  */
-const useStyles = createStyles(theme => ({
-  container: {
-    marginBottom: theme.spacing[1], // Gap between form fields
-  },
-}));
+const useStyles = createStyles(
+  theme => ({
+    container: {
+      marginBottom: theme.spacing[1], // Gap between form fields
+    },
+  }),
+  true,
+);
 
+export const FormInput = memo(FormInputBase) as typeof FormInputBase;
 export default FormInput;

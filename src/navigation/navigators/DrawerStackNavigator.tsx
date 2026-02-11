@@ -40,7 +40,7 @@ const DrawerStack = createStackNavigator<DrawerStackParamList>();
 export const DrawerStackNavigator: React.FC = () => {
   return (
     <DrawerStack.Navigator
-      initialRouteName="MainTabs"
+      initialRouteName={NAVIGATION_KEYS.DRAWER_STACK.MAIN}
       screenOptions={{
         headerShown: false,
       }}
@@ -49,14 +49,18 @@ export const DrawerStackNavigator: React.FC = () => {
         Sử dụng NAVIGATION_KEYS.DRAWER_STACK để tạo dynamic screens 
         Giúp dễ dàng maintain và mở rộng
       */}
-      {Object.entries(NAVIGATION_KEYS.DRAWER_STACK).map(([key, routeName]) => (
-        <DrawerStack.Screen
-          key={key}
-          name={routeName as keyof DrawerStackParamList}
-          component={MainStackNavigator}
-          initialParams={{ screen: routeName }}
-        />
-      ))}
+      {Object.entries(NAVIGATION_KEYS.DRAWER_STACK).map(([key, routeName]) => {
+        const initialScreen =
+          routeName === 'Main' ? 'MainTabsScreen' : routeName;
+        return (
+          <DrawerStack.Screen
+            key={key}
+            name={routeName as keyof DrawerStackParamList}
+            component={MainStackNavigator}
+            initialParams={{ screen: initialScreen as any }}
+          />
+        );
+      })}
     </DrawerStack.Navigator>
   );
 };

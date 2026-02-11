@@ -4,7 +4,7 @@
  * Custom wrapper cho Ant Design Card với theme integration
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { Card, type CardProps } from '@ant-design/react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
@@ -55,7 +55,7 @@ export const CustomCard: React.FC<CustomCardProps> = ({
 /**
  * Memoized export để prevent unnecessary re-renders
  */
-export default React.memo(CustomCard);
+export default memo(CustomCard);
 
 const useStyles = createStyles(theme => ({
   card: {

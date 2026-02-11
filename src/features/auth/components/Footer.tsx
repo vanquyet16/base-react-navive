@@ -1,12 +1,12 @@
+import React, { memo } from 'react';
+import { View } from '@ant-design/react-native';
 import { FaceIdIcon } from '@/assets/icons';
 import { CustomButton, LoginOther, SpacerSm } from '@/components';
 import CustomText from '@/components/base/CustomText';
 import Logo from '@/components/base/Logo';
 import { createStyles } from '@/shared/theme/create-styles';
-import { View } from '@ant-design/react-native';
-import React from 'react';
 
-const Footer = () => {
+const Footer = memo(() => {
   const styles = useStyles();
   return (
     <View style={styles.container}>
@@ -18,22 +18,9 @@ const Footer = () => {
         onBiometricPress={() => {}}
       />
       <SpacerSm />
-      <View style={styles.registerContainer}>
-        <CustomText variant="bodySmall" style={styles.registerText}>
-          {' Bạn chưa có tài khoản? '}
-        </CustomText>
-        <CustomButton title="Đăng ký ngay" variant="text" onPress={() => {}} />
-      </View>
-      <CustomButton
-        title="Quên mật khẩu?"
-        variant="text"
-        size="sm"
-        onPress={() => {}}
-        textStyle={styles.forgotPasswordText}
-      />
     </View>
   );
-};
+});
 
 export default Footer;
 

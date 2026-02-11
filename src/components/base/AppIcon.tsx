@@ -5,6 +5,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useTheme } from '@/shared/theme/use-theme';
+import { moderateScale } from 'react-native-size-matters';
 
 export type IconType = 'ant' | 'feather' | 'material' | 'ionic';
 
@@ -29,29 +30,24 @@ export interface AppIconProps {
  * <AppIcon name="home" /> (Defaults to Feather home)
  * <AppIcon name="user" type="ant" /> (AntDesign user)
  */
-const AppIcon: React.FC<AppIconProps> = ({
-  name,
-  type = 'feather',
-  size = 24,
-  color,
-  style,
-  onPress,
-}) => {
-  const theme = useTheme();
-  const iconColor = color || theme.colors.text;
+const AppIcon = memo<AppIconProps>(
+  ({ name, type = 'feather', size = 24, color, style, onPress }) => {
+    const theme = useTheme();
+    const iconColor = color || theme.colors.text;
 
-  const IconComponent = getIconComponent(type);
+    const IconComponent = getIconComponent(type);
 
-  return (
-    <IconComponent
-      name={name}
-      size={size}
-      color={iconColor as string}
-      style={style}
-      onPress={onPress}
-    />
-  );
-};
+    return (
+      <IconComponent
+        name={name}
+        size={moderateScale(size, 0.3)}
+        color={iconColor as string}
+        style={style}
+        onPress={onPress}
+      />
+    );
+  },
+);
 
 const getIconComponent = (type: IconType) => {
   switch (type) {
@@ -67,4 +63,4 @@ const getIconComponent = (type: IconType) => {
   }
 };
 
-export default memo(AppIcon);
+export default AppIcon;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import Swiper from 'react-native-swiper';
 import { View, ViewStyle } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
@@ -24,7 +24,7 @@ interface CustomSwiperProps {
  *   <Image ... />
  * </CustomSwiper>
  */
-export const CustomSwiper = React.memo<CustomSwiperProps>(
+export const CustomSwiper = memo<CustomSwiperProps>(
   ({
     children,
     height = verticalScale(150),
@@ -63,3 +63,4 @@ export const CustomSwiper = React.memo<CustomSwiperProps>(
 );
 
 CustomSwiper.displayName = 'CustomSwiper';
+export default CustomSwiper;

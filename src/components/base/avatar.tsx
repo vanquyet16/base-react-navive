@@ -6,8 +6,9 @@
  * Sử dụng theme system
  */
 
-import React, { useMemo } from 'react';
-import { View, Text, Image } from 'react-native';
+import React, { useMemo, memo } from 'react';
+import { View, Image } from 'react-native';
+import { CustomText } from '@/components/base/CustomText';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import type { User } from '@/shared/types/domain/user';
@@ -30,7 +31,7 @@ const Avatar: React.FC<AvatarProps> = ({
   accentBorder = false,
 }) => {
   const theme = useTheme();
-  const styles = useStyles(theme);
+  const styles = useStyles();
 
   // Memoize initials calculation
   const initials = useMemo(() => {
@@ -87,7 +88,9 @@ const Avatar: React.FC<AvatarProps> = ({
         accentBorderStyle,
       ]}
     >
-      <Text style={[styles.initials, initialsFontSize]}>{initials}</Text>
+      <CustomText style={[styles.initials, initialsFontSize]}>
+        {initials}
+      </CustomText>
     </View>
   );
 };
@@ -95,26 +98,29 @@ const Avatar: React.FC<AvatarProps> = ({
 /**
  * Memoized export để prevent unnecessary re-renders
  */
-export default React.memo(Avatar);
+export default memo(Avatar);
 
-const useStyles = createStyles(theme => ({
-  avatar: {
-    backgroundColor: theme.colors.backgroundSecondary,
-  },
-  placeholderAvatar: {
-    backgroundColor: theme.colors.primary, // Use new government blue
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  initials: {
-    color: theme.colors.white,
-    fontWeight: '600',
-  },
-  shadow: {
-    shadowColor: theme.colors.black,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-}));
+const useStyles = createStyles(
+  theme => ({
+    avatar: {
+      backgroundColor: theme.colors.backgroundSecondary,
+    },
+    placeholderAvatar: {
+      backgroundColor: theme.colors.primary, // Use new government blue
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    initials: {
+      color: theme.colors.white,
+      fontWeight: '600',
+    },
+    shadow: {
+      shadowColor: theme.colors.black,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.12,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+  }),
+  true,
+);

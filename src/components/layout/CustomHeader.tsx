@@ -35,13 +35,14 @@ import { AppIcon, Spacer, SpacerLg } from '@/components';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import { SCREEN_PADDING } from '@/shared/constants';
-import { layout } from '@/shared/theme/tokens';
+import { layout } from '@/shared/theme/tokens'; // New import
 import {
   moderateScale,
   moderateVerticalScale,
   scale,
 } from 'react-native-size-matters';
 import CustomBadge from '../base/CustomBadge';
+import { useMainNavigation } from '@/shared/hooks/useNavigation';
 
 /**
  * Props interface
@@ -115,11 +116,12 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
   }) => {
     const insets = useSafeAreaInsets();
     const theme = useTheme();
-    const styles = useStyles(theme);
+    const styles = useStyles();
 
     // State
     const [searchVisible, setSearchVisible] = useState(false);
     const [searchText, setSearchText] = useState('');
+    const navigation = useMainNavigation();
 
     // Stable animation value ref (prevent recreation on every render)
     const searchAnimation = useRef(new Animated.Value(0)).current;
@@ -239,24 +241,26 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
      * Toggle search visibility với animation
      */
     const toggleSearch = useCallback(() => {
-      if (searchVisible) {
-        Animated.timing(searchAnimation, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: false,
-        }).start(() => {
-          setSearchVisible(false);
-          setSearchText('');
-        });
-      } else {
-        setSearchVisible(true);
-        Animated.timing(searchAnimation, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: false,
-        }).start();
-      }
-    }, [searchVisible, searchAnimation]);
+      navigation.navigate('SearchScreen');
+      // if (searchVisible) {
+      //   Animated.timing(searchAnimation, {
+      //     toValue: 0,
+      //     duration: 300,
+      //     useNativeDriver: false,
+      //   }).start(() => {
+      //     setSearchVisible(false);
+      //     setSearchText('');
+      //   });
+      // } else {
+      //   setSearchVisible(true);
+      //   Animated.timing(searchAnimation, {
+      //     toValue: 1,
+      //     duration: 300,
+      //     useNativeDriver: false,
+      //   }).start();
+      // }
+      console.log('ádasdas');
+    }, [navigation]);
 
     /**
      * Handle search text change
@@ -308,52 +312,52 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
     /**
      * Render Search Header
      */
-    // const renderSearchHeader = useCallback(
-    //   () => (
-    //     <Animated.View
-    //       style={[
-    //         styles.searchContainer,
-    //         searchAnimatedStyle,
-    //         containerHeightStyle,
-    //       ]}
-    //     >
-    //       <View style={styles.searchInputContainer}>
-    //         <AppIcon
-    //           name="search"
-    //           size={20}
-    //           color={theme.colors.textSecondary}
-    //         />
-    //         <TextInput
-    //           style={styles.searchInput}
-    //           placeholder="Tìm kiếm..."
-    //           placeholderTextColor={theme.colors.textTertiary}
-    //           value={searchText}
-    //           onChangeText={handleSearch}
-    //           autoFocus
-    //         />
-    //         <TouchableOpacity
-    //           onPress={toggleSearch}
-    //           style={styles.searchCloseButton}
-    //         >
-    //           <AppIcon name="x" size={20} color={theme.colors.textSecondary} />
-    //         </TouchableOpacity>
-    //       </View>
-    //     </Animated.View>
-    //   ),
-    //   [
-    //     styles.searchContainer,
-    //     styles.searchInputContainer,
-    //     styles.searchInput,
-    //     styles.searchCloseButton,
-    //     searchAnimatedStyle,
-    //     containerHeightStyle,
-    //     theme.colors.textSecondary,
-    //     theme.colors.textTertiary,
-    //     searchText,
-    //     handleSearch,
-    //     toggleSearch,
-    //   ],
-    // );
+    const renderSearchHeader = useCallback(
+      () => (
+        <Animated.View
+          style={[
+            styles.searchContainer,
+            searchAnimatedStyle,
+            containerHeightStyle,
+          ]}
+        >
+          <View style={styles.searchInputContainer}>
+            <AppIcon
+              name="search"
+              size={20}
+              color={theme.colors.textSecondary}
+            />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Tìm kiếm..."
+              placeholderTextColor={theme.colors.textTertiary}
+              value={searchText}
+              onChangeText={handleSearch}
+              autoFocus
+            />
+            <TouchableOpacity
+              onPress={toggleSearch}
+              style={styles.searchCloseButton}
+            >
+              <AppIcon name="x" size={20} color={theme.colors.textSecondary} />
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      ),
+      [
+        styles.searchContainer,
+        styles.searchInputContainer,
+        styles.searchInput,
+        styles.searchCloseButton,
+        searchAnimatedStyle,
+        containerHeightStyle,
+        theme.colors.textSecondary,
+        theme.colors.textTertiary,
+        searchText,
+        handleSearch,
+        toggleSearch,
+      ],
+    );
 
     /**
      * Render Default Header
@@ -364,10 +368,17 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
           {/* Phần trái */}
           <View style={styles.leftSection}>
             {showBack ? (
-              <TouchableOpacity onPress={onBack} style={styles.backButton}>
+              // <TouchableOpacity onPress={onBack} style={styles.backButton}>
+              //   <AppIcon
+              //     name={'arrow-left'}
+              //     size={20}
+              //     color={headerTextColor}
+              //   />
+              // </TouchableOpacity>
+              <TouchableOpacity style={styles.backButton} onPress={onBack}>
                 <AppIcon
-                  name={'arrow-left'}
-                  size={20}
+                  name="arrow-left"
+                  size={moderateScale(20)}
                   color={headerTextColor}
                 />
               </TouchableOpacity>
@@ -466,7 +477,6 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
         notificationBadgeText,
         rightComponent,
         theme.colors.error,
-        props.rightAction,
       ],
     );
 
@@ -541,7 +551,6 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
         title,
         titleIcon,
         rightComponent,
-        props.rightAction,
       ],
     );
 
@@ -648,15 +657,15 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
             translucent={true}
           />
 
-          {/* {searchVisible && renderSearchHeader()} */}
+          {searchVisible && renderSearchHeader()}
 
-          {/* {!searchVisible && ( */}
-          {/* <> */}
-          {type === 'minimal' && renderMinimalHeader()}
-          {type === 'default' && renderDefaultHeader()}
-          {type === 'dashboard' && renderDashboardHeader()}
-          {/* </>
-          )} */}
+          {!searchVisible && (
+            <>
+              {type === 'minimal' && renderMinimalHeader()}
+              {type === 'default' && renderDefaultHeader()}
+              {type === 'dashboard' && renderDashboardHeader()}
+            </>
+          )}
         </View>
       ),
       [
@@ -664,7 +673,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
         type,
         barStyle,
         searchVisible,
-        // renderSearchHeader,
+        renderSearchHeader,
         renderMinimalHeader,
         renderDefaultHeader,
         renderDashboardHeader,
@@ -701,193 +710,194 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
 CustomHeader.displayName = 'CustomHeader';
 
 // Styles
-const useStyles = createStyles(theme => ({
-  container: {
-    // Basic container logic handled in style logic
-    paddingHorizontal: theme.spacing[2],
-  },
-  headerContent: {
-    height: moderateVerticalScale(layout.headerHeight),
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  leftSection: {
-    width: scale(40),
-    justifyContent: 'center',
-    zIndex: 1,
-  },
-  centerSection: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 0,
-  },
-  rightSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    zIndex: 1,
-  },
-  title: {
-    fontSize: moderateScale(18), // Explicit scale for font size
-    fontWeight: theme.typography.fontWeights.semibold,
-  },
-  subtitle: {
-    fontSize: moderateScale(12),
-    fontWeight: theme.typography.fontWeights.normal,
-    opacity: 0.8,
-    marginTop: moderateVerticalScale(4),
-  },
-  iconButton: {
-    padding: moderateScale(8), // General padding
-    marginHorizontal: scale(4),
-  },
-  backButton: {
-    padding: moderateScale(8),
-    marginHorizontal: scale(10),
-    backgroundColor: 'rgba(255, 255, 255, 0.3)', // Tăng opacity lên 0.3 để đậm hơn
-    borderRadius: moderateScale(20), // Circular background
-    width: scale(35),
-    height: scale(35),
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+const useStyles = createStyles(
+  theme => ({
+    container: {
+      // Basic container logic handled in style logic
+      paddingHorizontal: theme.spacing[2],
+    },
+    headerContent: {
+      height: moderateVerticalScale(layout.headerHeight),
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    leftSection: {
+      width: scale(40),
+      justifyContent: 'center',
+      zIndex: 1,
+    },
+    centerSection: {
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 0,
+    },
+    rightSection: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'flex-end',
+      zIndex: 1,
+    },
+    title: {
+      fontSize: theme.typography.fontSizes.lg,
+      fontWeight: theme.typography.fontWeights.semibold,
+    },
+    subtitle: {
+      fontSize: theme.typography.fontSizes.xs,
+      fontWeight: theme.typography.fontWeights.normal,
+      opacity: 0.8,
+      marginTop: moderateVerticalScale(4),
+    },
+    iconButton: {
+      padding: moderateScale(8), // General padding
+      marginHorizontal: scale(4),
+    },
+    backButton: {
+      width: scale(30),
+      height: scale(30),
+      borderRadius: theme.radius.full,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: theme.colors.scrim, // Optional: slight scrim for better visibility
+    },
 
-  // searchContainer: {
-  //   paddingHorizontal: scale(16), // SCREEN_PADDING usually is a constant, assuming it needs scaling or is already scaled
-  //   paddingVertical: moderateVerticalScale(8),
-  // },
-  // searchInputContainer: {
-  //   flexDirection: 'row',
-  //   alignItems: 'center',
-  //   backgroundColor: theme.colors.white,
-  //   borderRadius: moderateScale(100), // Full radius
-  //   paddingHorizontal: scale(16),
-  //   height: moderateVerticalScale(40),
-  //   elevation: 1,
-  //   shadowColor: theme.colors.black || '#000',
-  //   shadowOffset: { width: 0, height: moderateVerticalScale(1) },
-  //   shadowOpacity: 0.08,
-  //   shadowRadius: moderateScale(2),
-  // },
-  // searchInput: {
-  //   flex: 1,
-  //   marginLeft: scale(8),
-  //   fontSize: moderateScale(14),
-  //   color: theme.colors.text,
-  // },
-  searchCloseButton: {
-    padding: moderateScale(4),
-  },
-  minimalContainer: {
-    height: moderateVerticalScale(layout.headerHeight),
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  minimalLeftSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  minimalRightSection: {
-    paddingRight: scale(16),
-  },
-  minimalTitle: {
-    fontSize: moderateScale(18),
-    fontWeight: theme.typography.fontWeights.semibold,
-    marginLeft: scale(12),
-  },
+    searchContainer: {
+      paddingHorizontal: scale(16), // SCREEN_PADDING usually is a constant, assuming it needs scaling or is already scaled
+      paddingVertical: moderateVerticalScale(8),
+    },
+    searchInputContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: theme.colors.white,
+      borderRadius: moderateScale(100), // Full radius
+      paddingHorizontal: scale(16),
+      height: moderateVerticalScale(40),
+      elevation: 1,
+      shadowColor: theme.colors.black || '#000',
+      shadowOffset: { width: 0, height: moderateVerticalScale(1) },
+      shadowOpacity: 0.08,
+      shadowRadius: moderateScale(2),
+    },
+    searchInput: {
+      flex: 1,
+      marginLeft: scale(8),
+      fontSize: theme.typography.fontSizes.sm,
+      color: theme.colors.text,
+    },
+    searchCloseButton: {
+      padding: moderateScale(4),
+    },
+    minimalContainer: {
+      height: moderateVerticalScale(layout.headerHeight),
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      width: '100%',
+    },
+    minimalLeftSection: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    minimalRightSection: {
+      paddingRight: scale(16),
+    },
+    minimalTitle: {
+      fontSize: theme.typography.fontSizes.lg,
+      fontWeight: theme.typography.fontWeights.semibold,
+      marginLeft: scale(12),
+    },
 
-  // Dashboard Styles
-  dashboardInnerContent: {
-    paddingHorizontal: scale(12),
-    minHeight: '15%',
-    // Removed bg, radius, shadow from here
-  },
-  dashboardTopRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: moderateVerticalScale(8),
-    marginTop: moderateVerticalScale(8),
-  },
-  brandContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  logoCircle: {
-    width: scale(40),
-    height: scale(40), // Circle
-    borderRadius: moderateScale(20),
-    backgroundColor: theme.colors.white, // Inverted: White bg
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoText: {
-    color: theme.colors.primary, // Inverted: Primary text
-    fontWeight: 'bold',
-    fontSize: moderateScale(14),
-  },
-  brandName: {
-    fontSize: moderateScale(14),
-    fontWeight: 'bold',
-    color: theme.colors.white, // White text
-    textTransform: 'uppercase',
-  },
-  brandLocation: {
-    fontSize: moderateScale(10),
-    color: theme.colors.white, // White text
-    marginLeft: scale(4),
-    opacity: 0.9,
-  },
-  dashboardRightActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  greetingContainer: {
-    marginBottom: moderateVerticalScale(16),
-  },
-  dateText: {
-    fontSize: moderateScale(10),
-    color: theme.colors.white, // White text
-    opacity: 0.9,
-    marginBottom: moderateVerticalScale(4),
-  },
-  greetingTitle: {
-    fontSize: moderateScale(24),
-    fontWeight: 'bold',
-    color: theme.colors.white, // White text
-    lineHeight: moderateVerticalScale(32),
-  },
-  userName: {
-    color: theme.colors.white, // White text
-  },
-  dashboardSearchContainer: {
-    // inherit styles
-  },
-  avatarContainer: {
-    marginLeft: scale(12),
-  },
-  defaultAvatar: {
-    width: scale(36),
-    height: scale(36),
-    borderRadius: moderateScale(18),
-    backgroundColor: theme.colors.primary,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  actionText: {
-    fontSize: moderateScale(14),
-    fontWeight: theme.typography.fontWeights.medium,
-    color: theme.colors.white, // Default white
-  },
-}));
+    // Dashboard Styles
+    dashboardInnerContent: {
+      paddingHorizontal: scale(12),
+      minHeight: '15%',
+      // Removed bg, radius, shadow from here
+    },
+    dashboardTopRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: moderateVerticalScale(8),
+      marginTop: moderateVerticalScale(8),
+    },
+    brandContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    logoCircle: {
+      width: scale(40),
+      height: scale(40), // Circle
+      borderRadius: moderateScale(20),
+      backgroundColor: theme.colors.white, // Inverted: White bg
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    logoText: {
+      color: theme.colors.primary, // Inverted: Primary text
+      fontWeight: 'bold',
+      fontSize: theme.typography.fontSizes.sm,
+    },
+    brandName: {
+      fontSize: theme.typography.fontSizes.sm,
+      fontWeight: 'bold',
+      color: theme.colors.white, // White text
+      textTransform: 'uppercase',
+    },
+    brandLocation: {
+      fontSize: theme.typography.fontSizes['2xs'],
+      color: theme.colors.white, // White text
+      marginLeft: scale(4),
+      opacity: 0.9,
+    },
+    dashboardRightActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    greetingContainer: {
+      marginBottom: moderateVerticalScale(16),
+    },
+    dateText: {
+      fontSize: theme.typography.fontSizes['2xs'],
+      color: theme.colors.white, // White text
+      opacity: 0.9,
+      marginBottom: moderateVerticalScale(4),
+    },
+    greetingTitle: {
+      fontSize: theme.typography.fontSizes['2xl'],
+      fontWeight: 'bold',
+      color: theme.colors.white, // White text
+      lineHeight: moderateVerticalScale(32),
+    },
+    userName: {
+      color: theme.colors.white, // White text
+    },
+    dashboardSearchContainer: {
+      // inherit styles
+    },
+    avatarContainer: {
+      marginLeft: scale(12),
+    },
+    defaultAvatar: {
+      width: scale(36),
+      height: scale(36),
+      borderRadius: moderateScale(18),
+      backgroundColor: theme.colors.primary,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    actionText: {
+      fontSize: theme.typography.fontSizes.sm,
+      fontWeight: theme.typography.fontWeights.medium,
+      color: theme.colors.white, // Default white
+    },
+  }),
+  true,
+);
 
 export default CustomHeader;

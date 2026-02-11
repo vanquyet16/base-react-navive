@@ -1,233 +1,103 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
-
-import { Avatar } from '@/components/base';
-import { SCREEN_PADDING } from '@/shared/constants';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useTheme } from '@/shared/theme/use-theme';
+import { View, ImageBackground } from 'react-native';
+import React, { useCallback } from 'react';
 import { createStyles } from '@/shared/theme/create-styles';
+import { useTheme } from '@/shared/theme/use-theme';
+import { AppIcon, Avatar, CustomText } from '@/components';
+import LeverIdentity from '@/components/base/LeverIdentity';
+import { WingBlank } from '@ant-design/react-native';
+import ItemDriver from '../components/ItemDriver';
+import HeaderAction from '@/components/base/HeaderAction';
+import { ScrollView } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
 
-const ProfileScreen: React.FC = () => {
-  // const user = useUser();
+const ProfileScreen = () => {
   const theme = useTheme();
   const styles = useStyles();
+  const navigation = useNavigation();
+  // const insets = useSafeAreaInsets(); // Removed as HeaderAction handles it
 
-  const profileMenuItems = [
-    {
-      icon: 'edit',
-      title: 'Chỉnh sửa hồ sơ',
-      subtitle: 'Cập nhật thông tin cá nhân',
-      onPress: () => console.log('Edit profile'),
-    },
-    {
-      icon: 'security',
-      title: 'Bảo mật',
-      subtitle: 'Đổi mật khẩu, xác thực 2 lớp',
-      onPress: () => console.log('Security'),
-    },
-    {
-      icon: 'notifications',
-      title: 'Thông báo',
-      subtitle: 'Cài đặt thông báo',
-      onPress: () => console.log('Notifications'),
-    },
-    {
-      icon: 'language',
-      title: 'Ngôn ngữ',
-      subtitle: 'Thay đổi ngôn ngữ ứng dụng',
-      onPress: () => console.log('Language'),
-    },
-    {
-      icon: 'help',
-      title: 'Trợ giúp',
-      subtitle: 'FAQ, hướng dẫn sử dụng',
-      onPress: () => console.log('Help'),
-    },
-  ];
+  // Mock user data for display // TODO: Replace with actual user data from store
+  const user = {
+    id: '1',
+    username: 'vanquyet',
+    email: 'quyet@example.com',
+    displayName: 'Văn Quyết',
+    role: 'user',
+    status: 'active',
+    avatar:
+      'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/06/anh-dai-dien-mac-dinh-18.jpg',
+    phone: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    lastLoginAt: null,
+  } as const;
+
+  const handleBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
 
   return (
-    <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-      {/* User Info Card */}
-      <View style={styles.userCard}>
-        {/* <Avatar user={user} size={80} /> */}
-        {/* <Text style={styles.userName}>{user?.name || 'Người dùng'}</Text> */}
-        <Text style={styles.userEmail}>
-          {/* {user?.email || 'email@example.com'} */}
-        </Text>
-        {/* <Text style={styles.userRole}>Vai trò: {user?.role || 'User'}</Text> */}
-      </View>
-
-      {/* Stats Card */}
-      <View style={styles.statsCard}>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>24</Text>
-          <Text style={styles.statLabel}>Bài viết</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>156</Text>
-          <Text style={styles.statLabel}>Theo dõi</Text>
-        </View>
-        <View style={styles.statItem}>
-          <Text style={styles.statValue}>89</Text>
-          <Text style={styles.statLabel}>Đang theo dõi</Text>
-        </View>
-      </View>
-
-      {/* Menu Items */}
-      <View style={styles.menuContainer}>
-        {profileMenuItems.map((item, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.menuItem}
-            onPress={item.onPress}
-          >
-            <View style={styles.menuLeft}>
-              <View style={styles.iconContainer}>
-                <Icon name={item.icon} size={24} color={theme.colors.primary} />
-              </View>
-              <View style={styles.menuContent}>
-                <Text style={styles.menuTitle}>{item.title}</Text>
-                <Text style={styles.menuSubtitle}>{item.subtitle}</Text>
-              </View>
-            </View>
-            <Icon
-              name="chevron-right"
-              size={24}
-              color={theme.colors.textSecondary}
-            />
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      {/* Version Info */}
-      <View style={styles.versionInfo}>
-        <Text style={styles.versionText}>Phiên bản 1.0.0</Text>
-      </View>
-    </ScrollView>
+    <View style={styles.container}>
+      <ImageBackground
+        source={require('@/assets/images/imgbgrheader.jpg')}
+        style={styles.header}
+        imageStyle={styles.imageStyle}
+      >
+        {/* <View style={styles.headerContent}> */}
+        <HeaderAction
+          title="Thông tin cá nhân"
+          styleIconButton={styles.iconButton}
+          titleStyle={styles.title}
+          onIconLeftPress={handleBack}
+        />
+        <Avatar user={user} size={100} accentBorder />
+        <CustomText variant="h6" color="white">
+          {user.displayName}
+        </CustomText>
+        <LeverIdentity lever={2} />
+        {/* </View> */}
+      </ImageBackground>
+      <ScrollView>
+        <WingBlank size="md" style={styles.body}>
+          <ItemDriver title="Số định danh cá nhân" value={'12345689012'} />
+          <ItemDriver title="Giới tính" value={'Nam'} />
+          <ItemDriver title="Ngày sinh" value={'01/01/2000'} />
+          <ItemDriver title="Số điện thoại" value={'123456789'} />
+          <ItemDriver title="Email" value={'quyet@example.com'} />
+          <ItemDriver title="Nơi thường trú" value={'123 Main St, City'} />
+        </WingBlank>
+      </ScrollView>
+    </View>
   );
 };
 
-const useStyles = createStyles(
-  theme => ({
-    content: {
+const useStyles = createStyles(theme => {
+  return {
+    container: {
       flex: 1,
-      padding: SCREEN_PADDING,
-    },
-    userCard: {
       backgroundColor: theme.colors.background,
-      padding: 24,
-      borderRadius: 12,
+    },
+    header: {
+      backgroundColor: theme.colors.primary, // Removed in favor of gradient
       alignItems: 'center',
-      marginBottom: 16,
-      elevation: 2,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
+      borderBottomLeftRadius: theme.radius['3xl'],
+      borderBottomRightRadius: theme.radius['3xl'],
+      paddingBottom: theme.spacing[10],
     },
-    userName: {
-      fontSize: 20,
-      fontWeight: '600',
-      color: theme.colors.text,
-      marginTop: 12,
+    imageStyle: {
+      borderBottomLeftRadius: theme.radius['3xl'],
+      borderBottomRightRadius: theme.radius['3xl'],
     },
-    userEmail: {
-      fontSize: 14,
-      color: theme.colors.textSecondary,
-      marginTop: 4,
+    body: {
+      marginVertical: theme.spacing[4],
     },
-    userRole: {
-      fontSize: 12,
-      color: theme.colors.primary,
-      marginTop: 8,
-      paddingHorizontal: 12,
-      paddingVertical: 4,
-      backgroundColor: theme.colors.primary + '20',
-      borderRadius: 12,
+    iconButton: {
+      backgroundColor: theme.colors.scrim, // Optional: slight scrim for better visibility
     },
-    statsCard: {
-      backgroundColor: theme.colors.background,
-      padding: 20,
-      borderRadius: 12,
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      marginBottom: 16,
-      elevation: 2,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
+    title: {
+      color: theme.colors.white,
     },
-    statItem: {
-      alignItems: 'center',
-    },
-    statValue: {
-      fontSize: 24,
-      fontWeight: '700',
-      color: theme.colors.primary,
-    },
-    statLabel: {
-      fontSize: 12,
-      color: theme.colors.textSecondary,
-      marginTop: 4,
-    },
-    menuContainer: {
-      backgroundColor: theme.colors.background,
-      borderRadius: 12,
-      marginBottom: 24,
-      overflow: 'hidden',
-    },
-    menuItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: 16,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
-    },
-    menuLeft: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      flex: 1,
-    },
-    iconContainer: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      backgroundColor: theme.colors.primary + '20',
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginRight: 12,
-    },
-    menuContent: {
-      flex: 1,
-    },
-    menuTitle: {
-      fontSize: 16,
-      fontWeight: '500',
-      color: theme.colors.text,
-    },
-    menuSubtitle: {
-      fontSize: 12,
-      color: theme.colors.textSecondary,
-      marginTop: 2,
-    },
-    versionInfo: {
-      alignItems: 'center',
-      paddingVertical: 16,
-    },
-    versionText: {
-      fontSize: 12,
-      color: theme.colors.textSecondary,
-    },
-  }),
-  true,
-);
+  };
+}, true);
 
 export default ProfileScreen;

@@ -1,21 +1,22 @@
-import { CustomText, Logo, Spacer, SpacerLg } from '@/components';
-import { createStyles } from '@/shared/theme/create-styles';
-import { memo } from 'react';
+import React, { memo } from 'react';
 import { ImageBackground, View } from 'react-native';
 import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
+import { CustomText, Logo, Spacer, SpacerLg } from '@/components';
+import { createStyles } from '@/shared/theme/create-styles';
 
 /**
  * Header Component
  * Hiển thị Logo ở đầu màn hình auth
  */
-const Header = () => {
+const Header = memo(() => {
   // ✅ Chỉ cần 1 dòng - auto inject theme
   const styles = useStyles();
 
   return (
     <ImageBackground
-      source={require('@/assets/images/auth/header.png')}
+      source={require('@/assets/images/imgbgrheader.jpg')}
       style={styles.header}
+      imageStyle={styles.headerImage}
     >
       <View style={styles.logoContainer}>
         <Logo size={80} />
@@ -35,9 +36,9 @@ const Header = () => {
       </View>
     </ImageBackground>
   );
-};
+});
 
-export default memo(Header);
+export default Header;
 
 // ✅ Thêm flag `true` để auto-inject theme
 const useStyles = createStyles(
@@ -46,13 +47,17 @@ const useStyles = createStyles(
       alignItems: 'center',
 
       // Vertical spacing → verticalScale
-      paddingTop: verticalScale(50),
-      paddingBottom: verticalScale(30),
+      paddingTop: verticalScale(60),
+      paddingBottom: verticalScale(50),
 
       backgroundColor: theme.colors.primary,
       // Radius → moderateScale (KHÔNG scale mạnh)
-      borderBottomLeftRadius: moderateScale(50),
-      borderBottomRightRadius: moderateScale(50),
+      // borderBottomLeftRadius: moderateScale(50),
+      // borderBottomRightRadius: moderateScale(50),
+    },
+    headerImage: {
+      // borderBottomLeftRadius: moderateScale(50),
+      // borderBottomRightRadius: moderateScale(50),
     },
     logoContainer: {
       backgroundColor: '#fff',
@@ -63,6 +68,8 @@ const useStyles = createStyles(
       shadowOpacity: 0.1,
       shadowRadius: moderateScale(4),
       elevation: 3,
+      borderColor: theme.colors.boderColorLogo,
+      borderWidth: 3,
     },
     textContainer: {
       width: '100%',

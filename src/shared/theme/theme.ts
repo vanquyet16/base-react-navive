@@ -20,6 +20,7 @@ export interface Theme {
         backgroundSecondary: string;
         backgroundTertiary: string;
         inputBackground: string; // Added for input fields
+        inputBorder: string; // Added for input borders
 
         // Text
         text: string;
@@ -36,6 +37,7 @@ export interface Theme {
         primary: string;
         primaryLight: string;
         primaryDark: string;
+        primary1000: string;
 
         secondary: string;
         secondaryLight: string;
@@ -65,6 +67,69 @@ export interface Theme {
         white: string;
         black: string;
         transparent: string;
+        scrim: string;
+
+        // Logo
+        boderColorLogo: string;
+
+        // Specific Party Colors
+        partyRed: string;
+        partyYellow: string;
+        partyBg: string;
+        partyBorder: string;
+        partyText: string;
+        partyHeaderBg: string;
+        partyGradientStart: string;
+        partyGradientEnd: string;
+        partySubText: string;
+
+        // NewsBox Variants
+        newsBox: {
+            primary: {
+                bg: string;
+                border: string;
+                text: string;
+                headerBg: string;
+                gradientStart: string;
+                gradientEnd: string;
+                subText: string;
+            };
+            success: {
+                bg: string;
+                border: string;
+                text: string;
+                headerBg: string;
+                gradientStart: string;
+                gradientEnd: string;
+                subText: string;
+            };
+            info: {
+                bg: string;
+                border: string;
+                text: string;
+                headerBg: string;
+                gradientStart: string;
+                gradientEnd: string;
+                subText: string;
+            };
+            party: {
+                bg: string;
+                border: string;
+                text: string;
+                headerBg: string;
+                gradientStart: string;
+                gradientEnd: string;
+                subText: string;
+            };
+        };
+        tabs: {
+            background: string;
+            backgroundActive: string;
+            text: string;
+            textActive: string;
+            border: string;
+        },
+        divider: string;
     };
 
     // Re-export từ tokens
@@ -84,10 +149,11 @@ export interface Theme {
 export const lightTheme: Theme = {
     colors: {
         // Backgrounds - Match UI mockups
-        background: '#f5f7fa',        // Main app background (light gray)
-        backgroundSecondary: '#f9fafb', // Secondary surfaces
+        background: '#F8F9FB',        // Main app background (Ultra-clean modern gray)
+        backgroundSecondary: '#EEF1F5', // Secondary surfaces
         backgroundTertiary: '#ffffff',  // Cards, elevated surfaces
-        inputBackground: '#f8f9fb',     // Input fields
+        inputBackground: colors.white,     // Input fields
+        inputBorder: colors.gray[200],   // Input borders
 
         // Text
         text: colors.gray[900],         // #1a1f36 - Primary text
@@ -105,14 +171,16 @@ export const lightTheme: Theme = {
         primary: colors.primary[500],      // #2B4B9B - Main primary (buttons)
         primaryLight: colors.primary[100], // Light tint
         primaryDark: colors.primary[700],  // #001f4d - Darker shade
+        primary1000: colors.primary[1000],
 
         secondary: colors.secondary[500],
         secondaryLight: colors.secondary[100],
         secondaryDark: colors.secondary[700],
 
         // Gradient colors for headers
-        gradientStart: colors.primary[600], // #00235a - Dark navy
-        gradientEnd: colors.primary[800],   // #003d8f - Mid blue
+        // Gradient colors for headers
+        gradientStart: colors.primary[500], // #DA5531
+        gradientEnd: colors.primary[600],   // #b83b1d
 
         // Semantic
         success: colors.success.main,
@@ -134,6 +202,69 @@ export const lightTheme: Theme = {
         white: colors.white,
         black: colors.black,
         transparent: colors.transparent,
+        scrim: colors.backdrop,
+
+        ///logo
+        boderColorLogo: colors.special.avatarBorder,
+
+        // Party Colors
+        partyRed: '#D71920',
+        partyYellow: '#FFFF00',
+        partyBg: '#FFF8E1',
+        partyBorder: '#F5E0B7',
+        partyText: '#D71920',
+        partyHeaderBg: '#FFE5B4',
+        partyGradientStart: '#D22D28',
+        partyGradientEnd: '#F1B226',
+        partySubText: colors.gray[500],
+
+        // NewsBox Variants (Subtle, App-tone aligned)
+        newsBox: {
+            primary: {
+                bg: '#F5F7FB',
+                border: '#D1DCEA',
+                text: colors.primary[700],
+                headerBg: '#E8EDF7',
+                gradientStart: colors.primary[500],
+                gradientEnd: colors.primary[600],
+                subText: colors.gray[600],
+            },
+            success: {
+                bg: '#F4F9F6',
+                border: '#D0E8D8',
+                text: '#166534',
+                headerBg: '#E6F4EA',
+                gradientStart: '#22C55E',
+                gradientEnd: '#16A34A',
+                subText: colors.gray[600],
+            },
+            info: {
+                bg: '#F4F8FB',
+                border: '#CFE3F3',
+                text: '#0369A1',
+                headerBg: '#E7F2F9',
+                gradientStart: '#3B82F6',
+                gradientEnd: '#2563EB',
+                subText: colors.gray[600],
+            },
+            party: {
+                bg: '#FAF7F3',
+                border: '#E8DED0',
+                text: '#D71920',
+                headerBg: '#F5EDE3',
+                gradientStart: '#D22D28',
+                gradientEnd: '#F1B226',
+                subText: colors.gray[500],
+            },
+        },
+        tabs: {
+            background: colors.gray[80],
+            backgroundActive: colors.primary[500],
+            text: colors.gray[500],
+            textActive: colors.white,
+            border: colors.gray[100],
+        },
+        divider: '#E2E8F0',
     },
 
     // Re-export tokens
@@ -156,6 +287,7 @@ export const darkTheme: Theme = {
         backgroundSecondary: colors.gray[800],
         backgroundTertiary: colors.gray[700],
         inputBackground: colors.gray[800], // Dark input background
+        inputBorder: colors.gray[600],   // Dark input border
 
         // Text - inverted
         text: colors.gray[50],
@@ -171,6 +303,7 @@ export const darkTheme: Theme = {
         primary: colors.primary[400],
         primaryLight: colors.primary[900],
         primaryDark: colors.primary[300],
+        primary1000: colors.primary[1000],
 
         secondary: colors.secondary[400],
         secondaryLight: colors.secondary[900],
@@ -200,6 +333,71 @@ export const darkTheme: Theme = {
         white: colors.white,
         black: colors.black,
         transparent: colors.transparent,
+        scrim: colors.backdrop,
+
+        // Logo
+        boderColorLogo: colors.special.avatarBorder,
+
+        // Party Colors
+        partyRed: '#D71920',
+        partyYellow: '#FFFF00',
+        partyBg: '#FFF8E1',
+        partyBorder: '#F5E0B7',
+        partyText: '#D71920',
+        partyHeaderBg: '#FFE5B4',
+        partyGradientStart: '#D22D28',
+        partyGradientEnd: '#F1B226',
+        partySubText: colors.gray[500],
+
+        // NewsBox Variants (dark mode optimized)
+        newsBox: {
+            primary: {
+                bg: '#1E3A8A',
+                border: colors.primary[600],
+                text: colors.primary[100],
+                headerBg: colors.primary[700],
+                gradientStart: colors.primary[600],
+                gradientEnd: colors.primary[700],
+                subText: colors.gray[300],
+            },
+            success: {
+                bg: '#14532D',
+                border: '#15803D',
+                text: '#BBF7D0',
+                headerBg: '#166534',
+                gradientStart: '#15803D',
+                gradientEnd: '#166534',
+                subText: colors.gray[300],
+            },
+            info: {
+                bg: '#0C4A6E',
+                border: '#0369A1',
+                text: '#BAE6FD',
+                headerBg: '#075985',
+                gradientStart: '#0369A1',
+                gradientEnd: '#075985',
+                subText: colors.gray[300],
+            },
+            party: {
+                bg: '#FFF8E1',
+                border: '#F5E0B7',
+                text: '#D71920',
+                headerBg: '#FFE5B4',
+                gradientStart: '#D22D28',
+                gradientEnd: '#F1B226',
+                subText: colors.gray[500],
+            },
+
+        },
+        tabs: {
+            background: colors.gray[80],
+            backgroundActive: colors.primary[500],
+            text: colors.gray[500],
+            textActive: colors.white,
+            border: colors.gray[100],
+        },
+        divider: '#E2E8F0',
+
     },
 
     // Re-export tokens
@@ -208,7 +406,6 @@ export const darkTheme: Theme = {
     typography,
     shadows,
     zIndex,
-
     isDark: true,
 };
 

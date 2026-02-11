@@ -3,12 +3,14 @@
  * ===================
  * Type-safe HTTP client wrapper around axios.
  * Provides clean API với generics cho request/response types.
- * 
+ * Hỗ trợ multiple domains cho các API services khác nhau.
  */
 
 import type { AxiosInstance } from 'axios';
 import { axiosInstance } from './axios-interceptors';
+import { createAxiosInstance } from './axios-instance';
 import type { HttpRequestConfig, HttpResponse } from './http-types';
+import type { ApiDomain } from '@/shared/config/app.config';
 
 /**
  * HTTP Client class
@@ -118,8 +120,31 @@ class HttpClient {
 }
 
 /**
- * Singleton HTTP client instance
+ * Factory function: Tạo HTTP client cho domain cụ thể
+ * @param domain - Domain cần tạo client (MAIN, AUTH, MANAGER, etc.)
+ * @returns HttpClient instance cho domain đó
+ * 
+ * Usage:
+ * ```ts
+ * // Tạo client cho Auth API
+ * const authClient = createHttpClient('AUTH');
+ * await authClient.post('/login', credentials);
+ * 
+ * // Tạo client cho Manager API
+ * const managerClient = createHttpClient('MANAGER');
+ * await managerClient.get('/users');
+ * ```
+ */
+export const createHttpClient = (domain: ApiDomain = 'MAIN'): HttpClient => {
+    const instance = createAxiosInstance(domain);
+    return new HttpClient(instance);
+};
+
+/**
+ * Default HTTP client cho MAIN domain
  * Sử dụng: import { httpClient } from '@/shared/services/http/http-client';
+ * 
+ * @deprecated Nên sử dụng createHttpClient() để tạo client cho domain cụ thể
  */
 export const httpClient = new HttpClient(axiosInstance);
 
@@ -127,3 +152,4 @@ export const httpClient = new HttpClient(axiosInstance);
  * Export class nếu cần create custom instances
  */
 export { HttpClient };
+

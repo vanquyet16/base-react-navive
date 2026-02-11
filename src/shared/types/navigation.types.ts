@@ -32,14 +32,7 @@ export type RootStackParamList = {
 };
 
 export type DrawerStackParamList = {
-    MainTabs: NavigatorScreenParams<MainStackParamList>;
-    ProductScreen: NavigatorScreenParams<MainStackParamList>;
-    LazyDemoScreen: NavigatorScreenParams<MainStackParamList>;
-    ApiLazyDemoScreen: NavigatorScreenParams<MainStackParamList>;
-    CacheDemoScreen: NavigatorScreenParams<MainStackParamList>;
-    PdfDemoScreen: NavigatorScreenParams<MainStackParamList>;
-    PerformanceDemoScreen: NavigatorScreenParams<MainStackParamList>;
-    ResponsiveDemoScreen: NavigatorScreenParams<MainStackParamList>;
+    Main: NavigatorScreenParams<MainStackParamList>;
 };
 
 export type DrawerParamList = {
@@ -52,30 +45,24 @@ export type AuthStackParamList = {
 };
 
 export type MainStackParamList = {
-    ProductScreen: undefined;
-    ProductManagement: undefined; // Alias của ProductScreen
-    LazyDemoScreen: undefined;
-    LazyTestScreen: undefined;
-    ApiLazyDemoScreen: undefined;
-    CacheDemoScreen: undefined;
-    PdfDemoScreen: undefined;
-    PdfFileManagerScreen: undefined;
-    PdfAdvancedDemoScreen: undefined;
-    PerformanceDemoScreen: undefined;
-    ResponsiveDemoScreen: undefined;
-    DemoNewScreen: undefined;
+    CreateFeedbackScreen: undefined;
+    DetailFeedBackScreen: undefined;
+    MainTabsScreen: undefined;
+    SearchScreen: undefined;
+    ProfileScreen: undefined;
     // Có thể thêm các màn hình khác ở đây
     // DetailScreen: { id: string };
     // SearchScreen: { query?: string };
     // NotificationScreen: undefined;
-    MainTabs: undefined;
 };
 
 export type MainTabParamList = {
     Home: undefined;
-    Contacts: undefined;     // Danh bạ
+    Feedback: undefined;     // Danh bạ
+    Emergency: undefined;       // Khẩn cấp
     Notifications: undefined; // Thông báo
     Apps: undefined;         // Ứng dụng
+    Settings: undefined;         // Cài đặt
 };
 
 

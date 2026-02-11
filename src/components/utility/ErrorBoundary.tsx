@@ -6,7 +6,8 @@
  */
 
 import React, { Component, ReactNode } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { CustomText } from '@/components/base/CustomText';
 
 interface Props {
   children?: ReactNode;
@@ -45,12 +46,16 @@ class ErrorBoundary extends Component<Props, State> {
     if (hasError) {
       return (
         <View style={styles.container}>
-          <Text style={styles.title}>Có lỗi xảy ra!</Text>
-          <Text style={styles.message}>
+          <CustomText variant="h3" style={styles.title}>
+            Có lỗi xảy ra!
+          </CustomText>
+          <CustomText variant="body" style={styles.message}>
             {error?.message || 'Ứng dụng gặp phải một lỗi không mong muốn.'}
-          </Text>
+          </CustomText>
           <TouchableOpacity style={styles.button} onPress={this.handleRetry}>
-            <Text style={styles.buttonText}>Thử lại</Text>
+            <CustomText variant="body" weight="bold" style={styles.buttonText}>
+              Thử lại
+            </CustomText>
           </TouchableOpacity>
         </View>
       );
@@ -69,13 +74,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    // fontSize, fontWeight replaced by variant="h3"
     color: '#d32f2f',
+    textAlign: 'center',
     marginBottom: 16,
   },
   message: {
-    fontSize: 16,
+    // fontSize replaced by variant="body"
     color: '#666',
     textAlign: 'center',
     marginBottom: 24,
@@ -88,8 +93,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    // fontSize, fontWeight replaced by variant="body" + bold
   },
 });
 

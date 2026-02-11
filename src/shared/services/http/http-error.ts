@@ -8,7 +8,7 @@
 
 import type { AxiosError } from 'axios';
 import { HTTP_STATUS } from '@/shared/constants/http';
-import { ERROR_MESSAGES } from '@/shared/config/app.config';
+import { ERROR_MESSAGES } from '@/shared/constants';
 import type { HttpError, HttpErrorType } from './http-types';
 
 /**
@@ -96,17 +96,17 @@ function extractErrorMessage(error: any): string {
     if (error?.message) {
         // Network errors
         if (error.message === 'Network Error') {
-            return ERROR_MESSAGES.NETWORK.NO_INTERNET;
+            return ERROR_MESSAGES.NETWORK_ERROR;
         }
         // Timeout
         if (error.code === 'ECONNABORTED' || error.message.includes('timeout')) {
-            return ERROR_MESSAGES.NETWORK.TIMEOUT;
+            return ERROR_MESSAGES.NETWORK_ERROR;
         }
         return error.message;
     }
 
     // Fallback
-    return ERROR_MESSAGES.NETWORK.UNKNOWN;
+    return ERROR_MESSAGES.SERVER_ERROR;
 }
 
 /**

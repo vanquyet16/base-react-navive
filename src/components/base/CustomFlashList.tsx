@@ -5,10 +5,14 @@ import {
   StyleSheet,
   Text,
   ViewStyle,
+  Animated,
 } from 'react-native';
 import { FlashList, FlashListProps, ContentStyle } from '@shopify/flash-list';
 import { useTheme } from '@/shared/theme/use-theme';
 import { moderateVerticalScale } from '@/shared/utils/sizeMatters';
+import { createStyles } from '@/shared/theme/create-styles';
+
+const AnimatedFlashList = Animated.createAnimatedComponent(FlashList) as any;
 
 interface CustomFlashListProps<T> extends FlashListProps<T> {
   /** Triggered when end of list is reached */
@@ -17,6 +21,8 @@ interface CustomFlashListProps<T> extends FlashListProps<T> {
   isLoadingMore?: boolean;
   /** Custom empty state message or component */
   emptyText?: string;
+  /** Optimization: Return a unique string identifier for the item type for element recycling */
+  getItemType?: (item: T, index: number) => string | undefined;
 }
 
 /**
@@ -37,29 +43,7 @@ export function CustomFlashList<T>(props: CustomFlashListProps<T>) {
     ...rest
   } = props;
 
-  const styles = useMemo(
-    () =>
-      StyleSheet.create({
-        footer: {
-          paddingVertical: moderateVerticalScale(20),
-          alignItems: 'center',
-          justifyContent: 'center',
-        },
-        emptyContainer: {
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-          paddingTop: moderateVerticalScale(40),
-        },
-        emptyText: {
-          color: theme.colors.textSecondary,
-          fontSize: theme.typography.fontSizes.base,
-          marginTop: moderateVerticalScale(8),
-        },
-      }),
-    [theme],
-  );
-
+  const styles = useStyles();
   // Combine custom footer with loader
   const renderFooter = useCallback(() => {
     if (isLoadingMore) {
@@ -87,7 +71,7 @@ export function CustomFlashList<T>(props: CustomFlashListProps<T>) {
   }, [ListEmptyComponent, emptyText, styles, emptyText]);
 
   return (
-    <FlashList
+    <AnimatedFlashList
       {...rest}
       onEndReached={onLoadMore}
       onEndReachedThreshold={0.5}
@@ -95,9 +79,33 @@ export function CustomFlashList<T>(props: CustomFlashListProps<T>) {
       ListEmptyComponent={renderEmpty}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{
-        paddingBottom: moderateVerticalScale(20),
+        // paddingBottom: moderateVerticalScale(20),
+        paddingVertical: moderateVerticalScale(1),
+        paddingHorizontal: moderateVerticalScale(1),
         ...(contentContainerStyle as ViewStyle),
       }}
     />
   );
 }
+
+const useStyles = createStyles(
+  theme => ({
+    footer: {
+      paddingVertical: moderateVerticalScale(20),
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    emptyContainer: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingTop: moderateVerticalScale(40),
+    },
+    emptyText: {
+      color: theme.colors.textSecondary,
+      fontSize: theme.typography.fontSizes.base,
+      marginTop: moderateVerticalScale(8),
+    },
+  }),
+  true,
+);

@@ -8,6 +8,7 @@
 
 import React from 'react';
 import { QueryProvider } from '@/shared/query/query-provider';
+import { Provider } from '@ant-design/react-native';
 
 /**
  * AppProviders Props
@@ -24,9 +25,11 @@ interface AppProvidersProps {
 export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
   return (
     <QueryProvider>
-      {/* Zustand store không cần provider - global by default */}
-      {/* Theme được access qua useTheme hook từ Zustand */}
-      {children}
+      <Provider>
+        {/* Zustand store không cần provider - global by default */}
+        {/* Theme được access qua useTheme hook từ Zustand */}
+        {children}
+      </Provider>
     </QueryProvider>
   );
 };

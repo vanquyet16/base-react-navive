@@ -1,3 +1,6 @@
+import React, { useState, useCallback, memo } from 'react';
+import { TouchableOpacity, View } from 'react-native';
+import { WingBlank } from '@ant-design/react-native';
 import {
   CustomButton,
   CustomText,
@@ -7,6 +10,7 @@ import {
   SpacerXl,
   Spacer,
   SpacerSm,
+  SpacerMd,
 } from '@/components';
 import {
   SCREEN_PADDING,
@@ -17,18 +21,17 @@ import {
 } from '@/shared';
 import { LoginRequest } from '@/shared/types/domain/auth';
 import { createStyles } from '@/shared/theme/create-styles';
-import { WingBlank } from '@ant-design/react-native';
-import React, { useState, useCallback } from 'react';
-import { TouchableOpacity } from 'react-native';
 import { useAuthNavigation } from '@/shared/hooks/useNavigation'; // ← Custom hook với autocomplete
-import Icon from '@ant-design/react-native/lib/icon';
+import { AppIcon } from '@/components';
+import { useSessionActions } from '@/shared/store/selectors';
 
-const Main = () => {
+const Main = memo(() => {
   const [showPassword, setShowPassword] = useState(false);
   const styles = useStyles();
   const loginMutation = useLogin();
   // Navigation với autocomplete - giờ gọn hơn và reusable!
   const navigation = useAuthNavigation();
+  const { setSession } = useSessionActions();
 
   const {
     control,
@@ -44,6 +47,10 @@ const Main = () => {
     onSubmit: async (data: LoginRequest) => {
       try {
         await loginMutation.mutateAsync(data);
+        // setSession({
+        //   isAuthenticated: true,
+        //   user: null,
+        // });
         // Có thể thêm logic xử lý sau khi đăng nhập thành công ở đây
       } catch (error) {
         // Lỗi sẽ được xử lý bởi useBaseForm
@@ -69,7 +76,7 @@ const Main = () => {
   }, [navigation]);
 
   return (
-    <WingBlank size="lg">
+    <WingBlank size="lg" style={styles.container}>
       {/* <View style={styles.form}> */}
       <CustomText style={styles.title} variant="h3">
         Đăng nhập
@@ -77,7 +84,7 @@ const Main = () => {
       <CustomText style={styles.description} variant="bodySmall">
         Vui lòng nhập thông tin để đăng nhập
       </CustomText>
-      <SpacerLg />
+      <SpacerMd />
       <FormInput
         name="username"
         control={control}
@@ -93,15 +100,28 @@ const Main = () => {
         }}
         keyboardType="default"
         autoCapitalize="none"
-        leftIcon={<Icon name="idcard" size={18} color="#9ca3af" />}
+        leftIcon={<AppIcon name="credit-card" size={18} color="#9ca3af" />}
       />
       <SpacerSm />
+
+      {/* Custom Label Row for Password */}
+      <View style={styles.passwordLabelContainer}>
+        <CustomText variant="caption" style={styles.label}>
+          MẬT KHẨU
+        </CustomText>
+        <TouchableOpacity onPress={handleForgotPassword}>
+          <CustomText variant="caption" style={styles.forgotPasswordText}>
+            Quên mật khẩu
+          </CustomText>
+        </TouchableOpacity>
+      </View>
+
       <FormInput
         name="password"
         control={control}
-        label="Mật khẩu"
+        // LABEL handled externally
         required
-        placeholder="Nhập mật khẩu"
+        placeholder="Nhập mật khẩu của bạn"
         rules={{
           required: ERROR_MESSAGES.REQUIRED_FIELD,
           minLength: {
@@ -109,11 +129,11 @@ const Main = () => {
             message: ERROR_MESSAGES.PASSWORD_TOO_SHORT,
           },
         }}
-        leftIcon={<Icon name="lock" size={18} color="#9ca3af" />}
+        leftIcon={<AppIcon name="lock" size={18} color="#9ca3af" />}
         rightIcon={
           <TouchableOpacity onPress={togglePasswordVisibility}>
-            <Icon
-              name={showPassword ? 'eye' : 'eye-invisible'}
+            <AppIcon
+              name={showPassword ? 'eye' : 'eye-off'}
               size={18}
               color="#9ca3af"
             />
@@ -121,29 +141,35 @@ const Main = () => {
         }
         secureTextEntry={!showPassword}
       />
-      <Spacer size={4} />
+      <Spacer size={3} />
       <CustomButton
-        title="Đăng nhập"
+        title="ĐĂNG NHẬP"
         onPress={handleSubmitWithLoading}
         disabled={!isValid || isSubmitting}
         loading={isSubmitting}
         hidden={false}
       />
+      <Spacer size={3} />
+      <View style={styles.registerContainer}>
+        <CustomText variant="bodySmall" style={styles.registerText}>
+          {' Bạn chưa có tài khoản? '}
+        </CustomText>
+        <CustomButton title="Đăng ký ngay" variant="text" onPress={() => {}} />
+      </View>
     </WingBlank>
   );
-};
+});
 
 export default Main;
 
 const useStyles = createStyles(
   theme => ({
-    keyboardAvoidingView: {
+    rdAvoidingView: {
       flex: 1,
       backgroundColor: theme.colors.background,
     },
     container: {
-      flex: 1,
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.white,
     },
     scrollContent: {
       flexGrow: 1,
@@ -157,11 +183,32 @@ const useStyles = createStyles(
     },
     forgotPasswordContainer: {
       alignItems: 'flex-end',
-      marginTop: theme.spacing[1], // Gap between form fields
+      marginTop: theme.spacing[1],
     },
     forgotPasswordText: {
-      color: theme.colors.primary,
-      textDecorationLine: 'underline',
+      color: theme.colors.primary, // Orange/Primary
+      fontWeight: 'bold',
+    },
+    passwordLabelContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: theme.spacing[2],
+      paddingHorizontal: theme.spacing[1],
+    },
+    label: {
+      fontSize: theme.typography.fontSizes.xs,
+      fontWeight: theme.typography.fontWeights.bold,
+      color: theme.colors.textSecondary,
+    },
+    registerContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    registerText: {
+      color: theme.colors.textSecondary,
+      textAlign: 'center',
     },
   }),
   true,

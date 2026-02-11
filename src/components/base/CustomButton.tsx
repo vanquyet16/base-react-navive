@@ -66,7 +66,7 @@ export interface CustomButtonProps extends TouchableOpacityProps {
 /**
  * CustomButton Component
  */
-export const CustomButton: React.FC<CustomButtonProps> = ({
+const CustomButtonBase: React.FC<CustomButtonProps> = ({
   variant = 'primary',
   size = 'md',
   loading = false,
@@ -202,7 +202,8 @@ export const CustomButton: React.FC<CustomButtonProps> = ({
   );
 };
 
-export default memo(CustomButton);
+export const CustomButton = memo(CustomButtonBase);
+export default CustomButton;
 
 /**
  * Styles
@@ -212,7 +213,7 @@ const useStyles = createStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 20,
+    borderRadius: theme.radius.lg,
   },
 
   content: {

@@ -34,112 +34,51 @@ export type StyleFactoryWithProps<T, P = Record<string, unknown>> = (
 ) => T;
 
 /**
- * createStyles Function (Legacy - Manual Theme)
- * Tạo style factory function với theme access
- * 
- * @param styleFactory - Function nhận theme và return styles
- * @returns Style factory function cần pass theme manually
- * 
- * @example
- * const useStyles = createStyles((theme) => ({
- *   container: {
- *     backgroundColor: theme.colors.background,
- *     padding: theme.spacing[4],
- *   },
- * }));
- * 
- * // In component (cách cũ):
- * const theme = useTheme();
- * const styles = useStyles(theme);
+ * createStyles Function (Auto Theme Injection với Props)
+ * Tạo hook để tự động inject theme và nhận props
+ * Uses conditional type to make props optional if P is void/undefined
  */
-export function createStyles<T extends NamedStyles<any>>(
-    styleFactory: StyleFactory<T>,
-): (theme: Theme) => T;
+export function createStyles<T extends NamedStyles<any>, P = void>(
+    styleFactory: StyleFactoryWithProps<T, P>,
+    autoInject: true,
+): P extends void ? () => T : (props: P) => T;
 
 /**
  * createStyles Function (Auto Theme Injection - Recommended)
  * Tạo hook để tự động inject theme, không cần pass theme manually
- * 
- * @param styleFactory - Function nhận theme và return styles
- * @param autoInject - Set true để tự động inject theme
- * @returns Hook function tự động lấy theme
- * 
- * @example
- * const useStyles = createStyles((theme) => ({
- *   container: {
- *     backgroundColor: theme.colors.background,
- *     padding: theme.spacing[4],
- *   },
- * }), true);
- * 
- * // In component (cách mới - chỉ 1 dòng):
- * const styles = useStyles();
  */
 export function createStyles<T extends NamedStyles<any>>(
     styleFactory: StyleFactory<T>,
     autoInject: true,
 ): () => T;
 
-/**
- * createStyles Function (Auto Theme Injection với Props)
- * Tạo hook để tự động inject theme và nhận props
- * 
- * @param styleFactory - Function nhận theme và props, return styles
- * @param autoInject - Set true để tự động inject theme
- * @returns Hook function nhận props và tự động lấy theme
- * 
- * @example
- * const useStyles = createStyles((theme, props: { isActive: boolean }) => ({
- *   tabLabel: {
- *     fontSize: 12,
- *     fontWeight: props.isActive ? '600' : '500',
- *     color: props.isActive ? theme.colors.primary : theme.colors.textSecondary,
- *   },
- * }), true);
- * 
- * // In component:
- * const styles = useStyles({ isActive: true });
- */
-export function createStyles<T extends NamedStyles<any>, P = Record<string, unknown>>(
-    styleFactory: StyleFactoryWithProps<T, P>,
-    autoInject: true,
-): (props: P) => T;
-
 // Implementation
 export function createStyles<T extends NamedStyles<any>, P = Record<string, unknown>>(
     styleFactory: StyleFactory<T> | StyleFactoryWithProps<T, P>,
     autoInject?: boolean,
 ) {
-    if (autoInject) {
-        // Kiểm tra xem styleFactory có nhận props không (function length === 2)
-        const hasProps = styleFactory.length === 2;
+    // Luôn ưu tiên check props trước
+    const hasProps = styleFactory.length === 2;
 
-        if (hasProps) {
-            // Auto-inject theme variant với props
-            return (props: P): T => {
-                const theme = useTheme();
-                // useMemo để tránh recreate styles không cần thiết
-                return useMemo(() => {
-                    const styles = (styleFactory as StyleFactoryWithProps<T, P>)(theme, props);
-                    return StyleSheet.create(styles);
-                }, [theme, props]);
-            };
-        } else {
-            // Auto-inject theme variant không có props
-            return (): T => {
-                const theme = useTheme();
-                // useMemo để tránh recreate styles không cần thiết
-                return useMemo(() => {
-                    const styles = (styleFactory as StyleFactory<T>)(theme);
-                    return StyleSheet.create(styles);
-                }, [theme]);
-            };
-        }
+    if (hasProps) {
+        // Auto-inject theme variant với props
+        return (props: P): T => {
+            const theme = useTheme();
+            // useMemo để tránh recreate styles không cần thiết
+            return useMemo(() => {
+                const styles = (styleFactory as StyleFactoryWithProps<T, P>)(theme, props);
+                return StyleSheet.create(styles);
+            }, [theme, props]);
+        };
     } else {
-        // Manual theme variant (legacy)
-        return (theme: Theme): T => {
-            const styles = (styleFactory as StyleFactory<T>)(theme);
-            return StyleSheet.create(styles);
+        // Auto-inject theme variant không có props
+        return (): T => {
+            const theme = useTheme();
+            // useMemo để tránh recreate styles không cần thiết
+            return useMemo(() => {
+                const styles = (styleFactory as StyleFactory<T>)(theme);
+                return StyleSheet.create(styles);
+            }, [theme]);
         };
     }
 }

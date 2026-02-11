@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
+import { CustomText } from '@/components/base/CustomText';
 import MainLayout from './MainLayout';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
@@ -20,7 +21,7 @@ export const FullLayoutExample = () => {
       }}
     >
       <View style={styles.content}>
-        <Text>Content với header (tabs disabled cho demo)</Text>
+        <CustomText>Content với header (tabs disabled cho demo)</CustomText>
       </View>
     </MainLayout>
   );
@@ -41,7 +42,7 @@ export const HeaderOnlyExample = () => {
       }}
     >
       <View style={styles.content}>
-        <Text>Content chỉ có header</Text>
+        <CustomText>Content chỉ có header</CustomText>
       </View>
     </MainLayout>
   );
@@ -53,7 +54,7 @@ export const TabsOnlyExample = () => {
   return (
     <MainLayout showHeader={false} showTabs={false}>
       <View style={styles.content}>
-        <Text>Content example (tabs disabled cho demo)</Text>
+        <CustomText>Content example (tabs disabled cho demo)</CustomText>
       </View>
     </MainLayout>
   );
@@ -62,12 +63,20 @@ export const TabsOnlyExample = () => {
 // Example 4: Content only, không có header và tabs
 export const ContentOnlyExample = () => {
   const styles = useStyles();
+  const theme = useTheme();
+
   return (
     <MainLayout showHeader={false} showTabs={false}>
       <View style={styles.content}>
-        <Text>Content thuần, không có header và tabs</Text>
+        <CustomText>Content thuần, không có header và tabs</CustomText>
         <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Action Button</Text>
+          <CustomText
+            variant="body"
+            weight="semibold"
+            style={styles.buttonText}
+          >
+            Action Button
+          </CustomText>
         </TouchableOpacity>
       </View>
     </MainLayout>
@@ -91,8 +100,6 @@ const useStyles = createStyles(
     },
     buttonText: {
       color: '#fff',
-      fontSize: 16,
-      fontWeight: '600',
     },
   }),
   true,

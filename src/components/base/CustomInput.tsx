@@ -6,7 +6,7 @@
  *
  */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef, memo } from 'react';
 import {
   View,
   TextInput,
@@ -14,11 +14,18 @@ import {
   type TextInputProps,
   type StyleProp,
   type ViewStyle,
+  type DimensionValue,
 } from 'react-native';
 import { CustomText } from './CustomText';
 import { useTheme } from '@/shared/theme/use-theme';
+import type { Theme } from '@/shared/theme/theme';
+import {
+  moderateScale,
+  moderateVerticalScale,
+  scale,
+  verticalScale,
+} from 'react-native-size-matters';
 import { createStyles } from '@/shared/theme/create-styles';
-import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 
 /**
  * CustomInput Props
@@ -26,6 +33,8 @@ import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
 export interface CustomInputProps extends TextInputProps {
   /** Optional label trên input */
   label?: string;
+  /** Label transformation (default: uppercase) */
+  labelTransform?: 'none' | 'capitalize' | 'uppercase' | 'lowercase';
   /** Icon bên trái */
   leftIcon?: React.ReactNode;
   /** Icon bên phải (e.g., eye icon for password) */
@@ -38,6 +47,9 @@ export interface CustomInputProps extends TextInputProps {
   containerStyle?: StyleProp<ViewStyle>;
   /** Input style override */
   inputStyle?: StyleProp<ViewStyle>;
+
+  borderRadius?: number;
+  width?: DimensionValue;
 }
 
 /**
@@ -45,7 +57,7 @@ export interface CustomInputProps extends TextInputProps {
  *
  * @optimized React.memo, useCallback, useMemo
  */
-export const CustomInput: React.FC<CustomInputProps> = ({
+const CustomInputBase: React.FC<CustomInputProps> = ({
   label,
   leftIcon,
   rightIcon,
@@ -56,14 +68,17 @@ export const CustomInput: React.FC<CustomInputProps> = ({
   style,
   onFocus,
   onBlur,
+  labelTransform = 'uppercase',
+  borderRadius,
+  width,
   ...textInputProps
 }) => {
   const theme = useTheme();
-  const styles = useStyles(theme);
+  const styles = useStyles({ borderRadius, width });
   const [isFocused, setIsFocused] = useState(false);
 
   // Ref để focus TextInput programmatically
-  const inputRef = React.useRef<TextInput>(null);
+  const inputRef = useRef<TextInput>(null);
 
   // Handler khi tap vào container - focus input ngay
   // Memoized để stable reference
@@ -93,11 +108,7 @@ export const CustomInput: React.FC<CustomInputProps> = ({
 
   // Memoize combined input container styles để avoid tạo mới mỗi render
   const inputContainerStyle = useMemo(
-    () => [
-      styles.inputContainer,
-      isFocused && styles.inputContainerFocused,
-      error && styles.inputContainerError,
-    ],
+    () => [styles.inputContainer, isFocused && styles.inputContainerFocused],
     [styles, isFocused, error],
   );
 
@@ -122,7 +133,10 @@ export const CustomInput: React.FC<CustomInputProps> = ({
     <View style={[styles.container, containerStyle]}>
       {/* Label */}
       {label && (
-        <CustomText variant="caption" style={styles.label}>
+        <CustomText
+          variant="caption"
+          style={[styles.label, { textTransform: labelTransform }]}
+        >
           {label}
         </CustomText>
       )}
@@ -161,98 +175,105 @@ export const CustomInput: React.FC<CustomInputProps> = ({
 /**
  * Memoized export để prevent unnecessary re-renders
  */
-export default React.memo(CustomInput);
+export const CustomInput = memo(CustomInputBase);
+export default CustomInput;
 
 /**
  * Styles
  */
-const useStyles = createStyles(theme => ({
-  container: {
-    width: '100%',
-  },
+const useStyles = createStyles(
+  (theme: Theme, props: { borderRadius?: number; width?: DimensionValue }) => {
+    return {
+      container: {
+        width: props.width || '100%',
+      },
 
-  label: {
-    fontSize: theme.typography.fontSizes.xs,
-    fontWeight: theme.typography.fontWeights.bold,
-    textTransform: 'uppercase',
-    color: theme.colors.textSecondary, // #6b7280 gray-500
-    marginBottom: theme.spacing[2], // 8px
-    marginLeft: theme.spacing[1], // 4px
-  },
+      label: {
+        fontSize: theme.typography.fontSizes.xs,
+        fontWeight: theme.typography.fontWeights.bold,
+        textTransform: 'uppercase',
+        color: theme.colors.textSecondary, // #6b7280 gray-500
+        marginBottom: theme.spacing[2], // 8px
+        marginLeft: theme.spacing[1], // 4px
+      },
 
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.background, // Use white instead of light gray to pop out
-    borderWidth: 1.5, // Increase border thickness slightly
-    borderColor: '#E5E7EB', // Gray-200, darker than default border
-    borderRadius: theme.radius.xl,
-    paddingHorizontal: theme.spacing[4],
-    paddingVertical: theme.spacing[3],
-    minHeight: moderateScale(25), // Taller touch target (was 48)
-    // Add default shadow
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 3,
-    elevation: 2,
-  },
+      inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: theme.colors.inputBackground,
+        borderWidth: 1.5,
+        borderColor: theme.colors.inputBorder,
+        borderRadius: props.borderRadius ?? theme.radius.md,
+        paddingHorizontal: theme.spacing[3],
+        paddingVertical: theme.spacing[2], // Reduce vertical padding slightly
+        minHeight: moderateVerticalScale(40), // Reduced from 48
+        // Add default shadow
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 3,
+        elevation: 2,
+      },
 
-  inputContainerFocused: {
-    borderColor: theme.colors.primary,
-    backgroundColor: '#FFFFFF',
-    // Stronger shadow on focus
-    shadowColor: theme.colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 4,
-  },
+      inputContainerFocused: {
+        borderColor: theme.colors.primary,
+        backgroundColor: '#FFFFFF',
+        // Stronger shadow on focus
+        shadowColor: theme.colors.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 8,
+        elevation: 4,
+      },
 
-  inputContainerError: {
-    borderColor: theme.colors.error,
-    borderWidth: moderateScale(1),
-  },
+      inputContainerError: {
+        borderColor: theme.colors.error,
+        borderWidth: moderateScale(1),
+      },
 
-  input: {
-    flex: 1,
-    fontSize: theme.typography.fontSizes.xs,
-    fontWeight: theme.typography.fontWeights.medium,
-    color: theme.colors.text,
-    padding: 0, // Remove default padding
-  },
+      input: {
+        flex: 1,
+        fontSize: theme.typography.fontSizes.xs,
+        fontWeight: theme.typography.fontWeights.medium,
+        color: theme.colors.text,
+        padding: 0, // Remove default padding
+      },
 
-  inputWithLeftIcon: {
-    marginLeft: theme.spacing[2], // 8px spacing from icon
-  },
+      inputWithLeftIcon: {
+        marginLeft: theme.spacing[2], // 8px spacing from icon
+      },
 
-  inputWithRightIcon: {
-    marginRight: theme.spacing[2],
-  },
+      inputWithRightIcon: {
+        marginRight: theme.spacing[2],
+      },
 
-  leftIconContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: scale(20),
-    height: scale(20),
-  },
+      leftIconContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: scale(20),
+        height: scale(20),
+      },
 
-  rightIconContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: scale(20),
-    height: scale(20),
-  },
+      rightIconContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: scale(20),
+        height: scale(20),
+      },
 
-  errorText: {
-    color: theme.colors.error,
-    marginTop: theme.spacing[1],
-    marginLeft: theme.spacing[1],
-    fontSize: theme.typography.fontSizes.xs,
-  },
+      errorText: {
+        color: theme.colors.error,
+        marginTop: theme.spacing[1],
+        marginLeft: theme.spacing[1],
+        fontSize: theme.typography.fontSizes.xs,
+      },
 
-  inputDisabled: {
-    opacity: 0.5,
-    backgroundColor: theme.colors.backgroundSecondary,
+      inputDisabled: {
+        opacity: 0.5,
+        backgroundColor: theme.colors.backgroundSecondary,
+        marginBottom: theme.spacing[1],
+      },
+    };
   },
-}));
+  true,
+);

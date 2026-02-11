@@ -17,6 +17,7 @@ import {
   moderateVerticalScale,
   scale,
 } from 'react-native-size-matters';
+import CustomBadge from '../base/CustomBadge';
 
 type TabRoute = {
   key: string;
@@ -30,6 +31,7 @@ const CustomBottomTabBar: React.FC<BottomTabBarProps> = ({
   navigation,
 }) => {
   const theme = useTheme();
+  // ...
   const tabRoutes = state.routes as unknown as TabRoute[];
 
   const typedNavigate = useCallback(
@@ -95,6 +97,31 @@ const CustomBottomTabBar: React.FC<BottomTabBarProps> = ({
             ? theme.colors.primary
             : theme.colors.textSecondary;
 
+          // Custom styles for middle button (index 2)
+          const isMiddleButton = index === 2; // Assuming 5 tabs, index 2 is middle
+
+          if (isMiddleButton) {
+            return (
+              <TouchableOpacity
+                key={route.key}
+                style={[styles.tab, styles.middleTab]}
+                onPress={() => onTabPress(route, isFocused)}
+                onLongPress={() => onTabLongPress(route.key)}
+                activeOpacity={0.9}
+              >
+                <View style={styles.middleIconContainer}>
+                  {IconComponent &&
+                    IconComponent({
+                      focused: isFocused,
+                      color: theme.colors.white, // Always white icon for middle button
+                      size: 24,
+                    })}
+                </View>
+                {/* No label for middle button */}
+              </TouchableOpacity>
+            );
+          }
+
           return (
             <TouchableOpacity
               key={route.key}
@@ -107,24 +134,19 @@ const CustomBottomTabBar: React.FC<BottomTabBarProps> = ({
                 style={[
                   styles.tabContent,
                   {
-                    transform: [{ scale: isFocused ? 1.1 : 1 }],
+                    transform: [{ scale: isFocused ? 1.05 : 1 }],
                   },
                 ]}
               >
                 <View style={styles.iconContainer}>
-                  {IconComponent &&
-                    IconComponent({ focused: isFocused, color, size: 24 })}
-
-                  {/* Badge */}
-                  {!!badgeCount && (
-                    <View style={styles.badge}>
-                      <Text style={styles.badgeText}>
-                        {typeof badgeCount === 'number' && badgeCount > 99
-                          ? '99+'
-                          : badgeCount}
-                      </Text>
-                    </View>
-                  )}
+                  <CustomBadge>
+                    {IconComponent &&
+                      IconComponent({
+                        focused: isFocused,
+                        color,
+                        size: 24,
+                      })}
+                  </CustomBadge>
                 </View>
 
                 <Text
@@ -138,9 +160,6 @@ const CustomBottomTabBar: React.FC<BottomTabBarProps> = ({
                   {label}
                 </Text>
               </Animated.View>
-
-              {/* Active indicator */}
-              {isFocused && <View style={styles.activeIndicator} />}
             </TouchableOpacity>
           );
         })}
@@ -155,13 +174,13 @@ export default memo(CustomBottomTabBar);
 const useBaseStyles = createStyles(
   theme => ({
     container: {
-      backgroundColor: theme.colors.background,
+      backgroundColor: theme.colors.white,
       position: 'absolute',
       bottom: 0,
       left: 0,
       right: 0,
-      borderTopLeftRadius: moderateScale(40),
-      borderTopRightRadius: moderateScale(40),
+      // borderTopLeftRadius: moderateScale(50),
+      // borderTopRightRadius: moderateScale(50),
 
       shadowColor: '#000',
       shadowOffset: {
@@ -199,6 +218,8 @@ const useStyles = createStyles<
     activeIndicator: ViewStyle;
     badge: ViewStyle;
     badgeText: TextStyle;
+    middleTab: ViewStyle;
+    middleIconContainer: ViewStyle;
   },
   { isActive: boolean }
 >(
@@ -232,7 +253,7 @@ const useStyles = createStyles<
     },
 
     tabLabel: {
-      fontSize: moderateScale(10),
+      fontSize: theme.typography.fontSizes['2xs'],
 
       fontWeight: props.isActive ? '700' : '500',
       textAlign: 'center',
@@ -273,9 +294,36 @@ const useStyles = createStyles<
 
     badgeText: {
       color: '#FFFFFF',
-      fontSize: moderateScale(10),
+      fontSize: theme.typography.fontSizes['2xs'],
       fontWeight: '700',
       lineHeight: moderateScale(12),
+    },
+
+    // Middle Button Styles
+    middleTab: {
+      justifyContent: 'flex-start', // Align to top
+      paddingVertical: 0,
+    },
+    middleIconContainer: {
+      width: scale(50),
+      height: scale(50),
+      borderRadius: scale(50),
+      backgroundColor: theme.colors.primary, // Blue background
+      justifyContent: 'center',
+      alignItems: 'center',
+      // Lift it up
+      marginTop: moderateVerticalScale(-10),
+      // Shadow
+      shadowColor: theme.colors.primary,
+      shadowOffset: {
+        width: 0,
+        height: 8,
+      },
+      shadowOpacity: 0.5,
+      shadowRadius: 8,
+      elevation: 10,
+      borderWidth: 2,
+      borderColor: theme.colors.background, // Match container bg to create gap effect
     },
   }),
   true,

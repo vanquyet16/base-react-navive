@@ -6,7 +6,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { CustomText } from '@/components/base/CustomText';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -29,7 +30,7 @@ const AdvancedLazyScreen: React.FC<AdvancedLazyScreenProps> = ({
   retryCount = 3,
 }) => {
   const theme = useTheme();
-  const styles = useStyles(theme);
+  const styles = useStyles();
   const [Component, setComponent] = useState<React.ComponentType<any> | null>(
     null,
   );
@@ -76,10 +77,16 @@ const AdvancedLazyScreen: React.FC<AdvancedLazyScreenProps> = ({
         {fallback || (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={theme.colors.primary} />
-            <Text style={styles.loadingText}>Đang tải component...</Text>
-            <Text style={styles.loadingSubtext}>
+            <CustomText
+              variant="h5"
+              weight="semibold"
+              style={styles.loadingText}
+            >
+              Đang tải component...
+            </CustomText>
+            <CustomText variant="bodySmall" style={styles.loadingSubtext}>
               Thời gian load: ~1 giây (mô phỏng)
-            </Text>
+            </CustomText>
           </View>
         )}
       </View>
@@ -92,22 +99,30 @@ const AdvancedLazyScreen: React.FC<AdvancedLazyScreenProps> = ({
       <View style={styles.container}>
         <View style={styles.errorContainer}>
           <Icon name="error-outline" size={64} color={theme.colors.error} />
-          <Text style={styles.errorTitle}>Lỗi tải component</Text>
-          <Text style={styles.errorMessage}>{error.message}</Text>
+          <CustomText variant="h4" weight="bold" style={styles.errorTitle}>
+            Lỗi tải component
+          </CustomText>
+          <CustomText variant="body" style={styles.errorMessage}>
+            {error.message}
+          </CustomText>
 
           {retryAttempts < retryCount && (
             <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
               <Icon name="refresh" size={20} color="#fff" />
-              <Text style={styles.retryText}>
+              <CustomText
+                variant="body"
+                weight="semibold"
+                style={styles.retryText}
+              >
                 Thử lại ({retryAttempts + 1}/{retryCount})
-              </Text>
+              </CustomText>
             </TouchableOpacity>
           )}
 
-          <Text style={styles.errorSubtext}>
+          <CustomText variant="bodySmall" style={styles.errorSubtext}>
             Lazy loading giúp tối ưu performance bằng cách chỉ load component
             khi cần thiết
-          </Text>
+          </CustomText>
         </View>
       </View>
     );
@@ -121,70 +136,70 @@ const AdvancedLazyScreen: React.FC<AdvancedLazyScreenProps> = ({
   return null;
 };
 
-const useStyles = createStyles(theme => ({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.backgroundSecondary,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  loadingText: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: theme.colors.text,
-    marginTop: 16,
-    textAlign: 'center',
-  },
-  loadingSubtext: {
-    fontSize: 14,
-    color: theme.colors.textSecondary,
-    marginTop: 8,
-    textAlign: 'center',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  errorTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: theme.colors.text,
-    marginTop: 16,
-    marginBottom: 8,
-  },
-  errorMessage: {
-    fontSize: 16,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: 24,
-  },
-  retryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.primary,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginBottom: 16,
-  },
-  retryText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
-  errorSubtext: {
-    fontSize: 14,
-    color: theme.colors.textSecondary,
-    textAlign: 'center',
-    lineHeight: 20,
-  },
-}));
+const useStyles = createStyles(
+  theme => ({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.backgroundSecondary,
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+    },
+    loadingText: {
+      // fontSize: 18, fontWeight: '600' handled by variant="h5"
+      color: theme.colors.text,
+      marginTop: 16,
+      textAlign: 'center',
+    },
+    loadingSubtext: {
+      // fontSize: 14 handled by variant="bodySmall"
+      color: theme.colors.textSecondary,
+      marginTop: 8,
+      textAlign: 'center',
+    },
+    errorContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+    },
+    errorTitle: {
+      // fontSize: 20, fontWeight: 'bold' handled by variant="h4"
+      color: theme.colors.text,
+      marginTop: 16,
+      marginBottom: 8,
+    },
+    errorMessage: {
+      // fontSize: 16 handled by variant="body"
+      color: theme.colors.textSecondary,
+      textAlign: 'center',
+      marginBottom: 24,
+    },
+    retryButton: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: theme.colors.primary,
+      paddingHorizontal: 20,
+      paddingVertical: 12,
+      borderRadius: 8,
+      marginBottom: 16,
+    },
+    retryText: {
+      color: '#fff',
+      // fontSize: 16, fontWeight: '600' handled by variant="body" + semibold
+      marginLeft: 8,
+    },
+    errorSubtext: {
+      // fontSize: 14 handled by variant="bodySmall"
+      color: theme.colors.textSecondary,
+      textAlign: 'center',
+      lineHeight: 20,
+    },
+  }),
+  true,
+);
 
 export default AdvancedLazyScreen;

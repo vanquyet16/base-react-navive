@@ -8,7 +8,7 @@
  * @responsive Uses react-native-size-matters for scaling
  */
 
-import { scale, verticalScale, moderateScale } from '@/shared/utils/sizeMatters';
+import { scale, verticalScale, moderateScale, moderateVerticalScale } from 'react-native-size-matters';
 
 /**
  * Color Palette
@@ -17,35 +17,38 @@ import { scale, verticalScale, moderateScale } from '@/shared/utils/sizeMatters'
 export const colors = {
     // Primary brand colors - Government Blue
     primary: {
+        50: '#fff3eb',
+        100: '#ffe2d1',
+        200: '#ffc2a3',
+        300: '#ff9d70',
+        400: '#ff7b42',
+        500: '#E65100', // Brand Primary (Terracotta Orange)
+        600: '#b83b1d',
+        700: '#942b16',
+        800: '#732213',
+        900: '#5e1b0f',
+        1000: '#FFE5D1',
+    },
+
+    // Secondary colors
+    secondary: {
         50: '#e8eef7',
         100: '#c5d3e9',
         200: '#9fb6da',
         300: '#7999cb',
         400: '#5c83c0',
-        500: '#2B4B9B', // Brand Primary
+        500: '#2B4B9B', // Brand Secondary (Government Blue)
         600: '#00235a',
         700: '#001f4d',
         800: '#003d8f',
         900: '#001233',
     },
 
-    // Secondary colors
-    secondary: {
-        50: '#f3e8ff',
-        100: '#e0c6ff',
-        200: '#cca3ff',
-        300: '#b980ff',
-        400: '#a55dff',
-        500: '#923BFF', // Brand Secondary
-        600: '#7a1fff',
-        700: '#6300e6',
-        800: '#4c00b3',
-        900: '#350080',
-    },
-
     // Neutrals (grayscale)
     gray: {
+
         50: '#f9fafb',
+        80: '#D9E2EC',
         100: '#f3f4f6',
         200: '#e5e7eb',
         300: '#d1d5db',
@@ -81,7 +84,7 @@ export const colors = {
 
     // Special UI elements
     special: {
-        avatarBorder: '#eab308',
+        avatarBorder: '#FFB300',
         orangeAccent: '#f97316',
         blueAccent: '#2B4B9B',
         redNotification: '#ef4444',
@@ -96,6 +99,7 @@ export const colors = {
     white: '#ffffff',
     black: '#000000',
     transparent: 'transparent',
+    backdrop: 'rgba(0, 0, 0, 0.2)',
 } as const;
 
 /**
@@ -106,6 +110,7 @@ export const spacing = {
     0: 0,
     1: moderateScale(4, 0.3),
     2: moderateScale(8, 0.3),
+    2.5: moderateScale(10, 0.3),
     3: moderateScale(12, 0.3),
     4: moderateScale(16, 0.3),
     5: moderateScale(20, 0.3),
@@ -149,6 +154,8 @@ export const radius = {
     xl: moderateScale(16, 0.3),
     '2xl': moderateScale(24, 0.3),
     '3xl': moderateScale(32, 0.3),
+    '4xl': moderateScale(48, 0.3),
+    '5xl': moderateScale(64, 0.3),
     full: 9999,
 } as const;
 
@@ -157,16 +164,18 @@ export const radius = {
  */
 export const typography = {
     fontSizes: {
-        xs: moderateScale(12, 0.3),
-        sm: moderateScale(14, 0.3),
-        base: moderateScale(16, 0.3),
-        lg: moderateScale(18, 0.3),
-        xl: moderateScale(20, 0.3),
-        '2xl': moderateScale(24, 0.3),
-        '3xl': moderateScale(30, 0.3),
-        '4xl': moderateScale(36, 0.3),
-        '5xl': moderateScale(48, 0.3),
-        '6xl': moderateScale(60, 0.3),
+        '3xs': moderateScale(8, 0.3),   // For very tiny text (micro badges, minimal tags)
+        '2xs': moderateScale(10, 0.3),  // For tiny text (tab bar labels, small badges)
+        xs: moderateScale(12, 0.3),     // Caption, helper text, timestamps
+        sm: moderateScale(14, 0.3),     // Body small, labels, secondary text
+        base: moderateScale(16, 0.3),   // Primary body text
+        lg: moderateScale(18, 0.3),     // Highlighted text, large labels
+        xl: moderateScale(20, 0.3),     // H4, screen titles
+        '2xl': moderateScale(24, 0.3),  // H3, section titles
+        '3xl': moderateScale(30, 0.3),  // H2
+        '4xl': moderateScale(36, 0.3),  // H1
+        '5xl': moderateScale(48, 0.3),  // Display text (rare)
+        '6xl': moderateScale(60, 0.3),  // Hero text (rare)
     },
     lineHeights: {
         tight: 1.25,
@@ -248,5 +257,6 @@ export const breakpoints = {
  * Layout Constants
  */
 export const layout = {
-    headerHeight: 56,
+    headerHeight: moderateVerticalScale(56),
+    screenPadding: spacing[4], // Chuẩn chung 16px (scaled)ß
 } as const;

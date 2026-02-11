@@ -5,14 +5,17 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  ImageSourcePropType,
+  ImageBackground,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useNavigation } from '@react-navigation/native';
 import type { DrawerNavigationProp } from '@react-navigation/drawer';
 import { useTheme } from '@/shared/theme/use-theme';
-import CustomHeader from './CustomHeader';
+import CustomHeader, { CustomHeaderProps } from './CustomHeader';
 import { CustomBottomTabBar } from '@/components/navigation';
+import { moderateVerticalScale } from 'react-native-size-matters';
 import { createStyles } from '@/shared/theme/create-styles';
 
 /**
@@ -29,24 +32,7 @@ interface MainLayoutProps {
   children: ReactNode;
   // Thuộc tính Header
   showHeader?: boolean;
-  headerProps?: {
-    title?: string;
-    subtitle?: string;
-    showProfile?: boolean;
-    showBack?: boolean;
-    showSearch?: boolean;
-    showNotification?: boolean;
-    showMenu?: boolean;
-    onBack?: () => void;
-    onSearch?: (text: string) => void;
-    onNotificationPress?: () => void;
-    onMenuPress?: () => void;
-    rightComponent?: ReactNode;
-    backgroundColor?: string;
-    textColor?: string;
-    type?: 'default' | 'search' | 'minimal' | 'dashboard';
-    notificationCount?: number;
-  };
+  headerProps?: CustomHeaderProps;
   // Thuộc tính Bottom tabs
   showTabs?: boolean;
   tabsProps?: Partial<BottomTabBarProps>;
@@ -57,6 +43,7 @@ interface MainLayoutProps {
   // Thuộc tính Keyboard
   enableKeyboardAvoiding?: boolean;
   keyboardVerticalOffset?: number;
+  backgroundImage?: ImageSourcePropType;
   disableSafeArea?: boolean;
 }
 
@@ -96,6 +83,27 @@ const areEqual = (prevProps: MainLayoutProps, nextProps: MainLayoutProps) => {
   return true;
 };
 
+// Define useStyles before using it in component
+const useStyles = createStyles(
+  theme => ({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+      // paddingBottom: moderateVerticalScale(10),
+    },
+    content: {
+      flex: 1,
+    },
+    keyboardAvoidingView: {
+      flex: 1,
+    },
+    scrollContent: {
+      flexGrow: 1, // Thay đổi từ flex: 1 thành flexGrow: 1 để tương thích với paddingBottom
+    },
+  }),
+  true,
+);
+
 const MainLayout: React.FC<MainLayoutProps> = memo(
   ({
     children,
@@ -112,8 +120,6 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
     // Get theme for fallback backgroundColor
     const theme = useTheme();
     const styles = useStyles();
-    const bgColor = backgroundColor ?? theme.colors.background;
-
     // Fix: Proper type (remove 'as any')
     const navigation = useNavigation<DrawerNavigationProp<any>>();
 
@@ -159,10 +165,7 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
     );
 
     // Ghi nhớ style cho container
-    const containerStyle = useMemo(
-      () => [styles.container, { backgroundColor: bgColor }],
-      [bgColor],
-    );
+    const containerStyle = useMemo(() => [styles.container], []);
 
     // Ghi nhớ scrollContent style
     const scrollContentStyle = useMemo(
@@ -229,6 +232,10 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
     );
 
     return (
+      // <ImageBackground
+      //   style={containerStyle}
+      //   source={require('@/assets/images/bgrdemo2.png')}
+      // >
       <View style={containerStyle}>
         {/* Header */}
         {showHeader && (
@@ -239,7 +246,6 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
             onBack={headerProps?.onBack ?? navigation.goBack}
           />
         )}
-
         {/* Nội dung */}
         {!showHeader && !disableSafeArea ? (
           <SafeAreaView style={styles.content} edges={['top']}>
@@ -254,12 +260,13 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
               : renderNormalLayout()}
           </View>
         )}
-
         {/* Bottom Tabs */}
         {hasBottomTabs && (
           <CustomBottomTabBar {...(tabsProps as BottomTabBarProps)} />
         )}
       </View>
+
+      // </ImageBackground>
     );
   },
   areEqual,
@@ -267,23 +274,5 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
 
 // Đặt tên cho component để debug dễ dàng hơn
 MainLayout.displayName = 'MainLayout';
-
-const useStyles = createStyles(
-  theme => ({
-    container: {
-      flex: 1,
-    },
-    content: {
-      flex: 1,
-    },
-    keyboardAvoidingView: {
-      flex: 1,
-    },
-    scrollContent: {
-      flexGrow: 1, // Thay đổi từ flex: 1 thành flexGrow: 1 để tương thích với paddingBottom
-    },
-  }),
-  true,
-);
 
 export default MainLayout;

@@ -4,14 +4,13 @@
 
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import Icon from '@ant-design/react-native/lib/icon';
-
-import { useTheme } from '@/shared/theme/use-theme';
+import { AppIcon } from '@/components';
 import { MainTabParamList } from '@/shared/types/navigation.types';
 import { CustomBottomTabBar } from '@/components/navigation';
 import { logger } from '@/shared/utils/logger';
 import { TAB_SCREENS } from './config';
 import { createTabScreenWrappers } from './factories/screenFactory';
+import { useTheme } from '@/shared/theme/use-theme';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -48,20 +47,22 @@ const TAB_WRAPPERS = createTabScreenWrappers(TAB_SCREENS);
 // ... imports
 import { useCallback } from 'react';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { IconType } from '@/components/base/AppIcon';
 
 // ... const Tab = ...
 
 const MainTabs: React.FC = () => {
-  const theme = useTheme();
+  const theme = useTheme(); // Hook usage
+
   const renderTabBar = useCallback(
-    (props: BottomTabBarProps) => <CustomBottomTabBar {...props} />,
+    (props: BottomTabBarProps) => <CustomBottomTabBar {...props} />, // Changed component
     [],
   );
 
   const renderIcon = useCallback(
-    (iconName: string) =>
+    (iconName: string, iconType?: IconType) =>
       ({ color, size }: { color: string; size: number }) =>
-        <Icon name={iconName as any} size={size} color={color} />,
+        <AppIcon name={iconName} size={size} color={color} type={iconType} />,
     [],
   );
 
@@ -94,7 +95,7 @@ const MainTabs: React.FC = () => {
             component={Wrapper}
             options={{
               tabBarLabel: cfg.title,
-              tabBarIcon: renderIcon(cfg.icon),
+              tabBarIcon: renderIcon(cfg.icon, cfg.iconType),
               tabBarBadge: cfg.badge,
             }}
           />

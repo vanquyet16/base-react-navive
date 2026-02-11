@@ -14,8 +14,8 @@ import {
 } from '@/shared/store/selectors';
 import { useTheme } from '@/shared/theme/use-theme';
 import { SCREEN_PADDING } from '@/shared/constants';
-import { createStyles } from '@/shared/theme/create-styles';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { createStyles } from '@/shared/theme/create-styles';
 
 const SettingsScreen: React.FC = () => {
   const currentTheme = useThemeSelector();

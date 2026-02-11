@@ -4,7 +4,7 @@
  * Custom wrapper cho Ant Design List với theme integration
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { List, type ListProps } from '@ant-design/react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
@@ -30,7 +30,7 @@ export const CustomList: React.FC<CustomListProps> = ({
   ...props
 }) => {
   const theme = useTheme();
-  const styles = useStyles(theme);
+  const styles = useStyles();
 
   // Memoize combined list styles
   const listStyles = useMemo(
@@ -44,13 +44,16 @@ export const CustomList: React.FC<CustomListProps> = ({
 /**
  * Memoized export để prevent unnecessary re-renders
  */
-export default React.memo(CustomList);
+export default memo(CustomList);
 
-const useStyles = createStyles(theme => ({
-  list: {
-    backgroundColor: theme.colors.background,
-  },
-  padded: {
-    padding: theme.spacing[4],
-  },
-}));
+const useStyles = createStyles(
+  theme => ({
+    list: {
+      backgroundColor: theme.colors.background,
+    },
+    padded: {
+      padding: theme.spacing[4],
+    },
+  }),
+  true,
+);

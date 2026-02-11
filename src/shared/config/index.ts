@@ -1,24 +1,32 @@
 /**
  * CONFIG MODULE EXPORTS
  * =====================
- * Centralized export cho tất cả config modules.
- * Import như: import { ENV, BUILD_INFO } from '@/shared/config';
+ * Centralized export for all configuration modules
+ * Usage: import { ENV, API_CONFIG, APP_INFO } from '@/shared/config';
  */
 
-// App config (existing - keep for backwards compatibility)
-// Note: ENV từ app.config sẽ bị override bởi ENV từ env.ts (new)
+// Environment & API Configuration
 export {
+    ENV,
     API_CONFIG,
-    APP_CONFIG,
-    STORAGE_CONFIG,
-    THEME_CONFIG,
-    VALIDATION_CONFIG,
-    ERROR_MESSAGES,
-    PERFORMANCE_CONFIG,
+    getApiUrl,
+    BASE_URL, // Deprecated
 } from './app.config';
 
-// Environment config (new - override old ENV)
-export * from './env';
+// App Metadata
+export {
+    APP_INFO,
+    APP_INFO as APP_CONFIG, // Backward compatibility
+} from './app.config';
 
-// Build info (new)
+// Storage Configuration
+export {
+    STORAGE,
+    STORAGE as STORAGE_CONFIG, // Backward compatibility
+} from './app.config';
+
+// Type exports
+export type { ApiDomain } from './app.config';
+
+// Build info
 export * from './build-info';

@@ -2,21 +2,28 @@
  * AXIOS INSTANCE
  * ==============
  * Configured axios instance với base URL, timeout, headers.
- * Singleton pattern - chỉ 1 instance trong toàn app.
- * 
+ * Hỗ trợ multiple domains cho các API services khác nhau.
  */
 
 import axios, { AxiosInstance } from 'axios';
-import { API_CONFIG } from '@/shared/config/app.config';
+import { getApiUrl, type ApiDomain } from '@/shared/config/app.config';
 import { TIMEOUT, HEADERS } from '@/shared/constants/http';
 
 /**
- * Create và configure axios instance
+ * Factory function: Tạo axios instance cho domain cụ thể
+ * @param domain - Domain cần tạo instance (MAIN, AUTH, MANAGER, etc.)
+ * @returns Configured axios instance cho domain đó
+ * 
+ * Usage:
+ * ```ts
+ * const authClient = createAxiosInstance('AUTH');
+ * const managerClient = createAxiosInstance('MANAGER');
+ * ```
  */
-const createAxiosInstance = (): AxiosInstance => {
+export const createAxiosInstance = (domain: ApiDomain = 'MAIN'): AxiosInstance => {
     const instance = axios.create({
-        // Base URL từ environment config
-        baseURL: API_CONFIG.BASE_URL,
+        // Base URL cho domain cụ thể
+        baseURL: getApiUrl(domain),
 
         // Timeout
         timeout: TIMEOUT.DEFAULT,
@@ -27,8 +34,7 @@ const createAxiosInstance = (): AxiosInstance => {
             Accept: HEADERS.ACCEPT.JSON,
         },
 
-        // Disable automatic JSON parsing để có control hơn
-        // (nếu cần custom parsing logic)
+        // Custom JSON parsing để handle edge cases
         transformResponse: [
             (data) => {
                 try {
@@ -44,10 +50,12 @@ const createAxiosInstance = (): AxiosInstance => {
 };
 
 /**
- * Singleton axios instance
- * Sử dụng trong interceptors và http client
+ * Default axios instance cho MAIN domain
+ * Sử dụng trong interceptors và http client mặc định
+ * 
+ * @deprecated Nên sử dụng createAxiosInstance() để tạo instance cho domain cụ thể
  */
-export const axiosInstance = createAxiosInstance();
+export const axiosInstance = createAxiosInstance('MAIN');
 
 /**
  * Type helpers

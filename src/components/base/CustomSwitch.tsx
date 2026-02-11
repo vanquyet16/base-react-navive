@@ -4,7 +4,7 @@
  * Custom wrapper cho Ant Design Switch với theme integration
  */
 
-import React from 'react';
+import React, { memo } from 'react';
 import { Switch, type SwitchProps } from '@ant-design/react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 
@@ -39,4 +39,4 @@ export const CustomSwitch: React.FC<CustomSwitchProps> = ({
 /**
  * Memoized export để prevent unnecessary re-renders
  */
-export default React.memo(CustomSwitch);
+export default memo(CustomSwitch);

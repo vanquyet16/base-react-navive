@@ -1,5 +1,6 @@
 import React, { memo, useCallback } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
+import { CustomText } from '@/components/base/CustomText';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
   DrawerContentComponentProps,
@@ -52,42 +53,7 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = props => {
     {
       label: 'Trang chủ',
       icon: 'home',
-      screen: NAVIGATION_KEYS.DRAWER_STACK.MAIN_TABS,
-    },
-    {
-      label: 'Quản lý sản phẩm',
-      icon: 'inventory',
-      screen: NAVIGATION_KEYS.DRAWER_STACK.PRODUCT,
-    },
-    {
-      label: 'Lazy Loading Demo',
-      icon: 'speed',
-      screen: NAVIGATION_KEYS.DRAWER_STACK.LAZY_DEMO,
-    },
-    {
-      label: 'API Demo',
-      icon: 'api',
-      screen: NAVIGATION_KEYS.DRAWER_STACK.API_DEMO,
-    },
-    {
-      label: 'Cache Demo',
-      icon: 'cached',
-      screen: NAVIGATION_KEYS.DRAWER_STACK.CACHE_DEMO,
-    },
-    {
-      label: 'PDF Demo',
-      icon: 'picture-as-pdf',
-      screen: NAVIGATION_KEYS.DRAWER_STACK.PDF_DEMO,
-    },
-    {
-      label: 'Performance Demo',
-      icon: 'analytics',
-      screen: NAVIGATION_KEYS.DRAWER_STACK.PERFORMANCE_DEMO,
-    },
-    {
-      label: 'Responsive Demo',
-      icon: 'aspect-ratio',
-      screen: NAVIGATION_KEYS.DRAWER_STACK.RESPONSIVE_DEMO,
+      screen: NAVIGATION_KEYS.DRAWER_STACK.MAIN,
     },
   ];
 
@@ -100,8 +66,12 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = props => {
             <Icon name="person" size={40} color={theme.colors.primary} />
           </View>
           <View style={styles.userDetails}>
-            <Text style={styles.userName}>Người dùng</Text>
-            <Text style={styles.userEmail}>user@example.com</Text>
+            <CustomText variant="h5" weight="bold" style={styles.userName}>
+              Người dùng
+            </CustomText>
+            <CustomText variant="bodySmall" style={styles.userEmail}>
+              user@example.com
+            </CustomText>
           </View>
         </View>
       </View>
@@ -129,7 +99,9 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = props => {
       <View style={styles.footer}>
         <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
           <Icon name="logout" size={24} color={theme.colors.error} />
-          <Text style={styles.logoutText}>Đăng xuất</Text>
+          <CustomText variant="body" weight="medium" style={styles.logoutText}>
+            Đăng xuất
+          </CustomText>
         </TouchableOpacity>
       </View>
     </View>
@@ -167,13 +139,10 @@ const useStyles = createStyles(
       flex: 1,
     },
     userName: {
-      fontSize: 18,
-      fontWeight: 'bold',
       color: theme.colors.background,
       marginBottom: 4,
     },
     userEmail: {
-      fontSize: 14,
       color: theme.colors.background,
       opacity: 0.8,
     },
@@ -200,10 +169,8 @@ const useStyles = createStyles(
       paddingVertical: 10,
     },
     logoutText: {
-      fontSize: 16,
       color: theme.colors.error,
       marginLeft: 15,
-      fontWeight: '500',
     },
   }),
   true,

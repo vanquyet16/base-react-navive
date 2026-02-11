@@ -44,7 +44,7 @@ export const AppNavigator: React.FC = () => {
         id="RootNavigator"
         screenOptions={{ headerShown: false }}
       >
-        {isAuthenticated ? (
+        {true ? (
           <Stack.Screen name={ROOT_STACKS.DRAWER} component={MainDrawer} />
         ) : (
           <Stack.Screen

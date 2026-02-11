@@ -6,7 +6,7 @@
  *
  */
 
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { Text, type TextProps, type TextStyle } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
@@ -40,7 +40,8 @@ export type TextColor =
   | 'tertiary'
   | 'inverse'
   | 'error'
-  | 'success';
+  | 'success'
+  | 'white';
 
 /**
  * CustomText Props
@@ -65,7 +66,7 @@ export interface CustomTextProps extends TextProps {
  *
  * @optimized React.memo, useMemo
  */
-export const CustomText: React.FC<CustomTextProps> = ({
+const CustomTextBase: React.FC<CustomTextProps> = ({
   variant = 'body',
   color = 'primary',
   weight,
@@ -76,7 +77,7 @@ export const CustomText: React.FC<CustomTextProps> = ({
   ...rest
 }) => {
   const theme = useTheme();
-  const styles = useStyles(theme);
+  const styles = useStyles();
 
   // Get variant style
   const variantStyle = styles[variant];
@@ -125,7 +126,8 @@ export const CustomText: React.FC<CustomTextProps> = ({
 /**
  * Memoized export để prevent unnecessary re-renders
  */
-export default React.memo(CustomText);
+export const CustomText = memo(CustomTextBase);
+export default CustomText;
 
 /**
  * Get color style helper
@@ -144,6 +146,8 @@ const getColorStyle = (theme: any, color: TextColor): TextStyle => {
       return { color: theme.colors.error };
     case 'success':
       return { color: theme.colors.success };
+    case 'white':
+      return { color: theme.colors.white };
     default:
       return { color: theme.colors.text };
   }
@@ -152,108 +156,113 @@ const getColorStyle = (theme: any, color: TextColor): TextStyle => {
 /**
  * Styles với variants
  */
-const useStyles = createStyles(theme => ({
-  // Headings
-  h1: {
-    fontSize: theme.typography.fontSizes['4xl'],
-    lineHeight:
-      theme.typography.fontSizes['4xl'] * theme.typography.lineHeights.tight,
-    fontWeight: theme.typography.fontWeights.bold,
-    color: theme.colors.text,
-  },
-  h2: {
-    fontSize: theme.typography.fontSizes['3xl'],
-    lineHeight:
-      theme.typography.fontSizes['3xl'] * theme.typography.lineHeights.tight,
-    fontWeight: theme.typography.fontWeights.bold,
-    color: theme.colors.text,
-  },
-  h3: {
-    fontSize: theme.typography.fontSizes['2xl'],
-    lineHeight:
-      theme.typography.fontSizes['2xl'] * theme.typography.lineHeights.normal,
-    fontWeight: theme.typography.fontWeights.semibold,
-    color: theme.colors.text,
-  },
-  h4: {
-    fontSize: theme.typography.fontSizes.xl,
-    lineHeight:
-      theme.typography.fontSizes.xl * theme.typography.lineHeights.normal,
-    fontWeight: theme.typography.fontWeights.semibold,
-    color: theme.colors.text,
-  },
-  h5: {
-    fontSize: theme.typography.fontSizes.lg,
-    lineHeight:
-      theme.typography.fontSizes.lg * theme.typography.lineHeights.normal,
-    fontWeight: theme.typography.fontWeights.semibold,
-    color: theme.colors.text,
-  },
-  h6: {
-    fontSize: theme.typography.fontSizes.base,
-    lineHeight:
-      theme.typography.fontSizes.base * theme.typography.lineHeights.normal,
-    fontWeight: theme.typography.fontWeights.semibold,
-    color: theme.colors.text,
-  },
-  h7: {
-    fontSize: theme.typography.fontSizes.sm,
-    lineHeight:
-      theme.typography.fontSizes.sm * theme.typography.lineHeights.normal,
-    fontWeight: theme.typography.fontWeights.semibold,
-    color: theme.colors.text,
-  },
-  h8: {
-    fontSize: theme.typography.fontSizes.xs,
-    lineHeight:
-      theme.typography.fontSizes.xs * theme.typography.lineHeights.normal,
-    fontWeight: theme.typography.fontWeights.semibold,
-    color: theme.colors.text,
-  },
-  h9: {
-    fontSize: moderateScale(11),
-    lineHeight: moderateScale(11) * theme.typography.lineHeights.normal,
-    fontWeight: theme.typography.fontWeights.bold,
-    color: theme.colors.text,
-  },
-  h10: {
-    fontSize: moderateScale(10),
-    lineHeight: moderateScale(10) * theme.typography.lineHeights.normal,
-    fontWeight: theme.typography.fontWeights.bold,
-    color: theme.colors.text,
-  },
+const useStyles = createStyles(
+  theme => ({
+    // Headings
+    h1: {
+      fontSize: theme.typography.fontSizes['4xl'],
+      lineHeight:
+        theme.typography.fontSizes['4xl'] * theme.typography.lineHeights.tight,
+      fontWeight: theme.typography.fontWeights.bold,
+      color: theme.colors.text,
+    },
+    h2: {
+      fontSize: theme.typography.fontSizes['3xl'],
+      lineHeight:
+        theme.typography.fontSizes['3xl'] * theme.typography.lineHeights.tight,
+      fontWeight: theme.typography.fontWeights.bold,
+      color: theme.colors.text,
+    },
+    h3: {
+      fontSize: theme.typography.fontSizes['2xl'],
+      lineHeight:
+        theme.typography.fontSizes['2xl'] * theme.typography.lineHeights.normal,
+      fontWeight: theme.typography.fontWeights.semibold,
+      color: theme.colors.text,
+    },
+    h4: {
+      fontSize: theme.typography.fontSizes.xl,
+      lineHeight:
+        theme.typography.fontSizes.xl * theme.typography.lineHeights.normal,
+      fontWeight: theme.typography.fontWeights.semibold,
+      color: theme.colors.text,
+    },
+    h5: {
+      fontSize: theme.typography.fontSizes.lg,
+      lineHeight:
+        theme.typography.fontSizes.lg * theme.typography.lineHeights.normal,
+      fontWeight: theme.typography.fontWeights.semibold,
+      color: theme.colors.text,
+    },
+    h6: {
+      fontSize: theme.typography.fontSizes.base,
+      lineHeight:
+        theme.typography.fontSizes.base * theme.typography.lineHeights.normal,
+      fontWeight: theme.typography.fontWeights.semibold,
+      color: theme.colors.text,
+    },
+    h7: {
+      fontSize: theme.typography.fontSizes.sm,
+      lineHeight:
+        theme.typography.fontSizes.sm * theme.typography.lineHeights.normal,
+      fontWeight: theme.typography.fontWeights.semibold,
+      color: theme.colors.text,
+    },
+    h8: {
+      fontSize: theme.typography.fontSizes.xs,
+      lineHeight:
+        theme.typography.fontSizes.xs * theme.typography.lineHeights.normal,
+      fontWeight: theme.typography.fontWeights.semibold,
+      color: theme.colors.text,
+    },
+    h9: {
+      fontSize: theme.typography.fontSizes['2xs'],
+      lineHeight:
+        theme.typography.fontSizes['2xs'] * theme.typography.lineHeights.normal,
+      fontWeight: theme.typography.fontWeights.bold,
+      color: theme.colors.text,
+    },
+    h10: {
+      fontSize: theme.typography.fontSizes['2xs'],
+      lineHeight:
+        theme.typography.fontSizes['2xs'] * theme.typography.lineHeights.normal,
+      fontWeight: theme.typography.fontWeights.bold,
+      color: theme.colors.text,
+    },
 
-  // Body text
-  body: {
-    fontSize: theme.typography.fontSizes.base,
-    lineHeight:
-      theme.typography.fontSizes.base * theme.typography.lineHeights.normal,
-    fontWeight: theme.typography.fontWeights.normal,
-    color: theme.colors.text,
-  },
-  bodySmall: {
-    fontSize: theme.typography.fontSizes.sm,
-    lineHeight:
-      theme.typography.fontSizes.sm * theme.typography.lineHeights.normal,
-    fontWeight: theme.typography.fontWeights.normal,
-    color: theme.colors.text,
-  },
+    // Body text
+    body: {
+      fontSize: theme.typography.fontSizes.base,
+      lineHeight:
+        theme.typography.fontSizes.base * theme.typography.lineHeights.normal,
+      fontWeight: theme.typography.fontWeights.normal,
+      color: theme.colors.text,
+    },
+    bodySmall: {
+      fontSize: theme.typography.fontSizes.sm,
+      lineHeight:
+        theme.typography.fontSizes.sm * theme.typography.lineHeights.normal,
+      fontWeight: theme.typography.fontWeights.normal,
+      color: theme.colors.text,
+    },
 
-  // Caption
-  caption: {
-    fontSize: theme.typography.fontSizes.xs,
-    lineHeight:
-      theme.typography.fontSizes.xs * theme.typography.lineHeights.normal,
-    fontWeight: theme.typography.fontWeights.normal,
-    color: theme.colors.textSecondary,
-  },
+    // Caption
+    caption: {
+      fontSize: theme.typography.fontSizes.xs,
+      lineHeight:
+        theme.typography.fontSizes.xs * theme.typography.lineHeights.normal,
+      fontWeight: theme.typography.fontWeights.normal,
+      color: theme.colors.textSecondary,
+    },
 
-  // Label
-  label: {
-    fontSize: theme.typography.fontSizes.sm,
-    lineHeight:
-      theme.typography.fontSizes.sm * theme.typography.lineHeights.normal,
-    fontWeight: theme.typography.fontWeights.medium,
-    color: theme.colors.text,
-  },
-}));
+    // Label
+    label: {
+      fontSize: theme.typography.fontSizes.sm,
+      lineHeight:
+        theme.typography.fontSizes.sm * theme.typography.lineHeights.normal,
+      fontWeight: theme.typography.fontWeights.medium,
+      color: theme.colors.text,
+    },
+  }),
+  true,
+);
