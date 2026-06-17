@@ -7,7 +7,7 @@ import {
 } from '@/shared/utils/sizeMatters';
 import {
   ScrollView,
-  TouchableOpacity,
+  Pressable,
   Text,
   View,
   ViewStyle,
@@ -158,18 +158,20 @@ export const CustomTabs = memo<CustomTabsProps>(props => {
           ];
 
           return (
-            <TouchableOpacity
+            <Pressable
               key={tab.title || i}
-              activeOpacity={0.8}
               onPress={() => {
                 if (onTabClick) {
                   onTabClick(tab, i);
                 }
               }}
-              style={containerStyle}
+              style={({ pressed }) => [
+                ...containerStyle,
+                { opacity: pressed ? 0.8 : 1 },
+              ]}
             >
               <Text style={textStyle}>{tab.title}</Text>
-            </TouchableOpacity>
+            </Pressable>
           );
         })}
       </Content>

@@ -7,7 +7,7 @@
  * từ config, đảm bảo type-safe và tuân thủ separation of concerns.
  */
 
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@/shared/types/navigation.types';
 import { AUTH_SCREENS } from '@/navigation/config';
 import { createAuthStackNavigatorComponent } from '@/navigation/factories/navigatorFactory';
@@ -16,7 +16,7 @@ import { createAuthStackNavigatorComponent } from '@/navigation/factories/naviga
  * Auth Stack Navigator instance
  * Typed với AuthStackParamList cho type safety
  */
-const AuthStack = createStackNavigator<AuthStackParamList>();
+const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 
 /**
  * Auth Stack Navigator Component

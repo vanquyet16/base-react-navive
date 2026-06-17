@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useRef } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import Animated, { AnimatedStyle } from 'react-native-reanimated';
@@ -44,15 +44,9 @@ const FeedbackDetailHeader: React.FC<FeedbackDetailHeaderProps> = memo(
     const isTransparent = variant === 'transparent';
 
     // Optimize value calculations with useMemo
-    const iconColor = useMemo(
-      () => (isTransparent ? theme.colors.white : theme.colors.primary),
-      [isTransparent, theme.colors.white, theme.colors.primary],
-    );
+    const iconColor = isTransparent ? theme.colors.white : theme.colors.primary;
 
-    const containerVariantStyle = useMemo(
-      () => (isTransparent ? styles.transparentContainer : styles.container),
-      [isTransparent, styles.transparentContainer, styles.container],
-    );
+    const containerVariantStyle = isTransparent ? styles.transparentContainer : styles.container;
 
     // Combine styles in useMemo to maintain referential equality
     const combinedContainerStyle = useMemo(

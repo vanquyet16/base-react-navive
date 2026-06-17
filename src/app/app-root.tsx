@@ -6,12 +6,13 @@
  *
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, ActivityIndicator, StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppProviders } from './app-providers';
 import { useAppInit } from '@/app/hooks/use-app-init';
 import { useTheme } from '@/shared/theme/use-theme';
+import { useSplashScreen } from '@/shared/hooks';
 import {
   CustomText,
   ErrorBoundary,
@@ -32,6 +33,13 @@ import { AppNavigator } from './app-navigator';
 const AppContent: React.FC = () => {
   const { isLoading, isReady, error } = useAppInit();
   const theme = useTheme();
+  const { hideSplash } = useSplashScreen();
+
+  useEffect(() => {
+    if (isReady || error) {
+      hideSplash();
+    }
+  }, [isReady, error, hideSplash]);
 
   // Show loading
   if (isLoading) {

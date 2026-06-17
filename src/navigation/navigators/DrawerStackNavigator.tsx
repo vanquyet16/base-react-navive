@@ -11,7 +11,7 @@
  */
 
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { DrawerStackParamList } from '@/shared/types/navigation.types';
 import { MainStackNavigator } from './MainStackNavigator';
 import { NAVIGATION_KEYS } from '@/navigation/config';
@@ -20,7 +20,7 @@ import { NAVIGATION_KEYS } from '@/navigation/config';
  * Drawer Stack Navigator instance
  * Typed với DrawerStackParamList cho type safety
  */
-const DrawerStack = createStackNavigator<DrawerStackParamList>();
+const DrawerStack = createNativeStackNavigator<DrawerStackParamList>();
 
 /**
  * Drawer Stack Navigator Component

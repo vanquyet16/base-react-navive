@@ -4,7 +4,7 @@ import {
   Text,
   StyleSheet,
   ScrollView,
-  TouchableOpacity,
+  Pressable,
   Switch,
 } from 'react-native';
 
@@ -117,10 +117,13 @@ const SettingsScreen: React.FC = () => {
     },
   ];
 
-  const renderSettingItem = (item: any, index: number) => (
-    <TouchableOpacity
-      key={index}
-      style={styles.settingItem}
+  const renderSettingItem = (item: any) => (
+    <Pressable
+      key={item.title}
+      style={({ pressed }) => [
+        styles.settingItem,
+        { opacity: pressed && item.type !== 'switch' ? 0.7 : 1 },
+      ]}
       onPress={item.onPress}
       disabled={item.type === 'switch'}
     >
@@ -155,13 +158,13 @@ const SettingsScreen: React.FC = () => {
           />
         )}
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 
   return (
     <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-      {settingsSections.map((section, sectionIndex) => (
-        <View key={sectionIndex} style={styles.section}>
+      {settingsSections.map((section) => (
+        <View key={section.title} style={styles.section}>
           <Text style={styles.sectionTitle}>{section.title}</Text>
           <View style={styles.sectionContent}>
             {section.items.map(renderSettingItem)}
@@ -172,10 +175,15 @@ const SettingsScreen: React.FC = () => {
       {/* Danger Zone */}
       <View style={styles.dangerZone}>
         <Text style={styles.dangerTitle}>Vùng nguy hiểm</Text>
-        <TouchableOpacity style={styles.dangerItem}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.dangerItem,
+            { opacity: pressed ? 0.7 : 1 },
+          ]}
+        >
           <Icon name="delete-forever" size={24} color={theme.colors.error} />
           <Text style={styles.dangerText}>Xóa tài khoản</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </ScrollView>
   );

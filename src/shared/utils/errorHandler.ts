@@ -3,8 +3,25 @@
 // ============================================================================
 
 import { logger, logError } from './logger';
-import { ERROR_MESSAGES } from '@/shared/config/app.config';
 import Toast from 'react-native-toast-message';
+
+const ERROR_MESSAGES = {
+    NETWORK: {
+        UNKNOWN: 'Lỗi kết nối không xác định',
+        TIMEOUT: 'Kết nối quá thời gian quy định',
+        NO_INTERNET: 'Không có kết nối mạng',
+        SERVER_ERROR: 'Lỗi hệ thống từ máy chủ',
+    },
+    VALIDATION: {
+        REQUIRED: 'Trường này là bắt buộc',
+        INVALID_EMAIL: 'Email không đúng định dạng',
+        INVALID_PHONE: 'Số điện thoại không hợp lệ',
+    },
+    AUTH: {
+        SESSION_EXPIRED: 'Phiên đăng nhập đã hết hạn',
+        UNAUTHORIZED: 'Không có quyền truy cập',
+    }
+} as const;
 
 // Định nghĩa các loại lỗi
 export enum ErrorType {

@@ -2,8 +2,8 @@ import React, { memo, useCallback } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
-  Animated,
+  Pressable,
+  Platform,
   type ViewStyle,
   type TextStyle,
 } from 'react-native';
@@ -11,7 +11,7 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import type { MainTabParamList } from '@/shared/types/navigation.types';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   moderateScale,
   moderateVerticalScale,
@@ -31,7 +31,7 @@ const CustomBottomTabBar: React.FC<BottomTabBarProps> = ({
   navigation,
 }) => {
   const theme = useTheme();
-  // ...
+  const styles = useStyles();
   const tabRoutes = state.routes as unknown as TabRoute[];
 
   const typedNavigate = useCallback(
@@ -72,10 +72,11 @@ const CustomBottomTabBar: React.FC<BottomTabBarProps> = ({
     [navigation],
   );
 
-  const baseStyles = useBaseStyles();
+  const insets = useSafeAreaInsets();
+  const baseStyles = useBaseStyles({ bottomInset: insets.bottom });
 
   return (
-    <SafeAreaView edges={['bottom']} style={baseStyles.container}>
+    <View style={baseStyles.container}>
       <View style={baseStyles.tabsContainer}>
         {tabRoutes.map((route, index) => {
           const { options } = descriptors[route.key];
@@ -92,7 +93,6 @@ const CustomBottomTabBar: React.FC<BottomTabBarProps> = ({
           const IconComponent = options.tabBarIcon;
           const badgeCount = options.tabBarBadge;
 
-          const styles = useStyles({ isActive: isFocused });
           const color = isFocused
             ? theme.colors.primary
             : theme.colors.textSecondary;
@@ -102,12 +102,15 @@ const CustomBottomTabBar: React.FC<BottomTabBarProps> = ({
 
           if (isMiddleButton) {
             return (
-              <TouchableOpacity
+              <Pressable
                 key={route.key}
-                style={[styles.tab, styles.middleTab]}
+                style={({ pressed }) => [
+                  styles.tab,
+                  styles.middleTab,
+                  { opacity: pressed ? 0.9 : 1 },
+                ]}
                 onPress={() => onTabPress(route, isFocused)}
                 onLongPress={() => onTabLongPress(route.key)}
-                activeOpacity={0.9}
               >
                 <View style={styles.middleIconContainer}>
                   {IconComponent &&
@@ -118,19 +121,21 @@ const CustomBottomTabBar: React.FC<BottomTabBarProps> = ({
                     })}
                 </View>
                 {/* No label for middle button */}
-              </TouchableOpacity>
+              </Pressable>
             );
           }
 
           return (
-            <TouchableOpacity
+            <Pressable
               key={route.key}
-              style={styles.tab}
+              style={({ pressed }) => [
+                styles.tab,
+                { opacity: pressed ? 0.7 : 1 },
+              ]}
               onPress={() => onTabPress(route, isFocused)}
               onLongPress={() => onTabLongPress(route.key)}
-              activeOpacity={0.7}
             >
-              <Animated.View
+              <View
                 style={[
                   styles.tabContent,
                   {
@@ -159,28 +164,32 @@ const CustomBottomTabBar: React.FC<BottomTabBarProps> = ({
                 >
                   {label}
                 </Text>
-              </Animated.View>
-            </TouchableOpacity>
+              </View>
+            </Pressable>
           );
         })}
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
 export default memo(CustomBottomTabBar);
 
 // Base styles không phụ thuộc vào props
-const useBaseStyles = createStyles(
-  theme => ({
+const useBaseStyles = createStyles<
+  {
+    container: ViewStyle;
+    tabsContainer: ViewStyle;
+  },
+  { bottomInset: number }
+>(
+  (theme, props) => ({
     container: {
       backgroundColor: theme.colors.white,
       position: 'absolute',
       bottom: 0,
       left: 0,
       right: 0,
-      // borderTopLeftRadius: moderateScale(50),
-      // borderTopRightRadius: moderateScale(50),
 
       shadowColor: '#000',
       shadowOffset: {
@@ -191,39 +200,23 @@ const useBaseStyles = createStyles(
       shadowRadius: moderateScale(6),
       elevation: 6,
       borderTopWidth: 0,
-      paddingBottom: 0,
+      paddingBottom: props.bottomInset,
     },
 
     tabsContainer: {
       flexDirection: 'row',
-      height: moderateVerticalScale(50),
+      height: Platform.OS === 'ios' ? moderateVerticalScale(62) : moderateVerticalScale(62),
       paddingHorizontal: scale(8),
 
       backgroundColor: 'transparent',
-
-      paddingBottom: moderateVerticalScale(10),
     },
   }),
   true,
 );
 
-// Styles phụ thuộc vào props (isActive)
-const useStyles = createStyles<
-  {
-    tab: ViewStyle;
-    tabContent: ViewStyle;
-    iconContainer: ViewStyle;
-    tabLabel: TextStyle;
-    activeTabLabel: TextStyle;
-    activeIndicator: ViewStyle;
-    badge: ViewStyle;
-    badgeText: TextStyle;
-    middleTab: ViewStyle;
-    middleIconContainer: ViewStyle;
-  },
-  { isActive: boolean }
->(
-  (theme, props) => ({
+// Styles của CustomBottomTabBar
+const useStyles = createStyles(
+  theme => ({
     tab: {
       flex: 1,
       justifyContent: 'center',
@@ -240,7 +233,7 @@ const useStyles = createStyles<
     },
 
     iconContainer: {
-      marginTop: '40%',
+      marginTop: moderateVerticalScale(4),
       marginBottom: moderateVerticalScale(4),
 
       position: 'relative',
@@ -255,12 +248,10 @@ const useStyles = createStyles<
     tabLabel: {
       fontSize: theme.typography.fontSizes['2xs'],
 
-      fontWeight: props.isActive ? '700' : '500',
+      fontWeight: '500',
       textAlign: 'center',
 
-      color: props.isActive
-        ? theme.colors.primary
-        : theme.colors.textSecondary ?? theme.colors.text,
+      color: theme.colors.textSecondary ?? theme.colors.text,
 
       // ✅ giúp text cân hơn trên Android
       lineHeight: moderateScale(12),
@@ -325,6 +316,5 @@ const useStyles = createStyles<
       borderWidth: 2,
       borderColor: theme.colors.background, // Match container bg to create gap effect
     },
-  }),
-  true,
+  })
 );

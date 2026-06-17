@@ -6,7 +6,7 @@
  */
 
 import React, { Component, ReactNode } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
 import { CustomText } from '@/components/base/CustomText';
 
 interface Props {
@@ -52,11 +52,17 @@ class ErrorBoundary extends Component<Props, State> {
           <CustomText variant="body" style={styles.message}>
             {error?.message || 'Ứng dụng gặp phải một lỗi không mong muốn.'}
           </CustomText>
-          <TouchableOpacity style={styles.button} onPress={this.handleRetry}>
+          <Pressable 
+            style={({ pressed }) => [
+              styles.button,
+              { opacity: pressed ? 0.7 : 1 },
+            ]} 
+            onPress={this.handleRetry}
+          >
             <CustomText variant="body" weight="bold" style={styles.buttonText}>
               Thử lại
             </CustomText>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       );
     }

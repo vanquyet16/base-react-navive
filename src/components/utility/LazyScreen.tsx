@@ -33,9 +33,11 @@ interface LazyScreenProps {
  *   fallback={<CustomLoading />}
  * />
  */
+const DEFAULT_COMPONENT_PROPS = {};
+
 const LazyScreen: React.FC<LazyScreenProps> = ({
   component,
-  componentProps = {},
+  componentProps = DEFAULT_COMPONENT_PROPS,
   fallback = <LoadingScreen />,
 }) => {
   // Lazy load component

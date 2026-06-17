@@ -3,7 +3,7 @@ import React, { memo, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   ScrollView,
   Linking,
   StyleSheet,
@@ -149,10 +149,12 @@ const NewsBox: React.FC<NewsBoxProps> = ({
   // Memoized render function for cards
   const renderCard = useCallback(
     (item: NewsItem) => (
-      <TouchableOpacity
+      <Pressable
         key={item.id}
-        style={styles.cardContainer}
-        activeOpacity={0.8}
+        style={({ pressed }) => [
+          styles.cardContainer,
+          { opacity: pressed ? 0.8 : 1 },
+        ]}
         onPress={() => handlePress(item)}
       >
         <View style={styles.cardImageContainer}>
@@ -186,7 +188,7 @@ const NewsBox: React.FC<NewsBoxProps> = ({
             <Text style={styles.dateText}>{item.date || '01-02-2026'}</Text>
           </View>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     ),
     [
       handlePress,

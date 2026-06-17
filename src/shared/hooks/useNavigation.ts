@@ -6,7 +6,7 @@
  */
 
 import { useNavigation } from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { AuthStackParamList, MainStackParamList } from '@/shared/types/navigation.types';
 
 /**
@@ -21,7 +21,7 @@ import type { AuthStackParamList, MainStackParamList } from '@/shared/types/navi
  * navigation.navigate('Register'); // ← Autocomplete works!
  */
 export const useAuthNavigation = () => {
-    return useNavigation<StackNavigationProp<AuthStackParamList>>();
+    return useNavigation<NativeStackNavigationProp<AuthStackParamList>>();
 };
 
 /**
@@ -36,5 +36,5 @@ export const useAuthNavigation = () => {
  * navigation.navigate('LazyDemoScreen');
  */
 export const useMainNavigation = () => {
-    return useNavigation<StackNavigationProp<MainStackParamList>>();
+    return useNavigation<NativeStackNavigationProp<MainStackParamList>>();
 };

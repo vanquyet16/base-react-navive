@@ -108,8 +108,12 @@ const CustomInputBase: React.FC<CustomInputProps> = ({
 
   // Memoize combined input container styles để avoid tạo mới mỗi render
   const inputContainerStyle = useMemo(
-    () => [styles.inputContainer, isFocused && styles.inputContainerFocused],
-    [styles, isFocused, error],
+    () => [
+      styles.inputContainer,
+      isFocused && styles.inputContainerFocused,
+      error ? styles.inputContainerError : undefined,
+    ],
+    [styles.inputContainer, styles.inputContainerFocused, styles.inputContainerError, isFocused, error],
   );
 
   // Memoize combined input styles

@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, Text } from 'react-native';
 import { Button, WhiteSpace, WingBlank } from '@ant-design/react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { useRegister } from '@/features/auth/hooks/queries/useAuth';
@@ -183,13 +183,13 @@ const RegisterScreen = memo(({ navigation }: any) => {
             loading={registerMutation.isPending}
             onPress={handleSubmit(onSubmit)}
           >
-            Đăng ký
+            <Text>Đăng ký</Text>
           </Button>
 
           <WhiteSpace size="lg" />
 
           <Button type="ghost" onPress={navigateToLogin}>
-            Đã có tài khoản? Đăng nhập ngay
+            <Text>Đã có tài khoản? Đăng nhập ngay</Text>
           </Button>
         </View>
       </WingBlank>

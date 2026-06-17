@@ -1,5 +1,5 @@
 import React, { memo, useCallback } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { CustomText } from '@/components/base/CustomText';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {
@@ -20,6 +20,14 @@ type DrawerMenuItem = {
   screen: keyof DrawerStackParamList;
 };
 
+const menuItems: DrawerMenuItem[] = [
+  {
+    label: 'Trang chủ',
+    icon: 'home',
+    screen: NAVIGATION_KEYS.DRAWER_STACK.MAIN,
+  },
+];
+
 /**
  * CUSTOM DRAWER COMPONENT
  * =======================
@@ -28,7 +36,7 @@ type DrawerMenuItem = {
  *
  * @param props - Drawer content props từ React Navigation
  */
-const CustomDrawer: React.FC<DrawerContentComponentProps> = props => {
+const CustomDrawer: React.FC<DrawerContentComponentProps> = ({ navigation, ...props }) => {
   const theme = useTheme();
   const { clearSession } = useSessionActions();
   const styles = useStyles();
@@ -41,21 +49,13 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = props => {
   const handleNavigation = useCallback(
     (screenName: keyof DrawerStackParamList) => {
       // Drawer structure: Drawer -> DrawerStack -> (shortcut) -> MainStackNavigator
-      props.navigation.navigate(ROOT_STACKS.DRAWER_STACK, {
+      navigation.navigate(ROOT_STACKS.DRAWER_STACK, {
         screen: screenName,
       });
-      props.navigation.closeDrawer();
+      navigation.closeDrawer();
     },
-    [props.navigation],
+    [navigation],
   );
-
-  const menuItems: DrawerMenuItem[] = [
-    {
-      label: 'Trang chủ',
-      icon: 'home',
-      screen: NAVIGATION_KEYS.DRAWER_STACK.MAIN,
-    },
-  ];
 
   return (
     <View style={styles.container}>
@@ -78,9 +78,9 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = props => {
 
       {/* Menu Items */}
       <DrawerContentScrollView {...props} style={styles.menuContainer}>
-        {menuItems.map((item, index) => (
+        {menuItems.map((item) => (
           <DrawerItem
-            key={index}
+            key={item.screen}
             label={item.label}
             // eslint-disable-next-line react/no-unstable-nested-components
             icon={({ color, size }) => (
@@ -97,12 +97,18 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = props => {
 
       {/* Footer */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.logoutButton,
+            { opacity: pressed ? 0.7 : 1 },
+          ]}
+          onPress={handleLogout}
+        >
           <Icon name="logout" size={24} color={theme.colors.error} />
           <CustomText variant="body" weight="medium" style={styles.logoutText}>
             Đăng xuất
           </CustomText>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );

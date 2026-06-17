@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, Pressable } from 'react-native';
 import { CustomText } from '@/components/base/CustomText';
 import MainLayout from './MainLayout';
 import { useTheme } from '@/shared/theme/use-theme';
@@ -69,7 +69,12 @@ export const ContentOnlyExample = () => {
     <MainLayout showHeader={false} showTabs={false}>
       <View style={styles.content}>
         <CustomText>Content thuần, không có header và tabs</CustomText>
-        <TouchableOpacity style={styles.button}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.button,
+            { opacity: pressed ? 0.7 : 1 },
+          ]}
+        >
           <CustomText
             variant="body"
             weight="semibold"
@@ -77,7 +82,7 @@ export const ContentOnlyExample = () => {
           >
             Action Button
           </CustomText>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </MainLayout>
   );

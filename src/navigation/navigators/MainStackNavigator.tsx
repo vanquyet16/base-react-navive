@@ -7,7 +7,7 @@
  * từ config, đảm bảo type-safe và tuân thủ separation of concerns.
  */
 
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MainStackParamList } from '@/shared/types/navigation.types';
 import { MAIN_STACK_SCREENS } from '@/navigation/config';
 import { createMainStackNavigatorComponent } from '@/navigation/factories/navigatorFactory';
@@ -17,7 +17,7 @@ import MainTabs from '@/navigation/MainTabs';
  * Main Stack Navigator instance
  * Typed với MainStackParamList cho type safety
  */
-const MainStack = createStackNavigator<MainStackParamList>();
+const MainStack = createNativeStackNavigator<MainStackParamList>();
 
 /**
  * Main Stack Navigator Component

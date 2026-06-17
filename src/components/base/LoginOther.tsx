@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Pressable, View } from 'react-native';
 import { createStyles } from '@/shared/theme/create-styles';
 import { useTheme } from '@/shared/theme/use-theme';
 import { CustomText } from '@/components/base/CustomText';
@@ -43,22 +43,26 @@ const LoginOther: React.FC<LoginOtherProps> = ({
     <WingBlank size="lg">
       <View style={styles.container}>
         {/* Main Login Button (e.g., VNeID) */}
-        <TouchableOpacity
-          style={styles.mainButton}
-          activeOpacity={0.7}
+        <Pressable
+          style={({ pressed }) => [
+            styles.mainButton,
+            { opacity: pressed ? 0.7 : 1 },
+          ]}
           onPress={onPress}
         >
           {icon && <View style={styles.logoContainer}>{icon}</View>}
           <CustomText style={styles.mainButtonText}>{title}</CustomText>
-        </TouchableOpacity>
+        </Pressable>
 
         {/* Biometric Login Button (Optional) */}
         {biometricType && (
           <>
             <View style={styles.spacer} />
-            <TouchableOpacity
-              style={styles.biometricButton}
-              activeOpacity={0.7}
+            <Pressable
+              style={({ pressed }) => [
+                styles.biometricButton,
+                { opacity: pressed ? 0.7 : 1 },
+              ]}
               onPress={onBiometricPress}
             >
               {biometricIcon ? (
@@ -70,7 +74,7 @@ const LoginOther: React.FC<LoginOtherProps> = ({
                   color={theme.colors.primary}
                 />
               )}
-            </TouchableOpacity>
+            </Pressable>
           </>
         )}
       </View>

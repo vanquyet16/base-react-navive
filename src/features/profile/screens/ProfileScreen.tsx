@@ -10,27 +10,27 @@ import HeaderAction from '@/components/base/HeaderAction';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 
+// Mock user data for display // TODO: Replace with actual user data from store
+const MOCK_USER = {
+  id: '1',
+  username: 'vanquyet',
+  email: 'quyet@example.com',
+  displayName: 'Văn Quyết',
+  role: 'user',
+  status: 'active',
+  avatar:
+    'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/06/anh-dai-dien-mac-dinh-18.jpg',
+  phone: null,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  lastLoginAt: null,
+} as const;
+
 const ProfileScreen = () => {
   const theme = useTheme();
   const styles = useStyles();
   const navigation = useNavigation();
   // const insets = useSafeAreaInsets(); // Removed as HeaderAction handles it
-
-  // Mock user data for display // TODO: Replace with actual user data from store
-  const user = {
-    id: '1',
-    username: 'vanquyet',
-    email: 'quyet@example.com',
-    displayName: 'Văn Quyết',
-    role: 'user',
-    status: 'active',
-    avatar:
-      'https://hoanghamobile.com/tin-tuc/wp-content/uploads/2024/06/anh-dai-dien-mac-dinh-18.jpg',
-    phone: null,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    lastLoginAt: null,
-  } as const;
 
   const handleBack = useCallback(() => {
     navigation.goBack();
@@ -50,9 +50,9 @@ const ProfileScreen = () => {
           titleStyle={styles.title}
           onIconLeftPress={handleBack}
         />
-        <Avatar user={user} size={100} accentBorder />
+        <Avatar user={MOCK_USER} size={100} accentBorder />
         <CustomText variant="h6" color="white">
-          {user.displayName}
+          {MOCK_USER.displayName}
         </CustomText>
         <LeverIdentity lever={2} />
         {/* </View> */}

@@ -22,7 +22,7 @@ export const useBaseQuery = <TData, TError = Error>({
     successMessage = 'Tải dữ liệu thành công',
     ...options
 }: UseBaseQueryProps<TData, TError>) => {
-    const query = useQuery({
+    const { data, error, isSuccess, isFetching, ...rest } = useQuery({
         queryKey,
         queryFn,
         retry: (failureCount, error: any) => {
@@ -40,17 +40,17 @@ export const useBaseQuery = <TData, TError = Error>({
 
     // Hiển thị toast lỗi
     useEffect(() => {
-        if (query.error && showErrorToast) {
-            errorHandler.handleApiError(query.error, 'useBaseQuery');
+        if (error && showErrorToast) {
+            errorHandler.handleApiError(error, 'useBaseQuery');
         }
-    }, [query.error, showErrorToast]);
+    }, [error, showErrorToast]);
 
     // Log thành công nếu cần
     useEffect(() => {
-        if (query.data && query.isSuccess && showSuccessToast && !query.isFetching) {
+        if (data && isSuccess && showSuccessToast && !isFetching) {
             logger.info('Query thành công', { message: successMessage });
         }
-    }, [query.data, query.isSuccess, showSuccessToast, successMessage, query.isFetching]);
+    }, [data, isSuccess, showSuccessToast, successMessage, isFetching]);
 
-    return query;
+    return { data, error, isSuccess, isFetching, ...rest };
 }; 

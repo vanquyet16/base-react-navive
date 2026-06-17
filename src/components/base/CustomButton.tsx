@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import {
-  TouchableOpacity,
-  type TouchableOpacityProps,
+  Pressable,
+  type PressableProps,
   ActivityIndicator,
   View,
   type StyleProp,
@@ -28,7 +28,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 /**
  * CustomButton Props
  */
-export interface CustomButtonProps extends TouchableOpacityProps {
+export interface CustomButtonProps extends PressableProps {
   /** Button variant */
   variant?: ButtonVariant;
 
@@ -140,9 +140,6 @@ const CustomButtonBase: React.FC<CustomButtonProps> = ({
 
       // Disabled state
       isDisabled && styles.disabled,
-
-      // User overrides (margin, align, etc.)
-      style,
     ],
     [
       styles.container,
@@ -154,7 +151,6 @@ const CustomButtonBase: React.FC<CustomButtonProps> = ({
       isTextVariant,
       fullWidth,
       isDisabled,
-      style,
     ],
   );
 
@@ -179,10 +175,13 @@ const CustomButtonBase: React.FC<CustomButtonProps> = ({
   }
 
   return (
-    <TouchableOpacity
-      style={containerStyles}
+    <Pressable
+      style={state => [
+        containerStyles,
+        typeof style === 'function' ? style(state) : style,
+        { opacity: state.pressed ? 0.7 : 1 },
+      ]}
       disabled={isDisabled}
-      activeOpacity={0.7}
       {...rest}
     >
       {loading ? (
@@ -198,7 +197,7 @@ const CustomButtonBase: React.FC<CustomButtonProps> = ({
           {rightIcon && <View style={styles.iconRight}>{rightIcon}</View>}
         </View>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { View, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
+import { View, Pressable, StyleProp, ViewStyle } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import { CustomButton, ButtonVariant } from './CustomButton';
@@ -66,10 +66,12 @@ export const ModalActions = memo<ModalActionsProps>(
                 style={[styles.button, fullWidth && styles.fullWidth]}
               />
               {secondaryLabel && (
-                <TouchableOpacity
+                <Pressable
                   onPress={onSecondaryPress}
-                  style={styles.verticalSecondaryBtn}
-                  activeOpacity={0.7}
+                  style={({ pressed }) => [
+                    styles.verticalSecondaryBtn,
+                    { opacity: pressed ? 0.7 : 1 },
+                  ]}
                 >
                   {secondaryVariant === 'ghost' ||
                   secondaryVariant === 'text' ? (
@@ -88,7 +90,7 @@ export const ModalActions = memo<ModalActionsProps>(
                       style={[styles.button, fullWidth && styles.fullWidth]}
                     />
                   )}
-                </TouchableOpacity>
+                </Pressable>
               )}
             </View>
           );

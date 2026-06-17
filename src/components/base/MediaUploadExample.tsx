@@ -8,23 +8,24 @@ import { moderateVerticalScale, scale } from 'react-native-size-matters';
  * ===================
  * Ví dụ sử dụng MediaUploadButton với 3 loại khác nhau
  */
+const handleTakePhoto = () => {
+  console.log('Chụp ảnh');
+  // TODO: Implement camera logic
+  // Ví dụ: sử dụng react-native-image-picker
+};
+
+const handleRecordVideo = () => {
+  console.log('Quay video');
+  // TODO: Implement video recording logic
+};
+
+const handlePickFile = () => {
+  console.log('Chọn file');
+  // TODO: Implement file picker logic
+  // Ví dụ: sử dụng react-native-document-picker
+};
+
 export const MediaUploadExample = () => {
-  const handleTakePhoto = () => {
-    console.log('Chụp ảnh');
-    // TODO: Implement camera logic
-    // Ví dụ: sử dụng react-native-image-picker
-  };
-
-  const handleRecordVideo = () => {
-    console.log('Quay video');
-    // TODO: Implement video recording logic
-  };
-
-  const handlePickFile = () => {
-    console.log('Chọn file');
-    // TODO: Implement file picker logic
-    // Ví dụ: sử dụng react-native-document-picker
-  };
 
   return (
     <View style={styles.container}>

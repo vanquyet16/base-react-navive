@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import { CustomText } from './CustomText';
@@ -64,10 +64,12 @@ export const FilterChip = memo<FilterChipProps>(
     );
 
     return (
-      <TouchableOpacity
-        style={containerStyle}
+      <Pressable
+        style={({ pressed }) => [
+          containerStyle,
+          { opacity: pressed ? 0.7 : 1 },
+        ]}
         onPress={onPress}
-        activeOpacity={0.7}
         disabled={disabled}
       >
         {icon && (
@@ -87,7 +89,7 @@ export const FilterChip = memo<FilterChipProps>(
         <CustomText variant="caption" style={textStyle}>
           {label}
         </CustomText>
-      </TouchableOpacity>
+      </Pressable>
     );
   },
 );

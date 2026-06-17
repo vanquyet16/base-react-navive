@@ -1,7 +1,7 @@
 import React, { memo, useMemo } from 'react';
 import {
   View,
-  TouchableOpacity,
+  Pressable,
   ViewStyle,
   StyleProp,
   TextStyle,
@@ -110,10 +110,13 @@ const SectionHeader: React.FC<SectionHeaderProps> = memo(
       // Priority 1: Custom Action Button (Filter style)
       if (actionLabel || actionIcon) {
         return (
-          <TouchableOpacity
+          <Pressable
             onPress={onAction}
-            style={[styles.actionButton, rightActionStyle?.styleAction]}
-            activeOpacity={0.7}
+            style={({ pressed }) => [
+              styles.actionButton,
+              rightActionStyle?.styleAction,
+              { opacity: pressed ? 0.7 : 1 },
+            ]}
           >
             {actionIcon && (
               <AppIcon
@@ -138,21 +141,22 @@ const SectionHeader: React.FC<SectionHeaderProps> = memo(
                 {actionLabel}
               </CustomText>
             )}
-          </TouchableOpacity>
+          </Pressable>
         );
       }
 
       // Priority 2: "See All" text link
       if (onSeeAll) {
         return (
-          <TouchableOpacity
+          <Pressable
             onPress={onSeeAll}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
           >
             <CustomText variant="h8" style={styles.seeAllText}>
               {seeAllText}
             </CustomText>
-          </TouchableOpacity>
+          </Pressable>
         );
       }
 
@@ -168,6 +172,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = memo(
       styles.actionText,
       styles.seeAllText,
       theme.colors.textSecondary,
+      rightActionStyle,
     ]);
 
     const titleStyle = useMemo(() => {

@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useRef, ReactNode, useMemo } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import Animated, {
   SharedValue,
   useAnimatedStyle,
@@ -106,10 +106,12 @@ const SwipeActionView = memo<SwipeActionViewProps>(
       <Animated.View
         style={[styles.actionContainer, customStyle, animatedStyle]}
       >
-        <TouchableOpacity
-          style={styles.actionButton}
+        <Pressable
+          style={({ pressed }) => [
+            styles.actionButton,
+            { opacity: pressed ? 0.7 : 1 },
+          ]}
           onPress={action.onPress}
-          activeOpacity={0.7}
         >
           <AppIcon
             name={action.icon || (direction === 'right' ? 'trash' : 'check')}
@@ -119,7 +121,7 @@ const SwipeActionView = memo<SwipeActionViewProps>(
           <CustomText variant="caption" style={styles.actionText}>
             {action.text || (direction === 'right' ? 'Xóa' : 'Đánh dấu')}
           </CustomText>
-        </TouchableOpacity>
+        </Pressable>
       </Animated.View>
     );
   },
@@ -148,7 +150,7 @@ const RightSwipeActions = memo<RightSwipeActionsProps>(
       <View style={{ flexDirection: 'row', width: totalWidth }}>
         {actions.map((act, index) => (
           <SwipeActionView
-            key={index}
+            key={act.text || act.icon || index}
             progress={progress}
             action={act}
             direction="right"
@@ -183,7 +185,7 @@ const LeftSwipeActions = memo<LeftSwipeActionsProps>(({ progress, action }) => {
     <View style={{ flexDirection: 'row', width: totalWidth }}>
       {actions.map((act, index) => (
         <SwipeActionView
-          key={index}
+          key={act.text || act.icon || index}
           progress={progress}
           action={act}
           direction="left"
@@ -302,9 +304,9 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({
     [wrappedLeftActions],
   );
 
-  // Content wrapper (memoized)
-  const renderContent = useCallback(() => {
-    // If onPress is provided, we wrap in TouchableOpacity
+  // Content wrapper (JSX variable)
+  const content = (() => {
+    // If onPress is provided, we wrap in Pressable
     // If not, we just render children (assuming children handle touches or are static)
 
     // Optimization: If disabled and no onPress, just View wrapper
@@ -313,8 +315,10 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({
     }
 
     return (
-      <TouchableOpacity
-        activeOpacity={onPress ? 0.7 : 1}
+      <Pressable
+        style={({ pressed }) => ({
+          opacity: pressed && onPress ? 0.7 : 1,
+        })}
         onPress={onPress}
         onLongPress={
           !disabled && (rightAction || leftAction) ? handleLongPress : undefined
@@ -322,12 +326,12 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({
         delayLongPress={500}
       >
         {children}
-      </TouchableOpacity>
+      </Pressable>
     );
-  }, [disabled, onPress, children, rightAction, leftAction, handleLongPress]);
+  })();
 
   if (disabled || (!rightAction && !leftAction)) {
-    return renderContent();
+    return content;
   }
 
   return (
@@ -340,7 +344,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({
       friction={friction}
       enableTrackpadTwoFingerGesture
     >
-      {renderContent()}
+      {content}
     </Swipeable>
   );
 };

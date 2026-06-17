@@ -57,9 +57,9 @@ const FeedbackResponseCard: React.FC<FeedbackResponseCardProps> = memo(
               removeClippedSubviews={true} // ✅ Optimize horizontal scroll
               nestedScrollEnabled={false} // ✅ Avoid nested scroll conflicts
             >
-              {images.map((img, index) => (
+              {images.map((img) => (
                 <FastImage
-                  key={index}
+                  key={img}
                   source={{ uri: img }}
                   style={styles.image}
                   resizeMode={FastImage.resizeMode.cover}

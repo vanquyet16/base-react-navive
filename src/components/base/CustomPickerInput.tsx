@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import {
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   StyleProp,
   ViewStyle,
@@ -72,14 +72,14 @@ export const CustomPickerInput = memo<CustomPickerInputProps>(
         )}
 
         {/* Input Trigger */}
-        <TouchableOpacity
-          style={[
+        <Pressable
+          style={({ pressed }) => [
             styles.container,
             error && styles.containerError,
             disabled && styles.containerDisabled,
+            { opacity: pressed ? 0.7 : 1 },
           ]}
           onPress={onPress}
-          activeOpacity={0.7}
           disabled={disabled}
         >
           <CustomText
@@ -102,7 +102,7 @@ export const CustomPickerInput = memo<CustomPickerInputProps>(
                 : theme.colors.textSecondary
             }
           />
-        </TouchableOpacity>
+        </Pressable>
 
         {/* Error Message */}
         {error && (

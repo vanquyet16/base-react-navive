@@ -4,7 +4,7 @@ import { useTheme } from '@/shared/theme/use-theme';
 import { View } from '@ant-design/react-native';
 import React, { memo, useCallback } from 'react';
 import FastImage from 'react-native-fast-image';
-import { ImageBackground, TouchableOpacity } from 'react-native';
+import { ImageBackground, Pressable } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
 import { Text } from 'react-native-gesture-handler';
 import {
@@ -60,12 +60,15 @@ const HeaderHome = ({ scrollY }: HeaderHomeProps) => {
           <SafeAreaView edges={['top']} style={styles.safeArea}>
             <View style={styles.dashboardTopRow}>
               <View style={styles.brandContainer}>
-                <TouchableOpacity
-                  style={styles.logoCircle}
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.logoCircle,
+                    { opacity: pressed ? 0.7 : 1 },
+                  ]}
                   onPress={handleProfilePress}
                 >
                   <Text style={styles.logoText}>CS</Text>
-                </TouchableOpacity>
+                </Pressable>
                 <View style={styles.brandInfo}>
                   <Text style={styles.brandName}>{'Văn quyết'}</Text>
                   <View style={styles.locationContainer}>
@@ -80,9 +83,12 @@ const HeaderHome = ({ scrollY }: HeaderHomeProps) => {
               </View>
 
               <View style={styles.dashboardRightActions}>
-                <TouchableOpacity onPress={handleSearchPress}>
+                <Pressable
+                  style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+                  onPress={handleSearchPress}
+                >
                   <AppIcon name="search" size={24} color={theme.colors.white} />
-                </TouchableOpacity>
+                </Pressable>
               </View>
             </View>
           </SafeAreaView>
@@ -95,12 +101,15 @@ const HeaderHome = ({ scrollY }: HeaderHomeProps) => {
           <SafeAreaView edges={['top']} style={styles.safeArea}>
             <View style={styles.compactRow}>
               <View style={styles.compactBrand}>
-                <TouchableOpacity
-                  style={styles.compactLogoCircle}
+                <Pressable
+                  style={({ pressed }) => [
+                    styles.compactLogoCircle,
+                    { opacity: pressed ? 0.7 : 1 },
+                  ]}
                   onPress={handleProfilePress}
                 >
                   <Text style={styles.compactLogoText}>CS</Text>
-                </TouchableOpacity>
+                </Pressable>
                 <View style={styles.brandInfo}>
                   <Text style={styles.brandName}>{'Văn quyết'}</Text>
                   <View style={styles.locationContainer}>
@@ -113,9 +122,12 @@ const HeaderHome = ({ scrollY }: HeaderHomeProps) => {
                   </View>
                 </View>
               </View>
-              <TouchableOpacity onPress={handleSearchPress}>
+              <Pressable
+                style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+                onPress={handleSearchPress}
+              >
                 <AppIcon name="search" size={20} color={theme.colors.white} />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </SafeAreaView>
         </Animated.View>

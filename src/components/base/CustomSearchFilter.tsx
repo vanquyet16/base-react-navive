@@ -1,6 +1,6 @@
 import { createStyles } from '@/shared/theme/create-styles';
 import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 import { moderateScale } from 'react-native-size-matters';
 import AppIcon from './AppIcon';
@@ -24,9 +24,15 @@ const CustomSearchFilter = (props: CustomSearchFilterProps) => {
         borderRadius={20}
         width="85%"
       />
-      <TouchableOpacity style={styles.filterContainer} onPress={onFilter}>
+      <Pressable
+        style={({ pressed }) => [
+          styles.filterContainer,
+          { opacity: pressed ? 0.7 : 1 },
+        ]}
+        onPress={onFilter}
+      >
         <AppIcon name="sliders" size={moderateScale(20)} />
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };

@@ -4,9 +4,8 @@
 
 import React from 'react';
 import {
-  StackNavigationOptions,
-  StackNavigationEventMap,
-} from '@react-navigation/stack';
+  NativeStackNavigationOptions,
+} from '@react-navigation/native-stack';
 import {
   DrawerNavigationOptions,
   DrawerNavigationEventMap,
@@ -40,7 +39,7 @@ interface TypedNavigator<
 export interface AdditionalScreen<ParamList extends ParamListBase> {
   name: keyof ParamList;
   component: React.ComponentType<any>;
-  options?: StackNavigationOptions;
+  options?: NativeStackNavigationOptions;
 }
 
 /**
@@ -48,7 +47,7 @@ export interface AdditionalScreen<ParamList extends ParamListBase> {
  */
 export interface NavigatorOptions<
   ParamList extends ParamListBase,
-  ScreenOptions extends object = StackNavigationOptions,
+  ScreenOptions extends object = NativeStackNavigationOptions,
 > {
   initialRouteName: keyof ParamList;
   screenOptions?: ScreenOptions;
@@ -82,7 +81,7 @@ export const createMainStackNavigatorComponent = <
 >(
   Navigator: TypedNavigator<ParamList>,
   screenConfigs: Record<string, ScreenConfig>,
-  options: NavigatorOptions<ParamList, StackNavigationOptions>,
+  options: NavigatorOptions<ParamList, NativeStackNavigationOptions>,
   additionalScreens?: AdditionalScreen<ParamList>[],
 ): React.FC => {
   /**
@@ -158,7 +157,7 @@ export const createAuthStackNavigatorComponent = <
 >(
   Navigator: TypedNavigator<ParamList>,
   screenConfigs: AuthScreenConfig[],
-  options: NavigatorOptions<ParamList, StackNavigationOptions>,
+  options: NavigatorOptions<ParamList, NativeStackNavigationOptions>,
 ): React.FC => {
   /**
    * Auth Navigator Component

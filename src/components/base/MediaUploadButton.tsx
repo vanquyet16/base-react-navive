@@ -1,5 +1,5 @@
-import React, { memo, useCallback } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import React, { memo, useMemo } from 'react';
+import { Pressable, View } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import { CustomText } from '@/components/base';
@@ -54,94 +54,9 @@ export const MediaUploadButton: React.FC<MediaUploadButtonProps> = memo(
     const theme = useTheme();
     const styles = useStyles();
 
-    // Render Group Type
-    if (type === 'group') {
-      return (
-        <View style={styles.groupContainer}>
-          {/* Photo Action */}
-          <TouchableOpacity
-            style={styles.groupItem}
-            onPress={onPhotoPress}
-            activeOpacity={0.7}
-            disabled={disabled}
-          >
-            <View
-              style={[
-                styles.groupIconContainer,
-                {
-                  backgroundColor: '#E3F2FD', // Light Blue
-                  borderColor: '#2196F3',
-                },
-              ]}
-            >
-              <AppIcon name="camera" size={moderateScale(24)} color="#2196F3" />
-            </View>
-            <CustomText variant="caption" style={styles.groupLabel}>
-              Chụp ảnh
-            </CustomText>
-          </TouchableOpacity>
-
-          {/* Divider */}
-          <View style={styles.divider} />
-
-          {/* Video Action */}
-          <TouchableOpacity
-            style={styles.groupItem}
-            onPress={onVideoPress}
-            activeOpacity={0.7}
-            disabled={disabled}
-          >
-            <View
-              style={[
-                styles.groupIconContainer,
-                {
-                  backgroundColor: '#FFEBEE', // Light Red
-                  borderColor: '#F44336',
-                },
-              ]}
-            >
-              <AppIcon name="video" size={moderateScale(24)} color="#F44336" />
-            </View>
-            <CustomText variant="caption" style={styles.groupLabel}>
-              Quay video
-            </CustomText>
-          </TouchableOpacity>
-
-          {/* Divider */}
-          <View style={styles.divider} />
-
-          {/* File Action */}
-          <TouchableOpacity
-            style={styles.groupItem}
-            onPress={onFilePress}
-            activeOpacity={0.7}
-            disabled={disabled}
-          >
-            <View
-              style={[
-                styles.groupIconContainer,
-                {
-                  backgroundColor: '#FFF8E1', // Light Yellow/Orange
-                  borderColor: '#FFC107',
-                },
-              ]}
-            >
-              <AppIcon
-                name="paperclip"
-                size={moderateScale(24)}
-                color="#FFA000" // Darker Orange for visibility
-              />
-            </View>
-            <CustomText variant="caption" style={styles.groupLabel}>
-              Tệp tin
-            </CustomText>
-          </TouchableOpacity>
-        </View>
-      );
-    }
-
     // Cấu hình cho từng loại single
-    const config = useCallback(() => {
+    // Đã được chuyển lên trên để tránh lỗi Hook called conditionally
+    const config = useMemo(() => {
       switch (type) {
         case 'photo':
           return {
@@ -180,18 +95,110 @@ export const MediaUploadButton: React.FC<MediaUploadButtonProps> = memo(
             iconColor: theme.colors.white,
           };
       }
-    }, [type, label, theme])();
+    }, [type, label, theme]);
+
+    // Render Group Type
+    if (type === 'group') {
+      return (
+        <View style={styles.groupContainer}>
+          {/* Photo Action */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.groupItem,
+              { opacity: pressed ? 0.7 : 1 },
+            ]}
+            onPress={onPhotoPress}
+            disabled={disabled}
+          >
+            <View
+              style={[
+                styles.groupIconContainer,
+                {
+                  backgroundColor: '#E3F2FD', // Light Blue
+                  borderColor: '#2196F3',
+                },
+              ]}
+            >
+              <AppIcon name="camera" size={moderateScale(24)} color="#2196F3" />
+            </View>
+            <CustomText variant="caption" style={styles.groupLabel}>
+              Chụp ảnh
+            </CustomText>
+          </Pressable>
+
+          {/* Divider */}
+          <View style={styles.divider} />
+
+          {/* Video Action */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.groupItem,
+              { opacity: pressed ? 0.7 : 1 },
+            ]}
+            onPress={onVideoPress}
+            disabled={disabled}
+          >
+            <View
+              style={[
+                styles.groupIconContainer,
+                {
+                  backgroundColor: '#FFEBEE', // Light Red
+                  borderColor: '#F44336',
+                },
+              ]}
+            >
+              <AppIcon name="video" size={moderateScale(24)} color="#F44336" />
+            </View>
+            <CustomText variant="caption" style={styles.groupLabel}>
+              Quay video
+            </CustomText>
+          </Pressable>
+
+          {/* Divider */}
+          <View style={styles.divider} />
+
+          {/* File Action */}
+          <Pressable
+            style={({ pressed }) => [
+              styles.groupItem,
+              { opacity: pressed ? 0.7 : 1 },
+            ]}
+            onPress={onFilePress}
+            disabled={disabled}
+          >
+            <View
+              style={[
+                styles.groupIconContainer,
+                {
+                  backgroundColor: '#FFF8E1', // Light Yellow/Orange
+                  borderColor: '#FFC107',
+                },
+              ]}
+            >
+              <AppIcon
+                name="paperclip"
+                size={moderateScale(24)}
+                color="#FFA000" // Darker Orange for visibility
+              />
+            </View>
+            <CustomText variant="caption" style={styles.groupLabel}>
+              Tệp tin
+            </CustomText>
+          </Pressable>
+        </View>
+      );
+    }
 
     return (
-      <TouchableOpacity
-        style={[
+      <Pressable
+        style={({ pressed }) => [
           config.isFullWidth ? styles.fileButton : styles.button,
           { backgroundColor: config.backgroundColor },
           disabled && styles.disabled,
+          { opacity: pressed ? 0.7 : 1 },
         ]}
         onPress={onPress}
         disabled={disabled}
-        activeOpacity={0.7}
       >
         <View
           style={[
@@ -223,7 +230,7 @@ export const MediaUploadButton: React.FC<MediaUploadButtonProps> = memo(
         >
           {config.label}
         </CustomText>
-      </TouchableOpacity>
+      </Pressable>
     );
   },
 );

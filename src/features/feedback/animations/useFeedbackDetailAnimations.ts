@@ -22,10 +22,7 @@ export const useFeedbackDetailAnimations = (scrollY: SharedValue<number>) => {
     const insets = useSafeAreaInsets();
 
     // Memoize minHeight calculation
-    const minHeight = useMemo(
-        () => FEEDBACK_ANIMATION_CONSTANTS.HEADER_MIN_HEIGHT + insets.top,
-        [insets.top]
-    );
+    const minHeight = FEEDBACK_ANIMATION_CONSTANTS.HEADER_MIN_HEIGHT + insets.top;
 
     // 1. Container Height Animation
     const containerAnimatedStyle = useAnimatedStyle(() => {

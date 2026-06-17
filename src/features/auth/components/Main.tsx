@@ -1,5 +1,5 @@
 import React, { useState, useCallback, memo } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { WingBlank } from '@ant-design/react-native';
 import {
   CustomButton,
@@ -73,7 +73,7 @@ const Main = memo(() => {
 
   const handleForgotPassword = useCallback(() => {
     // navigation.navigate('ForgotPassword');
-  }, [navigation]);
+  }, []);
 
   return (
     <WingBlank size="lg" style={styles.container}>
@@ -109,11 +109,14 @@ const Main = memo(() => {
         <CustomText variant="caption" style={styles.label}>
           MẬT KHẨU
         </CustomText>
-        <TouchableOpacity onPress={handleForgotPassword}>
+        <Pressable 
+          style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+          onPress={handleForgotPassword}
+        >
           <CustomText variant="caption" style={styles.forgotPasswordText}>
             Quên mật khẩu
           </CustomText>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       <FormInput
@@ -131,13 +134,16 @@ const Main = memo(() => {
         }}
         leftIcon={<AppIcon name="lock" size={18} color="#9ca3af" />}
         rightIcon={
-          <TouchableOpacity onPress={togglePasswordVisibility}>
+          <Pressable 
+            style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+            onPress={togglePasswordVisibility}
+          >
             <AppIcon
               name={showPassword ? 'eye' : 'eye-off'}
               size={18}
               color="#9ca3af"
             />
-          </TouchableOpacity>
+          </Pressable>
         }
         secureTextEntry={!showPassword}
       />

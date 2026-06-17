@@ -1,5 +1,4 @@
-import { useRef, useMemo } from 'react';
-import { Animated } from 'react-native';
+import { useSharedValue, useAnimatedScrollHandler, useAnimatedStyle, interpolate } from 'react-native-reanimated';
 
 interface UseScrollFabAnimationConfig {
     /**
@@ -17,42 +16,47 @@ interface UseScrollFabAnimationConfig {
 /**
  * useScrollFabAnimation Hook
  * ==========================
- * A generic hook for creating a "scroll-to-hide" animation, typically used for FABs.
+ * A generic hook for creating a "scroll-to-hide" animation using react-native-reanimated.
  *
  * @param config Configuration object for customizing the animation
- * @returns { scrollY, translateY, onScroll }
+ * @returns { translateYStyle, onScroll }
  */
 export const useScrollFabAnimation = (config: UseScrollFabAnimationConfig = {}) => {
     const { clampRange = 100, hiddenTranslation = 200 } = config;
 
-    const scrollY = useRef(new Animated.Value(0)).current;
+    const lastScrollY = useSharedValue(0);
+    const clampedTranslation = useSharedValue(0);
 
-    const translateY = useMemo(() => {
-        // 1. Clamp negative scroll values (pull-to-refresh) to 0.
-        // This prevents the "snap back" animation from triggering the hide effect.
-        const clampedScrollY = scrollY.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0, 1],
-            extrapolateLeft: 'clamp',
-        });
+    const onScroll = useAnimatedScrollHandler({
+        onScroll: (event) => {
+            const currentY = event.contentOffset.y;
+            // Negative scroll values (pull to refresh) clamp to 0
+            const clampedY = Math.max(0, currentY);
+            const delta = clampedY - lastScrollY.value;
+            lastScrollY.value = clampedY;
 
-        // 2. Use diffClamp to track the scroll delta.
-        return Animated.diffClamp(clampedScrollY, 0, clampRange).interpolate({
-            inputRange: [0, clampRange],
-            outputRange: [0, hiddenTranslation],
-            extrapolate: 'clamp',
-        });
-    }, [scrollY, clampRange, hiddenTranslation]);
+            // diffClamp logic: accumulate scroll delta and clamp within [0, clampRange]
+            clampedTranslation.value = Math.max(
+                0,
+                Math.min(clampRange, clampedTranslation.value + delta)
+            );
+        },
+    });
 
-    const onScroll = useRef(
-        Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], {
-            useNativeDriver: true,
-        }),
-    ).current;
+    const translateYStyle = useAnimatedStyle(() => {
+        const val = interpolate(
+            clampedTranslation.value,
+            [0, clampRange],
+            [0, hiddenTranslation],
+            'clamp'
+        );
+        return {
+            transform: [{ translateY: val }],
+        };
+    });
 
     return {
-        scrollY,
-        translateY,
+        translateYStyle,
         onScroll,
     };
 };

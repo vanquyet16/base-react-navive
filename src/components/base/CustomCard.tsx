@@ -31,7 +31,7 @@ export const CustomCard: React.FC<CustomCardProps> = ({
   ...props
 }) => {
   const theme = useTheme();
-  const styles = useStyles(theme);
+  const styles = useStyles();
 
   // Memoize elevation style để avoid tạo object mới mỗi render
   const elevationStyle = useMemo(
@@ -57,11 +57,14 @@ export const CustomCard: React.FC<CustomCardProps> = ({
  */
 export default memo(CustomCard);
 
-const useStyles = createStyles(theme => ({
-  card: {
-    backgroundColor: theme.colors.backgroundTertiary, // White cards
-    borderRadius: 20, // Increased from theme.radius.md (8px) to 20px
-    borderColor: theme.colors.border, // #f3f4f6
-    borderWidth: 1,
-  },
-}));
+const useStyles = createStyles(
+  theme => ({
+    card: {
+      backgroundColor: theme.colors.backgroundTertiary, // White cards
+      borderRadius: 20, // Increased from theme.radius.md (8px) to 20px
+      borderColor: theme.colors.border, // #f3f4f6
+      borderWidth: 1,
+    },
+  }),
+  true,
+);

@@ -5,8 +5,8 @@ import {
   StyleSheet,
   Text,
   ViewStyle,
-  Animated,
 } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { FlashList, FlashListProps, ContentStyle } from '@shopify/flash-list';
 import { useTheme } from '@/shared/theme/use-theme';
 import { moderateVerticalScale } from '@/shared/utils/sizeMatters';
@@ -58,7 +58,7 @@ export function CustomFlashList<T>(props: CustomFlashListProps<T>) {
     ) : (
       <View style={{ height: moderateVerticalScale(20) }} />
     );
-  }, [isLoadingMore, theme, ListFooterComponent, styles.footer]);
+  }, [isLoadingMore, theme.colors.primary, ListFooterComponent, styles.footer]);
 
   // Default Empty State
   const renderEmpty = useCallback(() => {
@@ -68,7 +68,7 @@ export function CustomFlashList<T>(props: CustomFlashListProps<T>) {
         <Text style={styles.emptyText}>{emptyText}</Text>
       </View>
     );
-  }, [ListEmptyComponent, emptyText, styles, emptyText]);
+  }, [ListEmptyComponent, emptyText, styles.emptyContainer, styles.emptyText]);
 
   return (
     <AnimatedFlashList

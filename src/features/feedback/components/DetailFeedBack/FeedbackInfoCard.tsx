@@ -15,44 +15,51 @@ interface FeedbackInfoCardProps {
   createdAt: string;
 }
 
+interface InfoItemProps {
+  icon: string;
+  label: string;
+  value: string;
+  styles: any;
+  theme: any;
+}
+
+const InfoItem = memo<InfoItemProps>(({ icon, label, value, styles, theme }) => (
+  <View style={styles.itemContainer}>
+    <View style={styles.iconContainer}>
+      <AppIcon
+        name={icon}
+        size={moderateScale(18)}
+        color={theme.colors.textSecondary}
+      />
+    </View>
+    <View style={styles.textContainer}>
+      <CustomText variant="h9" color="secondary" style={styles.label}>
+        {label}
+      </CustomText>
+      <CustomText variant="h8" style={styles.value}>
+        {value}
+      </CustomText>
+    </View>
+  </View>
+));
+
+InfoItem.displayName = 'InfoItem';
+
 const FeedbackInfoCard: React.FC<FeedbackInfoCardProps> = memo(
   ({ address, feedbackCode, createdAt }) => {
     const theme = useTheme();
     const styles = useStyles();
 
-    const renderItem = useCallback(
-      (icon: string, label: string, value: string) => (
-        <View style={styles.itemContainer}>
-          <View style={styles.iconContainer}>
-            <AppIcon
-              name={icon}
-              size={moderateScale(18)}
-              color={theme.colors.textSecondary}
-            />
-          </View>
-          <View style={styles.textContainer}>
-            <CustomText variant="h9" color="secondary" style={styles.label}>
-              {label}
-            </CustomText>
-            <CustomText variant="h8" style={styles.value}>
-              {value}
-            </CustomText>
-          </View>
-        </View>
-      ),
-      [styles, theme.colors.textSecondary],
-    );
-
     return (
       <ShadowCard style={styles.containerOverride}>
-        {renderItem('map-pin', 'Địa điểm', address)}
+        <InfoItem icon="map-pin" label="Địa điểm" value={address} styles={styles} theme={theme} />
         <View style={styles.divider} />
         <View style={styles.row}>
           <View style={styles.halfWidth}>
-            {renderItem('hash', 'Mã phản ánh', feedbackCode)}
+            <InfoItem icon="hash" label="Mã phản ánh" value={feedbackCode} styles={styles} theme={theme} />
           </View>
           <View style={styles.halfWidth}>
-            {renderItem('clock', 'Thời gian gửi', createdAt)}
+            <InfoItem icon="clock" label="Thời gian gửi" value={createdAt} styles={styles} theme={theme} />
           </View>
         </View>
       </ShadowCard>

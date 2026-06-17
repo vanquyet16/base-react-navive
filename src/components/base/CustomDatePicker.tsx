@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo, useState, useEffect } from 'react';
-import { View, StyleSheet, Modal, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Modal, Pressable } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { CustomText } from '@/components'; // Assuming index export exists
 import { useTheme } from '@/shared/theme/use-theme';
@@ -63,6 +63,15 @@ interface CustomDatePickerProps {
   title?: string;
 }
 
+// Format date to YYYY-MM-DD for Calendar component
+const formatDateString = (date: Date | null | undefined): string => {
+  if (!date) return '';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 /**
  * CustomDatePicker Component
  * ===========================
@@ -87,26 +96,14 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = memo(
       console.log('CustomDatePicker render - visible:', visible);
     }, [visible]);
 
-    // Format date to YYYY-MM-DD for Calendar component
-    const formatDateString = useCallback(
-      (date: Date | null | undefined): string => {
-        if (!date) return '';
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-      },
-      [],
-    );
-
-    const [tempSelectedDate, setTempSelectedDate] = useState<string>(
+    const [tempSelectedDate, setTempSelectedDate] = useState<string>(() =>
       formatDateString(selectedDate),
     );
 
     // Update temp date when selectedDate prop changes
     useEffect(() => {
       setTempSelectedDate(formatDateString(selectedDate));
-    }, [selectedDate, formatDateString]);
+    }, [selectedDate]);
 
     // Calendar theme configuration
     const calendarTheme = useMemo(
@@ -165,7 +162,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = memo(
     const handleCancel = useCallback(() => {
       setTempSelectedDate(formatDateString(selectedDate));
       onClose();
-    }, [selectedDate, onClose, formatDateString]);
+    }, [selectedDate, onClose]);
 
     return (
       <Modal
@@ -197,10 +194,13 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = memo(
 
             {/* Footer Actions */}
             <View style={styles.footer}>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
+              <Pressable
+                style={({ pressed }) => [
+                  styles.button,
+                  styles.cancelButton,
+                  { opacity: pressed ? 0.7 : 1 },
+                ]}
                 onPress={handleCancel}
-                activeOpacity={0.7}
               >
                 <CustomText
                   variant="bodySmall"
@@ -209,11 +209,14 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = memo(
                 >
                   Hủy
                 </CustomText>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.button, styles.confirmButton]}
+              </Pressable>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.button,
+                  styles.confirmButton,
+                  { opacity: pressed ? 0.7 : 1 },
+                ]}
                 onPress={handleConfirm}
-                activeOpacity={0.7}
               >
                 <CustomText
                   variant="bodySmall"
@@ -222,7 +225,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = memo(
                 >
                   Xác nhận
                 </CustomText>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         </View>

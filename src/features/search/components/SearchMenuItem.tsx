@@ -10,7 +10,7 @@
  */
 
 import React, { memo, useCallback, useMemo } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { AppIcon, CustomText } from '@/components';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
@@ -52,10 +52,12 @@ const SearchMenuItem: React.FC<SearchMenuItemProps> = memo(
     }, [onPress]);
 
     return (
-      <TouchableOpacity
-        style={styles.container}
+      <Pressable
+        style={({ pressed }) => [
+          styles.container,
+          { opacity: pressed ? 0.7 : 1 },
+        ]}
         onPress={handlePress}
-        activeOpacity={0.7}
       >
         {/* Icon container */}
         <View style={styles.iconContainer}>
@@ -86,7 +88,7 @@ const SearchMenuItem: React.FC<SearchMenuItemProps> = memo(
           size={20}
           color={theme.colors.textTertiary}
         />
-      </TouchableOpacity>
+      </Pressable>
     );
   },
 );

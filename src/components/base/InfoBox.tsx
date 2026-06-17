@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback, memo } from 'react';
 import {
   View,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ViewStyle,
   ImageSourcePropType,
@@ -134,9 +134,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
       type,
       theme.spacing,
       iconBackgroundColor,
-      iconColor, // Dependency
       theme.colors.primaryLight,
-      theme.colors.primary,
     ],
   );
 
@@ -471,13 +469,13 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
           )}
         </View>
 
-        <TouchableOpacity
+        <Pressable
           onPress={onRightPress}
-          activeOpacity={0.8}
           disabled={!onRightPress}
-          style={[
+          style={({ pressed }) => [
             styles.contactRightButton,
             { backgroundColor: rightColor || theme.colors.primary },
+            { opacity: pressed ? 0.8 : 1 },
           ]}
         >
           <AppIcon
@@ -485,7 +483,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
             size={moderateScale(20)}
             color={theme.colors.white}
           />
-        </TouchableOpacity>
+        </Pressable>
       </View>
     ),
     [
@@ -493,7 +491,6 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
       iconBackgroundColor,
       theme.colors.background,
       theme.colors.text,
-      theme.colors.textSecondary,
       theme.colors.primary,
       theme.colors.white,
       icon,
@@ -507,7 +504,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
     ],
   );
 
-  const renderContent = useCallback(() => {
+  const content = (() => {
     switch (type) {
       case 'vertical':
         return renderVertical();
@@ -524,31 +521,24 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
       default:
         return null;
     }
-  }, [
-    type,
-    renderVertical,
-    renderStatus,
-    renderNews,
-    renderSuggestion,
-    renderContact,
-  ]);
+  })();
 
   if (onPress) {
     return (
-      <TouchableOpacity
+      <Pressable
         onPress={onPress}
-        activeOpacity={0.7}
-        style={[
+        style={({ pressed }) => [
           { marginBottom: moderateVerticalScale(16) },
           style, // Allow override
+          { opacity: pressed ? 0.7 : 1 },
         ]}
       >
-        <ShadowCard style={containerStyle}>{renderContent()}</ShadowCard>
-      </TouchableOpacity>
+        <ShadowCard style={containerStyle}>{content}</ShadowCard>
+      </Pressable>
     );
   }
 
-  return <ShadowCard style={containerStyle}>{renderContent()}</ShadowCard>;
+  return <ShadowCard style={containerStyle}>{content}</ShadowCard>;
 });
 
 const useStyles = (theme: any) =>

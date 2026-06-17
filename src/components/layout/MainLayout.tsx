@@ -159,18 +159,15 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
     );
 
     // Ghi nhớ tính toán padding
-    const contentPaddingBottom = useMemo(
-      () => (hasBottomTabs ? 80 : 0),
-      [hasBottomTabs],
-    );
+    const contentPaddingBottom = hasBottomTabs ? 80 : 0;
 
     // Ghi nhớ style cho container
-    const containerStyle = useMemo(() => [styles.container], []);
+    const containerStyle = useMemo(() => [styles.container], [styles.container]);
 
     // Ghi nhớ scrollContent style
     const scrollContentStyle = useMemo(
       () => [styles.scrollContent, { paddingBottom: contentPaddingBottom }],
-      [contentPaddingBottom],
+      [styles.scrollContent, contentPaddingBottom],
     );
 
     // Ghi nhớ nonScrollContent style
@@ -185,50 +182,28 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
       [keyboardVerticalOffset],
     );
 
-    // Callback cho render nội dung với scroll
-    const renderScrollContent = useCallback(
-      () => (
-        <ScrollView
-          contentContainerStyle={scrollContentStyle}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        >
-          {children}
-        </ScrollView>
-      ),
-      [scrollContentStyle, children],
+    // Tính toán nội dung layout dựa trên enableScroll
+    const layoutContent = enableScroll ? (
+      <ScrollView
+        contentContainerStyle={scrollContentStyle}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        {children}
+      </ScrollView>
+    ) : (
+      <View style={nonScrollStyle}>{children}</View>
     );
 
-    // Callback cho render nội dung không có scroll
-    const renderNonScrollContent = useCallback(
-      () => <View style={nonScrollStyle}>{children}</View>,
-      [nonScrollStyle, children],
-    );
-
-    // Callback cho render nội dung
-    const renderContent = useCallback(
-      () => (enableScroll ? renderScrollContent() : renderNonScrollContent()),
-      [enableScroll, renderScrollContent, renderNonScrollContent],
-    );
-
-    // Callback cho render layout với keyboard avoiding
-    const renderWithKeyboardAvoiding = useCallback(
-      () => (
-        <KeyboardAvoidingView
-          style={styles.keyboardAvoidingView}
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          keyboardVerticalOffset={keyboardOffset}
-        >
-          {renderContent()}
-        </KeyboardAvoidingView>
-      ),
-      [keyboardOffset, renderContent],
-    );
-
-    // Callback cho render layout thông thường
-    const renderNormalLayout = useCallback(
-      () => renderContent(),
-      [renderContent],
+    // Tính toán layout với keyboard avoiding
+    const keyboardAvoidingLayout = (
+      <KeyboardAvoidingView
+        style={styles.keyboardAvoidingView}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={keyboardOffset}
+      >
+        {layoutContent}
+      </KeyboardAvoidingView>
     );
 
     return (
@@ -249,15 +224,11 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
         {/* Nội dung */}
         {!showHeader && !disableSafeArea ? (
           <SafeAreaView style={styles.content} edges={['top']}>
-            {enableKeyboardAvoiding
-              ? renderWithKeyboardAvoiding()
-              : renderNormalLayout()}
+            {enableKeyboardAvoiding ? keyboardAvoidingLayout : layoutContent}
           </SafeAreaView>
         ) : (
           <View style={styles.content}>
-            {enableKeyboardAvoiding
-              ? renderWithKeyboardAvoiding()
-              : renderNormalLayout()}
+            {enableKeyboardAvoiding ? keyboardAvoidingLayout : layoutContent}
           </View>
         )}
         {/* Bottom Tabs */}

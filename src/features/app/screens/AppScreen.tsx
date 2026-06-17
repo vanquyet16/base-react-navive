@@ -166,8 +166,8 @@ const AppScreen = () => {
 
   return (
     <WingBlank size="md" style={styles.container}>
-      {SECTIONS.map((section, index) => (
-        <View key={index} style={styles.sectionContainer}>
+      {SECTIONS.map((section) => (
+        <View key={section.title} style={styles.sectionContainer}>
           <SectionHeader title={section.title} showVerticalBar={false} />
           <SpacerMd />
           <View style={styles.gridContainer}>

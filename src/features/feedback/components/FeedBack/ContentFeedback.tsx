@@ -11,7 +11,8 @@ import {
 import { useTheme } from '@/shared/store/selectors';
 import { createStyles } from '@/shared/theme/create-styles';
 import React, { useCallback, useRef, memo, useState } from 'react';
-import { View, Animated, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import Animated from 'react-native-reanimated';
 import { moderateScale } from 'react-native-size-matters';
 import { useScrollFabAnimation } from '@/shared/hooks/useScrollFabAnimation';
 import { useMainNavigation } from '@/shared/hooks/useNavigation';
@@ -88,7 +89,7 @@ const ContentFeedback = memo((props: ContentFeedbackProps) => {
   const navigation = useMainNavigation();
   const [filterVisible, setFilterVisible] = useState(false);
   // Hook for Scroll Animation
-  const { translateY, onScroll } = useScrollFabAnimation();
+  const { translateYStyle, onScroll } = useScrollFabAnimation();
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -165,7 +166,8 @@ const ContentFeedback = memo((props: ContentFeedbackProps) => {
         pointerEvents="box-none"
         style={[
           StyleSheet.absoluteFillObject,
-          { zIndex: 999, transform: [{ translateY }] },
+          { zIndex: 999 },
+          translateYStyle,
         ]}
       >
         <FloatingActionButton

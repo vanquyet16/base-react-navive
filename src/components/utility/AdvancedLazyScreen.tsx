@@ -5,8 +5,8 @@
  * Sử dụng theme system
  */
 
-import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, ActivityIndicator, Pressable } from 'react-native';
 import { CustomText } from '@/components/base/CustomText';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
@@ -38,7 +38,7 @@ const AdvancedLazyScreen: React.FC<AdvancedLazyScreenProps> = ({
   const [error, setError] = useState<Error | null>(null);
   const [retryAttempts, setRetryAttempts] = useState(0);
 
-  const loadComponent = async () => {
+  const loadComponent = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
@@ -57,7 +57,7 @@ const AdvancedLazyScreen: React.FC<AdvancedLazyScreenProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [component, onLoadStart, onLoadComplete, onError]);
 
   const handleRetry = () => {
     if (retryAttempts < retryCount) {
@@ -68,7 +68,7 @@ const AdvancedLazyScreen: React.FC<AdvancedLazyScreenProps> = ({
 
   useEffect(() => {
     loadComponent();
-  }, []);
+  }, [loadComponent]);
 
   // Loading state
   if (isLoading) {
@@ -107,7 +107,13 @@ const AdvancedLazyScreen: React.FC<AdvancedLazyScreenProps> = ({
           </CustomText>
 
           {retryAttempts < retryCount && (
-            <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
+            <Pressable
+              style={({ pressed }) => [
+                styles.retryButton,
+                { opacity: pressed ? 0.7 : 1 },
+              ]}
+              onPress={handleRetry}
+            >
               <Icon name="refresh" size={20} color="#fff" />
               <CustomText
                 variant="body"
@@ -116,7 +122,7 @@ const AdvancedLazyScreen: React.FC<AdvancedLazyScreenProps> = ({
               >
                 Thử lại ({retryAttempts + 1}/{retryCount})
               </CustomText>
-            </TouchableOpacity>
+            </Pressable>
           )}
 
           <CustomText variant="bodySmall" style={styles.errorSubtext}>

@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   moderateScale,
@@ -21,7 +21,7 @@ const FeedbackActionFooter: React.FC<FeedbackActionFooterProps> = memo(
     const styles = useStyles();
 
     return (
-      <View style={[styles.container]}>
+      <View style={styles.container}>
         <CustomButton
           title="Đánh giá kết quả"
           onPress={onRate}
@@ -37,17 +37,19 @@ const FeedbackActionFooter: React.FC<FeedbackActionFooterProps> = memo(
         />
 
         {/* Comment Button - Square Secondary */}
-        <TouchableOpacity
-          style={styles.commentButton}
+        <Pressable
+          style={({ pressed }) => [
+            styles.commentButton,
+            { opacity: pressed ? 0.8 : 1 },
+          ]}
           onPress={onComment}
-          activeOpacity={0.8}
         >
           <AppIcon
             name="message-square"
             size={moderateScale(24)}
             color={theme.colors.textSecondary}
           />
-        </TouchableOpacity>
+        </Pressable>
       </View>
     );
   },

@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, TouchableOpacity, ViewStyle } from 'react-native';
+import { StyleSheet, Pressable, ViewStyle } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import {
@@ -85,17 +85,19 @@ const FloatingActionButton = memo<FloatingActionButtonProps>(
     if (!visible) return null;
 
     return (
-      <TouchableOpacity
-        style={containerStyle}
+      <Pressable
+        style={({ pressed }) => [
+          containerStyle,
+          { opacity: pressed ? 0.8 : 1 },
+        ]}
         onPress={onPress}
-        activeOpacity={0.8}
       >
         <AppIcon
           name={iconName}
           size={moderateScale(iconSize)}
           color={iconColor}
         />
-      </TouchableOpacity>
+      </Pressable>
     );
   },
 );

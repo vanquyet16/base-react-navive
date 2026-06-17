@@ -1,5 +1,5 @@
 import React, { memo, useCallback, useMemo } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View } from 'react-native';
 import { CustomFlashList, CustomText, SectionHeader } from '@/components';
 import { createStyles } from '@/shared/theme/create-styles';
 import {

@@ -11,7 +11,7 @@ import {
   ViewStyle,
   View,
   StyleProp,
-  TouchableOpacity,
+  Pressable,
 } from 'react-native';
 import Modal, { ModalProps } from 'react-native-modal';
 import { useTheme } from '@/shared/theme/use-theme';
@@ -79,36 +79,24 @@ const CustomModalBase: React.FC<CustomModalProps> = ({
   }, [type, position]);
 
   // Modal (Wrapper) Style - Controls Position
-  const modalStyle = useMemo(() => {
-    const baseStyle: any[] = [styles.modal];
-
-    if (effectivePosition === 'bottom') baseStyle.push(styles.modalBottom);
-    if (effectivePosition === 'top') baseStyle.push(styles.modalTop);
-    if (type === 'fullscreen') baseStyle.push(styles.modalFullscreen);
-
-    return [baseStyle, style] as any;
-  }, [styles, effectivePosition, type, style]);
+  const modalStyle = [
+    styles.modal,
+    effectivePosition === 'bottom' && styles.modalBottom,
+    effectivePosition === 'top' && styles.modalTop,
+    type === 'fullscreen' && styles.modalFullscreen,
+    style,
+  ];
 
   // Content Container Style - Controls Look (White box, Radius)
-  const containerStyle = useMemo(() => {
-    const baseStyle: any[] = [
-      styles.contentContainer,
-      { backgroundColor: contentBackgroundColor ?? theme.colors.white },
-    ];
-
-    if (type === 'popup') baseStyle.push(styles.contentPopup);
-    if (type === 'default') baseStyle.push(styles.contentDefault);
-    if (type === 'fullscreen') baseStyle.push(styles.contentFullscreen);
-    if (type === 'alert') baseStyle.push(styles.contentAlert);
-
-    return [baseStyle, contentContainerStyle] as any;
-  }, [
-    styles,
-    type,
-    contentBackgroundColor,
-    theme.colors.white,
+  const containerStyle = [
+    styles.contentContainer,
+    { backgroundColor: contentBackgroundColor ?? theme.colors.white },
+    type === 'popup' && styles.contentPopup,
+    type === 'default' && styles.contentDefault,
+    type === 'fullscreen' && styles.contentFullscreen,
+    type === 'alert' && styles.contentAlert,
     contentContainerStyle,
-  ]);
+  ];
 
   // Determine animations
   const animationIn = useMemo(() => {
@@ -169,13 +157,19 @@ const CustomModalBase: React.FC<CustomModalProps> = ({
                 <View />
               )}
 
-              <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+              <Pressable
+                onPress={onClose}
+                style={({ pressed }) => [
+                  styles.closeBtn,
+                  { opacity: pressed ? 0.7 : 1 },
+                ]}
+              >
                 <AppIcon
                   name="x"
                   size={moderateScale(20)}
                   color={theme.colors.textSecondary}
                 />
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         )}

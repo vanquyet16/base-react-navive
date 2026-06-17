@@ -2,40 +2,30 @@
  * CUSTOM HEADER COMPONENT
  * =======================
  * Reusable header component cho app với nhiều variants và features.
- * Optimized cho performance với React.memo, useCallback, useMemo.
+ * Optimized cho performance với React.memo, useCallback, và useMemo.
  *
  * @features
- * - Multiple types: default, search, minimal, dashboard
- * - Search functionality với animation
- * - Notification badge (Ant Design)
- * - Flexible left/right sections
- * - Dashboard variant with greeting and custom layout
- *
- * @senior-pattern
- * - React.memo để prevent unnecessary re-renders
- * - useCallback cho all event handlers
- * - useMemo cho computed values và inline styles
- * - Stable refs cho animated values
+ * - Multiple types: default, minimal, dashboard
+ * - Safe Area integration & StatusBar management
+ * - Custom actions, badges, and background images
  */
 
-import React, { useState, useRef, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
-  TextInput,
+  Pressable,
   StatusBar,
-  Animated,
   ImageBackground,
   ImageSourcePropType,
+  type ViewStyle,
+  type TextStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Badge } from '@ant-design/react-native';
-import { AppIcon, Spacer, SpacerLg } from '@/components';
+import { AppIcon } from '@/components';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
-import { SCREEN_PADDING } from '@/shared/constants';
-import { layout } from '@/shared/theme/tokens'; // New import
+import { layout } from '@/shared/theme/tokens';
 import {
   moderateScale,
   moderateVerticalScale,
@@ -44,9 +34,6 @@ import {
 import CustomBadge from '../base/CustomBadge';
 import { useMainNavigation } from '@/shared/hooks/useNavigation';
 
-/**
- * Props interface
- */
 export interface CustomHeaderProps {
   title?: string;
   subtitle?: string;
@@ -66,15 +53,11 @@ export interface CustomHeaderProps {
   type?: 'default' | 'search' | 'minimal' | 'dashboard';
   notificationCount?: number;
   backgroundImage?: ImageSourcePropType;
-
-  // Dashboard specific props
   userName?: string;
   userLocation?: string;
-  userAvatar?: string; // URL or local path
+  userAvatar?: string;
   isTransparent?: boolean;
   height?: number;
-
-  // Senior Pattern: Data-driven action instead of JSX
   rightAction?: {
     type: 'text' | 'icon';
     value: string;
@@ -83,10 +66,6 @@ export interface CustomHeaderProps {
   };
 }
 
-/**
- * CustomHeader Component
- * Memoized để tránh re-render khi parent re-renders
- */
 const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
   ({
     title = 'Trang chủ',
@@ -101,6 +80,7 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
     onNotificationPress,
     onMenuPress,
     rightComponent,
+    titleIcon,
     backgroundColor,
     textColor,
     type = 'default',
@@ -110,37 +90,27 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
     userLocation = 'Hà Nội',
     userAvatar,
     isTransparent = false,
-    titleIcon,
     height,
-    ...props
+    rightAction,
   }) => {
     const insets = useSafeAreaInsets();
     const theme = useTheme();
     const styles = useStyles();
-
-    // State
-    const [searchVisible, setSearchVisible] = useState(false);
-    const [searchText, setSearchText] = useState('');
     const navigation = useMainNavigation();
 
-    // Stable animation value ref (prevent recreation on every render)
-    const searchAnimation = useRef(new Animated.Value(0)).current;
-
-    // Memoized computed values
+    // Compute Header Background Color
     const headerBg = useMemo(() => {
       if (isTransparent || backgroundImage) return 'transparent';
       return backgroundColor ?? theme.colors.primary;
     }, [backgroundColor, theme.colors.primary, backgroundImage, isTransparent]);
 
+    // Compute Text Color
     const headerTextColor = useMemo(
-      () =>
-        textColor ??
-        (isTransparent || backgroundImage
-          ? theme.colors.white
-          : theme.colors.white),
-      [textColor, theme.colors.white, isTransparent, backgroundImage],
+      () => textColor ?? theme.colors.white,
+      [textColor, theme.colors.white],
     );
 
+    // Compute Status Bar Style
     const barStyle = useMemo(
       () =>
         backgroundImage || type === 'dashboard'
@@ -151,41 +121,27 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
       [headerBg, theme.colors.white, backgroundImage, type, isTransparent],
     );
 
-    const notificationBadgeText = useMemo(
-      () => (notificationCount > 99 ? '99+' : notificationCount),
-      [notificationCount],
-    );
-
-    // Custom Height Logic
-    // If height is provided, use it. Otherwise, use type-specific defaults.
+    // Custom Height Style
     const containerHeightStyle = useMemo(() => {
       if (height) {
         return {
           height: moderateVerticalScale(height),
-          minHeight: undefined, // Reset minHeight for dashboard override if needed
+          minHeight: undefined,
         };
       }
       return {};
     }, [height]);
 
-    // Memoized container style (tránh tạo object mới mỗi render)
+    // Container Style with Padding Top from Safe Area Insets
     const containerStyle = useMemo(() => {
-      const baseStyle: any = [
+      const baseStyle: any[] = [
         styles.container,
         {
           backgroundColor: headerBg,
           paddingTop: insets.top,
-          // Only apply border radius if NOT transparent and NOT using background image
-          ...(!isTransparent &&
-            !backgroundImage &&
-            {
-              // borderBottomLeftRadius: theme.radius['3xl'],
-              // borderBottomRightRadius: theme.radius['3xl'],
-            }),
         },
       ];
 
-      // If transparent, ensure it overlays or has no background visual
       if (isTransparent) {
         baseStyle.push({
           borderBottomWidth: 0,
@@ -197,300 +153,165 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
       if (type === 'dashboard' && !isTransparent) {
         baseStyle.push({
           ...theme.shadows.md,
-          paddingBottom: theme.spacing[4], // Moved padding here
+          paddingBottom: theme.spacing[4],
         });
       }
 
       return baseStyle;
-    }, [
-      styles.container,
-      headerBg,
-      insets.top,
-      type,
-      theme,
-      isTransparent,
-      backgroundImage,
-    ]);
+    }, [styles.container, headerBg, insets.top, type, theme, isTransparent]);
 
-    // Current Date for Dashboard (Native JS)
-    const currentDate = useMemo(() => {
-      const date = new Date();
-      const options: Intl.DateTimeFormatOptions = {
-        weekday: 'long',
-        day: 'numeric',
-        month: 'long',
-      };
-      try {
-        const dateStr = date.toLocaleDateString('vi-VN', options);
-        // Capitalize first letter (e.g. "thứ hai" -> "Thứ Hai")
-        return dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
-      } catch (error) {
-        return 'Hôm nay'; // Fallback logic
+    // Navigation Handlers
+    const handleBack = useCallback(() => {
+      if (onBack) {
+        onBack();
+      } else {
+        navigation.goBack();
       }
-    }, []);
+    }, [onBack, navigation]);
 
-    // Greeting logic (Native JS)
-    const greeting = useMemo(() => {
-      const hour = new Date().getHours();
-      if (hour < 12) return 'Chào buổi sáng,';
-      if (hour < 18) return 'Chào buổi chiều,';
-      return 'Chào buổi tối,';
-    }, []);
-
-    /**
-     * Toggle search visibility với animation
-     */
-    const toggleSearch = useCallback(() => {
+    const handleSearchPress = useCallback(() => {
       navigation.navigate('SearchScreen');
-      // if (searchVisible) {
-      //   Animated.timing(searchAnimation, {
-      //     toValue: 0,
-      //     duration: 300,
-      //     useNativeDriver: false,
-      //   }).start(() => {
-      //     setSearchVisible(false);
-      //     setSearchText('');
-      //   });
-      // } else {
-      //   setSearchVisible(true);
-      //   Animated.timing(searchAnimation, {
-      //     toValue: 1,
-      //     duration: 300,
-      //     useNativeDriver: false,
-      //   }).start();
-      // }
-      console.log('ádasdas');
     }, [navigation]);
 
-    /**
-     * Handle search text change
-     */
-    const handleSearch = useCallback(
-      (text: string) => {
-        setSearchText(text);
-        onSearch?.(text);
-      },
-      [onSearch],
-    );
-
-    /**
-     * Memoized animated styles cho search container
-     */
-    const searchAnimatedStyle = useMemo(
-      () => ({
-        opacity: searchAnimation,
-        transform: [
-          {
-            translateY: searchAnimation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [-10, 0],
-            }),
-          },
-        ],
-      }),
-      [searchAnimation],
-    );
-
-    /**
-     * Memoized title style
-     */
-    const titleStyle = useMemo(
-      () => [styles.title, { color: headerTextColor }],
-      [styles.title, headerTextColor],
-    );
-
-    const subtitleStyle = useMemo(
-      () => [styles.subtitle, { color: headerTextColor }],
-      [styles.subtitle, headerTextColor],
-    );
-
-    const minimalTitleStyle = useMemo(
-      () => [styles.minimalTitle, { color: headerTextColor }],
-      [styles.minimalTitle, headerTextColor],
-    );
-
-    /**
-     * Render Search Header
-     */
-    const renderSearchHeader = useCallback(
-      () => (
-        <Animated.View
-          style={[
-            styles.searchContainer,
-            searchAnimatedStyle,
-            containerHeightStyle,
+    // Render rightAction helper
+    const renderRightAction = useCallback(() => {
+      if (!rightAction) return null;
+      return (
+        <Pressable
+          onPress={rightAction.onPress}
+          style={({ pressed }) => [
+            type === 'minimal' ? { padding: scale(4) } : styles.iconButton,
+            { opacity: pressed ? 0.7 : 1 },
           ]}
         >
-          <View style={styles.searchInputContainer}>
+          {rightAction.type === 'text' ? (
+            <Text style={[styles.actionText, rightAction.color ? { color: rightAction.color } : null]}>
+              {rightAction.value}
+            </Text>
+          ) : (
             <AppIcon
-              name="search"
-              size={20}
-              color={theme.colors.textSecondary}
+              name={rightAction.value}
+              size={24}
+              color={rightAction.color || headerTextColor}
             />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Tìm kiếm..."
-              placeholderTextColor={theme.colors.textTertiary}
-              value={searchText}
-              onChangeText={handleSearch}
-              autoFocus
-            />
-            <TouchableOpacity
-              onPress={toggleSearch}
-              style={styles.searchCloseButton}
-            >
-              <AppIcon name="x" size={20} color={theme.colors.textSecondary} />
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
-      ),
-      [
-        styles.searchContainer,
-        styles.searchInputContainer,
-        styles.searchInput,
-        styles.searchCloseButton,
-        searchAnimatedStyle,
-        containerHeightStyle,
-        theme.colors.textSecondary,
-        theme.colors.textTertiary,
-        searchText,
-        handleSearch,
-        toggleSearch,
-      ],
-    );
+          )}
+        </Pressable>
+      );
+    }, [rightAction, styles.iconButton, styles.actionText, type, headerTextColor]);
 
-    /**
-     * Render Default Header
-     */
+    // Render default style header
     const renderDefaultHeader = useCallback(
       () => (
         <View style={[styles.headerContent, containerHeightStyle]}>
-          {/* Phần trái */}
+          {/* Left Section (Back/Menu button) */}
           <View style={styles.leftSection}>
             {showBack ? (
-              // <TouchableOpacity onPress={onBack} style={styles.backButton}>
-              //   <AppIcon
-              //     name={'arrow-left'}
-              //     size={20}
-              //     color={headerTextColor}
-              //   />
-              // </TouchableOpacity>
-              <TouchableOpacity style={styles.backButton} onPress={onBack}>
+              <Pressable
+                style={({ pressed }) => [
+                  styles.backButton,
+                  { opacity: pressed ? 0.7 : 1 },
+                ]}
+                onPress={handleBack}
+              >
                 <AppIcon
                   name="arrow-left"
                   size={moderateScale(20)}
                   color={headerTextColor}
                 />
-              </TouchableOpacity>
+              </Pressable>
             ) : showMenu ? (
-              <TouchableOpacity onPress={onMenuPress} style={styles.iconButton}>
-                <AppIcon name={'menu'} size={24} color={headerTextColor} />
-              </TouchableOpacity>
+              <Pressable
+                onPress={onMenuPress}
+                style={({ pressed }) => [
+                  styles.iconButton,
+                  { opacity: pressed ? 0.7 : 1 },
+                ]}
+              >
+                <AppIcon name="menu" size={24} color={headerTextColor} />
+              </Pressable>
             ) : null}
           </View>
 
-          {/* Phần giữa */}
+          {/* Center Section (Title / Subtitle) */}
           <View style={styles.centerSection} pointerEvents="box-none">
-            <Text style={titleStyle} numberOfLines={1}>
+            <Text style={[styles.title, { color: headerTextColor }]} numberOfLines={1}>
               {title}
             </Text>
             {subtitle && (
-              <Text style={subtitleStyle} numberOfLines={1}>
+              <Text style={[styles.subtitle, { color: headerTextColor }]} numberOfLines={1}>
                 {subtitle}
               </Text>
             )}
           </View>
 
-          {/* Phần phải */}
+          {/* Right Section (Search / Notification / RightComponent / RightAction) */}
           <View style={styles.rightSection}>
             {showSearch && (
-              <TouchableOpacity
-                onPress={toggleSearch}
-                style={styles.iconButton}
+              <Pressable
+                onPress={handleSearchPress}
+                style={({ pressed }) => [
+                  styles.iconButton,
+                  { opacity: pressed ? 0.7 : 1 },
+                ]}
               >
-                <AppIcon name={'search'} size={24} color={headerTextColor} />
-              </TouchableOpacity>
+                <AppIcon name="search" size={24} color={headerTextColor} />
+              </Pressable>
             )}
 
             {showNotification && (
-              <TouchableOpacity
+              <Pressable
                 onPress={onNotificationPress}
-                style={styles.iconButton}
+                style={({ pressed }) => [
+                  styles.iconButton,
+                  { opacity: pressed ? 0.7 : 1 },
+                ]}
               >
                 <CustomBadge badgeCount={notificationCount}>
-                  <AppIcon name={'bell'} size={24} color={headerTextColor} />
+                  <AppIcon name="bell" size={24} color={headerTextColor} />
                 </CustomBadge>
-              </TouchableOpacity>
+              </Pressable>
             )}
 
             {rightComponent}
-            {/* Render rightAction if exists */}
-            {!rightComponent && props.rightAction && (
-              <TouchableOpacity
-                onPress={props.rightAction.onPress}
-                style={styles.iconButton}
-              >
-                {props.rightAction.type === 'text' ? (
-                  <Text
-                    style={[
-                      styles.actionText,
-                      props.rightAction.color && {
-                        color: props.rightAction.color,
-                      },
-                    ]}
-                  >
-                    {props.rightAction.value}
-                  </Text>
-                ) : (
-                  <AppIcon
-                    name={props.rightAction.value}
-                    size={24}
-                    color={props.rightAction.color || headerTextColor}
-                  />
-                )}
-              </TouchableOpacity>
-            )}
+            {!rightComponent && renderRightAction()}
           </View>
         </View>
       ),
       [
-        styles.headerContent,
-        styles.leftSection,
-        styles.iconButton,
-        styles.centerSection,
-        styles.rightSection,
+        styles,
         containerHeightStyle,
         showBack,
         showMenu,
         showSearch,
         showNotification,
-        onBack,
+        handleBack,
         onMenuPress,
-        toggleSearch,
+        handleSearchPress,
         onNotificationPress,
         headerTextColor,
-        titleStyle,
         title,
         subtitle,
-        subtitleStyle,
         notificationCount,
-        notificationBadgeText,
         rightComponent,
-        theme.colors.error,
+        renderRightAction,
       ],
     );
 
-    /**
-     * Render Minimal Header
-     */
+    // Render minimal style header
     const renderMinimalHeader = useCallback(
       () => (
         <View style={[styles.minimalContainer, containerHeightStyle]}>
           <View style={styles.minimalLeftSection}>
             {showBack && (
-              <TouchableOpacity onPress={onBack} style={styles.backButton}>
+              <Pressable
+                onPress={handleBack}
+                style={({ pressed }) => [
+                  styles.backButton,
+                  { opacity: pressed ? 0.7 : 1 },
+                ]}
+              >
                 <AppIcon name="arrow-left" size={20} color={headerTextColor} />
-              </TouchableOpacity>
+              </Pressable>
             )}
             {titleIcon && (
               <View
@@ -502,67 +323,42 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
                 <AppIcon name={titleIcon} size={20} color={headerTextColor} />
               </View>
             )}
-            <Text style={[minimalTitleStyle, titleIcon && { marginLeft: 0 }]}>
+            <Text
+              style={[
+                styles.minimalTitle,
+                { color: headerTextColor },
+                titleIcon ? { marginLeft: 0 } : null,
+              ]}
+            >
               {title}
             </Text>
           </View>
 
           <View style={styles.minimalRightSection}>
             {rightComponent}
-            {/* Render rightAction if exists (Minimal) */}
-            {!rightComponent && props.rightAction && (
-              <TouchableOpacity
-                onPress={props.rightAction.onPress}
-                style={{ padding: scale(4) }}
-              >
-                {props.rightAction.type === 'text' ? (
-                  <Text
-                    style={[
-                      styles.actionText,
-                      props.rightAction.color && {
-                        color: props.rightAction.color,
-                      },
-                    ]}
-                  >
-                    {props.rightAction.value}
-                  </Text>
-                ) : (
-                  <AppIcon
-                    name={props.rightAction.value}
-                    size={24}
-                    color={props.rightAction.color || headerTextColor}
-                  />
-                )}
-              </TouchableOpacity>
-            )}
+            {!rightComponent && renderRightAction()}
           </View>
         </View>
       ),
       [
-        styles.minimalContainer,
-        styles.minimalLeftSection,
-        styles.minimalRightSection,
-        styles.backButton,
+        styles,
         containerHeightStyle,
         showBack,
-        onBack,
-        headerTextColor,
-        minimalTitleStyle,
-        title,
+        handleBack,
         titleIcon,
+        headerTextColor,
+        title,
         rightComponent,
+        renderRightAction,
       ],
     );
 
-    /**
-     * Render Dashboard Header
-     */
+    // Render dashboard style header
     const renderDashboardHeader = useCallback(
       () => (
         <View style={[styles.dashboardInnerContent, containerHeightStyle]}>
-          {/* Top Row */}
           <View style={styles.dashboardTopRow}>
-            {/* Brand / Location */}
+            {/* User Profile / Location Brand info */}
             <View style={styles.brandContainer}>
               <View style={styles.logoCircle}>
                 <Text style={styles.logoText}>CS</Text>
@@ -570,127 +366,55 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
               <View style={{ marginLeft: scale(10) }}>
                 <Text style={styles.brandName}>{userName}</Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <AppIcon
-                    name="map-pin"
-                    size={10}
-                    color={theme.colors.white}
-                  />
+                  <AppIcon name="map-pin" size={10} color={theme.colors.white} />
                   <Text style={styles.brandLocation}>{userLocation}</Text>
                 </View>
               </View>
             </View>
 
-            {/* Right Actions */}
+            {/* Dashboard Right Search Trigger */}
             <View style={styles.dashboardRightActions}>
-              <TouchableOpacity
+              <Pressable
                 onPress={onNotificationPress}
-                // style={styles.iconButton}
+                style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
               >
-                {/* Ant Badge wraps icon */}
-                {/* <CustomBadge badgeCount={10} variant="error">
-                  <AppIcon name="bell" size={24} color={theme.colors.white} />
-                </CustomBadge> */}
                 <AppIcon name="search" size={24} color={theme.colors.white} />
-              </TouchableOpacity>
-
-              {/* <TouchableOpacity
-                onPress={onMenuPress}
-                style={styles.avatarContainer}
-              >
-                <View style={styles.defaultAvatar}>
-                  <AppIcon name="user" size={20} color={theme.colors.primary} />
-                </View>
-              </TouchableOpacity> */}
+              </Pressable>
             </View>
           </View>
-
-          {/* Greeting */}
-          {/* <View style={styles.greetingContainer}>
-            <Text style={styles.dateText}>{currentDate}</Text>
-            <Text style={styles.greetingTitle}>
-              {greeting}
-              {'\n'}
-              <Text style={styles.userName}>{userName} 👋</Text>
-            </Text>
-          </View> */}
-
-          {/* Search */}
-          {/* <View style={styles.dashboardSearchContainer}>
-            <View style={styles.searchInputContainer}>
-              <AppIcon
-                name="search"
-                size={20}
-                color={theme.colors.textSecondary}
-              />
-              <TextInput
-                style={styles.searchInput}
-                placeholder="Tìm kiếm công dân số..."
-                placeholderTextColor={theme.colors.textTertiary}
-                onChangeText={onSearch}
-              />
-            </View>
-          </View> */}
         </View>
       ),
       [
         styles,
-        theme,
-        userLocation,
-        notificationCount,
-        currentDate,
-        greeting,
-        userName,
-        onNotificationPress,
-        onMenuPress,
-        onSearch,
         containerHeightStyle,
-      ],
-    );
-
-    // Main render content wrapper
-    const renderContent = useCallback(
-      () => (
-        <View style={containerStyle}>
-          <StatusBar
-            backgroundColor="transparent"
-            barStyle={type === 'dashboard' ? 'light-content' : barStyle}
-            translucent={true}
-          />
-
-          {searchVisible && renderSearchHeader()}
-
-          {!searchVisible && (
-            <>
-              {type === 'minimal' && renderMinimalHeader()}
-              {type === 'default' && renderDefaultHeader()}
-              {type === 'dashboard' && renderDashboardHeader()}
-            </>
-          )}
-        </View>
-      ),
-      [
-        containerStyle,
-        type,
-        barStyle,
-        searchVisible,
-        renderSearchHeader,
-        renderMinimalHeader,
-        renderDefaultHeader,
-        renderDashboardHeader,
+        userName,
+        userLocation,
+        onNotificationPress,
+        theme.colors.white,
       ],
     );
 
     const backgroundStyle = useMemo<any>(
       () => ({
         width: '100%',
-        // borderBottomLeftRadius: theme.radius['3xl'],
-        // borderBottomRightRadius: theme.radius['3xl'],
         overflow: 'hidden',
       }),
-      [theme.radius],
+      [],
     );
 
-    // Render with background image if provided
+    const headerContent = (
+      <View style={containerStyle}>
+        <StatusBar
+          backgroundColor="transparent"
+          barStyle={type === 'dashboard' ? 'light-content' : barStyle}
+          translucent={true}
+        />
+        {type === 'minimal' && renderMinimalHeader()}
+        {type === 'default' && renderDefaultHeader()}
+        {type === 'dashboard' && renderDashboardHeader()}
+      </View>
+    );
+
     if (backgroundImage) {
       return (
         <ImageBackground
@@ -698,22 +422,20 @@ const CustomHeader: React.FC<CustomHeaderProps> = React.memo(
           style={backgroundStyle}
           resizeMode="cover"
         >
-          {renderContent()}
+          {headerContent}
         </ImageBackground>
       );
     }
 
-    return renderContent();
+    return headerContent;
   },
 );
 
 CustomHeader.displayName = 'CustomHeader';
 
-// Styles
 const useStyles = createStyles(
   theme => ({
     container: {
-      // Basic container logic handled in style logic
       paddingHorizontal: theme.spacing[2],
     },
     headerContent: {
@@ -754,7 +476,7 @@ const useStyles = createStyles(
       marginTop: moderateVerticalScale(4),
     },
     iconButton: {
-      padding: moderateScale(8), // General padding
+      padding: moderateScale(8),
       marginHorizontal: scale(4),
     },
     backButton: {
@@ -763,34 +485,7 @@ const useStyles = createStyles(
       borderRadius: theme.radius.full,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: theme.colors.scrim, // Optional: slight scrim for better visibility
-    },
-
-    searchContainer: {
-      paddingHorizontal: scale(16), // SCREEN_PADDING usually is a constant, assuming it needs scaling or is already scaled
-      paddingVertical: moderateVerticalScale(8),
-    },
-    searchInputContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: theme.colors.white,
-      borderRadius: moderateScale(100), // Full radius
-      paddingHorizontal: scale(16),
-      height: moderateVerticalScale(40),
-      elevation: 1,
-      shadowColor: theme.colors.black || '#000',
-      shadowOffset: { width: 0, height: moderateVerticalScale(1) },
-      shadowOpacity: 0.08,
-      shadowRadius: moderateScale(2),
-    },
-    searchInput: {
-      flex: 1,
-      marginLeft: scale(8),
-      fontSize: theme.typography.fontSizes.sm,
-      color: theme.colors.text,
-    },
-    searchCloseButton: {
-      padding: moderateScale(4),
+      backgroundColor: theme.colors.scrim,
     },
     minimalContainer: {
       height: moderateVerticalScale(layout.headerHeight),
@@ -812,12 +507,9 @@ const useStyles = createStyles(
       fontWeight: theme.typography.fontWeights.semibold,
       marginLeft: scale(12),
     },
-
-    // Dashboard Styles
     dashboardInnerContent: {
       paddingHorizontal: scale(12),
       minHeight: '15%',
-      // Removed bg, radius, shadow from here
     },
     dashboardTopRow: {
       flexDirection: 'row',
@@ -832,26 +524,26 @@ const useStyles = createStyles(
     },
     logoCircle: {
       width: scale(40),
-      height: scale(40), // Circle
+      height: scale(40),
       borderRadius: moderateScale(20),
-      backgroundColor: theme.colors.white, // Inverted: White bg
+      backgroundColor: theme.colors.white,
       justifyContent: 'center',
       alignItems: 'center',
     },
     logoText: {
-      color: theme.colors.primary, // Inverted: Primary text
+      color: theme.colors.primary,
       fontWeight: 'bold',
       fontSize: theme.typography.fontSizes.sm,
     },
     brandName: {
       fontSize: theme.typography.fontSizes.sm,
       fontWeight: 'bold',
-      color: theme.colors.white, // White text
+      color: theme.colors.white,
       textTransform: 'uppercase',
     },
     brandLocation: {
       fontSize: theme.typography.fontSizes['2xs'],
-      color: theme.colors.white, // White text
+      color: theme.colors.white,
       marginLeft: scale(4),
       opacity: 0.9,
     },
@@ -859,42 +551,10 @@ const useStyles = createStyles(
       flexDirection: 'row',
       alignItems: 'center',
     },
-    greetingContainer: {
-      marginBottom: moderateVerticalScale(16),
-    },
-    dateText: {
-      fontSize: theme.typography.fontSizes['2xs'],
-      color: theme.colors.white, // White text
-      opacity: 0.9,
-      marginBottom: moderateVerticalScale(4),
-    },
-    greetingTitle: {
-      fontSize: theme.typography.fontSizes['2xl'],
-      fontWeight: 'bold',
-      color: theme.colors.white, // White text
-      lineHeight: moderateVerticalScale(32),
-    },
-    userName: {
-      color: theme.colors.white, // White text
-    },
-    dashboardSearchContainer: {
-      // inherit styles
-    },
-    avatarContainer: {
-      marginLeft: scale(12),
-    },
-    defaultAvatar: {
-      width: scale(36),
-      height: scale(36),
-      borderRadius: moderateScale(18),
-      backgroundColor: theme.colors.primary,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
     actionText: {
       fontSize: theme.typography.fontSizes.sm,
       fontWeight: theme.typography.fontWeights.medium,
-      color: theme.colors.white, // Default white
+      color: theme.colors.white,
     },
   }),
   true,

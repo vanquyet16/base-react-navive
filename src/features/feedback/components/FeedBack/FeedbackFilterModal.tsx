@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback, memo, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import { createStyles } from '@/shared/theme/create-styles';
 import {
   CustomText,

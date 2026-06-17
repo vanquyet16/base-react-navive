@@ -2,7 +2,7 @@ import {
   StyleSheet,
   Text,
   TextStyle,
-  TouchableOpacity,
+  Pressable,
   View,
   ViewStyle,
 } from 'react-native';
@@ -62,13 +62,17 @@ const HeaderAction: React.FC<IHeaderActionProps> = React.memo(props => {
     [styles.iconButton, isTransparent, styles.transparentButton],
   );
 
-  // Memoize icon size để tránh tính toán lại
-  const iconSize = useMemo(() => moderateScale(20), []);
+  // Icon size
+  const iconSize = moderateScale(20);
 
   return (
     <View style={[styles.container, containerStyle, styleContainer]}>
-      <TouchableOpacity
-        style={[buttonStyle, styleIconButton]}
+      <Pressable
+        style={({ pressed }) => [
+          buttonStyle,
+          styleIconButton,
+          { opacity: pressed ? 0.7 : 1 },
+        ]}
         onPress={onIconLeftPress}
       >
         {iconLeft ? (
@@ -76,7 +80,7 @@ const HeaderAction: React.FC<IHeaderActionProps> = React.memo(props => {
         ) : (
           <AppIcon name="arrow-left" size={iconSize} color="white" />
         )}
-      </TouchableOpacity>
+      </Pressable>
 
       {!isTransparent && (
         <CustomText
@@ -90,9 +94,15 @@ const HeaderAction: React.FC<IHeaderActionProps> = React.memo(props => {
       )}
 
       {iconRight ? (
-        <TouchableOpacity style={styles.iconButton} onPress={onIconRightPress}>
+        <Pressable
+          style={({ pressed }) => [
+            styles.iconButton,
+            { opacity: pressed ? 0.7 : 1 },
+          ]}
+          onPress={onIconRightPress}
+        >
           {iconRight}
-        </TouchableOpacity>
+        </Pressable>
       ) : (
         <View style={styles.iconButton} />
       )}

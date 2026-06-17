@@ -6,7 +6,6 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  TouchableOpacity,
 } from 'react-native';
 import { Button, Icon, WhiteSpace, WingBlank } from '@ant-design/react-native';
 import { LoginRequest } from '@/shared/types/navigation.types';

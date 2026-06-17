@@ -27,11 +27,8 @@ const POINTER_EVENTS_AUTO = 'auto' as const;
 export const useHomeAnimations = (scrollY?: SharedValue<number>) => {
     const insets = useSafeAreaInsets();
 
-    // Calculate actual min height including safe area (memoized)
-    const minHeight = useMemo(
-        () => HOME_ANIMATION_CONSTANTS.HEADER_MIN_HEIGHT + insets.top,
-        [insets.top]
-    );
+    // Calculate actual min height including safe area
+    const minHeight = HOME_ANIMATION_CONSTANTS.HEADER_MIN_HEIGHT + insets.top;
 
     // 1. Container Height Animation
     const containerAnimatedStyle = useAnimatedStyle(() => {

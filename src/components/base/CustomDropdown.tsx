@@ -55,10 +55,7 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = memo(
     const [isFocused, setIsFocused] = useState(false);
 
     // Format label với required indicator
-    const formattedLabel = useMemo(
-      () => (label ? (required ? `${label} *` : label) : undefined),
-      [label, required],
-    );
+    const formattedLabel = label ? (required ? `${label} *` : label) : undefined;
 
     const containerStyle = useMemo(
       () => [
