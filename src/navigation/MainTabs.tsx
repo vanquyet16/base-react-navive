@@ -2,9 +2,9 @@
 // MAIN TABS NAVIGATOR - BOTTOM TABS NAVIGATION
 // ============================================================================
 
-import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { AppIcon } from '@/components';
+import React, { useCallback } from 'react';
+import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import { AppIcon, type IconType } from '@/components';
 import { MainTabParamList } from '@/shared/types/navigation.types';
 import { CustomBottomTabBar } from '@/components/navigation';
 import { logger } from '@/shared/utils/logger';
@@ -44,12 +44,6 @@ const TAB_WRAPPERS = createTabScreenWrappers(TAB_SCREENS);
  * - Settings: Cài đặt ứng dụng
  * - ResponsiveDemo: Demo responsive design
  */
-// ... imports
-import { useCallback } from 'react';
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { IconType } from '@/components/base/AppIcon';
-
-// ... const Tab = ...
 
 const MainTabs: React.FC = () => {
   const theme = useTheme(); // Hook usage

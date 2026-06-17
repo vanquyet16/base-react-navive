@@ -6,7 +6,7 @@
  * 
  */
 
-import { useTheme as useStoreTheme } from '@/shared/store/selectors';
+import { useThemeMode } from '@/shared/store/selectors';
 import { getTheme, type Theme } from './theme';
 
 /**
@@ -18,7 +18,7 @@ import { getTheme, type Theme } from './theme';
  * const { colors, spacing } = theme;
  */
 export const useTheme = (): Theme => {
-    const themeName = useStoreTheme();
+    const themeName = useThemeMode();
     return getTheme(themeName);
 };
 

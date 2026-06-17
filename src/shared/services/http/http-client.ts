@@ -7,8 +7,7 @@
  */
 
 import type { AxiosInstance } from 'axios';
-import { axiosInstance } from './axios-interceptors';
-import { createAxiosInstance } from './axios-instance';
+import { axiosInstance, createAxiosInstance } from './axios-instance';
 import type { HttpRequestConfig, HttpResponse } from './http-types';
 import type { ApiDomain } from '@/shared/config/app.config';
 

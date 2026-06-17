@@ -38,38 +38,41 @@ export const useBaseForm = <T extends FieldValues>({
 
     const form = useForm<T>(formProps);
 
-    const handleSubmitWithLoading = form.handleSubmit(async (data) => {
-        try {
-            setIsSubmitting(true);
-            setSubmitError(null);
+    const handleSubmitWithLoading = useCallback(
+        form.handleSubmit(async (data) => {
+            try {
+                setIsSubmitting(true);
+                setSubmitError(null);
 
-            await onSubmit(data);
+                await onSubmit(data);
 
-            if (showSuccessToast) {
-                Toast.show({
-                    type: 'success',
-                    text1: successMessage,
-                });
+                if (showSuccessToast) {
+                    Toast.show({
+                        type: 'success',
+                        text1: successMessage,
+                    });
+                }
+
+                if (resetOnSuccess) {
+                    form.reset();
+                }
+            } catch (error: any) {
+                const message = error?.response?.data?.message || error?.message || errorMessage;
+                setSubmitError(message);
+
+                if (showErrorToast) {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Lỗi',
+                        text2: message,
+                    });
+                }
+            } finally {
+                setIsSubmitting(false);
             }
-
-            if (resetOnSuccess) {
-                form.reset();
-            }
-        } catch (error: any) {
-            const message = error?.response?.data?.message || error?.message || errorMessage;
-            setSubmitError(message);
-
-            if (showErrorToast) {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Lỗi',
-                    text2: message,
-                });
-            }
-        } finally {
-            setIsSubmitting(false);
-        }
-    });
+        }),
+        [form, onSubmit, showSuccessToast, successMessage, resetOnSuccess, errorMessage, showErrorToast]
+    );
 
     const clearSubmitError = useCallback(() => {
         setSubmitError(null);

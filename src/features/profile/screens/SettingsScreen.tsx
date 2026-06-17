@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 
 import {
-  useTheme as useThemeSelector,
+  useThemeMode,
   useSettingsActions,
 } from '@/shared/store/selectors';
 import { useTheme } from '@/shared/theme/use-theme';
@@ -18,7 +18,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { createStyles } from '@/shared/theme/create-styles';
 
 const SettingsScreen: React.FC = () => {
-  const currentTheme = useThemeSelector();
+  const currentTheme = useThemeMode();
   const { setTheme } = useSettingsActions();
   const theme = useTheme();
   const styles = useStyles();

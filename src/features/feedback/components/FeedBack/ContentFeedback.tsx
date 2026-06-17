@@ -8,7 +8,6 @@ import {
   SpacerMd,
   InfoBox,
 } from '@/components';
-import { useTheme } from '@/shared/store/selectors';
 import { createStyles } from '@/shared/theme/create-styles';
 import React, { useCallback, useRef, memo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
@@ -83,7 +82,6 @@ const FEEDBACK_DATA = [
 
 const ContentFeedback = memo((props: ContentFeedbackProps) => {
   const { visibleFAB = false } = props;
-  const theme = useTheme();
   const styles = useStyles();
   const [refreshing, setRefreshing] = useState(false);
   const navigation = useMainNavigation();

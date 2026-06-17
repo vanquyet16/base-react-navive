@@ -1,12 +1,12 @@
-import React, { memo, useCallback } from 'react';
-import { View, StyleSheet, ScrollView, Text } from 'react-native';
+import React, { memo } from 'react';
+import { View, ScrollView, Text } from 'react-native';
 import { Button, WhiteSpace, WingBlank } from '@ant-design/react-native';
-import { useForm, Controller } from 'react-hook-form';
-import { useRegister } from '@/features/auth/hooks/queries/useAuth';
+import { useRegister } from '../hooks';
 import { SCREEN_PADDING, VALIDATION, ERROR_MESSAGES } from '@/shared/constants';
 import FormInput from '@/components/form/FormInput';
 import { Logo } from '@/components/base';
 import { createStyles } from '@/shared/theme/create-styles';
+import { useBaseForm } from '@/shared';
 
 interface RegisterFormData {
   name: string;
@@ -39,10 +39,11 @@ const RegisterScreen = memo(({ navigation }: any) => {
 
   const {
     control,
-    handleSubmit,
+    handleSubmitWithLoading,
     watch,
-    formState: { errors, isValid },
-  } = useForm<RegisterFormData>({
+    formState: { isValid },
+    isSubmitting,
+  } = useBaseForm<RegisterFormData>({
     mode: 'onChange',
     defaultValues: {
       name: '',
@@ -50,24 +51,29 @@ const RegisterScreen = memo(({ navigation }: any) => {
       password: '',
       confirmPassword: '',
     },
+    onSubmit: async (data: RegisterFormData) => {
+      try {
+        await registerMutation.mutateAsync({
+          username: data.email, // Use email as username for now
+          email: data.email,
+          password: data.password,
+          passwordConfirmation: data.confirmPassword, // Map confirmPassword to passwordConfirmation
+          displayName: data.name, // Map name to displayName
+        });
+        navigation.navigate('Login');
+      } catch (error) {
+        // Lỗi sẽ được xử lý tự động bởi useBaseForm
+        throw error;
+      }
+    },
+    successMessage: 'Đăng ký tài khoản thành công!',
+    errorMessage: 'Đăng ký tài khoản thất bại!',
+    resetOnSuccess: true,
   });
 
   const password = watch('password');
 
-  const onSubmit = useCallback(
-    (data: RegisterFormData) => {
-      registerMutation.mutate({
-        username: data.email, // Use email as username for now
-        email: data.email,
-        password: data.password,
-        passwordConfirmation: data.confirmPassword, // Map confirmPassword to passwordConfirmation
-        displayName: data.name, // Map name to displayName
-      });
-    },
-    [registerMutation],
-  );
-
-  const navigateToLogin = useCallback(() => {
+  const navigateToLogin = React.useCallback(() => {
     navigation.navigate('Login');
   }, [navigation]);
 
@@ -79,9 +85,12 @@ const RegisterScreen = memo(({ navigation }: any) => {
         </View>
 
         <View style={styles.form}>
-          <Controller
-            control={control}
+          <FormInput
             name="name"
+            control={control}
+            required
+            label="Họ và tên"
+            placeholder="Nhập họ và tên"
             rules={{
               required: ERROR_MESSAGES.REQUIRED_FIELD,
               minLength: {
@@ -89,49 +98,35 @@ const RegisterScreen = memo(({ navigation }: any) => {
                 message: 'Tên phải có ít nhất 2 ký tự',
               },
             }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <FormInput
-                label="Họ và tên"
-                placeholder="Nhập họ và tên"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={errors.name?.message}
-              />
-            )}
           />
 
           <WhiteSpace size="lg" />
 
-          <Controller
-            control={control}
+          <FormInput
             name="email"
+            control={control}
+            required
+            label="Email"
+            placeholder="Nhập email của bạn"
             rules={{
               required: ERROR_MESSAGES.REQUIRED_FIELD,
               pattern: {
-                value: VALIDATION.USER_NAME_REGEX,
+                value: VALIDATION.EMAIL_REGEX,
                 message: ERROR_MESSAGES.EMAIL_INVALID,
               },
             }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <FormInput
-                label="Email"
-                placeholder="Nhập email của bạn"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={errors.email?.message}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            )}
+            keyboardType="email-address"
+            autoCapitalize="none"
           />
 
           <WhiteSpace size="lg" />
 
-          <Controller
-            control={control}
+          <FormInput
             name="password"
+            control={control}
+            required
+            label="Mật khẩu"
+            placeholder="Nhập mật khẩu"
             rules={{
               required: ERROR_MESSAGES.REQUIRED_FIELD,
               minLength: {
@@ -139,49 +134,32 @@ const RegisterScreen = memo(({ navigation }: any) => {
                 message: ERROR_MESSAGES.PASSWORD_TOO_SHORT,
               },
             }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <FormInput
-                label="Mật khẩu"
-                placeholder="Nhập mật khẩu"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={errors.password?.message}
-                secureTextEntry
-              />
-            )}
+            secureTextEntry
           />
 
           <WhiteSpace size="lg" />
 
-          <Controller
-            control={control}
+          <FormInput
             name="confirmPassword"
+            control={control}
+            required
+            label="Xác nhận mật khẩu"
+            placeholder="Nhập lại mật khẩu"
             rules={{
               required: ERROR_MESSAGES.REQUIRED_FIELD,
               validate: value =>
                 value === password || 'Mật khẩu xác nhận không khớp',
             }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <FormInput
-                label="Xác nhận mật khẩu"
-                placeholder="Nhập lại mật khẩu"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                error={errors.confirmPassword?.message}
-                secureTextEntry
-              />
-            )}
+            secureTextEntry
           />
 
           <WhiteSpace size="xl" />
 
           <Button
             type="primary"
-            disabled={!isValid || registerMutation.isPending}
-            loading={registerMutation.isPending}
-            onPress={handleSubmit(onSubmit)}
+            disabled={!isValid || isSubmitting}
+            loading={isSubmitting}
+            onPress={handleSubmitWithLoading}
           >
             <Text>Đăng ký</Text>
           </Button>
@@ -196,5 +174,7 @@ const RegisterScreen = memo(({ navigation }: any) => {
     </ScrollView>
   );
 });
+
+RegisterScreen.displayName = 'RegisterScreen';
 
 export default RegisterScreen;

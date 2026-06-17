@@ -1,5 +1,5 @@
 import { useQuery, UseQueryOptions, QueryKey } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { logger } from '@/shared/utils/logger';
 import { errorHandler } from '@/shared/utils/errorHandler';
 
@@ -22,7 +22,7 @@ export const useBaseQuery = <TData, TError = Error>({
     successMessage = 'Tải dữ liệu thành công',
     ...options
 }: UseBaseQueryProps<TData, TError>) => {
-    const { data, error, isSuccess, isFetching, ...rest } = useQuery({
+    const { data, error, isSuccess, isFetching, errorUpdatedAt, ...rest } = useQuery({
         queryKey,
         queryFn,
         retry: (failureCount, error: any) => {
@@ -38,12 +38,15 @@ export const useBaseQuery = <TData, TError = Error>({
         ...options,
     });
 
-    // Hiển thị toast lỗi
+    const lastErrorShownAt = useRef<number>(0);
+
+    // Hiển thị toast lỗi (chỉ hiện 1 lần cho mỗi đợt lỗi mới thông qua errorUpdatedAt)
     useEffect(() => {
-        if (error && showErrorToast) {
+        if (error && showErrorToast && errorUpdatedAt > lastErrorShownAt.current) {
             errorHandler.handleApiError(error, 'useBaseQuery');
+            lastErrorShownAt.current = errorUpdatedAt;
         }
-    }, [error, showErrorToast]);
+    }, [error, showErrorToast, errorUpdatedAt]);
 
     // Log thành công nếu cần
     useEffect(() => {

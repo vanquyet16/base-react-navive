@@ -8,6 +8,7 @@
 import axios, { AxiosInstance } from 'axios';
 import { getApiUrl, type ApiDomain } from '@/shared/config/app.config';
 import { TIMEOUT, HEADERS } from '@/shared/constants/http';
+import { registerInterceptors } from './axios-interceptors';
 
 /**
  * Factory function: Tạo axios instance cho domain cụ thể
@@ -45,6 +46,9 @@ export const createAxiosInstance = (domain: ApiDomain = 'MAIN'): AxiosInstance =
             },
         ],
     });
+
+    // Tự động gắn interceptors (access token, refresh token, error normalization)
+    registerInterceptors(instance);
 
     return instance;
 };

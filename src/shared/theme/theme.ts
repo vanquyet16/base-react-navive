@@ -27,7 +27,7 @@ export interface Theme {
         textSecondary: string;
         textTertiary: string;
         textInverse: string;
-        textTertiarySeccon: string;
+        textTertiarySecond: string;
 
         // Borders
         border: string;
@@ -70,7 +70,7 @@ export interface Theme {
         scrim: string;
 
         // Logo
-        boderColorLogo: string;
+        borderColorLogo: string;
 
         // Specific Party Colors
         partyRed: string;
@@ -160,7 +160,7 @@ export const lightTheme: Theme = {
         textSecondary: colors.gray[500], // #6b7280 - Secondary text, labels
         textTertiary: colors.gray[400],  // #9ca3af - Tertiary text, placeholders
         textInverse: colors.white,
-        textTertiarySeccon: colors.blue.blueText,
+        textTertiarySecond: colors.blue.blueText,
 
 
         // Borders
@@ -177,7 +177,6 @@ export const lightTheme: Theme = {
         secondaryLight: colors.secondary[100],
         secondaryDark: colors.secondary[700],
 
-        // Gradient colors for headers
         // Gradient colors for headers
         gradientStart: colors.primary[500], // #DA5531
         gradientEnd: colors.primary[600],   // #b83b1d
@@ -205,7 +204,7 @@ export const lightTheme: Theme = {
         scrim: colors.backdrop,
 
         ///logo
-        boderColorLogo: colors.special.avatarBorder,
+        borderColorLogo: colors.special.avatarBorder,
 
         // Party Colors
         partyRed: '#D71920',
@@ -294,7 +293,7 @@ export const darkTheme: Theme = {
         textSecondary: colors.gray[300],
         textTertiary: colors.gray[400],
         textInverse: colors.gray[900],
-        textTertiarySeccon: colors.blue.blueText,
+        textTertiarySecond: colors.blue.blueText,
         // Borders
         border: colors.gray[700],
         borderLight: colors.gray[600],
@@ -336,18 +335,18 @@ export const darkTheme: Theme = {
         scrim: colors.backdrop,
 
         // Logo
-        boderColorLogo: colors.special.avatarBorder,
+        borderColorLogo: colors.special.avatarBorder,
 
         // Party Colors
-        partyRed: '#D71920',
-        partyYellow: '#FFFF00',
-        partyBg: '#FFF8E1',
-        partyBorder: '#F5E0B7',
-        partyText: '#D71920',
-        partyHeaderBg: '#FFE5B4',
-        partyGradientStart: '#D22D28',
-        partyGradientEnd: '#F1B226',
-        partySubText: colors.gray[500],
+        partyRed: '#FF8080',
+        partyYellow: '#FFD700',
+        partyBg: '#2C1313',
+        partyBorder: '#4E1A1A',
+        partyText: '#FF8080',
+        partyHeaderBg: '#3D1414',
+        partyGradientStart: '#8A1A16',
+        partyGradientEnd: '#9C6A15',
+        partySubText: colors.gray[300],
 
         // NewsBox Variants (dark mode optimized)
         newsBox: {
@@ -379,24 +378,24 @@ export const darkTheme: Theme = {
                 subText: colors.gray[300],
             },
             party: {
-                bg: '#FFF8E1',
-                border: '#F5E0B7',
-                text: '#D71920',
-                headerBg: '#FFE5B4',
-                gradientStart: '#D22D28',
-                gradientEnd: '#F1B226',
-                subText: colors.gray[500],
+                bg: '#2C1313',
+                border: '#4E1A1A',
+                text: '#FF8080',
+                headerBg: '#3D1414',
+                gradientStart: '#8A1A16',
+                gradientEnd: '#9C6A15',
+                subText: colors.gray[300],
             },
 
         },
         tabs: {
-            background: colors.gray[80],
+            background: colors.gray[800],
             backgroundActive: colors.primary[500],
-            text: colors.gray[500],
+            text: colors.gray[400],
             textActive: colors.white,
-            border: colors.gray[100],
+            border: colors.gray[700],
         },
-        divider: '#E2E8F0',
+        divider: colors.gray[700],
 
     },
 

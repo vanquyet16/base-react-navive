@@ -68,7 +68,7 @@ const useStyles = createStyles(
       shadowOpacity: 0.1,
       shadowRadius: moderateScale(4),
       elevation: 3,
-      borderColor: theme.colors.boderColorLogo,
+      borderColor: theme.colors.borderColorLogo,
       borderWidth: 3,
     },
     textContainer: {
@@ -80,7 +80,7 @@ const useStyles = createStyles(
       color: theme.colors.textInverse,
     },
     textSubTitle: {
-      color: theme.colors.textTertiarySeccon,
+      color: theme.colors.textTertiarySecond,
     },
   }),
   true,

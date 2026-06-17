@@ -6,12 +6,11 @@
  * 
  */
 
+import { StateCreator } from 'zustand';
 import type { User } from '@/shared/types/domain/user';
 import type { AuthSession } from '@/shared/types/domain/auth';
+import type { AppStoreState } from './app-store';
 
-/**
- * Session Store State
- */
 /**
  * Session Store State
  */
@@ -41,41 +40,36 @@ const initialState: Pick<
  * Create session slice
  * Pattern: Slice factory function để compose vào root store
  */
-export const createSessionSlice = (
-    set: any,
-    get: any,
-): SessionState => ({
+export const createSessionSlice: StateCreator<
+    AppStoreState,
+    [],
+    [],
+    SessionState
+> = (set) => ({
     ...initialState,
 
     /**
      * Set session data (partial update)
      */
     setSession: (session) => {
-        set((state: any) => ({
-            ...state,
+        set({
             ...session,
             isAuthenticated: true,
-        }));
+        });
     },
 
     /**
      * Set user data
      */
     setUser: (user) => {
-        set((state: any) => ({
-            ...state,
-            user,
-        }));
+        set({ user });
     },
 
     /**
      * Clear session (logout)
      */
     clearSession: () => {
-        set((state: any) => ({
-            ...state,
-            ...initialState,
-        }));
+        set(initialState);
     },
 });
 

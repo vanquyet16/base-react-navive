@@ -13,6 +13,9 @@ export const VALIDATION_PATTERNS = {
 
     /** Phone number: 10-11 digits */
     PHONE: /^[0-9]{10,11}$/,
+
+    /** Email pattern standard */
+    EMAIL: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
 } as const;
 
 /**

@@ -4,28 +4,16 @@ import {
   MainStackParamList,
 } from '@/shared/types/navigation.types';
 import LoginScreen from '@/features/auth/screens/LoginScreen';
-import React from 'react';
 import { RegisterScreen } from '@/features/auth';
 import { HomeScreen } from '@/features/home';
-import { ProfileScreen, SettingsScreen } from '@/features/profile';
-import { ImageSourcePropType, View } from 'react-native';
 import { CustomHeaderProps } from '@/components/layout/CustomHeader';
 import EmergencyScreen from '@/features/emergency/screens/EmergencyScreen';
 import { FeedbackScreen } from '@/features/feedback';
 import AppScreen from '@/features/app/screens/AppScreen';
-import NotificationScreen from '@/features/notification/screens/NotificationScreen';
 
 // ============================================================================
 // ĐỊNH NGHĨA TYPES CHO SCREEN CONFIGURATION
 // ============================================================================
-
-/**
- * Utility type để validate rằng tất cả screens trong config
- * đều phải có type definition tương ứng trong MainStackParamList
- */
-type ValidateScreenKeys<T extends Record<string, ScreenConfig>> = {
-  [K in keyof T]: K extends keyof MainStackParamList ? T[K] : never;
-};
 
 /**
  * Cấu hình cho main stack screen
@@ -153,39 +141,22 @@ export const TAB_SCREENS: TabScreenConfig[] = [
     showHeader: false,
     disableSafeArea: true,
     disableScroll: true,
-
-    // header: {
-    //     subtitle: 'Chào mừng trở lại!',
-    //     showProfile: true,
-    //     showSearch: true,
-    //     showNotification: false,
-
-    //     // notificationCount: 3,
-    //     type: 'default',
-    //     showMenu: true,
-    //     // backgroundImage: require('@/assets/images/imgbgrheader.jpg'),
-    //     userName: 'Lò Văn quyết',
-    // },
   },
-
   {
     name: 'Emergency',
     title: 'Khẩn cấp',
     componentDirect: EmergencyScreen,
     disableScroll: true,
-    icon: 'phone', // Will use 'qrcode' or 'phone' depending on icon set, using 'phone' as requested
+    icon: 'phone',
     header: {
       type: 'minimal',
       showMenu: true,
-      // backgroundImage: require('@/assets/images/imgbgrheader.jpg'),
       titleIcon: 'phone',
-      // isTransparent: true,
     },
   },
   {
     name: 'Feedback',
     title: 'Phản Ánh',
-    // TODO: Replace with actual Contacts screen or reuse Profile for demo
     componentDirect: FeedbackScreen,
     icon: 'send',
     disableScroll: true,
@@ -196,20 +167,16 @@ export const TAB_SCREENS: TabScreenConfig[] = [
       showNotification: false,
       backgroundImage: require('@/assets/images/imgbgrheader.jpg'),
       titleIcon: 'send',
-
-      // isTransparent: true,
     },
   },
   {
     name: 'Apps',
     title: 'Ứng dụng',
-    // TODO: Replace with Apps menu screen
     componentDirect: AppScreen,
     icon: 'grid',
     header: {
       type: 'minimal',
       showMenu: true,
-
       backgroundImage: require('@/assets/images/imgbgrheader.jpg'),
       titleIcon: 'grid',
     },
@@ -217,8 +184,6 @@ export const TAB_SCREENS: TabScreenConfig[] = [
   {
     name: 'Notifications',
     title: 'Thông báo',
-    // TODO: Replace with actual Notifications screen or reusable Settings for demo
-    // componentDirect: NotificationScreen,
     component: () =>
       import('@/features/notification/screens/NotificationScreen'),
     icon: 'bell',
@@ -229,28 +194,8 @@ export const TAB_SCREENS: TabScreenConfig[] = [
       showMenu: true,
       backgroundImage: require('@/assets/images/imgbgrheader.jpg'),
       titleIcon: 'bell',
-      // Demo: Custom component (Flexible)
-      //   rightComponent: (
-      //     // <View style={{ justifyContent: 'center', padding: 4 }}>
-      //     //   <Text style={{ color: 'white', fontWeight: '600' }}>Ứng dụng</Text>
-      //     // </View>
-      //   ),
     },
   },
-
-  // {
-  //   name: 'Settings',
-  //   title: 'Cài đặt',
-  //   // TODO: Replace with Apps menu screen
-  //   componentDirect: SettingsScreen,
-  //   icon: 'settings',
-  //   header: {
-  //     type: 'minimal',
-  //     showMenu: true,
-  //     backgroundImage: require('@/assets/images/imgbgrheader.jpg'),
-  //     titleIcon: 'settings',
-  //   },
-  // },
 ];
 
 // ============================================================================
@@ -284,38 +229,34 @@ export const AUTH_SCREENS: AuthScreenConfig[] = [
  * QUAN TRỌNG: MAIN_STACK keys được tự động đồng bộ với MainStackParamList
  */
 export const NAVIGATION_KEYS = {
-  // Root Navigator - Navigator gốc
+  /** Root Navigator */
   ROOT: {
-    DRAWER: 'Drawer', // Drawer navigation
-    AUTH: 'Auth', // Auth navigation
-  } as const,
+    DRAWER: 'Drawer',
+    AUTH: 'Auth',
+  },
 
-  // Main Stack - Stack navigation chính
-  // Sử dụng keyof MainStackParamList để đảm bảo type-safe
+  /** Main Stack — tự động đồng bộ với MAIN_STACK_SCREENS */
   MAIN_STACK: Object.keys(MAIN_STACK_SCREENS).reduce((acc, key) => {
     acc[key] = key;
     return acc;
   }, {} as Record<string, string>) as { [K in keyof MainStackParamList]: K },
 
-  // Drawer Stack - các route hiển thị trong Drawer menu
-  // Lưu ý: DrawerStack routes là "shortcut" để mở MainStackNavigator với initialParams tương ứng
+  /** Drawer Stack */
   DRAWER_STACK: {
     MAIN: 'Main',
-  } as const,
+  },
 
-  // Tab Navigator - Bottom tabs
-  TAB: {
-    HOME: 'Home', // Trang chủ
-    CONTACTS: 'Contacts', // Danh bạ
-    NOTIFICATIONS: 'Notifications', // Thông báo
-    APPS: 'Apps', // Ứng dụng
-  } as const,
+  /** Tab Navigator — tự động đồng bộ với TAB_SCREENS */
+  TAB: TAB_SCREENS.reduce((acc, tab) => {
+    acc[tab.name.toUpperCase()] = tab.name;
+    return acc;
+  }, {} as Record<string, string>) as { [K in Uppercase<keyof MainTabParamList>]: K extends Uppercase<infer N> ? N extends keyof MainTabParamList ? N : never : never },
 
-  // Auth Stack - Xác thực
+  /** Auth Stack */
   AUTH: {
-    LOGIN: 'Login', // Đăng nhập
-    REGISTER: 'Register', // Đăng ký
-  } as const,
+    LOGIN: 'Login',
+    REGISTER: 'Register',
+  },
 } as const;
 
 // ============================================================================
@@ -328,9 +269,9 @@ export const NAVIGATION_KEYS = {
  * @returns ScreenConfig hoặc undefined nếu không tìm thấy
  */
 export const getScreenConfig = (
-  screenName: string,
+  screenName: keyof typeof MAIN_STACK_SCREENS,
 ): ScreenConfig | undefined => {
-  return MAIN_STACK_SCREENS[screenName as keyof typeof MAIN_STACK_SCREENS];
+  return MAIN_STACK_SCREENS[screenName];
 };
 
 /**

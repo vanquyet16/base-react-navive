@@ -47,12 +47,12 @@ export type AppStoreState = SessionState & SettingsState;
  */
 export const useAppStore = create<AppStoreState>()(
     persist(
-        (set, get) => ({
+        (set, get, store) => ({
             // Session slice
-            ...createSessionSlice(set, get),
+            ...createSessionSlice(set, get, store),
 
             // Settings slice
-            ...createSettingsSlice(set, get),
+            ...createSettingsSlice(set, get, store),
         }),
         {
             name: 'app-store', // Storage key

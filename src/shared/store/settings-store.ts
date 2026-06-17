@@ -6,7 +6,9 @@
  * 
  */
 
+import { StateCreator } from 'zustand';
 import type { Theme, Language } from '@/shared/types/common';
+import type { AppStoreState } from './app-store';
 
 /**
  * Settings Store State
@@ -39,50 +41,40 @@ const defaultSettings: Pick<
 /**
  * Create settings slice
  */
-export const createSettingsSlice = (
-    set: any,
-    get: any,
-): SettingsState => ({
+export const createSettingsSlice: StateCreator<
+    AppStoreState,
+    [],
+    [],
+    SettingsState
+> = (set) => ({
     ...defaultSettings,
 
     /**
      * Set theme (light/dark)
      */
     setTheme: (theme) => {
-        set((state: any) => ({
-            ...state,
-            theme,
-        }));
+        set({ theme });
     },
 
     /**
      * Set language
      */
     setLanguage: (language) => {
-        set((state: any) => ({
-            ...state,
-            language,
-        }));
+        set({ language });
     },
 
     /**
      * Toggle notifications
      */
     setNotificationsEnabled: (enabled) => {
-        set((state: any) => ({
-            ...state,
-            notificationsEnabled: enabled,
-        }));
+        set({ notificationsEnabled: enabled });
     },
 
     /**
      * Reset về default settings
      */
     resetSettings: () => {
-        set((state: any) => ({
-            ...state,
-            ...defaultSettings,
-        }));
+        set(defaultSettings);
     },
 });
 

@@ -15,10 +15,10 @@ import {
 import {
   SCREEN_PADDING,
   useBaseForm,
-  useLogin,
   ERROR_MESSAGES,
   VALIDATION,
 } from '@/shared';
+import { useLogin } from '../hooks';
 import { LoginRequest } from '@/shared/types/domain/auth';
 import { createStyles } from '@/shared/theme/create-styles';
 import { useAuthNavigation } from '@/shared/hooks/useNavigation'; // ← Custom hook với autocomplete

@@ -3,7 +3,6 @@ import { View, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import Animated, { SharedValue } from 'react-native-reanimated';
 import { moderateVerticalScale } from 'react-native-size-matters';
 import { createStyles } from '@/shared/theme/create-styles';
-import { useTheme } from '@/shared/store/selectors';
 import PublicServiceSection from './PublicServiceSection';
 import TrackingSection from './TrackingSection';
 import UtilitySection from './UtilitySection';
@@ -19,7 +18,6 @@ interface IHomeProps {
 const ContentHome = memo((props: IHomeProps) => {
   const { dataHome, onScroll, scrollY } = props;
   const styles = useStyles();
-  const theme = useTheme();
 
   // Sync content position with header collapse using shared hook
   const { contentAnimatedStyle } = useHomeAnimations(scrollY);

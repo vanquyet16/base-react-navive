@@ -11,6 +11,7 @@ import {
 } from '@/shared/types/domain/auth';
 import { authService } from '../../services/auth.service';
 import { useIsAuthenticated, useSessionActions } from '@/shared/store/selectors';
+import { CACHE_TIME, STALE_TIME } from '@/shared/constants/query-defaults';
 
 // ============================================================================
 // QUERY KEYS
@@ -40,7 +41,7 @@ export const useGetCurrentUser = () => {
         queryKey,
         queryFn: authService.getCurrentUser,
         enabled: isAuthenticated,
-        staleTime: 5 * 60 * 1000, // 5 phút
+        staleTime: STALE_TIME.MEDIUM, // 5 phút
         showErrorToast: false, // Không hiển thị toast cho query này
         errorMessage: 'Lỗi khi tải thông tin người dùng',
         // Thêm retry logic tùy chỉnh cho auth queries
@@ -69,7 +70,8 @@ export const useGetUserProfile = () => {
             return authService.getCurrentUser();
         },
         enabled: isAuthenticated,
-        staleTime: 10 * 60 * 1000, // 10 phút - profile ít thay đổi
+        staleTime: STALE_TIME.SHORT,
+        gcTime: CACHE_TIME.MEDIUM,
         showErrorToast: false,
         errorMessage: 'Lỗi khi tải thông tin profile',
     });

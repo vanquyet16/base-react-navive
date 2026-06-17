@@ -29,8 +29,9 @@ export const useBaseMutation = <TData, TError = Error, TVariables = void>({
     const queryClient = useQueryClient();
 
     return useMutation({
+        ...options,
         mutationFn,
-        onSuccess: (data, variables, context, mutationContext) => {
+        onSuccess: (data, variables, context) => {
             // Vô hiệu hóa cache queries
             invalidateQueries && invalidateQueries.forEach(queryKey => {
                 queryClient.invalidateQueries({ queryKey });
@@ -56,10 +57,10 @@ export const useBaseMutation = <TData, TError = Error, TVariables = void>({
 
             // Gọi onSuccess gốc nếu có
             if (options.onSuccess) {
-                options.onSuccess(data, variables, context, mutationContext);
+                (options.onSuccess as any)(data, variables, context);
             }
         },
-        onError: (error, variables, context, mutationContext) => {
+        onError: (error, variables, context) => {
             // Hiển thị toast lỗi
             if (showErrorToast) {
                 const message = (error as any)?.response?.data?.message ||
@@ -80,9 +81,8 @@ export const useBaseMutation = <TData, TError = Error, TVariables = void>({
 
             // Gọi onError gốc nếu có
             if (options.onError) {
-                options.onError(error, variables, context, mutationContext);
+                (options.onError as any)(error, variables, context);
             }
         },
-        ...options,
     });
 }; 

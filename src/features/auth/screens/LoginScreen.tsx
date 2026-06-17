@@ -8,7 +8,6 @@ import {
   Platform,
 } from 'react-native';
 import { Button, Icon, WhiteSpace, WingBlank } from '@ant-design/react-native';
-import { LoginRequest } from '@/shared/types/navigation.types';
 import { SCREEN_PADDING, ERROR_MESSAGES, VALIDATION } from '@/shared/constants';
 import FormInput from '@/components/form/FormInput';
 import {

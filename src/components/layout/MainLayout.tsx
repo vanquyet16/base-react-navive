@@ -47,6 +47,25 @@ interface MainLayoutProps {
   disableSafeArea?: boolean;
 }
 
+// Hàm so sánh nông hai đối tượng
+const isShallowEqual = (objA: any, objB: any) => {
+  if (Object.is(objA, objB)) return true;
+  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) return false;
+  
+  const keysA = Object.keys(objA);
+  const keysB = Object.keys(objB);
+  
+  if (keysA.length !== keysB.length) return false;
+  
+  for (let i = 0; i < keysA.length; i++) {
+    const key = keysA[i];
+    if (!Object.prototype.hasOwnProperty.call(objB, key) || !Object.is(objA[key], objB[key])) {
+      return false;
+    }
+  }
+  return true;
+};
+
 // Hàm so sánh tùy chỉnh cho React.memo
 const areEqual = (prevProps: MainLayoutProps, nextProps: MainLayoutProps) => {
   // So sánh các props cơ bản
@@ -62,11 +81,8 @@ const areEqual = (prevProps: MainLayoutProps, nextProps: MainLayoutProps) => {
     return false;
   }
 
-  // So sánh headerProps (so sánh nông)
-  if (
-    JSON.stringify(prevProps.headerProps) !==
-    JSON.stringify(nextProps.headerProps)
-  ) {
+  // So sánh headerProps (so sánh nông để nhận biết sự thay đổi của callback/function references)
+  if (!isShallowEqual(prevProps.headerProps, nextProps.headerProps)) {
     return false;
   }
 

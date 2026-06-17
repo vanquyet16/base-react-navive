@@ -193,8 +193,8 @@ class AuthService {
      * Get current user từ API
      * Dùng để refresh user data
      */
-    public async getCurrentUser() {
-        const response = await this.authApiClient.get<ApiResponse<any>>(
+    public async getCurrentUser(): Promise<User> {
+        const response = await this.authApiClient.get<ApiResponse<User>>(
             API_ENDPOINTS.AUTH.GET_CURRENT_USER,
         );
         return response.data;

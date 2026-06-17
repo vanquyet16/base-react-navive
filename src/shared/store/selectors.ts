@@ -34,7 +34,7 @@ export const useUserRole = () =>
 /**
  * Settings Selectors
  */
-export const useTheme = (): Theme =>
+export const useThemeMode = (): Theme =>
     useAppStore(settingsSelectors.theme);
 
 export const useLanguage = (): Language =>
