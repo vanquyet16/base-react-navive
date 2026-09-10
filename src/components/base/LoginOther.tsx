@@ -1,5 +1,5 @@
 import React, { memo } from 'react';
-import { StyleSheet, Pressable, View } from 'react-native';
+import {  Pressable, View } from 'react-native';
 import { createStyles } from '@/shared/theme/create-styles';
 import { useTheme } from '@/shared/theme/use-theme';
 import { CustomText } from '@/components/base/CustomText';

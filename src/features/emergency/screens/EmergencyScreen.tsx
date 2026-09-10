@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo } from 'react';
-import { View } from 'react-native';
+import React, { useCallback } from 'react';
 import { useTheme } from '@/shared/theme/use-theme';
+import { logger } from '@/shared/utils/logger';
 import {
   InfoBox,
   SectionHeader,
@@ -75,7 +75,7 @@ const EmergencyScreen = () => {
 
   const handleCall = useCallback((phoneNumber: string) => {
     // Implement call logic here
-    console.log('Call:', phoneNumber);
+    logger.info('Call emergency contact', { phoneNumber });
   }, []);
 
   const renderItem = useCallback(
@@ -102,7 +102,7 @@ const EmergencyScreen = () => {
     setRefreshing(true);
     // Simulate API call
     setTimeout(() => {
-      console.log('Refresh');
+      logger.info('EmergencyScreen refresh complete');
       setRefreshing(false);
     }, 1000);
   }, []);

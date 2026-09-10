@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 // ============================================================================
 // LOGGER UTILITY - THAY THẾ CONSOLE.LOG VỚI CẤU HÌNH CHUYÊN NGHIỆP
 // ============================================================================
@@ -40,7 +41,7 @@ class Logger {
     }
 
     // Private method để format log
-    private formatMessage(level: LogLevel, message: string, data?: any): string {
+    private formatMessage(level: LogLevel, message: string, _data?: unknown): string {
         const timestamp = new Date().toISOString();
         const levelName = LogLevel[level];
         const context = this.context ? `[${this.context}]` : '';
@@ -73,11 +74,13 @@ class Logger {
 
             switch (level) {
                 case LogLevel.ERROR:
-                    console.error(formattedMessage, data || '');
+                     
+        console.error(formattedMessage, data || '');
                     if (error) console.error(error);
                     break;
                 case LogLevel.WARN:
-                    console.warn(formattedMessage, data || '');
+                     
+        console.warn(formattedMessage, data || '');
                     break;
                 case LogLevel.INFO:
                     console.info(formattedMessage, data || '');

@@ -6,8 +6,6 @@ import {
 import { CustomTabs } from '@/components/base/CustomTabs';
 import { ViewStyle } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
-import { moderateVerticalScale } from '@/shared/utils/sizeMatters';
-import { View } from '@ant-design/react-native';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -51,7 +49,6 @@ const CustomTabBar = memo(
     tabType?: 'pill' | 'underline' | 'chip' | 'solid';
   }) => {
     const theme = useTheme();
-
     const tabs = useMemo(
       () =>
         state.routes.map(route => ({
@@ -128,7 +125,6 @@ const CustomTabBar = memo(
  */
 export const CustomTabNavigator = memo<CustomTabNavigatorProps>(
   ({ screens, initialRouteName, style, tabType = 'pill' }) => {
-    const theme = useTheme();
 
     const sceneContainerStyle = useMemo(
       () => ({ backgroundColor: 'transparent' }),

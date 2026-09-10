@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  StyleSheet,
+  
   ScrollView,
   Pressable,
   Switch,
@@ -16,6 +16,7 @@ import { useTheme } from '@/shared/theme/use-theme';
 import { SCREEN_PADDING } from '@/shared/constants';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { createStyles } from '@/shared/theme/create-styles';
+import { logger } from '@/shared/utils/logger';
 
 const SettingsScreen: React.FC = () => {
   const currentTheme = useThemeMode();
@@ -44,7 +45,7 @@ const SettingsScreen: React.FC = () => {
           title: 'Ngôn ngữ',
           subtitle: 'Tiếng Việt',
           type: 'arrow',
-          onPress: () => console.log('Language settings'),
+          onPress: () => logger.info('Language settings pressed'),
         },
       ],
     },
@@ -64,7 +65,7 @@ const SettingsScreen: React.FC = () => {
           title: 'Thông báo email',
           subtitle: 'Nhận thông báo qua email',
           type: 'arrow',
-          onPress: () => console.log('Email notifications'),
+          onPress: () => logger.info('Email notifications pressed'),
         },
       ],
     },
@@ -84,7 +85,7 @@ const SettingsScreen: React.FC = () => {
           title: 'Đổi mật khẩu',
           subtitle: 'Cập nhật mật khẩu đăng nhập',
           type: 'arrow',
-          onPress: () => console.log('Change password'),
+          onPress: () => logger.info('Change password pressed'),
         },
       ],
     },
@@ -104,14 +105,14 @@ const SettingsScreen: React.FC = () => {
           title: 'Quản lý lưu trữ',
           subtitle: 'Xóa cache, dữ liệu tạm',
           type: 'arrow',
-          onPress: () => console.log('Storage management'),
+          onPress: () => logger.info('Storage management pressed'),
         },
         {
           icon: 'info',
           title: 'Về ứng dụng',
           subtitle: 'Thông tin phiên bản',
           type: 'arrow',
-          onPress: () => console.log('About app'),
+          onPress: () => logger.info('About app pressed'),
         },
       ],
     },

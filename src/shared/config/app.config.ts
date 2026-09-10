@@ -75,20 +75,16 @@ export const APP_INFO = {
     BUNDLE_ID: 'com.reactnativebase.app',
 } as const;
 
+import { STORAGE_KEYS } from '@/shared/constants/storage-keys';
+
 /**
  * Storage Configuration
- * AsyncStorage keys and prefixes
+ * Single Source of Truth liên kết với storage-keys.ts
  */
 export const STORAGE = {
     /** Storage key names */
-    KEYS: {
-        ACCESS_TOKEN: 'access_token',
-        REFRESH_TOKEN: 'refresh_token',
-        USER_DATA: 'user_data',
-        THEME: 'theme',
-        LANGUAGE: 'language',
-        APP_SETTINGS: 'app_settings',
-    },
+    KEYS: STORAGE_KEYS,
     /** Prefix for all storage keys */
-    PREFIX: 'app_',
+    PREFIX: '@rn_base:',
 } as const;
+

@@ -1,5 +1,5 @@
 import React, { memo, useMemo } from 'react';
-import { StyleSheet, Pressable, ViewStyle } from 'react-native';
+import {  Pressable, ViewStyle } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import {
@@ -103,7 +103,7 @@ const FloatingActionButton = memo<FloatingActionButtonProps>(
 );
 
 const useStyles = createStyles(
-  theme => ({
+  _theme => ({
     container: {
       position: 'absolute',
       width: scale(45),

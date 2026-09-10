@@ -5,13 +5,12 @@ import {
   Pressable,
   Platform,
   type ViewStyle,
-  type TextStyle,
 } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import type { MainTabParamList } from '@/shared/types/navigation.types';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   moderateScale,
   moderateVerticalScale,
@@ -91,7 +90,6 @@ const CustomBottomTabBar: React.FC<BottomTabBarProps> = ({
 
           // Lấy icon từ options
           const IconComponent = options.tabBarIcon;
-          const badgeCount = options.tabBarBadge;
 
           const color = isFocused
             ? theme.colors.primary

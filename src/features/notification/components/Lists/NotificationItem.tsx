@@ -8,6 +8,7 @@ import {
 } from 'react-native-size-matters';
 import { AppIcon, CustomText, SwipeableItem } from '@/components';
 import { View } from 'react-native';
+import { logger } from '@/shared/utils/logger';
 
 interface NotificationItemProps {
   item: Notification;
@@ -63,7 +64,7 @@ const NotificationItem = memo<NotificationItemProps>(
 
       // Action 1: Archive (Orange)
       actions.push({
-        onPress: () => console.log('Archive item:', item.id), // Demo handler
+        onPress: () => logger.info('Archive item', { id: item.id }), // Demo handler
         text: 'Lưu trữ',
         icon: 'archive',
         backgroundColor: '#F97316', // Orange

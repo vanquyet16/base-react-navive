@@ -1,22 +1,19 @@
 import {
-  StyleSheet,
-  Text,
-  TextStyle,
   Pressable,
   View,
-  ViewStyle,
+  type ViewStyle,
+  type TextStyle,
 } from 'react-native';
 import React, { useMemo } from 'react';
 import {
   moderateScale,
-  moderateVerticalScale,
+  
   scale,
 } from 'react-native-size-matters';
 import { layout } from '@/shared/theme/tokens';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AppIcon from './AppIcon';
 import { createStyles } from '@/shared/theme/create-styles';
-import { useTheme } from '@/shared/theme/use-theme';
 import CustomText from './CustomText';
 
 export interface IHeaderActionProps {
@@ -44,7 +41,6 @@ const HeaderAction: React.FC<IHeaderActionProps> = React.memo(props => {
     styleIconButton,
   } = props;
   const insets = useSafeAreaInsets();
-  const theme = useTheme();
   const styles = useStyles();
 
   // Memoize container style để tránh tạo object mới mỗi render

@@ -1,12 +1,11 @@
 /**
  * NAVIGATION EXPORTS
  * ==================
- * Centralized export cho tất cả navigation-related modules
- * 
+ * Centralized export cho tất cả navigation modules
+ *
  * Architecture:
- * - navigators/: Dedicated navigator components (AuthStack, MainStack)
- * - config/: Screen configurations và route constants
- * - factories/: Factory functions để tạo screen wrappers và navigators
+ * - navigators/: Dedicated navigator components (AuthStack, MainStack, MainDrawer)
+ * - config/: Route constants (NAVIGATION_KEYS)
  * - MainTabs: Bottom tabs navigation component
  */
 
@@ -16,6 +15,5 @@ export * from './navigators';
 // Main Tabs component
 export { default as MainTabs } from './MainTabs';
 
-// Config và factories
+// Route constants & config
 export * from './config';
-export * from './factories';

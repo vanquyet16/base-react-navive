@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { View } from 'react-native';
 import React from 'react';
 import { createStyles } from '@/shared/theme/create-styles';
 import { useTheme } from '@/shared/theme/use-theme';
@@ -36,7 +36,7 @@ const useStyles = createStyles(theme => {
       backgroundColor: theme.colors.white,
       paddingHorizontal: theme.spacing[2],
       paddingVertical: theme.spacing[1],
-      borderRadius: theme.radius['lg'],
+      borderRadius: theme.radius.lg,
       gap: theme.spacing[1],
       shadowColor: theme.colors.black,
       shadowOffset: {

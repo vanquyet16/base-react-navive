@@ -1,37 +1,46 @@
 /**
- * THEME CONFIGURATION
- * ===================
- * Light và Dark theme definitions.
- * Semantic color mappings từ design tokens.
- * 
+ * THEME CONFIGURATION (SENIOR ARCHITECTURE STANDARD)
+ * ==================================================
+ * Light và Dark theme definitions chuẩn 3-Tier Token System.
+ * Semantic color mappings từ design tokens:
+ * - Hỗ trợ đầy đủ Surface, Card, States, Borders, Muted/Placeholder
+ * - Tích hợp sẵn helper `theme.alpha(color, opacity)`
+ * - Tích hợp sẵn `theme.typography.presets` (h1-h5, body, caption, button)
  */
 
-import { colors, spacing, radius, typography, shadows, zIndex } from './tokens';
+import { colors, spacing, spacingV, radius, typography, shadows, zIndex } from './tokens';
+import { alpha, typographyPresets } from './helpers';
 
 /**
  * Theme interface
- * Define structure cho theme objects
+ * Cấu trúc hoàn chỉnh của Theme object
  */
 export interface Theme {
-    // Colors - semantic mappings
     colors: {
-        // Backgrounds
+        // Core Surfaces & Backgrounds
         background: string;
         backgroundSecondary: string;
         backgroundTertiary: string;
-        inputBackground: string; // Added for input fields
-        inputBorder: string; // Added for input borders
+        surface: string;            // Nền thẻ card / modal / sheet chuẩn
+        card: string;               // Alias tiện lợi cho surface
+        surfaceVariant: string;      // Nền phụ, hover, highlight
+        inputBackground: string;
+        inputBorder: string;
 
-        // Text
-        text: string;
-        textSecondary: string;
-        textTertiary: string;
-        textInverse: string;
+        // Typography & Text
+        text: string;               // Chữ chính
+        textSecondary: string;      // Chữ phụ
+        textTertiary: string;       // Chữ mờ / placeholder
+        textInverse: string;        // Chữ tương phản
         textTertiarySecond: string;
+        muted: string;              // Alias cho textSecondary
+        placeholder: string;        // Alias cho textTertiary
 
-        // Borders
+        // Borders & Dividers
         border: string;
         borderLight: string;
+        borderFocus: string;        // Màu viền khi active/focus
+        divider: string;
 
         // Brand colors
         primary: string;
@@ -43,11 +52,11 @@ export interface Theme {
         secondaryLight: string;
         secondaryDark: string;
 
-        // Gradient colors for headers
+        // Header gradients
         gradientStart: string;
         gradientEnd: string;
 
-        // Semantic colors
+        // Semantic states
         success: string;
         successLight: string;
         warning: string;
@@ -57,13 +66,18 @@ export interface Theme {
         info: string;
         infoLight: string;
 
+        // Interactive States
+        disabled: string;           // Màu chữ/icon khi bị disable
+        disabledBackground: string; // Màu nền khi bị disable
+        backdrop: string;           // Lớp phủ đen mờ khi mở modal
+
         // Special UI elements
         avatarBorder: string;
         orangeAccent: string;
         blueAccent: string;
         redNotification: string;
 
-        // Common
+        // Common primitives
         white: string;
         black: string;
         transparent: string;
@@ -72,7 +86,7 @@ export interface Theme {
         // Logo
         borderColorLogo: string;
 
-        // Specific Party Colors
+        // Specific Party Colors (Backward compatible)
         partyRed: string;
         partyYellow: string;
         partyBg: string;
@@ -83,7 +97,7 @@ export interface Theme {
         partyGradientEnd: string;
         partySubText: string;
 
-        // NewsBox Variants
+        // NewsBox Variants (Backward compatible)
         newsBox: {
             primary: {
                 bg: string;
@@ -122,66 +136,79 @@ export interface Theme {
                 subText: string;
             };
         };
+
+        // Tabs
         tabs: {
             background: string;
             backgroundActive: string;
             text: string;
             textActive: string;
             border: string;
-        },
-        divider: string;
+        };
     };
 
-    // Re-export từ tokens
+    // Design Tokens & DX Helpers
     spacing: typeof spacing;
+    spacingV: typeof spacingV; // Scale dọc cho vertical rhythm
     radius: typeof radius;
-    typography: typeof typography;
+    typography: typeof typography & {
+        presets: typeof typographyPresets;
+    };
     shadows: typeof shadows;
     zIndex: typeof zIndex;
 
-    // Theme metadata
+    // Helper tạo màu trong suốt tiện lợi
+    alpha: typeof alpha;
+
+    // Metadata
     isDark: boolean;
 }
 
 /**
- * Light Theme
+ * LIGHT THEME DEFINITION
  */
 export const lightTheme: Theme = {
     colors: {
-        // Backgrounds - Match UI mockups
-        background: '#F8F9FB',        // Main app background (Ultra-clean modern gray)
-        backgroundSecondary: '#EEF1F5', // Secondary surfaces
-        backgroundTertiary: '#ffffff',  // Cards, elevated surfaces
-        inputBackground: colors.white,     // Input fields
-        inputBorder: colors.gray[200],   // Input borders
+        // Surfaces & Backgrounds
+        background: '#F8F9FB',
+        backgroundSecondary: '#EEF1F5',
+        backgroundTertiary: '#ffffff',
+        surface: '#ffffff',
+        card: '#ffffff',
+        surfaceVariant: '#EEF1F5',
+        inputBackground: colors.white,
+        inputBorder: colors.gray[200],
 
         // Text
-        text: colors.gray[900],         // #1a1f36 - Primary text
-        textSecondary: colors.gray[500], // #6b7280 - Secondary text, labels
-        textTertiary: colors.gray[400],  // #9ca3af - Tertiary text, placeholders
+        text: colors.gray[900],         // #1a1f36
+        textSecondary: colors.gray[500], // #6b7280
+        textTertiary: colors.gray[400],  // #9ca3af
         textInverse: colors.white,
         textTertiarySecond: colors.blue.blueText,
+        muted: colors.gray[500],
+        placeholder: colors.gray[400],
 
+        // Borders & Dividers
+        border: colors.gray[100],       // #f3f4f6
+        borderLight: colors.gray[50],   // #f9fafb
+        borderFocus: colors.primary[500],
+        divider: '#E2E8F0',
 
-        // Borders
-        border: colors.gray[100],       // #f3f4f6 - Main borders
-        borderLight: colors.gray[50],   // #f9fafb - Subtle borders
-
-        // Brand - Government Blue
-        primary: colors.primary[500],      // #2B4B9B - Main primary (buttons)
-        primaryLight: colors.primary[100], // Light tint
-        primaryDark: colors.primary[700],  // #001f4d - Darker shade
+        // Brand
+        primary: colors.primary[500],      // #E65100
+        primaryLight: colors.primary[100],
+        primaryDark: colors.primary[700],
         primary1000: colors.primary[1000],
 
-        secondary: colors.secondary[500],
+        secondary: colors.secondary[500],  // #2B4B9B
         secondaryLight: colors.secondary[100],
         secondaryDark: colors.secondary[700],
 
-        // Gradient colors for headers
-        gradientStart: colors.primary[500], // #DA5531
-        gradientEnd: colors.primary[600],   // #b83b1d
+        // Header gradients
+        gradientStart: colors.primary[500],
+        gradientEnd: colors.primary[600],
 
-        // Semantic
+        // Semantic States
         success: colors.success.main,
         successLight: colors.success.light,
         warning: colors.warning.main,
@@ -191,19 +218,24 @@ export const lightTheme: Theme = {
         info: colors.info.main,
         infoLight: colors.info.light,
 
-        // Special UI elements
+        // Interactive States
+        disabled: colors.gray[400],
+        disabledBackground: colors.gray[100],
+        backdrop: colors.backdrop,
+
+        // Special UI
         avatarBorder: colors.special.avatarBorder,
         orangeAccent: colors.special.orangeAccent,
         blueAccent: colors.special.blueAccent,
         redNotification: colors.special.redNotification,
 
-        // Common
+        // Primitives
         white: colors.white,
         black: colors.black,
         transparent: colors.transparent,
         scrim: colors.backdrop,
 
-        ///logo
+        // Logo
         borderColorLogo: colors.special.avatarBorder,
 
         // Party Colors
@@ -217,7 +249,7 @@ export const lightTheme: Theme = {
         partyGradientEnd: '#F1B226',
         partySubText: colors.gray[500],
 
-        // NewsBox Variants (Subtle, App-tone aligned)
+        // NewsBox Variants
         newsBox: {
             primary: {
                 bg: '#F5F7FB',
@@ -256,49 +288,62 @@ export const lightTheme: Theme = {
                 subText: colors.gray[500],
             },
         },
+
+        // Tabs
         tabs: {
-            background: colors.gray[80],
+            background: colors.gray[75], // Cập nhật từ gray[80] → gray[75]
             backgroundActive: colors.primary[500],
             text: colors.gray[500],
             textActive: colors.white,
             border: colors.gray[100],
         },
-        divider: '#E2E8F0',
     },
 
-    // Re-export tokens
+    // Tokens & Helpers
     spacing,
+    spacingV,
     radius,
-    typography,
+    typography: {
+        ...typography,
+        presets: typographyPresets,
+    },
     shadows,
     zIndex,
-
+    alpha,
     isDark: false,
 };
 
 /**
- * Dark Theme
+ * DARK THEME DEFINITION
  */
 export const darkTheme: Theme = {
     colors: {
-        // Backgrounds - inverted
+        // Surfaces & Backgrounds
         background: colors.gray[900],
         backgroundSecondary: colors.gray[800],
         backgroundTertiary: colors.gray[700],
-        inputBackground: colors.gray[800], // Dark input background
-        inputBorder: colors.gray[600],   // Dark input border
+        surface: colors.gray[800],
+        card: colors.gray[800],
+        surfaceVariant: colors.gray[700],
+        inputBackground: colors.gray[800],
+        inputBorder: colors.gray[600],
 
-        // Text - inverted
+        // Text
         text: colors.gray[50],
         textSecondary: colors.gray[300],
         textTertiary: colors.gray[400],
         textInverse: colors.gray[900],
         textTertiarySecond: colors.blue.blueText,
-        // Borders
+        muted: colors.gray[400],
+        placeholder: colors.gray[500],
+
+        // Borders & Dividers
         border: colors.gray[700],
         borderLight: colors.gray[600],
+        borderFocus: colors.primary[400],
+        divider: colors.gray[700],
 
-        // Brand - slightly adjusted cho dark mode
+        // Brand
         primary: colors.primary[400],
         primaryLight: colors.primary[900],
         primaryDark: colors.primary[300],
@@ -308,11 +353,11 @@ export const darkTheme: Theme = {
         secondaryLight: colors.secondary[900],
         secondaryDark: colors.secondary[300],
 
-        // Gradient colors for headers (lighter in dark mode)
+        // Header gradients
         gradientStart: colors.primary[700],
         gradientEnd: colors.primary[500],
 
-        // Semantic - adjusted
+        // Semantic States
         success: colors.success.main,
         successLight: '#1a4d2e',
         warning: colors.warning.main,
@@ -322,13 +367,18 @@ export const darkTheme: Theme = {
         info: colors.info.main,
         infoLight: '#1a3d5c',
 
-        // Special UI elements (same in dark mode)
+        // Interactive States
+        disabled: colors.gray[600],
+        disabledBackground: colors.gray[800],
+        backdrop: colors.backdrop,
+
+        // Special UI
         avatarBorder: colors.special.avatarBorder,
         orangeAccent: colors.special.orangeAccent,
         blueAccent: colors.special.blueAccent,
         redNotification: colors.special.redNotification,
 
-        // Common
+        // Primitives
         white: colors.white,
         black: colors.black,
         transparent: colors.transparent,
@@ -348,7 +398,7 @@ export const darkTheme: Theme = {
         partyGradientEnd: '#9C6A15',
         partySubText: colors.gray[300],
 
-        // NewsBox Variants (dark mode optimized)
+        // NewsBox Variants
         newsBox: {
             primary: {
                 bg: '#1E3A8A',
@@ -386,8 +436,9 @@ export const darkTheme: Theme = {
                 gradientEnd: '#9C6A15',
                 subText: colors.gray[300],
             },
-
         },
+
+        // Tabs
         tabs: {
             background: colors.gray[800],
             backgroundActive: colors.primary[500],
@@ -395,27 +446,27 @@ export const darkTheme: Theme = {
             textActive: colors.white,
             border: colors.gray[700],
         },
-        divider: colors.gray[700],
-
     },
 
-    // Re-export tokens
+    // Tokens & Helpers
     spacing,
+    spacingV,
     radius,
-    typography,
+    typography: {
+        ...typography,
+        presets: typographyPresets,
+    },
     shadows,
     zIndex,
+    alpha,
     isDark: true,
 };
 
 /**
- * Get theme by name
+ * Lấy Theme theo tên ('light' hoặc 'dark')
  */
 export const getTheme = (themeName: 'light' | 'dark'): Theme => {
     return themeName === 'dark' ? darkTheme : lightTheme;
 };
 
-/**
- * Export theme type
- */
 export type ThemeName = 'light' | 'dark';

@@ -1,5 +1,5 @@
 import React, { useMemo, memo } from 'react';
-import { View, type ViewStyle } from 'react-native';
+import { View } from 'react-native';
 import { spacing as spacingScale } from '@/shared/theme/tokens';
 
 /**

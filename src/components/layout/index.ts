@@ -1,6 +1,5 @@
 // Layout Components
-export { default as CustomHeader } from './CustomHeader';
-// export { default as Header } from './Header';
+export { default as AppHeader, AppHeaderComponent, type AppHeaderProps, type HeaderActionProps, type HeaderLeftAction } from './AppHeader';
 export { default as MainLayout } from './MainLayout';
 
 // Layout Examples

@@ -25,7 +25,7 @@ interface CustomSwitchProps extends SwitchProps {
  * />
  */
 export const CustomSwitch: React.FC<CustomSwitchProps> = ({
-  label,
+  label: _label,
   ...props
 }) => {
   const theme = useTheme();

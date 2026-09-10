@@ -42,13 +42,6 @@ interface ListNotificationProps {
   refreshing?: boolean;
 }
 
-/**
- * Section header component (memoized)
- */
-interface SectionHeaderProps {
-  title: string;
-}
-
 // const SectionHeader = memo<SectionHeaderProps>(({ title }) => {
 //   const styles = useStyles();
 

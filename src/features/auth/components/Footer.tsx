@@ -1,8 +1,7 @@
 import React, { memo } from 'react';
 import { View } from '@ant-design/react-native';
 import { FaceIdIcon } from '@/assets/icons';
-import { CustomButton, LoginOther, SpacerSm } from '@/components';
-import CustomText from '@/components/base/CustomText';
+import {  LoginOther, SpacerSm } from '@/components';
 import Logo from '@/components/base/logo';
 import { createStyles } from '@/shared/theme/create-styles';
 

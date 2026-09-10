@@ -1,4 +1,4 @@
-import React, { memo, useMemo, useCallback, useState, useEffect } from 'react';
+import React, { memo, useMemo, useCallback, useState } from 'react';
 import { CustomDatePicker, CustomPickerInput } from '@/components/base';
 
 interface FormDatePickerProps {

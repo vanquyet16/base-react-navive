@@ -1,15 +1,14 @@
 import React, { useCallback } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View } from 'react-native';
 import { createStyles } from '@/shared/theme/create-styles';
 import { moderateVerticalScale } from 'react-native-size-matters';
 import {
   InfoBox,
   SectionHeader,
-  Spacer,
+  
   SpacerMd,
-  SpacerSm,
+  
 } from '@/components';
-import { useTheme } from '@/shared/theme/use-theme';
 import { WingBlank } from '@ant-design/react-native';
 
 // Define the structure for grid items
@@ -158,7 +157,6 @@ const SECTIONS: UtilitySection[] = [
 
 const AppScreen = () => {
   const styles = useStyles();
-  const theme = useTheme();
 
   const handlePress = useCallback(() => {
     // Handle navigation or action here

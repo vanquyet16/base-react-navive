@@ -1,12 +1,11 @@
 import { View, ImageBackground } from 'react-native';
-import React, { useCallback } from 'react';
+import React, { memo, useCallback } from 'react';
 import { createStyles } from '@/shared/theme/create-styles';
-import { useTheme } from '@/shared/theme/use-theme';
-import { AppIcon, Avatar, CustomText } from '@/components';
+import { Avatar, CustomText } from '@/components';
 import LeverIdentity from '@/components/base/LeverIdentity';
+import HeaderAction from '@/components/base/HeaderAction';
 import { WingBlank } from '@ant-design/react-native';
 import ItemDriver from '../components/ItemDriver';
-import HeaderAction from '@/components/base/HeaderAction';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 
@@ -26,8 +25,14 @@ const MOCK_USER = {
   lastLoginAt: null,
 } as const;
 
-const ProfileScreen = () => {
-  const theme = useTheme();
+/**
+ * ProfileScreen — Hero Header Pattern
+ *
+ * Không dùng Wrapper + MainLayout vì ProfileScreen có custom hero ImageBackground header.
+ * Screen tự quản lý toàn bộ layout: hero image → avatar → body content.
+ * Đây là ngoại lệ có chủ đích trong navigator, không phải lỗi architecture.
+ */
+const ProfileScreen = memo(() => {
   const styles = useStyles();
   const navigation = useNavigation();
   // const insets = useSafeAreaInsets(); // Removed as HeaderAction handles it
@@ -69,7 +74,7 @@ const ProfileScreen = () => {
       </ScrollView>
     </View>
   );
-};
+});
 
 const useStyles = createStyles(theme => {
   return {
@@ -99,5 +104,7 @@ const useStyles = createStyles(theme => {
     },
   };
 }, true);
+
+ProfileScreen.displayName = 'ProfileScreen';
 
 export default ProfileScreen;

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /**
  * USAGE EXAMPLES - MULTI-DOMAIN HTTP CLIENT
  * ==========================================
@@ -33,8 +34,8 @@ const login = async (credentials: { username: string; password: string }) => {
     return response;
 };
 
-const refreshToken = async (refreshToken: string) => {
-    const response = await authClient.post('/auth/refresh', { refreshToken });
+const refreshToken = async (token: string) => {
+    const response = await authClient.post('/auth/refresh', { refreshToken: token });
     return response;
 };
 

@@ -100,6 +100,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = memo(
     color,
     fontBold = true,
     transform,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     styleAction,
     rightActionStyle,
   }) => {
@@ -129,7 +130,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = memo(
                 }
                 style={[
                   rightActionStyle?.styleIconAction?.style,
-                  { marginRight: actionLabel ? scale(4) : 0 },
+                  actionLabel ? styles.actionIconWithLabel : undefined,
                 ]}
               />
             )}
@@ -169,6 +170,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = memo(
       onSeeAll,
       seeAllText,
       styles.actionButton,
+      styles.actionIconWithLabel,
       styles.actionText,
       styles.seeAllText,
       theme.colors.textSecondary,
@@ -260,6 +262,9 @@ const useStyles = createStyles(
     actionText: {
       color: theme.colors.textSecondary,
       fontWeight: '600',
+    },
+    actionIconWithLabel: {
+      marginRight: scale(4),
     },
   }),
   true,

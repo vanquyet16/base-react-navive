@@ -174,22 +174,6 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
     ],
   );
 
-  const statusBadgeStyle = useMemo(
-    () => [
-      styles.statusBadge,
-      { backgroundColor: statusColor || theme.colors.warningLight },
-    ],
-    [styles.statusBadge, statusColor, theme.colors.warningLight],
-  );
-
-  const statusTextStyle = useMemo(
-    () => ({
-      color: statusTextColor || theme.colors.warning,
-      fontWeight: 'bold' as const,
-    }),
-    [statusTextColor, theme.colors.warning],
-  );
-
   const renderStatus = useCallback(
     () => (
       <View>
@@ -462,7 +446,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
             <CustomText
               variant="h7"
               weight="bold"
-              style={{ color: theme.colors.text, marginTop: 4 }}
+              style={styles.contactPhone}
             >
               {phoneNumber}
             </CustomText>
@@ -743,6 +727,10 @@ const useStyles = (theme: any) =>
     },
     contactSubtitle: {
       marginBottom: 2,
+    },
+    contactPhone: {
+      color: theme.colors.text,
+      marginTop: 4,
     },
     contactRightButton: {
       width: scale(48),

@@ -10,7 +10,7 @@
  */
 
 import React, { useMemo, memo } from 'react';
-import { View, type ViewStyle, type StyleProp, TextStyle } from 'react-native';
+import { View, type ViewStyle, type StyleProp } from 'react-native';
 import { CustomText } from './CustomText';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
@@ -39,7 +39,7 @@ export interface CustomBadgeProps {
 
 export const CustomBadge: React.FC<CustomBadgeProps> = ({
   variant = 'error',
-  size = 'sm',
+  size: _size = 'sm',
   text,
   badgeCount,
   showZero = false,

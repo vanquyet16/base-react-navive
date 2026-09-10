@@ -1,588 +1,332 @@
-# Navigation Guide - CBS Mobile App
+# HƯỚNG DẪN TẠO MÀN HÌNH MỚI (SENIOR ARCHITECTURE GUIDE)
 
-> Hướng dẫn chi tiết về navigation architecture và cách thêm screens/stacks mới
-
-## 📚 Table of Contents
-
-- [Architecture Overview](#architecture-overview)
-- [Adding New Screen](#adding-new-screen)
-- [Adding New Stack](#adding-new-stack)
-- [Type-Safe Navigation](#type-safe-navigation)
-- [Best Practices](#best-practices)
+> Tài liệu chuẩn dành cho Developer: Hướng dẫn chi tiết quy trình 3 bước tạo màn hình mới trong dự án React Native theo mô hình **Declarative Routing (React Navigation v7)** và **Header Slot Pattern**.
 
 ---
 
-## Architecture Overview
-
-### Cấu trúc Navigation
-
-```
-navigation/
-├── config/                    # Screen configurations
-│   └── navigationConfig.ts   # MAIN_STACK_SCREENS, AUTH_SCREENS, TAB_SCREENS
-│
-├── factories/                 # Generic factory functions
-│   ├── screenFactory.tsx     # Screen wrapper factories
-│   ├── navigatorFactory.tsx  # Navigator factories (type-safe)
-│   └── index.ts
-│
-├── navigators/                # Dedicated navigator components
-│   ├── AuthStackNavigator.tsx
-│   ├── MainStackNavigator.tsx
-│   └── index.ts
-│
-└── MainTabs.tsx              # Bottom tab navigator
-```
-
-### Nguyên tắc
-
-1. **Config-driven**: Screens được định nghĩa trong config, không hardcode
-2. **Factory pattern**: Sử dụng generic factories để tạo navigators
-3. **Type-safe**: 100% TypeScript với strict typing, không có `any`
-4. **Separation of concerns**: Config → Factories → Navigators → Root
+## 📌 Mục Lục
+1. [Tổng Quan Kiến Trúc](#1-tổng-quan-kiến-trúc)
+2. [Quy Trình 3 Bước Chuẩn Thêm Màn Hình](#2-quy-trình-3-bước-chuẩn-thêm-màn-hình)
+   - [Bước 1: Khai báo Type an toàn](#bước-1-khai-báo-type-an-toàn)
+   - [Bước 2: Xây dựng Screen Component](#bước-2-xây-dựng-screen-component)
+   - [Bước 3: Đăng ký vào Navigator](#bước-3-đăng-ký-vào-navigator)
+3. [Cách Điều Hướng & Truyền Nhận Dữ Liệu (Type-Safe Navigation)](#3-cách-điều-hướng--truyền-nhận-dữ-liệu)
+4. [Các Mẫu Thiết Kế Header Thực Tế Với AppHeader](#4-các-mẫu-thiết-kế-header-thực-tế-với-appheader)
+5. [Senior Code Review Checklist](#5-senior-code-review-checklist)
 
 ---
 
-## Adding New Screen
+## 1. Tổng Quan Kiến Trúc
 
-### Quick Start
+Dự án đã loại bỏ hoàn toàn các tầng Factory gián tiếp (`navigatorFactory`, `screenFactory`) và Header 25 boolean props để chuyển sang chuẩn Senior:
 
-**3 bước đơn giản để thêm màn hình mới:**
-
-1. Tạo screen component
-2. Thêm vào config
-3. Thêm type definition
-
-### Step-by-Step
-
-#### 1. Tạo Screen Component
-
-```bash
-# Location
-src/features/<feature-name>/screens/NewScreen.tsx
 ```
+src/
+├── shared/types/navigation.types.ts  # 👉 Nơi định nghĩa duy nhất về Type của Route
+├── features/<tên-feature>/screens/    # 👉 Mã nguồn màn hình (UI, State, Logic)
+├── components/layout/
+│   ├── AppHeader.tsx                  # 👉 Header chuẩn Slot Pattern (Compound Component)
+│   └── MainLayout.tsx                 # 👉 Container bao bọc nội dung và header
+└── navigation/
+    ├── navigators/
+    │   ├── MainStackNavigator.tsx    # 👉 Stack chính của ứng dụng
+    │   ├── AuthStackNavigator.tsx    # 👉 Stack xác thực (Login, Register)
+    │   └── MainDrawer.tsx            # 👉 Side menu drawer
+    └── MainTabs.tsx                  # 👉 Bottom Tab bar
+```
+
+---
+
+## 2. Quy Trình 3 Bước Chuẩn Thêm Màn Hình
+
+### Bước 1: Khai báo Type an toàn
+Mở file [src/shared/types/navigation.types.ts](file:///Users/quyet/Desktop/Teca/Mobile/base-react-navive/src/shared/types/navigation.types.ts).
+
+Thêm tên màn hình và kiểu dữ liệu tham số (params) vào `MainStackParamList` (nếu là màn hình nằm trong Main Stack):
+
+```typescript
+export type MainStackParamList = {
+  MainTabsScreen: undefined;
+  CreateFeedbackScreen: undefined;
+  SearchScreen: undefined;
+  ProfileScreen: undefined;
+
+  // 👉 THÊM MÀN HÌNH MỚI CỦA BẠN TẠI ĐÂY:
+  // Nếu màn hình KHÔNG nhận param:
+  NewsDetailScreen: undefined;
+
+  // Nếu màn hình CÓ nhận param:
+  OrderDetailScreen: {
+    orderId: string;
+    orderCode?: string;
+  };
+};
+```
+
+---
+
+### Bước 2: Xây dựng Screen Component
+Tạo file màn hình tại thư mục feature tương ứng, ví dụ:  
+`src/features/order/screens/OrderDetailScreen.tsx`.
+
+Áp dụng mẫu chuẩn Senior:
+- Bọc bằng `MainLayout` và sử dụng `AppHeader` qua prop `headerNode`.
+- Định kiểu chặt chẽ với `NativeStackScreenProps`.
+- Sử dụng `React.memo` và `useCallback`.
 
 ```tsx
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import React, { memo, useCallback } from 'react';
+import { View, StyleSheet } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { MainStackParamList } from '@/shared/types/navigation.types';
+import { MainLayout, AppHeader } from '@/components/layout';
+import { CustomText, AppIcon } from '@/components';
+import { useTheme } from '@/shared/theme/use-theme';
+import { moderateScale, moderateVerticalScale } from 'react-native-size-matters';
 
-const NewScreen: React.FC = () => {
+// Type props cho màn hình OrderDetailScreen
+type Props = NativeStackScreenProps<MainStackParamList, 'OrderDetailScreen'>;
+
+// Ảnh nền header (tùy chọn)
+const HEADER_BG = require('@/assets/images/imgbgrheader.jpg');
+
+export const OrderDetailScreen: React.FC<Props> = memo(({ route, navigation }) => {
+  const theme = useTheme();
+  
+  // 1. Lấy dữ liệu an toàn từ params
+  const { orderId, orderCode } = route.params;
+
+  // 2. Các hàm xử lý sự kiện
+  const handleShare = useCallback(() => {
+    // Xử lý chia sẻ đơn hàng
+    console.log('Chia sẻ đơn hàng:', orderId);
+  }, [orderId]);
+
   return (
-    <View style={styles.container}>
-      <Text>New Screen</Text>
-    </View>
+    <MainLayout
+      enableScroll={false} // Mặc định false nếu bên dưới dùng FlashList/FlatList
+      headerNode={
+        <AppHeader
+          title={`Đơn hàng #${orderCode || orderId}`}
+          subtitle="Trạng thái: Đang xử lý"
+          leftAction="back" // Tự động goBack() khi bấm
+          backgroundImage={HEADER_BG}
+          rightNode={
+            <AppHeader.Action
+              icon="share-variant"
+              iconType="material"
+              color={theme.colors.white}
+              onPress={handleShare}
+            />
+          }
+        />
+      }
+    >
+      <View style={styles.content}>
+        <CustomText variant="h5" weight="bold">
+          Chi tiết đơn hàng {orderId}
+        </CustomText>
+        <CustomText variant="body" color="textSecondary" style={styles.desc}>
+          Nội dung chi tiết của đơn hàng hiển thị tại đây.
+        </CustomText>
+      </View>
+    </MainLayout>
   );
-};
+});
+
+OrderDetailScreen.displayName = 'OrderDetailScreen';
 
 const styles = StyleSheet.create({
-  container: {
+  content: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: moderateScale(16),
+    paddingVertical: moderateVerticalScale(16),
+  },
+  desc: {
+    marginTop: moderateVerticalScale(8),
   },
 });
 
-export default NewScreen;
+export default OrderDetailScreen;
 ```
 
-#### 2. Thêm vào Navigation Config
+---
 
-**File:** `src/navigation/config/navigationConfig.ts`
+### Bước 3: Đăng ký vào Navigator
+Mở file Navigator quản lý luồng màn hình đó:
 
-```typescript
-export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
-  // ... existing screens
+#### Trường hợp A: Màn hình thuộc Main Flow
+Mở [src/navigation/navigators/MainStackNavigator.tsx](file:///Users/quyet/Desktop/Teca/Mobile/base-react-navive/src/navigation/navigators/MainStackNavigator.tsx):
 
-  NewScreen: {
-    title: 'New Screen Title',
-    component: () => import('@/features/<feature-name>/screens/NewScreen'),
-    showHeader: true,
-    showTabs: false,
-    headerType: 'minimal', // 'minimal' | 'default' | 'search'
-    showBack: true,
-  },
+```tsx
+import OrderDetailScreen from '@/features/order/screens/OrderDetailScreen';
+
+export const MainStackNavigator: React.FC = () => {
+  return (
+    <MainStack.Navigator
+      initialRouteName="MainTabsScreen"
+      screenOptions={{
+        headerShown: false,
+        animation: 'slide_from_right',
+      }}
+    >
+      <MainStack.Screen name="MainTabsScreen" component={MainTabs} />
+      <MainStack.Screen name="CreateFeedbackScreen" component={CreateFeedbackScreenWrapper} />
+      <MainStack.Screen name="SearchScreen" component={SearchScreenWrapper} />
+      <MainStack.Screen name="ProfileScreen" component={ProfileScreen} />
+
+      {/* 👉 ĐĂNG KÝ MÀN HÌNH MỚI CỦA BẠN: */}
+      <MainStack.Screen
+        name="OrderDetailScreen"
+        component={OrderDetailScreen}
+      />
+    </MainStack.Navigator>
+  );
 };
 ```
 
-**Config Options:**
+#### Trường hợp B: Màn hình là 1 Tab ở thanh điều hướng dưới đáy
+Mở [src/navigation/MainTabs.tsx](file:///Users/quyet/Desktop/Teca/Mobile/base-react-navive/src/navigation/MainTabs.tsx):
 
-| Option       | Type                                 | Description                  | Default     |
-| ------------ | ------------------------------------ | ---------------------------- | ----------- |
-| `title`      | `string`                             | Tiêu đề hiển thị trên header | Required    |
-| `component`  | `() => Promise<any>`                 | Lazy import function         | Required    |
-| `showHeader` | `boolean`                            | Hiển thị header              | `true`      |
-| `showTabs`   | `boolean`                            | Hiển thị bottom tabs         | `false`     |
-| `headerType` | `'minimal' \| 'default' \| 'search'` | Loại header                  | `'minimal'` |
-| `showBack`   | `boolean`                            | Hiển thị nút back            | `false`     |
+1. Khai báo tab name trong `MainTabParamList` ([src/shared/types/navigation.types.ts](file:///Users/quyet/Desktop/Teca/Mobile/base-react-navive/src/shared/types/navigation.types.ts)).
+2. Thêm thẻ `<Tab.Screen>`:
 
-#### 3. Thêm Type Definition
-
-**File:** `src/shared/types/index.ts`
-
-```typescript
-export type MainStackParamList = {
-  MainTabs: undefined;
-  // ... existing screens
-
-  NewScreen: undefined; // No params
-
-  // Hoặc với params:
-  // ProductDetail: { productId: string; categoryId?: number };
-};
+```tsx
+<Tab.Screen
+  name="Orders"
+  component={OrdersTabScreen}
+  options={{
+    tabBarLabel: 'Đơn hàng',
+    tabBarIcon: ({ color, size }) => (
+      <TabBarIcon name="shopping-bag" type="feather" color={color} size={size} />
+    ),
+    tabBarBadge: 2, // Hiển thị số badge đỏ trên icon (nếu có)
+  }}
+/>
 ```
 
-#### 4. Navigate
+---
+
+## 3. Cách Điều Hướng & Truyền Nhận Dữ Liệu
+
+### Từ bất kỳ màn hình nào chuyển sang màn hình mới:
 
 ```tsx
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { MainStackParamList } from '@/shared/types';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { MainStackParamList } from '@/shared/types/navigation.types';
 
-const MyComponent = () => {
-  const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
+// Trong Component của bạn:
+const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
 
-  return (
-    <Button onPress={() => navigation.navigate('NewScreen')}>
-      Go to New Screen
-    </Button>
-  );
-};
-```
+// 1. Chuyển màn hình không có params:
+navigation.navigate('SearchScreen');
 
-**✅ Done!** Screen sẽ tự động:
-
-- Được wrap với MainLayout
-- Lazy loading
-- Type-safe navigation
-
----
-
-## Adding New Stack
-
-### Use Cases
-
-Tạo stack mới khi bạn có nhóm screens liên quan:
-
-- **Settings Stack**: Settings Home, Account, Privacy, Notifications
-- **Onboarding Stack**: Welcome, Tutorial, Permissions
-- **Checkout Stack**: Cart, Shipping, Payment, Confirmation
-
-### Example: Settings Stack
-
-#### 1. Define Types
-
-**File:** `src/shared/types/index.ts`
-
-```typescript
-// Settings Stack ParamList
-export type SettingsStackParamList = {
-  SettingsHome: undefined;
-  AccountSettings: undefined;
-  PrivacySettings: undefined;
-  NotificationSettings: { enabled: boolean };
-};
-
-// Update Root ParamList
-export type RootStackParamList = {
-  Auth: undefined;
-  MainStack: undefined;
-  SettingsStack: undefined; // ← Add new stack
-};
-```
-
-#### 2. Create Screen Components
-
-```bash
-# Create screens
-src/features/settings/screens/
-├── SettingsHomeScreen.tsx
-├── AccountSettingsScreen.tsx
-└── PrivacySettingsScreen.tsx
-```
-
-```tsx
-// SettingsHomeScreen.tsx
-import React from 'react';
-import { View, Text } from 'react-native';
-
-const SettingsHomeScreen: React.FC = () => {
-  return (
-    <View>
-      <Text>Settings Home</Text>
-    </View>
-  );
-};
-
-export default SettingsHomeScreen;
-```
-
-#### 3. Define Screen Configs
-
-**File:** `src/navigation/config/navigationConfig.ts`
-
-```typescript
-export const SETTINGS_STACK_SCREENS: Record<string, ScreenConfig> = {
-  SettingsHome: {
-    title: 'Cài đặt',
-    component: () => import('@/features/settings/screens/SettingsHomeScreen'),
-    showHeader: true,
-    headerType: 'default',
-  },
-  AccountSettings: {
-    title: 'Tài khoản',
-    component: () =>
-      import('@/features/settings/screens/AccountSettingsScreen'),
-    showHeader: true,
-    showBack: true,
-  },
-  PrivacySettings: {
-    title: 'Quyền riêng tư',
-    component: () =>
-      import('@/features/settings/screens/PrivacySettingsScreen'),
-    showHeader: true,
-    showBack: true,
-  },
-};
-```
-
-#### 4. Create Navigator Component
-
-**File:** `src/navigation/navigators/SettingsStackNavigator.tsx`
-
-```tsx
-import { createStackNavigator } from '@react-navigation/stack';
-import { SettingsStackParamList } from '@/shared/types';
-import { SETTINGS_STACK_SCREENS } from '@/navigation/config';
-import { createMainStackNavigatorComponent } from '@/navigation/factories/navigatorFactory';
-
-const SettingsStack = createStackNavigator<SettingsStackParamList>();
-
-export const SettingsStackNavigator = createMainStackNavigatorComponent(
-  SettingsStack,
-  SETTINGS_STACK_SCREENS,
-  {
-    initialRouteName: 'SettingsHome',
-    screenOptions: { headerShown: false },
-  },
-);
-```
-
-#### 5. Export Navigator
-
-**File:** `src/navigation/navigators/index.ts`
-
-```typescript
-export { AuthStackNavigator } from './AuthStackNavigator';
-export { MainStackNavigator } from './MainStackNavigator';
-export { SettingsStackNavigator } from './SettingsStackNavigator';
-```
-
-#### 6. Add to Root Navigation
-
-**File:** `src/app/app-navigator.tsx`
-
-```tsx
-import {
-  AuthStackNavigator,
-  MainStackNavigator,
-  SettingsStackNavigator,
-} from '@/navigation/navigators';
-
-export const AppNavigator: React.FC = () => {
-  const isAuthenticated = useIsAuthenticated();
-
-  return (
-    <NavigationContainer>
-      <RootStack.Navigator screenOptions={{ headerShown: false }}>
-        {isAuthenticated ? (
-          <>
-            <RootStack.Screen name="MainStack" component={MainStackNavigator} />
-            <RootStack.Screen
-              name="SettingsStack"
-              component={SettingsStackNavigator}
-            />
-          </>
-        ) : (
-          <RootStack.Screen name="Auth" component={AuthStackNavigator} />
-        )}
-      </RootStack.Navigator>
-    </NavigationContainer>
-  );
-};
-```
-
-#### 7. Navigate Between Stacks
-
-```tsx
-// Navigate to Settings Stack
-navigation.navigate('SettingsStack', {
-  screen: 'SettingsHome',
+// 2. Chuyển màn hình kèm params (TypeScript sẽ tự kiểm tra đúng kiểu dữ liệu):
+navigation.navigate('OrderDetailScreen', {
+  orderId: 'DH-12345',
+  orderCode: 'ORD-9988',
 });
 
-// Navigate to specific screen
-navigation.navigate('SettingsStack', {
-  screen: 'AccountSettings',
-});
-
-// With params
-navigation.navigate('SettingsStack', {
-  screen: 'NotificationSettings',
-  params: { enabled: true },
-});
+// 3. Quay lại màn hình trước:
+navigation.goBack();
 ```
 
 ---
 
-## Type-Safe Navigation
+## 4. Các Mẫu Thiết Kế Header Thực Tế Với AppHeader
 
-### Basic Navigation
+Component `AppHeader` được thiết kế theo **Slot Pattern**, không dùng boolean flags rườm rà:
 
+### 1. Header cơ bản (Back + Tiêu đề)
 ```tsx
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { MainStackParamList } from '@/shared/types';
-
-type NavigationProp = StackNavigationProp<MainStackParamList>;
-
-const MyComponent = () => {
-  const navigation = useNavigation<NavigationProp>();
-
-  // ✅ Type-safe - autocomplete available
-  navigation.navigate('ProductDetail', { productId: '123' });
-
-  // ❌ TypeScript error - missing required params
-  navigation.navigate('ProductDetail');
-};
+<AppHeader
+  title="Thông tin tài khoản"
+  leftAction="back"
+/>
 ```
 
-### Navigation with Params
-
-**Define types:**
-
-```typescript
-export type MainStackParamList = {
-  ProductDetail: {
-    productId: string;
-    variant?: string;
-    fromScreen?: string;
-  };
-};
+### 2. Header màn hình chính có Menu Hamburger (Mở Drawer)
+```tsx
+<AppHeader
+  title="Trang chủ"
+  leftAction="menu"
+/>
 ```
 
-**Navigate:**
-
+### 3. Header có nút hành động bên phải (Compound Component `AppHeader.Action`)
 ```tsx
-navigation.navigate('ProductDetail', {
-  productId: '123',
-  variant: 'blue',
-  fromScreen: 'Home',
-});
+<AppHeader
+  title="Danh sách thông báo"
+  leftAction="back"
+  rightNode={
+    <AppHeader.Action
+      icon="check-all"
+      iconType="material"
+      onPress={() => markAllAsRead()}
+    />
+  }
+/>
 ```
 
-**Access params in screen:**
-
+### 4. Header có nhiều nút bên phải + Badge đỏ thông báo
 ```tsx
-import { RouteProp, useRoute } from '@react-navigation/native';
-import { MainStackParamList } from '@/shared/types';
-
-type ProductDetailRouteProp = RouteProp<MainStackParamList, 'ProductDetail'>;
-
-const ProductDetailScreen = () => {
-  const route = useRoute<ProductDetailRouteProp>();
-  const { productId, variant, fromScreen } = route.params; // ← Type-safe
-
-  return (
-    <View>
-      <Text>Product ID: {productId}</Text>
-      <Text>Variant: {variant ?? 'default'}</Text>
-      <Text>From: {fromScreen ?? 'unknown'}</Text>
-    </View>
-  );
-};
+<AppHeader
+  title="Khám phá"
+  leftAction="menu"
+  rightNode={
+    <>
+      <AppHeader.Action
+        icon="magnify"
+        iconType="material"
+        onPress={() => navigation.navigate('SearchScreen')}
+      />
+      <AppHeader.Action
+        icon="bell-outline"
+        iconType="material"
+        badgeCount={5}
+        onPress={() => navigation.navigate('NotificationScreen')}
+      />
+    </>
+  }
+/>
 ```
 
-### Composite Navigation Hook
-
+### 5. Header có nút Text ("Lưu", "Bỏ qua", "Gửi")
 ```tsx
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
-import { MainStackParamList } from '@/shared/types';
+<AppHeader
+  title="Tạo báo cáo"
+  leftAction="back"
+  rightNode={
+    <AppHeader.Action
+      label="Gửi"
+      disabled={isSubmitting}
+      onPress={handleSubmit}
+    />
+  }
+/>
+```
 
-type ProductDetailNavigationProp = StackNavigationProp<
-  MainStackParamList,
-  'ProductDetail'
->;
-type ProductDetailRouteProp = RouteProp<MainStackParamList, 'ProductDetail'>;
-
-const ProductDetailScreen = () => {
-  const navigation = useNavigation<ProductDetailNavigationProp>();
-  const route = useRoute<ProductDetailRouteProp>();
-
-  // Both navigation and route are fully typed
-  const handleGoBack = () => navigation.goBack();
-  const { productId } = route.params;
-
-  return <View>...</View>;
-};
+### 6. Header có ảnh nền + Chữ trắng
+```tsx
+<AppHeader
+  title="Dịch vụ công"
+  leftAction="back"
+  backgroundImage={require('@/assets/images/imgbgrheader.jpg')}
+/>
 ```
 
 ---
 
-## Best Practices
+## 5. Senior Code Review Checklist
 
-### 1. Always Use Type-Safe Navigation
+Trước khi commit code màn hình mới, kiểm tra các tiêu chí sau:
 
-```tsx
-// ✅ GOOD - Type-safe
-const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
-navigation.navigate('ProductDetail', { productId: '123' });
-
-// ❌ BAD - No type safety
-const navigation = useNavigation();
-navigation.navigate('ProductDetail'); // Can navigate with wrong params
-```
-
-### 2. Define Params Types Explicitly
-
-```typescript
-// ✅ GOOD - Clear param types
-export type MainStackParamList = {
-  ProductDetail: {
-    productId: string; // Required
-    variant?: string; // Optional
-    fromScreen?: string; // Optional
-  };
-  ProductList: undefined; // No params
-};
-
-// ❌ BAD - Unclear types
-export type MainStackParamList = {
-  ProductDetail: any; // ❌ Never use any
-};
-```
-
-### 3. Use Generic Factories
-
-```tsx
-// ✅ GOOD - Reusable generic factory
-export const MyStackNavigator = createMainStackNavigatorComponent(
-  MyStack,
-  MY_SCREENS,
-  { initialRouteName: 'Home' }
-);
-
-// ❌ BAD - Manual navigator creation with duplication
-const MyStackNavigator = () => {
-  const screens = /* ... manual mapping ... */;
-  return <MyStack.Navigator>{screens}</MyStack.Navigator>;
-};
-```
-
-### 4. Lazy Load Screens
-
-```typescript
-// ✅ GOOD - Lazy loading with dynamic import
-component: () => import('@/features/product/screens/ProductDetailScreen'),
-
-// ❌ BAD - Direct import
-import ProductDetailScreen from '@/features/product/screens/ProductDetailScreen';
-component: ProductDetailScreen,
-```
-
-### 5. Organize Screens by Feature
-
-```
-features/
-├── products/
-│   ├── screens/
-│   │   ├── ProductListScreen.tsx
-│   │   └── ProductDetailScreen.tsx
-│   ├── components/
-│   └── services/
-└── settings/
-    └── screens/
-        └── SettingsScreen.tsx
-```
-
-### 6. Navigation Guards
-
-```tsx
-// Custom hook for protected navigation
-const useProtectedNavigation = () => {
-  const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
-  const isAuthenticated = useIsAuthenticated();
-
-  const navigateToProtectedScreen = useCallback(
-    (screenName: keyof MainStackParamList, params?: any) => {
-      if (!isAuthenticated) {
-        navigation.navigate('Login');
-        return;
-      }
-      navigation.navigate(screenName, params);
-    },
-    [isAuthenticated, navigation],
-  );
-
-  return { navigateToProtectedScreen };
-};
-```
-
----
-
-## Checklists
-
-### ✅ Adding New Screen Checklist
-
-- [ ] Create screen component in `features/<name>/screens/`
-- [ ] Add config to `MAIN_STACK_SCREENS` (navigationConfig.ts)
-- [ ] Add type to `MainStackParamList` (types/index.ts)
-- [ ] Test navigation works
-- [ ] Test lazy loading works
-- [ ] Test back button works (if applicable)
-
-### ✅ Adding New Stack Checklist
-
-- [ ] Define `<Stack>ParamList` type (types/index.ts)
-- [ ] Add stack name to `RootStackParamList`
-- [ ] Create screen components
-- [ ] Create screen configs `<STACK>_SCREENS` (navigationConfig.ts)
-- [ ] Create `<Stack>Navigator.tsx` in `navigators/`
-- [ ] Export from `navigators/index.ts`
-- [ ] Add `<RootStack.Screen>` to `app-navigator.tsx`
-- [ ] Test navigation between stacks
-- [ ] Test deep linking (if applicable)
-
----
-
-## Troubleshooting
-
-### TypeScript Errors
-
-**"Type is not assignable to..."**
-
-- Verify ParamList types match navigation config
-- Check screen names are consistent
-- Ensure params match type definitions
-
-**"Property does not exist on type..."**
-
-- Check export from navigators/index.ts
-- Verify screen config export from navigationConfig.ts
-
-### Runtime Errors
-
-**"Unable to resolve module..."**
-
-- Check import paths
-- Verify lazy import syntax: `() => import(...)`
-- Run `yarn start --reset-cache`
-
-**"undefined is not an object (evaluating 'navigation.navigate')"**
-
-- Ensure component is inside NavigationContainer
-- Check navigation hook is called inside function component
-
----
-
-**Made with ❤️ by Zamiga Team**
+- [ ] **Type Safety**: Đã định nghĩa params trong `navigation.types.ts` chưa? Không dùng `any` cho route hoặc navigation.
+- [ ] **Virtualization Safety**: Nếu màn hình sử dụng `FlashList` hoặc `FlatList`, đã đặt `enableScroll={false}` trên `MainLayout` chưa (để tránh lồng `ScrollView` vào `VirtualizedList`)?
+- [ ] **Slot Pattern**: Header sử dụng `AppHeader` với `rightNode` thay vì dùng các props boolean kiểu cũ.
+- [ ] **Touch Target**: Các nút bấm trên Header có đạt kích thước tối thiểu 44x44pt (chuẩn Apple HIG & Android Material)?
+- [ ] **Kiểm thử lệnh**:
+  - `npx tsc --noEmit` -> Exit 0.
+  - `npm run lint` -> Exit 0.
+  - `npm test` -> Exit 0.

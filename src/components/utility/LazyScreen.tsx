@@ -33,15 +33,32 @@ interface LazyScreenProps {
  *   fallback={<CustomLoading />}
  * />
  */
+// Map lưu trữ cache các lazy component theo dynamic import function để tránh tái tạo component mới mỗi lần render
+const lazyComponentCache = new Map<
+  () => Promise<{ default: ComponentType<any> }>,
+  React.LazyExoticComponent<ComponentType<any>>
+>();
+
 const DEFAULT_COMPONENT_PROPS = {};
+
+const getLazyComponent = (
+  importer: () => Promise<{ default: ComponentType<any> }>,
+): React.LazyExoticComponent<ComponentType<any>> => {
+  let cached = lazyComponentCache.get(importer);
+  if (!cached) {
+    cached = React.lazy(importer);
+    lazyComponentCache.set(importer, cached);
+  }
+  return cached;
+};
 
 const LazyScreen: React.FC<LazyScreenProps> = ({
   component,
   componentProps = DEFAULT_COMPONENT_PROPS,
   fallback = <LoadingScreen />,
 }) => {
-  // Lazy load component
-  const LazyComponent = React.lazy(component);
+  // Lấy component từ cache, đảm bảo reference ổn định qua các lần render
+  const LazyComponent = getLazyComponent(component);
 
   return (
     <Suspense fallback={fallback}>
@@ -51,3 +68,4 @@ const LazyScreen: React.FC<LazyScreenProps> = ({
 };
 
 export default LazyScreen;
+

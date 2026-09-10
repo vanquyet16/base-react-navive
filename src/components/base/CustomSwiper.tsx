@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import Swiper from 'react-native-swiper';
 import { View, ViewStyle } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 import { moderateScale, verticalScale } from '@/shared/utils/sizeMatters';
 
 interface CustomSwiperProps {
@@ -33,16 +34,13 @@ export const CustomSwiper = memo<CustomSwiperProps>(
     style,
   }) => {
     const theme = useTheme();
+    const styles = useStyles();
 
     return (
       <View
         style={[
-          {
-            height,
-            borderRadius: moderateScale(12),
-            overflow: 'hidden',
-            backgroundColor: theme.colors.backgroundSecondary,
-          },
+          styles.container,
+          { height, backgroundColor: theme.colors.backgroundSecondary },
           style,
         ]}
       >
@@ -51,7 +49,7 @@ export const CustomSwiper = memo<CustomSwiperProps>(
           autoplayTimeout={autoplayTimeout}
           dotColor={theme.colors.border}
           activeDotColor={theme.colors.primary}
-          paginationStyle={{ bottom: verticalScale(10) }}
+          paginationStyle={styles.pagination}
           removeClippedSubviews={false} // Crucial for stability
           loop={true}
         >
@@ -61,6 +59,16 @@ export const CustomSwiper = memo<CustomSwiperProps>(
     );
   },
 );
+
+const useStyles = createStyles(() => ({
+  container: {
+    borderRadius: moderateScale(12),
+    overflow: 'hidden',
+  },
+  pagination: {
+    bottom: verticalScale(10),
+  },
+}));
 
 CustomSwiper.displayName = 'CustomSwiper';
 export default CustomSwiper;

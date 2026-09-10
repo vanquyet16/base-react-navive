@@ -1,5 +1,5 @@
 import React, { useMemo, memo } from 'react';
-import { ImageStyle } from 'react-native';
+
 import FastImage, { FastImageProps } from 'react-native-fast-image';
 import { moderateScale, scale } from 'react-native-size-matters';
 

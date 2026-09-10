@@ -1,7 +1,6 @@
 import React, { memo } from 'react';
 import { View, StyleProp, ViewStyle } from 'react-native';
 import { CustomText } from './CustomText';
-import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 
 export interface LabelDividerProps {
@@ -19,7 +18,6 @@ export interface LabelDividerProps {
  */
 export const LabelDivider: React.FC<LabelDividerProps> = memo(
   ({ text, style }) => {
-    const theme = useTheme();
     const styles = useStyles();
 
     return (

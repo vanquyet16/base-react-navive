@@ -1,5 +1,4 @@
 import React, { memo, useMemo, useEffect, useState } from 'react';
-import { colors } from '@/shared/theme/tokens';
 import { createStyles } from '@/shared/theme/create-styles';
 import {
   moderateScale,
@@ -11,7 +10,7 @@ import {
   Text,
   View,
   ViewStyle,
-  TextStyle,
+  
   LayoutChangeEvent,
 } from 'react-native';
 import Animated, {
@@ -23,7 +22,7 @@ import Animated, {
 import { useTheme } from '@/shared/theme/use-theme';
 
 export interface CustomTabsProps {
-  tabs: { title: string }[];
+  tabs: { title: string; key?: string; id?: string }[];
   page?: number;
   onTabClick?: (tab: any, index: number) => void;
   style?: ViewStyle;
@@ -159,7 +158,7 @@ export const CustomTabs = memo<CustomTabsProps>(props => {
 
           return (
             <Pressable
-              key={tab.title || i}
+              key={tab.key || tab.id || tab.title}
               onPress={() => {
                 if (onTabClick) {
                   onTabClick(tab, i);

@@ -5,7 +5,7 @@
  * Tự động inject theme để tạo hook useStyles sử dụng trong component.
  */
 
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 import { StyleSheet, type ImageStyle, type TextStyle, type ViewStyle } from 'react-native';
 import type { Theme } from './theme';
 import { useTheme } from './use-theme';
@@ -55,7 +55,7 @@ export type StyleFactoryWithProps<T, P = Record<string, unknown>> = (
  */
 export function createStyles<T extends NamedStyles<any>, P = void>(
     styleFactory: StyleFactoryWithProps<T, P>,
-    autoInject?: boolean,
+    _autoInject?: boolean,
 ): P extends void ? (theme?: any) => T & { theme: Theme } : (props: P) => T & { theme: Theme };
 
 /**
@@ -65,13 +65,13 @@ export function createStyles<T extends NamedStyles<any>, P = void>(
  */
 export function createStyles<T extends NamedStyles<any>>(
     styleFactory: StyleFactory<T>,
-    autoInject?: boolean,
+    _autoInject?: boolean,
 ): (theme?: any) => T & { theme: Theme };
 
 // Implementation
 export function createStyles<T extends NamedStyles<any>, P = Record<string, unknown>>(
     styleFactory: StyleFactory<T> | StyleFactoryWithProps<T, P>,
-    autoInject?: boolean,
+    _autoInject?: boolean,
 ) {
     // Luôn ưu tiên check props trước (nếu nhận 2 đối số)
     const hasProps = styleFactory.length === 2;
@@ -98,22 +98,24 @@ export function createStyles<T extends NamedStyles<any>, P = Record<string, unkn
             return stylesRef.current;
         };
     } else {
+        // Module-level cache theo Theme reference cho styleFactory tĩnh (không props)
+        const staticCache = new WeakMap<Theme, T & { theme: Theme }>();
+
         // Auto-inject theme không có props
-        return (themeArg?: any): T & { theme: Theme } => {
+        return (_themeArg?: any): T & { theme: Theme } => {
             const theme = useTheme();
-            const themeRef = useRef<Theme>(theme);
-            const stylesRef = useRef<T & { theme: Theme } | undefined>(undefined);
 
-            const isThemeChanged = theme !== themeRef.current;
-
-            if (!stylesRef.current || isThemeChanged) {
-                themeRef.current = theme;
-                const styles = (styleFactory as StyleFactory<T>)(theme);
-                const compiled = StyleSheet.create(styles);
-                stylesRef.current = { ...compiled, theme };
+            const cached = staticCache.get(theme);
+            if (cached) {
+                return cached;
             }
 
-            return stylesRef.current;
+            const styles = (styleFactory as StyleFactory<T>)(theme);
+            const compiled = StyleSheet.create(styles);
+            const result: T & { theme: Theme } = { ...compiled, theme };
+            staticCache.set(theme, result);
+
+            return result;
         };
     }
 }

@@ -6,7 +6,7 @@ import ListNotification, {
   NotificationSection,
   Notification,
 } from '../Lists/ListNotification';
-import { ActivityIndicator } from 'react-native';
+import { logger } from '@/shared/utils/logger';
 
 const TabNotifiAccount = () => {
   const styles = useStyles();
@@ -74,14 +74,14 @@ const TabNotifiAccount = () => {
 
   // Handle delete notification
   const handleDeleteNotification = useCallback((notification: Notification) => {
-    console.log('Delete notification:', notification.id);
+    logger.info('Delete notification', { id: notification.id });
     // TODO: Implement actual delete logic (API call, state update, etc.)
   }, []);
 
   // Handle mark as read
   const handleMarkAsReadNotification = useCallback(
     (notification: Notification) => {
-      console.log('Mark as read:', notification.id);
+      logger.info('Mark as read', { id: notification.id });
       // TODO: Implement actual mark as read logic (API call, state update, etc.)
     },
     [],

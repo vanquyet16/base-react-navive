@@ -1,40 +1,32 @@
-import React, { FC, memo, useMemo } from 'react';
+import React, { FC, memo } from 'react';
 import { View } from 'react-native';
-import {
-  useSharedValue,
-  useAnimatedScrollHandler,
-} from 'react-native-reanimated';
-import { useSessionActions } from '@/shared/store/selectors';
-import { useMainNavigation } from '@/shared/hooks/useNavigation';
+import { CustomText } from '@/components';
 import { createStyles } from '@/shared/theme/create-styles';
-import HeaderHome from '../components/HeaderHome';
-import ContentHome from '../components/ContentHome';
-import { moderateVerticalScale } from 'react-native-size-matters';
+import { moderateScale, moderateVerticalScale } from 'react-native-size-matters';
 
+/**
+ * HomeScreen - Pure Screen View
+ * Trách nhiệm: Chỉ render nội dung UI của Home.
+ * Tầng Navigation (MainTabs) phụ trách bọc MainLayout và Header.
+ */
 const HomeScreen: FC = memo(() => {
-  const navigation = useMainNavigation();
-  const { clearSession } = useSessionActions();
   const styles = useStyles();
-
-  const scrollY = useSharedValue(0);
-
-  const scrollHandler = useAnimatedScrollHandler(event => {
-    scrollY.value = event.contentOffset.y;
-  });
-
-  const dataHome = useMemo(() => [], []);
 
   return (
     <View style={styles.container}>
-      <HeaderHome scrollY={scrollY} />
-      <ContentHome
-        dataHome={dataHome}
-        onScroll={scrollHandler}
-        scrollY={scrollY}
-      />
+      <View style={styles.welcomeCard}>
+        <CustomText variant="h6" weight="bold">
+          Xin chào! 👋
+        </CustomText>
+        <CustomText variant="body" color="secondary" style={styles.subtitle}>
+          Chào mừng bạn đến với ứng dụng.
+        </CustomText>
+      </View>
     </View>
   );
 });
+
+HomeScreen.displayName = 'HomeScreen';
 
 export default HomeScreen;
 
@@ -42,20 +34,21 @@ const useStyles = createStyles(
   theme => ({
     container: {
       flex: 1,
-      paddingBottom: moderateVerticalScale(50),
+      paddingHorizontal: moderateScale(16),
+      paddingVertical: moderateVerticalScale(16),
     },
-    scroll: {
-      flex: 1,
+    welcomeCard: {
+      backgroundColor: theme.colors.white,
+      borderRadius: moderateScale(12),
+      padding: moderateScale(16),
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 3,
     },
-    scrollContent: {
-      paddingBottom: theme.spacing[6],
-
-      flexGrow: 1, // ✅ Fill remaining space
-    },
-    content: {
-      flex: 1,
-      paddingHorizontal: theme.spacing[4], // Thay thế WingBlank
-      paddingVertical: theme.spacing[4],
+    subtitle: {
+      marginTop: moderateVerticalScale(8),
     },
   }),
   true,

@@ -93,7 +93,7 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
 /**
  * Styles
  */
-const useStyles = createStyles(theme => ({
+const useStyles = createStyles(_theme => ({
   safeArea: {
     flex: 1,
   },

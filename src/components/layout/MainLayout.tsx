@@ -1,111 +1,51 @@
-import React, { ReactNode, useMemo, useCallback, memo } from 'react';
+import React, { ReactNode,  useMemo, memo } from 'react';
 import {
   View,
-  StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  ImageSourcePropType,
-  ImageBackground,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { useNavigation } from '@react-navigation/native';
-import type { DrawerNavigationProp } from '@react-navigation/drawer';
-import { useTheme } from '@/shared/theme/use-theme';
-import CustomHeader, { CustomHeaderProps } from './CustomHeader';
-import { CustomBottomTabBar } from '@/components/navigation';
-import { moderateVerticalScale } from 'react-native-size-matters';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { AppHeader, AppHeaderProps } from './AppHeader';
+import CustomBottomTabBar from '@/components/navigation/CustomBottomTabBar';
 import { createStyles } from '@/shared/theme/create-styles';
+import { BOTTOM_TAB_HEIGHT } from '@/shared/constants/ui';
 
-/**
- * MainLayout Component - Tối ưu hiệu suất với memo và callback
- *
- * Các tối ưu:
- * - React.memo với hàm so sánh tùy chỉnh để tránh re-render không cần thiết
- * - useMemo cho các tính toán và style objects
- * - useCallback cho các hàm render
- * - Memoize inline styles để tránh tạo object mới mỗi lần render
- * - KeyboardAvoidingView để tự động đẩy nội dung lên khi bàn phím xuất hiện
- */
-interface MainLayoutProps {
-  children: ReactNode;
-  // Thuộc tính Header
+export interface MainLayoutConfig {
   showHeader?: boolean;
-  headerProps?: CustomHeaderProps;
-  // Thuộc tính Bottom tabs
   showTabs?: boolean;
-  tabsProps?: Partial<BottomTabBarProps>;
-  // Thuộc tính Layout
-  backgroundColor?: string;
-  // Thuộc tính Scroll
   enableScroll?: boolean;
-  // Thuộc tính Keyboard
   enableKeyboardAvoiding?: boolean;
-  keyboardVerticalOffset?: number;
-  backgroundImage?: ImageSourcePropType;
   disableSafeArea?: boolean;
 }
 
-// Hàm so sánh nông hai đối tượng
-const isShallowEqual = (objA: any, objB: any) => {
-  if (Object.is(objA, objB)) return true;
-  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) return false;
-  
-  const keysA = Object.keys(objA);
-  const keysB = Object.keys(objB);
-  
-  if (keysA.length !== keysB.length) return false;
-  
-  for (let i = 0; i < keysA.length; i++) {
-    const key = keysA[i];
-    if (!Object.prototype.hasOwnProperty.call(objB, key) || !Object.is(objA[key], objB[key])) {
-      return false;
-    }
-  }
-  return true;
-};
+export interface MainLayoutProps extends Partial<MainLayoutConfig> {
+  children: ReactNode;
+  config?: MainLayoutConfig;
+  headerProps?: AppHeaderProps;
+  /** Slot tùy biến cho header: cho phép truyền trực tiếp AppHeader hoặc component bất kỳ */
+  headerNode?: ReactNode;
+  tabsProps?: Partial<BottomTabBarProps>;
+  backgroundColor?: string;
+  keyboardVerticalOffset?: number;
+}
 
-// Hàm so sánh tùy chỉnh cho React.memo
-const areEqual = (prevProps: MainLayoutProps, nextProps: MainLayoutProps) => {
-  // So sánh các props cơ bản
-  if (
-    prevProps.showHeader !== nextProps.showHeader ||
-    prevProps.showTabs !== nextProps.showTabs ||
-    prevProps.backgroundColor !== nextProps.backgroundColor ||
-    prevProps.enableScroll !== nextProps.enableScroll ||
-    prevProps.enableKeyboardAvoiding !== nextProps.enableKeyboardAvoiding ||
-    prevProps.keyboardVerticalOffset !== nextProps.keyboardVerticalOffset ||
-    prevProps.disableSafeArea !== nextProps.disableSafeArea
-  ) {
-    return false;
-  }
+interface MainLayoutInternalProps {
+  children: ReactNode;
+  config: Required<MainLayoutConfig>;
+  headerProps?: AppHeaderProps;
+  headerNode?: ReactNode;
+  tabsProps?: Partial<BottomTabBarProps>;
+  backgroundColor?: string;
+  keyboardVerticalOffset?: number;
+}
 
-  // So sánh headerProps (so sánh nông để nhận biết sự thay đổi của callback/function references)
-  if (!isShallowEqual(prevProps.headerProps, nextProps.headerProps)) {
-    return false;
-  }
-
-  // So sánh tabsProps state (chỉ so sánh state để tránh re-render không cần thiết)
-  if (prevProps.tabsProps?.state !== nextProps.tabsProps?.state) {
-    return false;
-  }
-
-  // So sánh children (so sánh nông)
-  if (prevProps.children !== nextProps.children) {
-    return false;
-  }
-
-  return true;
-};
-
-// Define useStyles before using it in component
 const useStyles = createStyles(
   theme => ({
     container: {
       flex: 1,
       backgroundColor: theme.colors.background,
-      // paddingBottom: moderateVerticalScale(10),
     },
     content: {
       flex: 1,
@@ -114,58 +54,39 @@ const useStyles = createStyles(
       flex: 1,
     },
     scrollContent: {
-      flexGrow: 1, // Thay đổi từ flex: 1 thành flexGrow: 1 để tương thích với paddingBottom
+      flexGrow: 1,
     },
   }),
   true,
 );
 
-const MainLayout: React.FC<MainLayoutProps> = memo(
+const MainLayoutView: React.FC<MainLayoutInternalProps> = memo(
   ({
     children,
-    showHeader = true,
+    config,
     headerProps,
-    showTabs = true,
+    headerNode,
     tabsProps,
-    backgroundColor,
-    enableScroll = true,
-    enableKeyboardAvoiding = true,
     keyboardVerticalOffset,
-    disableSafeArea = false,
   }) => {
-    // Get theme for fallback backgroundColor
-    const theme = useTheme();
     const styles = useStyles();
-    // Fix: Proper type (remove 'as any')
-    const navigation = useNavigation<DrawerNavigationProp<any>>();
 
-    /**
-     * Open drawer nếu navigation hỗ trợ drawer
-     * Defensive programming: Check xem navigation có openDrawer method hay không
-     */
-    const openDrawer = useCallback(() => {
-      // Type guard: Check nếu navigation có openDrawer method
-      if (
-        'openDrawer' in navigation &&
-        typeof navigation.openDrawer === 'function'
-      ) {
-        navigation.openDrawer();
-      } else {
-        // Fallback: Log warning hoặc handle alternative action
-        console.warn(
-          'Drawer navigation not available. Consider adding Drawer Navigator.',
-        );
-        // TODO: Có thể navigate đến settings screen hoặc show modal menu
-      }
-    }, [navigation]);
+    const {
+      showHeader,
+      showTabs,
+      enableScroll,
+      enableKeyboardAvoiding,
+      disableSafeArea,
+    } = config;
 
-    // Ghi nhớ tính toán hasBottomTabs
     const hasBottomTabs = useMemo(
       () =>
-        showTabs &&
-        tabsProps?.state &&
-        tabsProps?.descriptors &&
-        tabsProps?.navigation,
+        Boolean(
+          showTabs &&
+            tabsProps?.state &&
+            tabsProps?.descriptors &&
+            tabsProps?.navigation,
+        ),
       [
         showTabs,
         tabsProps?.state,
@@ -174,31 +95,24 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
       ],
     );
 
-    // Ghi nhớ tính toán padding
-    const contentPaddingBottom = hasBottomTabs ? 80 : 0;
+    // Dùng BOTTOM_TAB_HEIGHT constant thay vì hardcode magic number 80
+    const contentPaddingBottom = hasBottomTabs ? BOTTOM_TAB_HEIGHT : 0;
 
-    // Ghi nhớ style cho container
-    const containerStyle = useMemo(() => [styles.container], [styles.container]);
-
-    // Ghi nhớ scrollContent style
     const scrollContentStyle = useMemo(
       () => [styles.scrollContent, { paddingBottom: contentPaddingBottom }],
       [styles.scrollContent, contentPaddingBottom],
     );
 
-    // Ghi nhớ nonScrollContent style
     const nonScrollStyle = useMemo(
       () => ({ flex: 1, paddingBottom: contentPaddingBottom }),
       [contentPaddingBottom],
     );
 
-    // Ghi nhớ keyboardVerticalOffset
     const keyboardOffset = useMemo(
       () => keyboardVerticalOffset ?? (Platform.OS === 'ios' ? 0 : 20),
       [keyboardVerticalOffset],
     );
 
-    // Tính toán nội dung layout dựa trên enableScroll
     const layoutContent = enableScroll ? (
       <ScrollView
         contentContainerStyle={scrollContentStyle}
@@ -211,7 +125,6 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
       <View style={nonScrollStyle}>{children}</View>
     );
 
-    // Tính toán layout với keyboard avoiding
     const keyboardAvoidingLayout = (
       <KeyboardAvoidingView
         style={styles.keyboardAvoidingView}
@@ -223,22 +136,16 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
     );
 
     return (
-      // <ImageBackground
-      //   style={containerStyle}
-      //   source={require('@/assets/images/bgrdemo2.png')}
-      // >
-      <View style={containerStyle}>
-        {/* Header */}
-        {showHeader && (
-          <CustomHeader
-            {...headerProps}
-            showMenu={headerProps?.showMenu ?? true}
-            onMenuPress={openDrawer}
-            onBack={headerProps?.onBack ?? navigation.goBack}
-          />
-        )}
-        {/* Nội dung */}
-        {!showHeader && !disableSafeArea ? (
+      <View style={styles.container}>
+        {/* Header Slot */}
+        {headerNode ? (
+          headerNode
+        ) : showHeader && headerProps ? (
+          <AppHeader {...headerProps} />
+        ) : null}
+
+        {/* Nội dung chính */}
+        {!showHeader && !headerNode && !disableSafeArea ? (
           <SafeAreaView style={styles.content} edges={['top']}>
             {enableKeyboardAvoiding ? keyboardAvoidingLayout : layoutContent}
           </SafeAreaView>
@@ -247,19 +154,54 @@ const MainLayout: React.FC<MainLayoutProps> = memo(
             {enableKeyboardAvoiding ? keyboardAvoidingLayout : layoutContent}
           </View>
         )}
+
         {/* Bottom Tabs */}
         {hasBottomTabs && (
           <CustomBottomTabBar {...(tabsProps as BottomTabBarProps)} />
         )}
       </View>
-
-      // </ImageBackground>
     );
   },
-  areEqual,
 );
 
-// Đặt tên cho component để debug dễ dàng hơn
+MainLayoutView.displayName = 'MainLayoutView';
+
+export const MainLayout: React.FC<MainLayoutProps> = memo(
+  ({
+    children,
+    config,
+    headerProps,
+    headerNode,
+    tabsProps,
+    backgroundColor,
+    keyboardVerticalOffset,
+    ...legacyFlags
+  }) => {
+    const resolvedConfig: Required<MainLayoutConfig> = {
+      showHeader: config?.showHeader ?? legacyFlags.showHeader ?? true,
+      showTabs: config?.showTabs ?? legacyFlags.showTabs ?? true,
+      enableScroll: config?.enableScroll ?? legacyFlags.enableScroll ?? false,
+      enableKeyboardAvoiding:
+        config?.enableKeyboardAvoiding ?? legacyFlags.enableKeyboardAvoiding ?? true,
+      disableSafeArea:
+        config?.disableSafeArea ?? legacyFlags.disableSafeArea ?? false,
+    };
+
+    return (
+      <MainLayoutView
+        config={resolvedConfig}
+        headerProps={headerProps}
+        headerNode={headerNode}
+        tabsProps={tabsProps}
+        backgroundColor={backgroundColor}
+        keyboardVerticalOffset={keyboardVerticalOffset}
+      >
+        {children}
+      </MainLayoutView>
+    );
+  },
+);
+
 MainLayout.displayName = 'MainLayout';
 
 export default MainLayout;

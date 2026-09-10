@@ -97,7 +97,7 @@ class TokenStore {
 
             // Store expiry nếu có
             if (tokenPair.expiresAt) {
-                storage.set('token_expires_at', String(tokenPair.expiresAt));
+                storage.set(STORAGE_KEYS.TOKEN_EXPIRES_AT, String(tokenPair.expiresAt));
             }
         } catch (error) {
             console.error('[TokenStore] Set tokens error:', error);
@@ -134,7 +134,7 @@ class TokenStore {
         try {
             storage.delete(STORAGE_KEYS.ACCESS_TOKEN);
             storage.delete(STORAGE_KEYS.REFRESH_TOKEN);
-            storage.delete('token_expires_at');
+            storage.delete(STORAGE_KEYS.TOKEN_EXPIRES_AT);
         } catch (error) {
             console.error('[TokenStore] Clear tokens error:', error);
         }
@@ -153,7 +153,7 @@ class TokenStore {
      */
     public async isTokenExpired(): Promise<boolean> {
         try {
-            const expiresAtStr = storage.getString('token_expires_at');
+            const expiresAtStr = storage.getString(STORAGE_KEYS.TOKEN_EXPIRES_AT);
             if (!expiresAtStr) {
                 return false; // Không có expiry = assume còn valid
             }

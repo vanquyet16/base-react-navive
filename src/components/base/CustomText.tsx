@@ -10,7 +10,6 @@ import React, { useMemo, memo } from 'react';
 import { Text, type TextProps, type TextStyle } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
-import { moderateScale } from 'react-native-size-matters';
 
 /**
  * Text variant types

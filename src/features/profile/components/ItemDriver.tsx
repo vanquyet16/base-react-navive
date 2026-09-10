@@ -1,7 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { View } from 'react-native';
 import React from 'react';
 import { createStyles } from '@/shared/theme/create-styles';
-import { useTheme } from '@/shared/theme/use-theme';
 import { CustomText } from '@/components';
 
 interface ItemDriverProps {
@@ -10,7 +9,6 @@ interface ItemDriverProps {
 }
 
 export default function ItemDriver({ title, value }: ItemDriverProps) {
-  const theme = useTheme();
   const styles = useStyles();
   return (
     <View style={styles.item}>

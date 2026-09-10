@@ -1,11 +1,7 @@
 import {
-  CustomButton,
-  FormDropdown,
-  FormInput,
   MediaUploadButton,
   SectionHeader,
 } from '@/components';
-import { FormDatePicker } from '@/components/form';
 import { createStyles } from '@/shared/theme/create-styles';
 import { useTheme } from '@/shared/theme/use-theme';
 import { View, WingBlank } from '@ant-design/react-native';
@@ -15,9 +11,9 @@ import {
   moderateVerticalScale,
   scale,
 } from 'react-native-size-matters';
-import { FromCreateFeedBack } from '../components/CreateFeedBack/FromCreateFeedBack';
 
-const CreateFedBackScreen = memo(() => {
+
+const CreateFeedbackScreen = memo(() => {
   const styles = useStyles();
   const theme = useTheme();
 
@@ -40,13 +36,13 @@ const CreateFedBackScreen = memo(() => {
           onVideoPress={handleVideoPress}
           onFilePress={handleFilePress}
         />
-        <FromCreateFeedBack />
+     
       </View>
     </WingBlank>
   );
 });
 
-export default CreateFedBackScreen;
+export default CreateFeedbackScreen;
 
 const useStyles = createStyles(theme => {
   return {

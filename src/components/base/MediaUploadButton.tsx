@@ -113,10 +113,7 @@ export const MediaUploadButton: React.FC<MediaUploadButtonProps> = memo(
             <View
               style={[
                 styles.groupIconContainer,
-                {
-                  backgroundColor: '#E3F2FD', // Light Blue
-                  borderColor: '#2196F3',
-                },
+                styles.iconCamera,
               ]}
             >
               <AppIcon name="camera" size={moderateScale(24)} color="#2196F3" />
@@ -141,10 +138,7 @@ export const MediaUploadButton: React.FC<MediaUploadButtonProps> = memo(
             <View
               style={[
                 styles.groupIconContainer,
-                {
-                  backgroundColor: '#FFEBEE', // Light Red
-                  borderColor: '#F44336',
-                },
+                styles.iconVideo,
               ]}
             >
               <AppIcon name="video" size={moderateScale(24)} color="#F44336" />
@@ -169,10 +163,7 @@ export const MediaUploadButton: React.FC<MediaUploadButtonProps> = memo(
             <View
               style={[
                 styles.groupIconContainer,
-                {
-                  backgroundColor: '#FFF8E1', // Light Yellow/Orange
-                  borderColor: '#FFC107',
-                },
+                styles.iconFile,
               ]}
             >
               <AppIcon
@@ -205,13 +196,13 @@ export const MediaUploadButton: React.FC<MediaUploadButtonProps> = memo(
             config.isFullWidth
               ? styles.fileIconContainer
               : styles.iconContainer,
-            config.iconBackgroundColor && {
-              backgroundColor: config.iconBackgroundColor,
-              borderWidth: 2,
-              borderColor: config.iconBorderColor,
-              borderRadius: moderateScale(12),
-              padding: moderateScale(12),
-            },
+            config.iconBackgroundColor && [
+              styles.customIconBox,
+              {
+                backgroundColor: config.iconBackgroundColor,
+                borderColor: config.iconBorderColor,
+              },
+            ],
           ]}
         >
           <AppIcon
@@ -317,6 +308,23 @@ const useStyles = createStyles(
       height: moderateVerticalScale(40),
       backgroundColor: theme.colors.borderLight,
       marginHorizontal: scale(4),
+    },
+    iconCamera: {
+      backgroundColor: '#E3F2FD',
+      borderColor: '#2196F3',
+    },
+    iconVideo: {
+      backgroundColor: '#FFEBEE',
+      borderColor: '#F44336',
+    },
+    iconFile: {
+      backgroundColor: '#FFF8E1',
+      borderColor: '#FFC107',
+    },
+    customIconBox: {
+      borderWidth: 2,
+      borderRadius: moderateScale(12),
+      padding: moderateScale(12),
     },
   }),
   true,

@@ -8,7 +8,7 @@
  * @responsive Uses react-native-size-matters for scaling
  */
 
-import { scale, verticalScale, moderateScale, moderateVerticalScale } from 'react-native-size-matters';
+import { verticalScale, moderateScale, moderateVerticalScale } from 'react-native-size-matters';
 
 /**
  * Color Palette
@@ -48,7 +48,7 @@ export const colors = {
     gray: {
 
         50: '#f9fafb',
-        80: '#D9E2EC',
+        75: '#D9E2EC',  // Dùng cho nền tab background (đổi từ 80 → 75 cho đúng Tailwind scale)
         100: '#f3f4f6',
         200: '#e5e7eb',
         300: '#d1d5db',
@@ -105,8 +105,11 @@ export const colors = {
 /**
  * Spacing Scale
  * Base unit: 4px. Scaled responsively.
+ * Hỗ trợ cả 2 cách gọi:
+ * - Dạng object: theme.spacing[4] // 16px
+ * - Dạng hàm: theme.spacing(4)    // 16px (tự tính cho mọi số)
  */
-export const spacing = {
+const baseSpacing = {
     0: 0,
     1: moderateScale(4, 0.3),
     2: moderateScale(8, 0.3),
@@ -122,6 +125,24 @@ export const spacing = {
     20: moderateScale(80, 0.3),
     24: moderateScale(96, 0.3),
 } as const;
+
+export type SpacingScale = typeof baseSpacing;
+
+export interface SpacingHelper extends SpacingScale {
+    (multiplier: number): number;
+}
+
+const createSpacing = (): SpacingHelper => {
+    const fn = (multiplier: number): number => {
+        if (multiplier in baseSpacing) {
+            return baseSpacing[multiplier as keyof SpacingScale];
+        }
+        return moderateScale(multiplier * 4, 0.3);
+    };
+    return Object.assign(fn, baseSpacing);
+};
+
+export const spacing: SpacingHelper = createSpacing();
 
 /**
  * Vertical Spacing Scale

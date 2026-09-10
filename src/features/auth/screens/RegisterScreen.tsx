@@ -1,12 +1,15 @@
 import React, { memo } from 'react';
 import { View, ScrollView, Text } from 'react-native';
 import { Button, WhiteSpace, WingBlank } from '@ant-design/react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useRegister } from '../hooks';
 import { SCREEN_PADDING, VALIDATION, ERROR_MESSAGES } from '@/shared/constants';
 import FormInput from '@/components/form/FormInput';
 import { Logo } from '@/components/base';
 import { createStyles } from '@/shared/theme/create-styles';
 import { useBaseForm } from '@/shared';
+import { moderateVerticalScale } from 'react-native-size-matters';
+import { AuthStackParamList } from '@/shared/types/navigation.types';
 
 interface RegisterFormData {
   name: string;
@@ -23,8 +26,8 @@ const useStyles = createStyles(
     },
     header: {
       alignItems: 'center',
-      paddingTop: 80,
-      paddingBottom: 40,
+      paddingTop: moderateVerticalScale(80),   // Responsive thay vì hardcode 80
+      paddingBottom: moderateVerticalScale(40), // Responsive thay vì hardcode 40
     },
     form: {
       paddingHorizontal: SCREEN_PADDING,
@@ -33,7 +36,7 @@ const useStyles = createStyles(
   true,
 );
 
-const RegisterScreen = memo(({ navigation }: any) => {
+const RegisterScreen = memo(({ navigation }: NativeStackScreenProps<AuthStackParamList, 'Register'>) => {
   const styles = useStyles();
   const registerMutation = useRegister();
 

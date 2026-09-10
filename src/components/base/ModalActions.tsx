@@ -1,6 +1,5 @@
 import React, { memo, useMemo } from 'react';
 import { View, Pressable, StyleProp, ViewStyle } from 'react-native';
-import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import { CustomButton, ButtonVariant } from './CustomButton';
 import { CustomText } from './CustomText';
@@ -50,7 +49,6 @@ export const ModalActions = memo<ModalActionsProps>(
     style,
     fullWidth = true, // Default true cho vertical style
   }) => {
-    const theme = useTheme();
     const styles = useStyles();
 
     // Render Layouts

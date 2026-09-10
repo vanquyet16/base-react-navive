@@ -17,7 +17,7 @@ export const useBaseQuery = <TData, TError = Error>({
     queryKey,
     queryFn,
     showErrorToast = true,
-    errorMessage = 'Lỗi khi tải dữ liệu',
+    errorMessage: _errorMessage = 'Lỗi khi tải dữ liệu',
     showSuccessToast = false,
     successMessage = 'Tải dữ liệu thành công',
     ...options
@@ -25,11 +25,11 @@ export const useBaseQuery = <TData, TError = Error>({
     const { data, error, isSuccess, isFetching, errorUpdatedAt, ...rest } = useQuery({
         queryKey,
         queryFn,
-        retry: (failureCount, error: any) => {
+        retry: (failureCount, queryErr: any) => {
             // Không retry với các lỗi 401, 403, 404
-            if (error?.response?.status === 401 ||
-                error?.response?.status === 403 ||
-                error?.response?.status === 404) {
+            if (queryErr?.response?.status === 401 ||
+                queryErr?.response?.status === 403 ||
+                queryErr?.response?.status === 404) {
                 return false;
             }
             return failureCount < 2;

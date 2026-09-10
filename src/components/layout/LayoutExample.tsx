@@ -1,45 +1,49 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, no-console */
 import React from 'react';
 import { View, Pressable } from 'react-native';
 import { CustomText } from '@/components/base/CustomText';
 import MainLayout from './MainLayout';
+import AppHeader from './AppHeader';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 
-// Example 1: Full layout với header và tabs
+// Example 1: Full layout với header và action
 export const FullLayoutExample = () => {
   const styles = useStyles();
   return (
     <MainLayout
-      showHeader={true}
-      showTabs={false} // Simplified for demo
-      headerProps={{
-        title: 'Full Layout',
-        showProfile: true,
-        showSearch: true,
-        showNotification: true,
-        notificationCount: 5,
-      }}
+      headerNode={
+        <AppHeader
+          title="Full Layout"
+          leftAction="menu"
+          rightNode={
+            <>
+              <AppHeader.Action icon="magnify" iconType="material" />
+              <AppHeader.Action icon="bell-outline" iconType="material" badgeCount={5} />
+            </>
+          }
+        />
+      }
     >
       <View style={styles.content}>
-        <CustomText>Content với header (tabs disabled cho demo)</CustomText>
+        <CustomText>Content với AppHeader</CustomText>
       </View>
     </MainLayout>
   );
 };
 
-// Example 2: Chỉ có header, không có tabs
+// Example 2: Chỉ có header, có back button
 export const HeaderOnlyExample = () => {
   const styles = useStyles();
   return (
     <MainLayout
-      showHeader={true}
-      showTabs={false}
-      headerProps={{
-        title: 'Header Only',
-        type: 'minimal',
-        showBack: true,
-        onBack: () => console.log('Back pressed'),
-      }}
+      headerNode={
+        <AppHeader
+          title="Header Only"
+          leftAction="back"
+          onLeftPress={() => console.log('Back pressed')}
+        />
+      }
     >
       <View style={styles.content}>
         <CustomText>Content chỉ có header</CustomText>

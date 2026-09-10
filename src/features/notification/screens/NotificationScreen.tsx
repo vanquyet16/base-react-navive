@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import {  View } from 'react-native';
 import React from 'react';
 import { createStyles } from '@/shared/theme/create-styles';
 import { moderateVerticalScale } from 'react-native-size-matters';
@@ -38,7 +38,7 @@ const NotificationScreen = () => {
 export default NotificationScreen;
 
 const useStyles = createStyles(
-  theme => ({
+  _theme => ({
     container: {
       flex: 1,
       paddingBottom: moderateVerticalScale(50),

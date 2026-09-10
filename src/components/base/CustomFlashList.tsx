@@ -1,13 +1,12 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import {
   View,
   ActivityIndicator,
-  StyleSheet,
   Text,
-  ViewStyle,
+  type ViewStyle,
 } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { FlashList, FlashListProps, ContentStyle } from '@shopify/flash-list';
+import { FlashList, FlashListProps } from '@shopify/flash-list';
 import { useTheme } from '@/shared/theme/use-theme';
 import { moderateVerticalScale } from '@/shared/utils/sizeMatters';
 import { createStyles } from '@/shared/theme/create-styles';

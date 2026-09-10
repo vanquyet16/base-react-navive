@@ -17,18 +17,16 @@ import {
   CustomFlashList,
   CustomInput,
   SectionHeader,
-  Spacer,
-  SpacerMd,
 } from '@/components';
 import SearchMenuItem from '../components/SearchMenuItem';
 import { SearchMenuItem as SearchMenuItemType } from '../types/types';
 import { createStyles } from '@/shared/theme/create-styles';
 import {
-  moderateScale,
   moderateVerticalScale,
   scale,
 } from 'react-native-size-matters';
 import { useTheme } from '@/shared/theme/use-theme';
+import { logger } from '@/shared/utils/logger';
 import { WingBlank } from '@ant-design/react-native';
 
 /**
@@ -195,7 +193,7 @@ const SearchScreen = () => {
    * Handle item press
    */
   const handleItemPress = useCallback((item: SearchMenuItemType) => {
-    console.log('Item pressed:', item.title);
+    logger.info('Item pressed', { title: item.title });
     // TODO: Navigate to detail screen or perform action
   }, []);
 
