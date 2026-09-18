@@ -25,18 +25,11 @@ export const NAVIGATION_KEYS = {
   /** Main Stack Screens — phải khớp với MainStackParamList */
   MAIN_STACK: {
     MAIN_TABS: 'MainTabsScreen',
-    CREATE_FEEDBACK: 'CreateFeedbackScreen',
-    SEARCH: 'SearchScreen',
-    PROFILE: 'ProfileScreen',
   } as const,
 
   /** Tab Navigator — phải khớp với MainTabParamList */
   TAB: {
     HOME: 'Home',
-    FEEDBACK: 'Feedback',
-    EMERGENCY: 'Emergency',
-    NOTIFICATIONS: 'Notifications',
-    APPS: 'Apps',
   } as const,
 
   /** Auth Stack — tái sử dụng ROUTES.AUTH (Single Source of Truth) */

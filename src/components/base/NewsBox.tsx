@@ -221,51 +221,50 @@ const NewsBox: React.FC<NewsBoxProps> = ({
 
 export default memo(NewsBox);
 
-const useStyles = createStyles(
-  theme => ({
-    container: {
-      backgroundColor: theme.colors.partyBg, // Light beige "warm" background from image
-      borderRadius: moderateScale(12),
-      overflow: 'hidden',
-      marginBottom: moderateVerticalScale(16),
-      // ...theme.shadows.sm,
-      borderWidth: 1,
-      borderColor: theme.colors.partyBorder, // Subtle border matching the background tone
-    },
-    emptyBrandSpacing: {
-      height: moderateVerticalScale(12),
-    },
-    headerWrapper: {
-      width: '100%',
-    },
-    headerGradient: {
-      ...StyleSheet.absoluteFillObject,
-      opacity: 0.1, // Fallback if we want just a tint
-    },
-    headerContent: {
-      backgroundColor: theme.colors.partyHeaderBg, // Light yellow gradient start
-    },
-    headerTopDisplay: {
-      flexDirection: 'row',
-    },
-    // Redesigning the Header to match the image exactly:
-    // Top strip: Yellow to White Gradient? Or Solid Yellow?
-    // Image: "DAI HOI DANG..." is Red text on Yellow background.
-    // Left side: Red Flag with Star/Hammer.
-    flagIconContainer: {
-      backgroundColor: theme.colors.partyRed, // Party Red
-      paddingHorizontal: scale(8),
-      paddingVertical: moderateVerticalScale(4),
-      borderTopLeftRadius: moderateScale(12),
-      borderBottomRightRadius: moderateScale(20), // Curved effect
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    flagIcon: {
-      color: theme.colors.partyYellow, // Gold Yellow
-      fontSize: theme.typography.fontSizes.sm,
-      fontWeight: 'bold',
-    },
+const useStyles = createStyles((theme, rs) => ({
+  container: {
+    backgroundColor: theme.colors.partyBg, // Light beige "warm" background from image
+    borderRadius: moderateScale(12),
+    overflow: 'hidden',
+    marginBottom: moderateVerticalScale(16),
+    // ...theme.shadows.sm,
+    borderWidth: 1,
+    borderColor: theme.colors.partyBorder, // Subtle border matching the background tone
+  },
+  emptyBrandSpacing: {
+    height: moderateVerticalScale(12),
+  },
+  headerWrapper: {
+    width: '100%',
+  },
+  headerGradient: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.1, // Fallback if we want just a tint
+  },
+  headerContent: {
+    backgroundColor: theme.colors.partyHeaderBg, // Light yellow gradient start
+  },
+  headerTopDisplay: {
+    flexDirection: 'row',
+  },
+  // Redesigning the Header to match the image exactly:
+  // Top strip: Yellow to White Gradient? Or Solid Yellow?
+  // Image: "DAI HOI DANG..." is Red text on Yellow background.
+  // Left side: Red Flag with Star/Hammer.
+  flagIconContainer: {
+    backgroundColor: theme.colors.partyRed, // Party Red
+    paddingHorizontal: scale(8),
+    paddingVertical: moderateVerticalScale(4),
+    borderTopLeftRadius: moderateScale(12),
+    borderBottomRightRadius: moderateScale(20), // Curved effect
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  flagIcon: {
+    color: theme.colors.partyYellow, // Gold Yellow
+    fontSize: rs.fontSize(14),
+    fontWeight: 'bold',
+  },
     headerTitle: {
       flex: 1,
       fontWeight: '900',
@@ -337,7 +336,7 @@ const useStyles = createStyles(
       padding: moderateScale(12),
     },
     cardTitle: {
-      fontSize: theme.typography.fontSizes.xs,
+      fontSize: rs.fontSize(12),
       // fontWeight: '600',
       color: theme.colors.text,
       lineHeight: moderateScale(20),
@@ -353,9 +352,8 @@ const useStyles = createStyles(
       marginRight: scale(4),
     },
     dateText: {
-      fontSize: theme.typography.fontSizes.xs,
+      fontSize: rs.fontSize(12),
       color: theme.colors.textTertiary,
     },
-  }),
-  true,
+  })
 );

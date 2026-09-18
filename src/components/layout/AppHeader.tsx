@@ -39,13 +39,11 @@ import {
   type TextStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import { DrawerNavigationProp } from '@react-navigation/drawer';
+import { useNavigation, DrawerActions } from '@react-navigation/native';
 import { AppIcon, CustomText, type IconType } from '@/components';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import { moderateScale, moderateVerticalScale } from 'react-native-size-matters';
-import { DrawerParamList } from '@/shared/types/navigation.types';
 
 // ============================================================================
 // TYPES
@@ -53,10 +51,12 @@ import { DrawerParamList } from '@/shared/types/navigation.types';
 
 export type HeaderLeftAction = 'back' | 'menu' | 'none';
 
-// Navigation type có cả goBack() lẫn openDrawer()
-type AppHeaderNavigation = DrawerNavigationProp<DrawerParamList> & {
-  canGoBack: () => boolean;
-  goBack: () => void;
+// Type an toàn cho navigation tương thích cả Stack lẫn Drawer
+type AppHeaderNavigation = {
+  canGoBack?: () => boolean;
+  goBack?: () => void;
+  openDrawer?: () => void;
+  dispatch?: (action: any) => void;
 };
 
 export interface AppHeaderProps {
@@ -121,8 +121,9 @@ const HeaderAction: React.FC<HeaderActionProps> = memo(({
   labelStyle,
   disabled = false,
 }) => {
+  const theme = useTheme();
   const styles = useActionStyles();
-  const actionColor = color || styles.theme.colors.white;
+  const actionColor = color || theme.colors.white;
 
   return (
     <Pressable
@@ -153,7 +154,7 @@ const HeaderAction: React.FC<HeaderActionProps> = memo(({
         </CustomText>
       )}
       {badgeCount > 0 && (
-        <View style={[styles.badge, { backgroundColor: styles.theme.colors.error }]}>
+        <View style={[styles.badge, { backgroundColor: theme.colors.error }]}>
           <CustomText variant="caption" weight="bold" style={styles.badgeText}>
             {badgeCount > 99 ? '99+' : badgeCount}
           </CustomText>
@@ -200,12 +201,14 @@ export const AppHeaderComponent: React.FC<AppHeaderProps> = memo(({
       return;
     }
     if (leftAction === 'back') {
-      if (navigation.canGoBack()) {
-        navigation.goBack();
+      if (typeof navigation.canGoBack === 'function' && navigation.canGoBack()) {
+        navigation.goBack?.();
       }
     } else if (leftAction === 'menu') {
       if (typeof navigation.openDrawer === 'function') {
         navigation.openDrawer();
+      } else if (typeof navigation.dispatch === 'function') {
+        navigation.dispatch(DrawerActions.openDrawer());
       }
     }
   }, [onLeftPress, leftAction, navigation]);

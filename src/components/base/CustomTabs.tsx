@@ -7,10 +7,8 @@ import {
 import {
   ScrollView,
   Pressable,
-  Text,
   View,
   ViewStyle,
-  
   LayoutChangeEvent,
 } from 'react-native';
 import Animated, {
@@ -20,11 +18,12 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { useTheme } from '@/shared/theme/use-theme';
+import { CustomText } from '@/components/base/CustomText';
 
 export interface CustomTabsProps {
   tabs: { title: string; key?: string; id?: string }[];
   page?: number;
-  onTabClick?: (tab: any, index: number) => void;
+  onTabClick?: (tab: unknown, index: number) => void;
   style?: ViewStyle;
   type?: 'pill' | 'underline' | 'chip' | 'solid';
 }
@@ -169,7 +168,7 @@ export const CustomTabs = memo<CustomTabsProps>(props => {
                 { opacity: pressed ? 0.8 : 1 },
               ]}
             >
-              <Text style={textStyle}>{tab.title}</Text>
+              <CustomText style={textStyle}>{tab.title}</CustomText>
             </Pressable>
           );
         })}
@@ -180,44 +179,41 @@ export const CustomTabs = memo<CustomTabsProps>(props => {
 
 CustomTabs.displayName = 'CustomTabs';
 
-const useStyles = createStyles(
-  theme => ({
-    container: {
-      backgroundColor: theme.colors.background,
-    },
-    scrollViewContent: {
-      // paddingHorizontal: moderateScale(16),
-      gap: moderateScale(8),
-    },
-    chipScrollView: {
-      paddingHorizontal: moderateScale(4),
-    },
-    // Solid Container (Flex Row)
-    solidContainer: {
-      flexDirection: 'row',
-      width: '100%',
-      borderRadius: moderateScale(8),
-      // padding: moderateScale(4),
-      backgroundColor: theme.colors.tabs.background,
-      position: 'relative', // Context for absolute positioning
-    },
+const useStyles = createStyles((theme, rs) => ({
+  container: {
+    backgroundColor: theme.colors.background,
+  },
+  scrollViewContent: {
+    gap: moderateScale(8),
+  },
+  chipScrollView: {
+    paddingHorizontal: moderateScale(4),
+  },
+  // Solid Container (Flex Row)
+  solidContainer: {
+    flexDirection: 'row',
+    width: '100%',
+    borderRadius: moderateScale(8),
+    backgroundColor: theme.colors.tabs.background,
+    position: 'relative',
+  },
 
-    // Base Styles
-    baseTabItem: {
-      paddingHorizontal: moderateScale(16),
-      paddingVertical: moderateVerticalScale(8),
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    baseText: {
-      fontSize: theme.typography.fontSizes.sm,
-      fontWeight: '500',
-    },
+  // Base Styles
+  baseTabItem: {
+    paddingHorizontal: moderateScale(16),
+    paddingVertical: moderateVerticalScale(8),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  baseText: {
+    fontSize: rs.fontSize(14),
+    fontWeight: '500',
+  },
     textInactive: {
       color: theme.colors.textSecondary,
     },
 
-    // Pill Styles (Original)
+    // Pill Styles
     pillItem: {
       borderRadius: moderateScale(20),
       marginBottom: moderateVerticalScale(8),
@@ -225,7 +221,7 @@ const useStyles = createStyles(
       paddingVertical: moderateVerticalScale(10),
     },
     pillActive: {
-      backgroundColor: theme.colors.secondary[500], // Government Blue
+      backgroundColor: theme.colors.secondary[500],
     },
     pillInactive: {
       backgroundColor: theme.colors.background,
@@ -237,7 +233,7 @@ const useStyles = createStyles(
       fontWeight: '600',
     },
 
-    // Chip Styles (Image 0 - White Active, Shadow)
+    // Chip Styles
     chipItem: {
       borderRadius: moderateScale(8),
       paddingVertical: moderateVerticalScale(6),
@@ -262,17 +258,15 @@ const useStyles = createStyles(
       color: theme.colors.textSecondary,
     },
 
-    // Solid Styles (Image 1 - Primary Active, No Border Inactive)
+    // Solid Styles
     solidItem: {
       borderRadius: moderateScale(8),
       paddingVertical: moderateVerticalScale(10),
-
       margin: moderateScale(3),
-      flex: 1, // Expand to fill if needed, though ScrollView prevents flex grow usually
-      zIndex: 1, // Text above indicator
+      flex: 1,
+      zIndex: 1,
     },
     solidActive: {
-      // backgroundColor: theme.colors.tabs.backgroundActive, // Moved to indicator
       backgroundColor: 'transparent',
     },
     solidInactive: {
@@ -287,7 +281,7 @@ const useStyles = createStyles(
       top: 0,
       left: 0,
       bottom: 0,
-      marginVertical: moderateScale(3), // To match item margin vertical
+      marginVertical: moderateScale(3),
       height: 'auto',
       borderRadius: moderateScale(8),
       backgroundColor: theme.colors.tabs.backgroundActive,
@@ -296,8 +290,7 @@ const useStyles = createStyles(
 
     // Underline Styles
     underlineContainer: {
-      // paddingHorizontal: moderateScale(16),
-      backgroundColor: '#FFFF',
+      backgroundColor: theme.colors.white,
       width: '100%',
     },
     underlineItem: {
@@ -308,9 +301,8 @@ const useStyles = createStyles(
       borderBottomColor: theme.colors.secondary[500],
     },
     underlineTextActive: {
-      color: theme.colors.tabs.textActive[500],
+      color: theme.colors.tabs.textActive,
       fontWeight: '600',
     },
-  }),
-  true,
+  })
 );

@@ -1,19 +1,15 @@
 /**
- * THEME CONFIGURATION (SENIOR ARCHITECTURE STANDARD)
- * ==================================================
- * Light và Dark theme definitions chuẩn 3-Tier Token System.
- * Semantic color mappings từ design tokens:
- * - Hỗ trợ đầy đủ Surface, Card, States, Borders, Muted/Placeholder
- * - Tích hợp sẵn helper `theme.alpha(color, opacity)`
- * - Tích hợp sẵn `theme.typography.presets` (h1-h5, body, caption, button)
+ * Hệ thống Theme hợp nhất cho Base React Native
+ * - Quản lý màu sắc (colors), bóng đổ (shadows), zIndex, alpha
+ * - Tối ưu 60 FPS, memoized, type-safe
  */
 
-import { colors, spacing, spacingV, radius, typography, shadows, zIndex } from './tokens';
-import { alpha, typographyPresets } from './helpers';
+import { colors, shadows, zIndex } from './tokens';
+import { alpha } from './helpers';
 
 /**
  * Theme interface
- * Cấu trúc hoàn chỉnh của Theme object
+ * Cấu trúc hoàn chỉnh của Theme object (chuyên biệt cho Màu sắc, Shadows, Alpha và Dark/Light mode)
  */
 export interface Theme {
     colors: {
@@ -147,13 +143,7 @@ export interface Theme {
         };
     };
 
-    // Design Tokens & DX Helpers
-    spacing: typeof spacing;
-    spacingV: typeof spacingV; // Scale dọc cho vertical rhythm
-    radius: typeof radius;
-    typography: typeof typography & {
-        presets: typeof typographyPresets;
-    };
+    // Shadows & Depth
     shadows: typeof shadows;
     zIndex: typeof zIndex;
 
@@ -299,14 +289,6 @@ export const lightTheme: Theme = {
         },
     },
 
-    // Tokens & Helpers
-    spacing,
-    spacingV,
-    radius,
-    typography: {
-        ...typography,
-        presets: typographyPresets,
-    },
     shadows,
     zIndex,
     alpha,
@@ -448,14 +430,6 @@ export const darkTheme: Theme = {
         },
     },
 
-    // Tokens & Helpers
-    spacing,
-    spacingV,
-    radius,
-    typography: {
-        ...typography,
-        presets: typographyPresets,
-    },
     shadows,
     zIndex,
     alpha,

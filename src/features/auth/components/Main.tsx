@@ -161,54 +161,51 @@ const Main = memo(() => {
 
 export default Main;
 
-const useStyles = createStyles(
-  theme => ({
-    rdAvoidingView: {
-      flex: 1,
-      backgroundColor: theme.colors.background,
-    },
-    container: {
-      backgroundColor: theme.colors.white,
-    },
-    scrollContent: {
-      flexGrow: 1,
-    },
+const useStyles = createStyles((theme, rs) => ({
+  rdAvoidingView: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  container: {
+    backgroundColor: theme.colors.white,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
 
-    title: {
-      fontWeight: 'bold',
-    },
-    description: {
-      color: theme.colors.textSecondary,
-    },
-    forgotPasswordContainer: {
-      alignItems: 'flex-end',
-      marginTop: theme.spacing[1],
-    },
-    forgotPasswordText: {
-      color: theme.colors.primary, // Orange/Primary
-      fontWeight: 'bold',
-    },
-    passwordLabelContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: theme.spacing[2],
-      paddingHorizontal: theme.spacing[1],
-    },
-    label: {
-      fontSize: theme.typography.fontSizes.xs,
-      fontWeight: theme.typography.fontWeights.bold,
-      color: theme.colors.textSecondary,
-    },
-    registerContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    registerText: {
-      color: theme.colors.textSecondary,
-      textAlign: 'center',
-    },
-  }),
-  true,
-);
+  title: {
+    fontWeight: 'bold',
+  },
+  description: {
+    color: theme.colors.textSecondary,
+  },
+  forgotPasswordContainer: {
+    alignItems: 'flex-end',
+    marginTop: rs.verticalScale(4),
+  },
+  forgotPasswordText: {
+    color: theme.colors.primary, // Orange/Primary
+    fontWeight: 'bold',
+  },
+  passwordLabelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: rs.verticalScale(8),
+    paddingHorizontal: rs.px(4),
+  },
+  label: {
+    fontSize: rs.fontSize(12),
+    fontWeight: 'bold',
+    color: theme.colors.textSecondary,
+  },
+  registerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  registerText: {
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+  },
+}));

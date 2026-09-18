@@ -8,7 +8,7 @@
  * - Kiểm tra typography presets
  */
 
-import { lightTheme, darkTheme, alpha, spacing } from '@/shared/theme';
+import { lightTheme, darkTheme, alpha } from '@/shared/theme';
 
 describe('Base Theme System (Senior Standard)', () => {
   describe('Semantic Tokens Integrity', () => {
@@ -54,27 +54,6 @@ describe('Base Theme System (Senior Standard)', () => {
     it('should clamp opacity between 0 and 1 safely', () => {
       expect(alpha('#FFFFFF', 1.5)).toBe('rgba(255, 255, 255, 1)');
       expect(alpha('#FFFFFF', -0.5)).toBe('rgba(255, 255, 255, 0)');
-    });
-  });
-
-  describe('Spacing Helper Functionality', () => {
-    it('should support both object access and function call', () => {
-      // Object access
-      expect(spacing[4]).toBeGreaterThan(0);
-      expect(spacing[0]).toBe(0);
-
-      // Function call
-      expect(spacing(4)).toBe(spacing[4]);
-      expect(spacing(0)).toBe(0);
-    });
-  });
-
-  describe('Typography Presets', () => {
-    it('should provide structured presets for typography', () => {
-      expect(lightTheme.typography.presets.h1.fontSize).toBeDefined();
-      expect(lightTheme.typography.presets.h1.fontWeight).toBe('700');
-      expect(lightTheme.typography.presets.bodyMedium.fontSize).toBeDefined();
-      expect(lightTheme.typography.presets.caption.fontSize).toBeDefined();
     });
   });
 });

@@ -42,10 +42,7 @@ export type AuthStackParamList = {
 // ============================================================================
 
 export type MainStackParamList = {
-    CreateFeedbackScreen: undefined;
     MainTabsScreen: undefined;
-    SearchScreen: undefined;
-    ProfileScreen: undefined;
 };
 
 // ============================================================================
@@ -54,10 +51,6 @@ export type MainStackParamList = {
 
 export type MainTabParamList = {
     Home: undefined;
-    Feedback: undefined;
-    Emergency: undefined;
-    Notifications: undefined;
-    Apps: undefined;
 };
 
 // ============================================================================

@@ -5,7 +5,6 @@ import {
 } from '@react-navigation/material-top-tabs';
 import { CustomTabs } from '@/components/base/CustomTabs';
 import { ViewStyle } from 'react-native';
-import { useTheme } from '@/shared/theme/use-theme';
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -48,7 +47,6 @@ const CustomTabBar = memo(
   }: MaterialTopTabBarProps & {
     tabType?: 'pill' | 'underline' | 'chip' | 'solid';
   }) => {
-    const theme = useTheme();
     const tabs = useMemo(
       () =>
         state.routes.map(route => ({
@@ -59,10 +57,11 @@ const CustomTabBar = memo(
 
     const activeTab = state.index;
 
+    // Throttle chống double-click chuyển tab quá nhanh
     const lastClickTimeRef = React.useRef(0);
 
     const handleTabClick = useCallback(
-      (tab: any, index: number) => {
+      (_tab: unknown, index: number) => {
         const now = Date.now();
         if (now - lastClickTimeRef.current < 300) {
           return;
@@ -85,25 +84,13 @@ const CustomTabBar = memo(
       [state.routes, state.index, navigation],
     );
 
-    const tabStyle = useMemo(
-      () => ({
-        backgroundColor: theme.colors.background,
-        // marginBottom: moderateVerticalScale(12),
-        // marginBottom handled by CustomTabs internally
-      }),
-      [theme.colors.background],
-    );
-
     return (
-      // <View style={{ backgroundColor: 'transparent' }}>
       <CustomTabs
         tabs={tabs}
-        page={activeTab} // Control tab active state
-        onTabClick={handleTabClick} // Handle navigation
-        style={tabStyle}
+        page={activeTab}
+        onTabClick={handleTabClick}
         type={tabType}
       />
-      // </View>
     );
   },
 );

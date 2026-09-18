@@ -116,7 +116,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
     () => [
       styles.iconCircle,
       type === 'utility' && {
-        marginBottom: theme.spacing[1],
+        marginBottom: 4,
         shadowColor: '#000000', // Standard black shadow
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1, // Softer opacity
@@ -132,7 +132,6 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
     [
       styles.iconCircle,
       type,
-      theme.spacing,
       iconBackgroundColor,
       theme.colors.primaryLight,
     ],

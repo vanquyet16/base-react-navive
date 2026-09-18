@@ -34,26 +34,23 @@ export const LabelDivider: React.FC<LabelDividerProps> = memo(
   },
 );
 
-const useStyles = createStyles(
-  theme => ({
-    container: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginVertical: theme.spacing[4],
-    },
-    line: {
-      flex: 1,
-      height: 1,
-      backgroundColor: '#E5E7EB', // Gray-200
-    },
-    text: {
-      marginHorizontal: theme.spacing[3],
-      color: '#9CA3AF', // Gray-400
-      fontSize: 12,
-      fontWeight: '600',
-      textTransform: 'uppercase',
-      letterSpacing: 0.5,
-    },
-  }),
-  true,
-);
+const useStyles = createStyles((_theme, rs) => ({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: rs.my(16),
+  },
+  line: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#E5E7EB', // Gray-200
+  },
+  text: {
+    marginHorizontal: rs.mx(12),
+    color: '#9CA3AF', // Gray-400
+    fontSize: rs.fontSize(12),
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+}));

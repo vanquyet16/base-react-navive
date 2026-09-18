@@ -87,24 +87,21 @@ export function CustomFlashList<T>(props: CustomFlashListProps<T>) {
   );
 }
 
-const useStyles = createStyles(
-  theme => ({
-    footer: {
-      paddingVertical: moderateVerticalScale(20),
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    emptyContainer: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingTop: moderateVerticalScale(40),
-    },
-    emptyText: {
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.fontSizes.base,
-      marginTop: moderateVerticalScale(8),
-    },
-  }),
-  true,
-);
+const useStyles = createStyles((theme, rs) => ({
+  footer: {
+    paddingVertical: rs.py(20),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: rs.verticalScale(40),
+  },
+  emptyText: {
+    color: theme.colors.textSecondary,
+    fontSize: rs.fontSize(16),
+    marginTop: rs.verticalScale(8),
+  },
+}));

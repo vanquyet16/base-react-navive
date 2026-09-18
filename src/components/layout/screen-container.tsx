@@ -1,40 +1,33 @@
-/**
- * SCREEN CONTAINER COMPONENT
- * ==========================
- * Consistent screen wrapper với safe area và theming.
- * Base container cho tất cả screens.
- *
- */
-
 import React from 'react';
 import {
   View,
   ScrollView,
-  type ViewProps,
-  type ViewStyle,
   KeyboardAvoidingView,
   Platform,
+  type ViewStyle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
+import { useResponsiveSize } from '@/shared/hooks/useResponsiveSize';
 
 /**
  * ScreenContainer Props
  */
-export interface ScreenContainerProps extends ViewProps {
-  /** Children content */
+export interface ScreenContainerProps {
   children: React.ReactNode;
-  /** Enable scroll (default: false) */
+  /** Enable scrollable content (default: false) */
   scroll?: boolean;
+  /** Additional style */
+  style?: ViewStyle;
   /** Safe area edges (default: all) */
   edges?: ('top' | 'bottom' | 'left' | 'right')[];
   /** Avoid keyboard (default: true) */
   avoidKeyboard?: boolean;
   /** Background color override */
   backgroundColor?: string;
-  /** Padding size (spacing scale) */
-  padding?: keyof typeof import('@/shared/theme/tokens').spacing;
+  /** Padding size in pt (default: 16) */
+  padding?: number;
 }
 
 /**
@@ -46,18 +39,19 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
   edges = ['top', 'bottom', 'left', 'right'],
   avoidKeyboard = true,
   backgroundColor,
-  padding = 4,
+  padding = 16,
   style,
   ...rest
 }) => {
   const theme = useTheme();
-  const styles = useStyles(theme);
+  const rs = useResponsiveSize();
+  const styles = useStyles();
 
   // Container style
   const containerStyle: ViewStyle = {
     ...styles.container,
     backgroundColor: backgroundColor || theme.colors.background,
-    padding: theme.spacing[padding],
+    padding: rs.padding(padding),
   };
 
   // Content component
@@ -93,7 +87,7 @@ export const ScreenContainer: React.FC<ScreenContainerProps> = ({
 /**
  * Styles
  */
-const useStyles = createStyles(_theme => ({
+const useStyles = createStyles(() => ({
   safeArea: {
     flex: 1,
   },
@@ -114,3 +108,5 @@ const useStyles = createStyles(_theme => ({
     flexGrow: 1,
   },
 }));
+
+export default ScreenContainer;

@@ -157,14 +157,11 @@ const FormInputBase = <T extends FieldValues = FieldValues>({
 /**
  * Minimal styles - most styling is handled by CustomInput
  */
-const useStyles = createStyles(
-  theme => ({
-    container: {
-      marginBottom: theme.spacing[1], // Gap between form fields
-    },
-  }),
-  true,
-);
+const useStyles = createStyles((_theme, rs) => ({
+  container: {
+    marginBottom: rs.verticalScale(4), // Gap between form fields
+  },
+}));
 
 export const FormInput = memo(FormInputBase) as typeof FormInputBase;
 export default FormInput;

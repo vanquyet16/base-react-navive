@@ -10,6 +10,7 @@ import { createStyles } from '@/shared/theme/create-styles';
 import { useBaseForm } from '@/shared';
 import { moderateVerticalScale } from 'react-native-size-matters';
 import { AuthStackParamList } from '@/shared/types/navigation.types';
+import { NAVIGATION_KEYS } from '@/navigation/config/navigationConfig';
 
 interface RegisterFormData {
   name: string;
@@ -63,7 +64,7 @@ const RegisterScreen = memo(({ navigation }: NativeStackScreenProps<AuthStackPar
           passwordConfirmation: data.confirmPassword, // Map confirmPassword to passwordConfirmation
           displayName: data.name, // Map name to displayName
         });
-        navigation.navigate('Login');
+        navigation.navigate(NAVIGATION_KEYS.AUTH.LOGIN);
       } catch (error) {
         // Lỗi sẽ được xử lý tự động bởi useBaseForm
         throw error;
@@ -77,7 +78,7 @@ const RegisterScreen = memo(({ navigation }: NativeStackScreenProps<AuthStackPar
   const password = watch('password');
 
   const navigateToLogin = React.useCallback(() => {
-    navigation.navigate('Login');
+    navigation.navigate(NAVIGATION_KEYS.AUTH.LOGIN);
   }, [navigation]);
 
   return (

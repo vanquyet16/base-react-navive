@@ -44,14 +44,11 @@ export const CustomList: React.FC<CustomListProps> = ({
  */
 export default memo(CustomList);
 
-const useStyles = createStyles(
-  theme => ({
-    list: {
-      backgroundColor: theme.colors.background,
-    },
-    padded: {
-      padding: theme.spacing[4],
-    },
-  }),
-  true,
-);
+const useStyles = createStyles((theme, rs) => ({
+  list: {
+    backgroundColor: theme.colors.background,
+  },
+  padded: {
+    padding: rs.padding(16),
+  },
+}));

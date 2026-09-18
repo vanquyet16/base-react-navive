@@ -11,6 +11,7 @@ import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import { useSessionActions } from '@/shared/store/selectors';
 import type { MainStackParamList } from '@/shared/types/navigation.types';
+import { NAVIGATION_KEYS } from '@/navigation/config/navigationConfig';
 
 type DrawerMenuItem = {
   label: string;
@@ -22,12 +23,7 @@ const menuItems: DrawerMenuItem[] = [
   {
     label: 'Trang chủ',
     icon: 'home',
-    screen: 'MainTabsScreen',
-  },
-  {
-    label: 'Thông tin cá nhân',
-    icon: 'person',
-    screen: 'ProfileScreen',
+    screen: NAVIGATION_KEYS.MAIN_STACK.MAIN_TABS,
   },
 ];
 

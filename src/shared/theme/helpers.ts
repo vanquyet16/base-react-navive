@@ -5,9 +5,7 @@
  * - alpha(): Chuyển đổi mã màu sang dạng có độ trong suốt (opacity) an toàn.
  * - Typography Presets: Các mẫu typography định nghĩa sẵn (h1-h5, body, caption).
  */
-
-import { TextStyle } from 'react-native';
-import { typography } from './tokens';
+// Helper utilities thuần túy cho Theme (màu sắc)
 
 /**
  * Chuyển đổi mã màu hex hoặc rgb sang rgba với độ mờ (opacity) từ 0 đến 1.
@@ -54,68 +52,3 @@ export const alpha = (color: string, opacity: number): string => {
   // Fallback nếu màu không hợp lệ hoặc là tên màu named (red, blue...)
   return color;
 };
-
-/**
- * Typography Presets - Các kiểu chữ định sẵn cho giao diện
- */
-export const typographyPresets = {
-  h1: {
-    fontSize: typography.fontSizes['4xl'],
-    lineHeight: Math.round(typography.fontSizes['4xl'] * typography.lineHeights.tight),
-    fontWeight: typography.fontWeights.bold,
-  } as TextStyle,
-
-  h2: {
-    fontSize: typography.fontSizes['3xl'],
-    lineHeight: Math.round(typography.fontSizes['3xl'] * typography.lineHeights.tight),
-    fontWeight: typography.fontWeights.bold,
-  } as TextStyle,
-
-  h3: {
-    fontSize: typography.fontSizes['2xl'],
-    lineHeight: Math.round(typography.fontSizes['2xl'] * typography.lineHeights.normal),
-    fontWeight: typography.fontWeights.bold,
-  } as TextStyle,
-
-  h4: {
-    fontSize: typography.fontSizes.xl,
-    lineHeight: Math.round(typography.fontSizes.xl * typography.lineHeights.normal),
-    fontWeight: typography.fontWeights.bold,
-  } as TextStyle,
-
-  h5: {
-    fontSize: typography.fontSizes.lg,
-    lineHeight: Math.round(typography.fontSizes.lg * typography.lineHeights.normal),
-    fontWeight: typography.fontWeights.semibold,
-  } as TextStyle,
-
-  bodyLarge: {
-    fontSize: typography.fontSizes.base,
-    lineHeight: Math.round(typography.fontSizes.base * typography.lineHeights.normal),
-    fontWeight: typography.fontWeights.normal,
-  } as TextStyle,
-
-  bodyMedium: {
-    fontSize: typography.fontSizes.sm,
-    lineHeight: Math.round(typography.fontSizes.sm * typography.lineHeights.normal),
-    fontWeight: typography.fontWeights.normal,
-  } as TextStyle,
-
-  bodySmall: {
-    fontSize: typography.fontSizes.xs,
-    lineHeight: Math.round(typography.fontSizes.xs * typography.lineHeights.normal),
-    fontWeight: typography.fontWeights.normal,
-  } as TextStyle,
-
-  caption: {
-    fontSize: typography.fontSizes['2xs'],
-    lineHeight: Math.round(typography.fontSizes['2xs'] * typography.lineHeights.normal),
-    fontWeight: typography.fontWeights.normal,
-  } as TextStyle,
-
-  button: {
-    fontSize: typography.fontSizes.sm,
-    lineHeight: Math.round(typography.fontSizes.sm * typography.lineHeights.tight),
-    fontWeight: typography.fontWeights.semibold,
-  } as TextStyle,
-} as const;

@@ -19,13 +19,8 @@ import {
 import { CustomText } from './CustomText';
 import { useTheme } from '@/shared/theme/use-theme';
 import type { Theme } from '@/shared/theme/theme';
-import {
-  moderateScale,
-  moderateVerticalScale,
-  scale,
-  
-} from 'react-native-size-matters';
-import { createStyles } from '@/shared/theme/create-styles';
+
+import { createStylesWithProps } from '@/shared/theme/create-styles';
 
 /**
  * CustomInput Props
@@ -185,20 +180,20 @@ export default CustomInput;
 /**
  * Styles
  */
-const useStyles = createStyles(
-  (theme: Theme, props: { borderRadius?: number; width?: DimensionValue }) => {
+const useStyles = createStylesWithProps(
+  (theme: Theme, rs, props: { borderRadius?: number; width?: DimensionValue }) => {
     return {
       container: {
         width: props.width || '100%',
       },
 
       label: {
-        fontSize: theme.typography.fontSizes.xs,
-        fontWeight: theme.typography.fontWeights.bold,
+        fontSize: rs.fontSize(12),
+        fontWeight: '700',
         textTransform: 'uppercase',
-        color: theme.colors.textSecondary, // #6b7280 gray-500
-        marginBottom: theme.spacing[2], // 8px
-        marginLeft: theme.spacing[1], // 4px
+        color: theme.colors.textSecondary,
+        marginBottom: rs.verticalGap(8),
+        marginLeft: rs.horizontalGap(4),
       },
 
       inputContainer: {
@@ -207,11 +202,10 @@ const useStyles = createStyles(
         backgroundColor: theme.colors.inputBackground,
         borderWidth: 1.5,
         borderColor: theme.colors.inputBorder,
-        borderRadius: props.borderRadius ?? theme.radius.md,
-        paddingHorizontal: theme.spacing[3],
-        paddingVertical: theme.spacing[2], // Reduce vertical padding slightly
-        minHeight: moderateVerticalScale(40), // Reduced from 48
-        // Add default shadow
+        borderRadius: props.borderRadius ?? rs.radius(8),
+        paddingHorizontal: rs.px(12),
+        paddingVertical: rs.py(8),
+        minHeight: rs.inputHeight('sm'),
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
@@ -222,7 +216,6 @@ const useStyles = createStyles(
       inputContainerFocused: {
         borderColor: theme.colors.primary,
         backgroundColor: '#FFFFFF',
-        // Stronger shadow on focus
         shadowColor: theme.colors.primary,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15,
@@ -232,52 +225,51 @@ const useStyles = createStyles(
 
       inputContainerError: {
         borderColor: theme.colors.error,
-        borderWidth: moderateScale(1),
+        borderWidth: 1,
       },
 
       input: {
         flex: 1,
-        fontSize: theme.typography.fontSizes.xs,
-        fontWeight: theme.typography.fontWeights.medium,
+        fontSize: rs.fontSize(12),
+        fontWeight: '500',
         color: theme.colors.text,
-        padding: 0, // Remove default padding
+        padding: 0,
       },
 
       inputWithLeftIcon: {
-        marginLeft: theme.spacing[2], // 8px spacing from icon
+        marginLeft: rs.horizontalGap(8),
       },
 
       inputWithRightIcon: {
-        marginRight: theme.spacing[2],
+        marginRight: rs.horizontalGap(8),
       },
 
       leftIconContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        width: scale(20),
-        height: scale(20),
+        width: rs.scale(20),
+        height: rs.scale(20),
       },
 
       rightIconContainer: {
         justifyContent: 'center',
         alignItems: 'center',
-        width: scale(20),
-        height: scale(20),
+        width: rs.scale(20),
+        height: rs.scale(20),
       },
 
       errorText: {
         color: theme.colors.error,
-        marginTop: theme.spacing[1],
-        marginLeft: theme.spacing[1],
-        fontSize: theme.typography.fontSizes.xs,
+        marginTop: rs.verticalGap(4),
+        marginLeft: rs.horizontalGap(4),
+        fontSize: rs.fontSize(12),
       },
 
       inputDisabled: {
         opacity: 0.5,
         backgroundColor: theme.colors.backgroundSecondary,
-        marginBottom: theme.spacing[1],
+        marginBottom: rs.verticalGap(4),
       },
     };
   },
-  true,
 );

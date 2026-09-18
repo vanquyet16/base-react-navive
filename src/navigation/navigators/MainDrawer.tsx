@@ -9,6 +9,7 @@
 import React from 'react';
 import { createDrawerNavigator, DrawerContentComponentProps } from '@react-navigation/drawer';
 import { DrawerParamList } from '@/shared/types/navigation.types';
+import { NAVIGATION_KEYS } from '@/navigation/config/navigationConfig';
 import { MainStackNavigator } from './MainStackNavigator';
 import CustomDrawer from '@/components/navigation/CustomDrawer';
 
@@ -24,7 +25,7 @@ const renderDrawerContent = (props: DrawerContentComponentProps) => (
 export const MainDrawer: React.FC = () => {
   return (
     <Drawer.Navigator
-      initialRouteName="MainStack"
+      initialRouteName={NAVIGATION_KEYS.ROOT.MAIN_STACK}
       drawerContent={renderDrawerContent}
       screenOptions={{
         headerShown: false,
@@ -36,7 +37,7 @@ export const MainDrawer: React.FC = () => {
       }}
     >
       <Drawer.Screen
-        name="MainStack"
+        name={NAVIGATION_KEYS.ROOT.MAIN_STACK}
         component={MainStackNavigator}
       />
     </Drawer.Navigator>

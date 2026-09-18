@@ -26,9 +26,9 @@ const storage = new MMKV({
  */
 class TokenStore {
     /**
-     * Get access token
+     * Get access token (synchronous MMKV)
      */
-    public async getAccessToken(): Promise<string | null> {
+    public getAccessToken(): string | null {
         try {
             return storage.getString(STORAGE_KEYS.ACCESS_TOKEN) || null;
         } catch (error) {
@@ -38,9 +38,9 @@ class TokenStore {
     }
 
     /**
-     * Get refresh token
+     * Get refresh token (synchronous MMKV)
      */
-    public async getRefreshToken(): Promise<string | null> {
+    public getRefreshToken(): string | null {
         try {
             return storage.getString(STORAGE_KEYS.REFRESH_TOKEN) || null;
         } catch (error) {
@@ -52,21 +52,20 @@ class TokenStore {
     /**
      * Get both tokens
      */
-    public async getTokens(): Promise<{
+    public getTokens(): {
         accessToken: string | null;
         refreshToken: string | null;
-    }> {
-        const [accessToken, refreshToken] = await Promise.all([
-            this.getAccessToken(),
-            this.getRefreshToken(),
-        ]);
-        return { accessToken, refreshToken };
+    } {
+        return {
+            accessToken: this.getAccessToken(),
+            refreshToken: this.getRefreshToken(),
+        };
     }
 
     /**
      * Set access token
      */
-    public async setAccessToken(token: string): Promise<void> {
+    public setAccessToken(token: string): void {
         try {
             storage.set(STORAGE_KEYS.ACCESS_TOKEN, token);
         } catch (error) {
@@ -78,7 +77,7 @@ class TokenStore {
     /**
      * Set refresh token
      */
-    public async setRefreshToken(token: string): Promise<void> {
+    public setRefreshToken(token: string): void {
         try {
             storage.set(STORAGE_KEYS.REFRESH_TOKEN, token);
         } catch (error) {
@@ -90,7 +89,7 @@ class TokenStore {
     /**
      * Set both tokens (atomic operation)
      */
-    public async setTokens(tokenPair: TokenPair): Promise<void> {
+    public setTokens(tokenPair: TokenPair): void {
         try {
             storage.set(STORAGE_KEYS.ACCESS_TOKEN, tokenPair.accessToken);
             storage.set(STORAGE_KEYS.REFRESH_TOKEN, tokenPair.refreshToken);
@@ -108,7 +107,7 @@ class TokenStore {
     /**
      * Clear access token
      */
-    public async clearAccessToken(): Promise<void> {
+    public clearAccessToken(): void {
         try {
             storage.delete(STORAGE_KEYS.ACCESS_TOKEN);
         } catch (error) {
@@ -119,7 +118,7 @@ class TokenStore {
     /**
      * Clear refresh token
      */
-    public async clearRefreshToken(): Promise<void> {
+    public clearRefreshToken(): void {
         try {
             storage.delete(STORAGE_KEYS.REFRESH_TOKEN);
         } catch (error) {
@@ -130,7 +129,7 @@ class TokenStore {
     /**
      * Clear all tokens
      */
-    public async clearTokens(): Promise<void> {
+    public clearTokens(): void {
         try {
             storage.delete(STORAGE_KEYS.ACCESS_TOKEN);
             storage.delete(STORAGE_KEYS.REFRESH_TOKEN);
@@ -143,15 +142,15 @@ class TokenStore {
     /**
      * Check if has valid access token
      */
-    public async hasAccessToken(): Promise<boolean> {
-        const token = await this.getAccessToken();
+    public hasAccessToken(): boolean {
+        const token = this.getAccessToken();
         return !!token;
     }
 
     /**
      * Check if token expired (cần expiresAt được set)
      */
-    public async isTokenExpired(): Promise<boolean> {
+    public isTokenExpired(): boolean {
         try {
             const expiresAtStr = storage.getString(STORAGE_KEYS.TOKEN_EXPIRES_AT);
             if (!expiresAtStr) {

@@ -6,9 +6,9 @@ import {
   Platform,
   type ViewStyle,
 } from 'react-native';
-import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useTheme } from '@/shared/theme/use-theme';
-import { createStyles } from '@/shared/theme/create-styles';
+import { createStyles, createStylesWithProps } from '@/shared/theme/create-styles';
 import type { MainTabParamList } from '@/shared/types/navigation.types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -174,14 +174,14 @@ const CustomBottomTabBar: React.FC<BottomTabBarProps> = ({
 export default memo(CustomBottomTabBar);
 
 // Base styles không phụ thuộc vào props
-const useBaseStyles = createStyles<
+const useBaseStyles = createStylesWithProps<
   {
     container: ViewStyle;
     tabsContainer: ViewStyle;
   },
   { bottomInset: number }
 >(
-  (theme, props) => ({
+  (theme, _rs, props) => ({
     container: {
       backgroundColor: theme.colors.white,
       position: 'absolute',
@@ -209,45 +209,43 @@ const useBaseStyles = createStyles<
       backgroundColor: 'transparent',
     },
   }),
-  true,
 );
 
 // Styles của CustomBottomTabBar
-const useStyles = createStyles(
-  theme => ({
-    tab: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
+const useStyles = createStyles((theme, rs) => ({
+  tab: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
 
-      paddingVertical: moderateVerticalScale(4),
+    paddingVertical: moderateVerticalScale(4),
 
-      position: 'relative',
-    },
+    position: 'relative',
+  },
 
-    tabContent: {
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
+  tabContent: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 
-    iconContainer: {
-      marginTop: moderateVerticalScale(4),
-      marginBottom: moderateVerticalScale(4),
+  iconContainer: {
+    marginTop: moderateVerticalScale(4),
+    marginBottom: moderateVerticalScale(4),
 
-      position: 'relative',
+    position: 'relative',
 
-      width: scale(32),
-      height: scale(32),
+    width: scale(32),
+    height: scale(32),
 
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 
-    tabLabel: {
-      fontSize: theme.typography.fontSizes['2xs'],
+  tabLabel: {
+    fontSize: rs.fontSize(10),
 
-      fontWeight: '500',
-      textAlign: 'center',
+    fontWeight: '500',
+    textAlign: 'center',
 
       color: theme.colors.textSecondary ?? theme.colors.text,
 
@@ -283,7 +281,7 @@ const useStyles = createStyles(
 
     badgeText: {
       color: '#FFFFFF',
-      fontSize: theme.typography.fontSizes['2xs'],
+      fontSize: rs.fontSize(10),
       fontWeight: '700',
       lineHeight: moderateScale(12),
     },
