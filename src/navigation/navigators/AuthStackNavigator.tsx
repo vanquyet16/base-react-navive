@@ -1,43 +1,33 @@
 /**
  * AUTH STACK NAVIGATOR
  * ====================
- * Navigator cho authentication flow (Login, Register)
- *
- * Sử dụng generic navigator factory để tạo navigator component
- * từ config, đảm bảo type-safe và tuân thủ separation of concerns.
+ * Quản lý luồng điều hướng Authentication (Đăng nhập, Đăng ký).
+ * Triển khai theo mô hình Declarative Navigator chuẩn React Navigation v7.
  */
 
+import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '@/shared/types/navigation.types';
-import { AUTH_SCREENS } from '@/navigation/config';
-import { createAuthStackNavigatorComponent } from '@/navigation/factories/navigatorFactory';
+import { NAVIGATION_KEYS } from '@/navigation/config/navigationConfig';
+// Import qua feature barrel
+import { LoginScreen, RegisterScreen } from '@/features/auth';
 
-/**
- * Auth Stack Navigator instance
- * Typed với AuthStackParamList cho type safety
- */
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 
 /**
  * Auth Stack Navigator Component
- *
- * Tự động tạo từ AUTH_SCREENS config sử dụng generic factory.
- * Chứa tất cả auth screens: Login, Register, etc.
- *
- * Features:
- * - Lazy loading screens qua LazyScreen wrapper
- * - Type-safe navigation
- * - Không có MainLayout (full screen auth UI)
- *
- * @example
- * // Sử dụng trong Root Navigation
- * <Stack.Screen name="AuthStack" component={AuthStackNavigator} />
  */
-export const AuthStackNavigator = createAuthStackNavigatorComponent(
-  AuthStack,
-  AUTH_SCREENS,
-  {
-    initialRouteName: 'Login',
-    screenOptions: { headerShown: false },
-  },
-);
+export const AuthStackNavigator: React.FC = () => {
+  return (
+    <AuthStack.Navigator
+      initialRouteName={NAVIGATION_KEYS.AUTH.LOGIN}
+      screenOptions={{
+        headerShown: false,
+        animation: 'slide_from_right',
+      }}
+    >
+      <AuthStack.Screen name={NAVIGATION_KEYS.AUTH.LOGIN} component={LoginScreen} />
+      <AuthStack.Screen name={NAVIGATION_KEYS.AUTH.REGISTER} component={RegisterScreen} />
+    </AuthStack.Navigator>
+  );
+};

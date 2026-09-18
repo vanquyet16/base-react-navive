@@ -100,6 +100,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = memo(
     color,
     fontBold = true,
     transform,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     styleAction,
     rightActionStyle,
   }) => {
@@ -129,7 +130,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = memo(
                 }
                 style={[
                   rightActionStyle?.styleIconAction?.style,
-                  { marginRight: actionLabel ? scale(4) : 0 },
+                  actionLabel ? styles.actionIconWithLabel : undefined,
                 ]}
               />
             )}
@@ -169,6 +170,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = memo(
       onSeeAll,
       seeAllText,
       styles.actionButton,
+      styles.actionIconWithLabel,
       styles.actionText,
       styles.seeAllText,
       theme.colors.textSecondary,
@@ -213,56 +215,56 @@ const SectionHeader: React.FC<SectionHeaderProps> = memo(
   },
 );
 
-const useStyles = createStyles(
-  theme => ({
-    container: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-    leftContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    },
-    verticalBar: {
-      width: moderateScale(3),
-      height: moderateVerticalScale(14),
-      backgroundColor: theme.colors.primary,
-      borderRadius: moderateScale(2),
-      marginRight: theme.spacing[2],
-    },
-    title: {
-      color: theme.colors.text,
-      fontSize: theme.typography.fontSizes.sm,
-      fontWeight: '600',
-    },
-    seeAllText: {
-      color: theme.colors.primary,
-      fontWeight: '500',
-    },
-    // Custom Action Button Styles
-    actionButton: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: theme.colors.white,
-      paddingHorizontal: scale(12),
-      paddingVertical: moderateVerticalScale(6),
-      borderRadius: moderateScale(8),
-      borderWidth: 1,
-      borderColor: theme.colors.border,
-      // Optional shadow
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.05,
-      shadowRadius: 2,
-      elevation: 2,
-    },
-    actionText: {
-      color: theme.colors.textSecondary,
-      fontWeight: '600',
-    },
-  }),
-  true,
-);
+const useStyles = createStyles((theme, rs) => ({
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  leftContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  verticalBar: {
+    width: moderateScale(3),
+    height: moderateVerticalScale(14),
+    backgroundColor: theme.colors.primary,
+    borderRadius: moderateScale(2),
+    marginRight: rs.scale(8),
+  },
+  title: {
+    color: theme.colors.text,
+    fontSize: rs.fontSize(14),
+    fontWeight: '600',
+  },
+  seeAllText: {
+    color: theme.colors.primary,
+    fontWeight: '500',
+  },
+  // Custom Action Button Styles
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.white,
+    paddingHorizontal: scale(12),
+    paddingVertical: moderateVerticalScale(6),
+    borderRadius: moderateScale(8),
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    // Optional shadow
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  actionText: {
+    color: theme.colors.textSecondary,
+    fontWeight: '600',
+  },
+  actionIconWithLabel: {
+    marginRight: scale(4),
+  },
+}));
 
 export default SectionHeader;

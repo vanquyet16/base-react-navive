@@ -1,62 +1,81 @@
-// ============================================================================
-// MAIN TABS NAVIGATOR - BOTTOM TABS NAVIGATION
-// ============================================================================
+/**
+ * MAIN TABS NAVIGATOR - BOTTOM TABS NAVIGATION
+ * ============================================
+ * Bottom Tabs Navigator chính của ứng dụng.
+ * Triển khai theo mô hình Declarative Navigator chuẩn React Navigation v7.
+ */
 
-import React, { useCallback } from 'react';
-import { createBottomTabNavigator, BottomTabBarProps } from '@react-navigation/bottom-tabs';
+import React, { useCallback, memo } from 'react';
+import {
+  createBottomTabNavigator,
+  type BottomTabBarProps,
+} from '@react-navigation/bottom-tabs';
 import { AppIcon, type IconType } from '@/components';
 import { MainTabParamList } from '@/shared/types/navigation.types';
 import { CustomBottomTabBar } from '@/components/navigation';
-import { logger } from '@/shared/utils/logger';
-import { TAB_SCREENS } from './config';
-import { createTabScreenWrappers } from './factories/screenFactory';
 import { useTheme } from '@/shared/theme/use-theme';
+import { MainLayout, AppHeader } from '@/components/layout';
+import { NAVIGATION_KEYS } from '@/navigation/config/navigationConfig';
+
+// Feature screens — import qua feature barrel
+import { HomeScreen } from '@/features/home';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-/**
- * Logger instance cho MainTabs
- */
-const tabLogger = logger;
-
-/**
- * Tạo tab wrappers từ config
- * Memoized để tránh tạo lại mỗi lần render
- */
-const TAB_WRAPPERS = createTabScreenWrappers(TAB_SCREENS);
+// Ảnh nền header dùng chung
+const HEADER_BG = require('@/assets/images/imgbgrheader.jpg');
 
 // ============================================================================
-// MAIN TABS COMPONENT
+// TAB SCREEN WRAPPERS (MEMOIZED)
 // ============================================================================
 
 /**
- * MainTabs - Bottom tabs navigation chính
- *
- * Chức năng:
- * - Hiển thị 4 tabs chính: Home, Profile, Settings, ResponsiveDemo
- * - Custom tab bar với styling riêng
- * - Mỗi tab có wrapper riêng với MainLayout
- * - Error handling cho missing wrappers
- *
- * Cấu trúc:
- * - Home: Trang chủ với search và notification
- * - Profile: Hồ sơ người dùng
- * - Settings: Cài đặt ứng dụng
- * - ResponsiveDemo: Demo responsive design
+ * Tab Home: Header "Trang chủ" + menu
  */
+const HomeTabScreen: React.FC = memo(() => {
+  return (
+    <MainLayout
+      enableScroll={true}
+      headerNode={
+        <AppHeader
+          title="Trang chủ"
+          subtitle="Cổng dịch vụ thông minh"
+          leftAction="menu"
+          backgroundImage={HEADER_BG}
+        />
+      }
+    >
+      <HomeScreen />
+    </MainLayout>
+  );
+});
+HomeTabScreen.displayName = 'HomeTabScreen';
 
-const MainTabs: React.FC = () => {
-  const theme = useTheme(); // Hook usage
+interface TabBarIconProps {
+  name: string;
+  type?: IconType;
+  color: string;
+  size: number;
+}
+
+const TabBarIcon: React.FC<TabBarIconProps> = memo(({ name, type, color, size }) => (
+  <AppIcon name={name} size={size} color={color} type={type} />
+));
+TabBarIcon.displayName = 'TabBarIcon';
+
+const renderHomeIcon = ({ color, size }: { color: string; size: number }) => (
+  <TabBarIcon name="home" type="feather" color={color} size={size} />
+);
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+
+export const MainTabs: React.FC = () => {
+  const theme = useTheme();
 
   const renderTabBar = useCallback(
-    (props: BottomTabBarProps) => <CustomBottomTabBar {...props} />, // Changed component
-    [],
-  );
-
-  const renderIcon = useCallback(
-    (iconName: string, iconType?: IconType) =>
-      ({ color, size }: { color: string; size: number }) =>
-        <AppIcon name={iconName} size={size} color={color} type={iconType} />,
+    (props: BottomTabBarProps) => <CustomBottomTabBar {...props} />,
     [],
   );
 
@@ -69,32 +88,15 @@ const MainTabs: React.FC = () => {
         tabBarInactiveTintColor: theme.colors.textSecondary,
       }}
     >
-      {TAB_SCREENS.map(cfg => {
-        const tabName = cfg.name as keyof MainTabParamList;
-        const Wrapper = TAB_WRAPPERS[tabName];
-
-        // Error handling: Log nếu wrapper không tìm thấy
-        if (!Wrapper) {
-          tabLogger.error('Tab wrapper not found', {
-            tabName,
-            availableWrappers: Object.keys(TAB_WRAPPERS),
-          });
-          return null;
-        }
-
-        return (
-          <Tab.Screen
-            key={tabName}
-            name={tabName}
-            component={Wrapper}
-            options={{
-              tabBarLabel: cfg.title,
-              tabBarIcon: renderIcon(cfg.icon, cfg.iconType),
-              tabBarBadge: cfg.badge,
-            }}
-          />
-        );
-      })}
+      {/* 1. Trang chủ */}
+      <Tab.Screen
+        name={NAVIGATION_KEYS.TAB.HOME}
+        component={HomeTabScreen}
+        options={{
+          tabBarLabel: 'Trang chủ',
+          tabBarIcon: renderHomeIcon,
+        }}
+      />
     </Tab.Navigator>
   );
 };

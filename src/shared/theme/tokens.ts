@@ -8,7 +8,8 @@
  * @responsive Uses react-native-size-matters for scaling
  */
 
-import { scale, verticalScale, moderateScale, moderateVerticalScale } from 'react-native-size-matters';
+// Đã gỡ bỏ react-native-size-matters: các token giữ nguyên giá trị thiết kế gốc (Raw Base Units).
+// Việc co giãn kích thước động được đảm nhiệm hoàn toàn bởi useResponsiveSize.
 
 /**
  * Color Palette
@@ -48,7 +49,7 @@ export const colors = {
     gray: {
 
         50: '#f9fafb',
-        80: '#D9E2EC',
+        75: '#D9E2EC',  // Dùng cho nền tab background (đổi từ 80 → 75 cho đúng Tailwind scale)
         100: '#f3f4f6',
         200: '#e5e7eb',
         300: '#d1d5db',
@@ -100,101 +101,6 @@ export const colors = {
     black: '#000000',
     transparent: 'transparent',
     backdrop: 'rgba(0, 0, 0, 0.2)',
-} as const;
-
-/**
- * Spacing Scale
- * Base unit: 4px. Scaled responsively.
- */
-export const spacing = {
-    0: 0,
-    1: moderateScale(4, 0.3),
-    2: moderateScale(8, 0.3),
-    2.5: moderateScale(10, 0.3),
-    3: moderateScale(12, 0.3),
-    4: moderateScale(16, 0.3),
-    5: moderateScale(20, 0.3),
-    6: moderateScale(24, 0.3),
-    8: moderateScale(32, 0.3),
-    10: moderateScale(40, 0.3),
-    12: moderateScale(48, 0.3),
-    16: moderateScale(64, 0.3),
-    20: moderateScale(80, 0.3),
-    24: moderateScale(96, 0.3),
-} as const;
-
-/**
- * Vertical Spacing Scale
- * Used for strict vertical rhythm.
- */
-export const spacingV = {
-    0: 0,
-    1: verticalScale(4),
-    2: verticalScale(8),
-    3: verticalScale(12),
-    4: verticalScale(16),
-    5: verticalScale(20),
-    6: verticalScale(24),
-    8: verticalScale(32),
-    10: verticalScale(40),
-    12: verticalScale(48),
-    16: verticalScale(64),
-    20: verticalScale(80),
-    24: verticalScale(96),
-} as const;
-
-/**
- * Border Radius
- */
-export const radius = {
-    none: 0,
-    sm: moderateScale(4, 0.3),
-    md: moderateScale(8, 0.3),
-    lg: moderateScale(12, 0.3),
-    xl: moderateScale(16, 0.3),
-    '2xl': moderateScale(24, 0.3),
-    '3xl': moderateScale(32, 0.3),
-    '4xl': moderateScale(48, 0.3),
-    '5xl': moderateScale(64, 0.3),
-    full: 9999,
-} as const;
-
-/**
- * Typography Scale
- */
-export const typography = {
-    fontSizes: {
-        '3xs': moderateScale(8, 0.3),   // For very tiny text (micro badges, minimal tags)
-        '2xs': moderateScale(10, 0.3),  // For tiny text (tab bar labels, small badges)
-        xs: moderateScale(12, 0.3),     // Caption, helper text, timestamps
-        sm: moderateScale(14, 0.3),     // Body small, labels, secondary text
-        base: moderateScale(16, 0.3),   // Primary body text
-        lg: moderateScale(18, 0.3),     // Highlighted text, large labels
-        xl: moderateScale(20, 0.3),     // H4, screen titles
-        '2xl': moderateScale(24, 0.3),  // H3, section titles
-        '3xl': moderateScale(30, 0.3),  // H2
-        '4xl': moderateScale(36, 0.3),  // H1
-        '5xl': moderateScale(48, 0.3),  // Display text (rare)
-        '6xl': moderateScale(60, 0.3),  // Hero text (rare)
-    },
-    lineHeights: {
-        tight: 1.25,
-        normal: 1.5,
-        relaxed: 1.75,
-        loose: 2,
-    },
-    fontWeights: {
-        light: '300',
-        normal: '400',
-        medium: '500',
-        semibold: '600',
-        bold: '700',
-        extrabold: '800',
-    },
-    fontFamilies: {
-        sans: 'System',
-        mono: 'Courier',
-    },
 } as const;
 
 /**
@@ -251,12 +157,4 @@ export const breakpoints = {
     md: 768,
     lg: 1024,
     xl: 1280,
-} as const;
-
-/**
- * Layout Constants
- */
-export const layout = {
-    headerHeight: moderateVerticalScale(56),
-    screenPadding: spacing[4], // Chuẩn chung 16px (scaled)ß
 } as const;

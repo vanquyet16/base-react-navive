@@ -98,8 +98,8 @@ export const useLogin = () => {
         errorMessage: 'Đăng nhập thất bại',
         invalidateQueries,
         onSuccessCallback: (data) => {
-            // Set session với user data và tokens
-            const { user, tokens } = data;
+            // Set session với user data
+            const { user } = data;
             setSession({
                 isAuthenticated: true,
                 user,
@@ -203,21 +203,11 @@ export const useUpdateProfile = () => {
  * Refresh token
  */
 export const useRefreshToken = () => {
-    const { setSession } = useSessionActions();
-
     return useBaseMutation({
         mutationFn: authService.refreshToken,
         showSuccessToast: false,
         showErrorToast: false,
-        onSuccessCallback: (accessToken: string) => {
-            // Update tokens trong session
-            // Note: refreshToken service trả về string (new access token) hoặc object full tokens depending on implementation
-            // In auth.service.ts, refreshTokenInternal returns PROMISE<STRING> (access token)
-            // But we should update store mostly.
-            // Let's rely on tokenStore update inside service, here just update session state if needed
-            // Currently setSession takes partial update
-            // Token updated in disk by service, no need to update session store (which is RAM only now)
-
+        onSuccessCallback: (_accessToken: string) => {
         },
         // Không retry refresh token để tránh loop vô hạn
         retry: false,
@@ -257,7 +247,7 @@ export const useVerifyEmail = () => {
     const queryClient = useQueryClient();
 
     return useBaseMutation({
-        mutationFn: (token: string) => {
+        mutationFn: (_token: string) => {
             // Giả lập verifyEmail nếu chưa có trong service
             return Promise.resolve({ success: true });
         },

@@ -43,6 +43,8 @@ import { AppIcon, CustomText } from '@/components';
  * Swipe action configuration
  */
 export interface SwipeableAction {
+  key?: string;
+  id?: string;
   onPress: () => void;
   text?: string;
   icon?: string;
@@ -78,6 +80,7 @@ interface SwipeActionViewProps {
 }
 
 const SwipeActionView = memo<SwipeActionViewProps>(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ({ progress, action, direction, totalActions = 1, index = 0 }) => {
     const styles = useStyles();
 
@@ -140,6 +143,7 @@ interface RightSwipeActionsProps {
 
 const RightSwipeActions = memo<RightSwipeActionsProps>(
   ({ progress, action }) => {
+    const styles = useStyles();
     const actions = Array.isArray(action) ? action : [action];
     const totalWidth = actions.reduce(
       (sum, act) => sum + scale(act.width || 80),
@@ -147,10 +151,10 @@ const RightSwipeActions = memo<RightSwipeActionsProps>(
     );
 
     return (
-      <View style={{ flexDirection: 'row', width: totalWidth }}>
+      <View style={[styles.actionsRow, { width: totalWidth }]}>
         {actions.map((act, index) => (
           <SwipeActionView
-            key={act.text || act.icon || index}
+            key={act.key || act.id || act.text || act.icon || `right-act-${act.backgroundColor}`}
             progress={progress}
             action={act}
             direction="right"
@@ -175,6 +179,7 @@ interface LeftSwipeActionsProps {
 }
 
 const LeftSwipeActions = memo<LeftSwipeActionsProps>(({ progress, action }) => {
+  const styles = useStyles();
   const actions = Array.isArray(action) ? action : [action];
   const totalWidth = actions.reduce(
     (sum, act) => sum + scale(act.width || 80),
@@ -182,10 +187,10 @@ const LeftSwipeActions = memo<LeftSwipeActionsProps>(({ progress, action }) => {
   );
 
   return (
-    <View style={{ flexDirection: 'row', width: totalWidth }}>
+    <View style={[styles.actionsRow, { width: totalWidth }]}>
       {actions.map((act, index) => (
         <SwipeActionView
-          key={act.text || act.icon || index}
+          key={act.key || act.id || act.text || act.icon || `left-act-${act.backgroundColor}`}
           progress={progress}
           action={act}
           direction="left"
@@ -213,6 +218,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({
   const swipeableRef = useRef<React.ElementRef<typeof Swipeable>>(null);
 
   // Handle right action (only for single action long press fallback)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleRightAction = useCallback(() => {
     swipeableRef.current?.close();
     if (!Array.isArray(rightAction) && rightAction?.onPress) {
@@ -221,6 +227,7 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({
   }, [rightAction]);
 
   // Handle left action (only for single action long press fallback)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleLeftAction = useCallback(() => {
     swipeableRef.current?.close();
     if (!Array.isArray(leftAction) && leftAction?.onPress) {
@@ -373,6 +380,9 @@ const useStyles = createStyles(
       color: '#FFF',
       fontWeight: '600',
       marginTop: moderateVerticalScale(4),
+    },
+    actionsRow: {
+      flexDirection: 'row',
     },
   }),
   true,

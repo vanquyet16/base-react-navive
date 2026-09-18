@@ -2,7 +2,7 @@
 // ERROR HANDLER UTILITY - XỬ LÝ LỖI TẬP TRUNG VÀ CHUYÊN NGHIỆP
 // ============================================================================
 
-import { logger, logError } from './logger';
+import { logError } from './logger';
 import Toast from 'react-native-toast-message';
 
 const ERROR_MESSAGES = {

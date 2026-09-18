@@ -51,9 +51,9 @@ const AdvancedLazyScreen: React.FC<AdvancedLazyScreenProps> = ({
       setComponent(() => module.default);
       onLoadComplete?.();
     } catch (err) {
-      const error = err as Error;
-      setError(error);
-      onError?.(error);
+      const loadError = err as Error;
+      setError(loadError);
+      onError?.(loadError);
     } finally {
       setIsLoading(false);
     }

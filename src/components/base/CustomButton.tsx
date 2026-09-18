@@ -204,15 +204,12 @@ const CustomButtonBase: React.FC<CustomButtonProps> = ({
 export const CustomButton = memo(CustomButtonBase);
 export default CustomButton;
 
-/**
- * Styles
- */
-const useStyles = createStyles(theme => ({
+const useStyles = createStyles((theme, rs) => ({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: theme.radius.lg,
+    borderRadius: rs.radius(12),
   },
 
   content: {
@@ -222,7 +219,7 @@ const useStyles = createStyles(theme => ({
   },
 
   text: {
-    fontWeight: theme.typography.fontWeights.bold,
+    fontWeight: '700',
     textTransform: 'uppercase',
   },
 
@@ -232,15 +229,15 @@ const useStyles = createStyles(theme => ({
    */
   textOnly: {
     textTransform: 'none',
-    fontWeight: theme.typography.fontWeights.medium,
+    fontWeight: '500',
   },
 
   iconLeft: {
-    marginRight: theme.spacing[2],
+    marginRight: rs.horizontalGap(8),
   },
 
   iconRight: {
-    marginLeft: theme.spacing[2],
+    marginLeft: rs.horizontalGap(8),
   },
 
   /**
@@ -282,19 +279,19 @@ const useStyles = createStyles(theme => ({
    * Sizes (ignored when variant="text")
    */
   smContainer: {
-    paddingHorizontal: theme.spacing[3],
-    paddingVertical: theme.spacing[2],
-    minHeight: 36,
+    paddingHorizontal: rs.px(12),
+    paddingVertical: rs.py(8),
+    minHeight: rs.buttonHeight('sm'),
   },
   mdContainer: {
-    paddingHorizontal: theme.spacing[5],
-    paddingVertical: theme.spacing[3],
-    minHeight: 48,
+    paddingHorizontal: rs.px(20),
+    paddingVertical: rs.py(12),
+    minHeight: rs.buttonHeight('md'),
   },
   lgContainer: {
-    paddingHorizontal: theme.spacing[6],
-    paddingVertical: theme.spacing[4],
-    minHeight: 56,
+    paddingHorizontal: rs.px(24),
+    paddingVertical: rs.py(16),
+    minHeight: rs.buttonHeight('lg'),
   },
 
   /**

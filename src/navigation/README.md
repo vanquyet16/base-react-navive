@@ -1,186 +1,133 @@
-# Navigation Documentation
+# Hướng Dẫn Kiến Trúc Navigation (Senior Standard)
 
-> **Note:** This documentation covers the **legacy navigation configuration**. The project now uses a simpler AppNavigator pattern in `src/app/app-navigator.tsx`.
+Hệ thống điều hướng đã được tái cấu trúc theo mô hình **Declarative Routing** chuẩn của **React Navigation v7**, loại bỏ hoàn toàn tầng **Factory Pattern** và mô hình **God Component Header** (25 boolean flags) gây cồng kềnh, khó debug.
 
-## 📁 Current Structure
-
-```
-src/navigation/
-├── config/
-│   ├── navigationConfig.ts  # Screen configs (reference/legacy)
-│   └── index.ts
-├── factories/
-│   ├── screenFactory.ts    # Screen factory patterns (reference)
-│   └── index.ts
-├── MainTabs.tsx            # Bottom tabs (still in use)
-├── index.ts
-└── README.md              # This file
-```
-
-## ✅ Active Navigation
-
-### Main Navigation (New)
-
-The app now uses `src/app/app-navigator.tsx` with a simpler structure:
-
-```typescript
-// src/app/app-navigator.tsx
-const AppNavigator = () => {
-  const isAuthenticated = useIsAuthenticated();
-
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {isAuthenticated ? (
-        <Stack.Screen name="Main" component={MainNavigator} />
-      ) : (
-        <Stack.Screen name="Auth" component={AuthNavigator} />
-      )}
-    </Stack.Navigator>
-  );
-};
-```
-
-### Bottom Tabs (Active)
-
-```typescript
-// src/navigation/MainTabs.tsx
-const MainTabs = () => {
-  return (
-    <Tab.Navigator tabBar={CustomBottomTabBar}>
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
-      <Tab.Screen name="Settings" component={SettingsScreen} />
-      <Tab.Screen name="ResponsiveDemo" component={ResponsiveDemoScreen} />
-    </Tab.Navigator>
-  );
-};
-```
-
-## ❌ Removed/Deprecated
-
-The following files have been removed as part of the refactoring:
-
-- ~~`RootNavigator.tsx`~~ → Replaced by `app/app-navigator.tsx`
-- ~~`AuthStack.tsx`~~ → Simplified auth navigation in AppNavigator
-- ~~`MainStack.tsx`~~ → Simplified main navigation in AppNavigator
-- ~~`DrawerNavigator.tsx`~~ → Removed, using simpler stack navigation
-
-## 📚 Reference Files (Keep for Patterns)
-
-### Navigation Config
-
-`config/navigationConfig.ts` contains:
-
-- Screen configurations with lazy loading
-- Navigation keys constants
-- Header configuration patterns
-- Screen metadata
-
-**Use case:** Reference for screen config patterns when adding new screens.
-
-### Screen Factory
-
-`factories/screenFactory.ts` contains:
-
-- Factory pattern for creating screen wrappers
-- MainLayout integration patterns
-- Batch creation utilities
-
-**Use case:** Reference for creating screen wrapper patterns.
-
-## 🆕 Adding New Screens
-
-### Old Way (Deprecated)
-
-```typescript
-// In navigationConfig.ts
-MAIN_STACK_SCREENS: {
-  NewScreen: {
-    title: 'New Screen',
-    component: () => import('@/screens/NewScreen'),
-    // ...config
-  }
-}
-```
-
-### New Way (Current)
-
-1. Create screen component in `src/features/my-feature/screens/`
-2. Add to AppNavigator directly:
-
-```typescript
-// src/app/app-navigator.tsx
-<Stack.Screen
-  name="NewScreen"
-  component={NewScreen}
-  options={{ title: 'New Screen' }}
-/>
-```
-
-Or use in tabs:
-
-```typescript
-// src/navigation/MainTabs.tsx
-<Tab.Screen
-  name="NewTab"
-  component={NewScreen}
-  options={{
-    tabBarLabel: 'New',
-    tabBarIcon: ({ color }) => <Icon name="star" color={color} />,
-  }}
-/>
-```
-
-## 🔧 Migration Guide
-
-If you need to migrate old screen configs to new pattern:
-
-1. **Find screen config** in `config/navigationConfig.ts`
-2. **Extract component import** and metadata
-3. **Add to AppNavigator** with proper stack/tabs
-4. **Remove from config** (optional, can keep as reference)
-
-Example:
-
-```typescript
-// Old config
-{
-  ProductScreen: {
-    title: 'Products',
-    component: () => import('@/features/example/screens/ProductScreen'),
-    showHeader: true,
-    headerType: 'minimal',
-  }
-}
-
-// New implementation
-<Stack.Screen
-  name="ProductScreen"
-  component={ProductScreen}
-  options={{
-    title: 'Products',
-    headerShown: true,
-  }}
-/>
-```
-
-## 🎯 Best Practices
-
-1. ✅ Use AppNavigator for new screens
-2. ✅ Keep screens in feature folders
-3. ✅ Use type-safe navigation params
-4. ✅ Leverage React Navigation v6 features
-5. ⚠️ Reference old config files only for patterns
-6. ❌ Don't add new screens to legacy config files
-
-## 🔗 Related Documentation
-
-- [Main README](../../README.md)
-- [Features Organization](../features/README.md)
-- [App Bootstrap](../app/README.md)
+> 📖 **Xem hướng dẫn chi tiết đầy đủ tại**: [NAVIGATION_GUIDE.md](../../NAVIGATION_GUIDE.md)
 
 ---
 
-**Status:** Legacy documentation - kept for reference patterns only  
-**Last Updated:** 2026-01-16  
-**Maintained by:** vanquyet16/base-react-native
+## 📁 Cấu Trúc Thư Mục
+
+```
+src/navigation/
+├── navigators/
+│   ├── AuthStackNavigator.tsx      # Luồng Login, Register
+│   ├── MainStackNavigator.tsx      # Luồng Main App (Tabs + Screens)
+│   └── MainDrawer.tsx              # Side Drawer Navigator (bọc trực tiếp MainStack)
+├── config/
+│   └── navigationConfig.ts         # Constants NAVIGATION_KEYS
+├── MainTabs.tsx                    # Bottom Tabs chính
+└── index.ts
+```
+
+---
+
+## 🚀 Cách Thêm Màn Hình Mới (Quy Trình Chuẩn 3 Bước)
+
+### Bước 1: Khai báo Type trong `src/shared/types/navigation.types.ts`
+
+Mọi màn hình đều phải có type an toàn:
+
+```typescript
+export type MainStackParamList = {
+  MainTabsScreen: undefined;
+  CreateFeedbackScreen: undefined;
+  SearchScreen: undefined;
+  ProfileScreen: undefined;
+  // 👉 Thêm màn hình mới tại đây:
+  OrderDetailScreen: { orderId: string };
+};
+```
+
+---
+
+### Bước 2: Tạo Screen Component trong Feature Folder
+
+Sử dụng `ScreenContainer` hoặc `MainLayout` kết hợp với `AppHeader` theo **Slot Pattern**:
+
+```tsx
+import React, { memo } from 'react';
+import { View } from 'react-native';
+import { MainLayout, AppHeader } from '@/components/layout';
+import { CustomText } from '@/components';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { MainStackParamList } from '@/shared/types/navigation.types';
+
+type Props = NativeStackScreenProps<MainStackParamList, 'OrderDetailScreen'>;
+
+export const OrderDetailScreen: React.FC<Props> = memo(({ route, navigation }) => {
+  const { orderId } = route.params;
+
+  return (
+    <MainLayout
+      headerNode={
+        <AppHeader
+          title={`Đơn hàng #${orderId}`}
+          leftAction="back"
+          rightNode={
+            <AppHeader.Action
+              icon="share-variant"
+              iconType="material"
+              onPress={() => console.log('Share')}
+            />
+          }
+        />
+      }
+    >
+      <View>
+        <CustomText>Chi tiết đơn hàng {orderId}</CustomText>
+      </View>
+    </MainLayout>
+  );
+});
+
+OrderDetailScreen.displayName = 'OrderDetailScreen';
+export default OrderDetailScreen;
+```
+
+---
+
+### Bước 3: Đăng ký Screen vào `MainStackNavigator.tsx`
+
+Khai báo trực tiếp bằng thẻ `<MainStack.Screen>`:
+
+```tsx
+// src/navigation/navigators/MainStackNavigator.tsx
+<MainStack.Navigator screenOptions={{ headerShown: false }}>
+  {/* Các screen khác */}
+  <MainStack.Screen
+    name="OrderDetailScreen"
+    component={OrderDetailScreen}
+  />
+</MainStack.Navigator>
+```
+
+---
+
+## 🎯 Chuẩn Thiết Kế Header (`AppHeader`)
+
+Không dùng `showSearch`, `showNotification`, `showShare` (Boolean Prop Proliferation). Sử dụng **Slot Pattern**:
+
+```tsx
+<AppHeader
+  title="Tiêu đề màn hình"
+  subtitle="Mô tả phụ (tùy chọn)"
+  leftAction="back" // 'back' | 'menu' | 'none' hoặc Custom ReactNode
+  onLeftPress={() => navigation.goBack()}
+  rightNode={
+    <>
+      <AppHeader.Action
+        icon="magnify"
+        iconType="material"
+        onPress={handleSearch}
+      />
+      <AppHeader.Action
+        icon="bell-outline"
+        iconType="material"
+        badgeCount={3}
+        onPress={handleNotification}
+      />
+    </>
+  }
+/>
+```

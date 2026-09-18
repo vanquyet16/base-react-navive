@@ -1,6 +1,6 @@
 declare module '@shopify/flash-list' {
-    import { Component, ReactNode } from 'react';
-    import { ScrollViewProps, StyleProp, ViewStyle } from 'react-native';
+    import { Component } from 'react';
+    import { ScrollViewProps } from 'react-native';
 
     export interface ContentStyle {
         paddingTop?: number;

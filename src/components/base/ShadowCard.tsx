@@ -1,10 +1,9 @@
 import React, { memo } from 'react';
 import { View, ViewStyle, StyleProp } from 'react-native';
-import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import {
   moderateScale,
-  scale,
+  
   moderateVerticalScale,
 } from 'react-native-size-matters';
 
@@ -26,7 +25,6 @@ export interface ShadowCardProps {
  */
 export const ShadowCard: React.FC<ShadowCardProps> = memo(
   ({ children, style }) => {
-    const theme = useTheme();
     const styles = useStyles();
 
     return <View style={[styles.container, style]}>{children}</View>;

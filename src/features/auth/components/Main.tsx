@@ -5,15 +5,11 @@ import {
   CustomButton,
   CustomText,
   FormInput,
-  SpacerLg,
-  LabelDivider,
-  SpacerXl,
   Spacer,
   SpacerSm,
   SpacerMd,
 } from '@/components';
 import {
-  SCREEN_PADDING,
   useBaseForm,
   ERROR_MESSAGES,
   VALIDATION,
@@ -21,17 +17,14 @@ import {
 import { useLogin } from '../hooks';
 import { LoginRequest } from '@/shared/types/domain/auth';
 import { createStyles } from '@/shared/theme/create-styles';
-import { useAuthNavigation } from '@/shared/hooks/useNavigation'; // ← Custom hook với autocomplete
+import { useAuthNavigation } from '@/shared/hooks/useNavigation';
 import { AppIcon } from '@/components';
-import { useSessionActions } from '@/shared/store/selectors';
 
 const Main = memo(() => {
   const [showPassword, setShowPassword] = useState(false);
   const styles = useStyles();
   const loginMutation = useLogin();
-  // Navigation với autocomplete - giờ gọn hơn và reusable!
   const navigation = useAuthNavigation();
-  const { setSession } = useSessionActions();
 
   const {
     control,
@@ -160,7 +153,7 @@ const Main = memo(() => {
         <CustomText variant="bodySmall" style={styles.registerText}>
           {' Bạn chưa có tài khoản? '}
         </CustomText>
-        <CustomButton title="Đăng ký ngay" variant="text" onPress={() => {}} />
+        <CustomButton title="Đăng ký ngay" variant="text" onPress={navigateToRegister} />
       </View>
     </WingBlank>
   );
@@ -168,54 +161,51 @@ const Main = memo(() => {
 
 export default Main;
 
-const useStyles = createStyles(
-  theme => ({
-    rdAvoidingView: {
-      flex: 1,
-      backgroundColor: theme.colors.background,
-    },
-    container: {
-      backgroundColor: theme.colors.white,
-    },
-    scrollContent: {
-      flexGrow: 1,
-    },
+const useStyles = createStyles((theme, rs) => ({
+  rdAvoidingView: {
+    flex: 1,
+    backgroundColor: theme.colors.background,
+  },
+  container: {
+    backgroundColor: theme.colors.white,
+  },
+  scrollContent: {
+    flexGrow: 1,
+  },
 
-    title: {
-      fontWeight: 'bold',
-    },
-    description: {
-      color: theme.colors.textSecondary,
-    },
-    forgotPasswordContainer: {
-      alignItems: 'flex-end',
-      marginTop: theme.spacing[1],
-    },
-    forgotPasswordText: {
-      color: theme.colors.primary, // Orange/Primary
-      fontWeight: 'bold',
-    },
-    passwordLabelContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: theme.spacing[2],
-      paddingHorizontal: theme.spacing[1],
-    },
-    label: {
-      fontSize: theme.typography.fontSizes.xs,
-      fontWeight: theme.typography.fontWeights.bold,
-      color: theme.colors.textSecondary,
-    },
-    registerContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    registerText: {
-      color: theme.colors.textSecondary,
-      textAlign: 'center',
-    },
-  }),
-  true,
-);
+  title: {
+    fontWeight: 'bold',
+  },
+  description: {
+    color: theme.colors.textSecondary,
+  },
+  forgotPasswordContainer: {
+    alignItems: 'flex-end',
+    marginTop: rs.verticalScale(4),
+  },
+  forgotPasswordText: {
+    color: theme.colors.primary, // Orange/Primary
+    fontWeight: 'bold',
+  },
+  passwordLabelContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: rs.verticalScale(8),
+    paddingHorizontal: rs.px(4),
+  },
+  label: {
+    fontSize: rs.fontSize(12),
+    fontWeight: 'bold',
+    color: theme.colors.textSecondary,
+  },
+  registerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  registerText: {
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+  },
+}));

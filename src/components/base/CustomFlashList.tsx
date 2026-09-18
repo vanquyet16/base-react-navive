@@ -1,13 +1,12 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback } from 'react';
 import {
   View,
   ActivityIndicator,
-  StyleSheet,
   Text,
-  ViewStyle,
+  type ViewStyle,
 } from 'react-native';
 import Animated from 'react-native-reanimated';
-import { FlashList, FlashListProps, ContentStyle } from '@shopify/flash-list';
+import { FlashList, FlashListProps } from '@shopify/flash-list';
 import { useTheme } from '@/shared/theme/use-theme';
 import { moderateVerticalScale } from '@/shared/utils/sizeMatters';
 import { createStyles } from '@/shared/theme/create-styles';
@@ -88,24 +87,21 @@ export function CustomFlashList<T>(props: CustomFlashListProps<T>) {
   );
 }
 
-const useStyles = createStyles(
-  theme => ({
-    footer: {
-      paddingVertical: moderateVerticalScale(20),
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    emptyContainer: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingTop: moderateVerticalScale(40),
-    },
-    emptyText: {
-      color: theme.colors.textSecondary,
-      fontSize: theme.typography.fontSizes.base,
-      marginTop: moderateVerticalScale(8),
-    },
-  }),
-  true,
-);
+const useStyles = createStyles((theme, rs) => ({
+  footer: {
+    paddingVertical: rs.py(20),
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: rs.verticalScale(40),
+  },
+  emptyText: {
+    color: theme.colors.textSecondary,
+    fontSize: rs.fontSize(16),
+    marginTop: rs.verticalScale(8),
+  },
+}));

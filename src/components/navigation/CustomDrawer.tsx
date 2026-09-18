@@ -10,21 +10,20 @@ import {
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import { useSessionActions } from '@/shared/store/selectors';
-import { NAVIGATION_KEYS } from '@/navigation/config';
-import { ROOT_STACKS } from '@/shared/constants/routes';
-import type { DrawerStackParamList } from '@/shared/types/navigation.types';
+import type { MainStackParamList } from '@/shared/types/navigation.types';
+import { NAVIGATION_KEYS } from '@/navigation/config/navigationConfig';
 
 type DrawerMenuItem = {
   label: string;
   icon: string;
-  screen: keyof DrawerStackParamList;
+  screen: keyof MainStackParamList;
 };
 
 const menuItems: DrawerMenuItem[] = [
   {
     label: 'Trang chủ',
     icon: 'home',
-    screen: NAVIGATION_KEYS.DRAWER_STACK.MAIN,
+    screen: NAVIGATION_KEYS.MAIN_STACK.MAIN_TABS,
   },
 ];
 
@@ -47,11 +46,8 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = ({ navigation, ...pr
   }, [clearSession]);
 
   const handleNavigation = useCallback(
-    (screenName: keyof DrawerStackParamList) => {
-      // Drawer structure: Drawer -> DrawerStack -> (shortcut) -> MainStackNavigator
-      navigation.navigate(ROOT_STACKS.DRAWER_STACK, {
-        screen: screenName,
-      });
+    (screenName: keyof MainStackParamList) => {
+      navigation.navigate(screenName as any);
       navigation.closeDrawer();
     },
     [navigation],

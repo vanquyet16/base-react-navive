@@ -14,6 +14,7 @@ const PREFIX = '@rn_base:';
 export const AUTH_KEYS = {
     ACCESS_TOKEN: `${PREFIX}access_token`,
     REFRESH_TOKEN: `${PREFIX}refresh_token`,
+    TOKEN_EXPIRES_AT: `${PREFIX}token_expires_at`,
     USER_DATA: `${PREFIX}user_data`,
     BIOMETRIC_ENABLED: `${PREFIX}biometric_enabled`,
 } as const;

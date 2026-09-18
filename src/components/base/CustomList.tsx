@@ -6,7 +6,6 @@
 
 import React, { useMemo, memo } from 'react';
 import { List, type ListProps } from '@ant-design/react-native';
-import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 
 interface CustomListProps extends ListProps {
@@ -29,7 +28,6 @@ export const CustomList: React.FC<CustomListProps> = ({
   style,
   ...props
 }) => {
-  const theme = useTheme();
   const styles = useStyles();
 
   // Memoize combined list styles
@@ -46,14 +44,11 @@ export const CustomList: React.FC<CustomListProps> = ({
  */
 export default memo(CustomList);
 
-const useStyles = createStyles(
-  theme => ({
-    list: {
-      backgroundColor: theme.colors.background,
-    },
-    padded: {
-      padding: theme.spacing[4],
-    },
-  }),
-  true,
-);
+const useStyles = createStyles((theme, rs) => ({
+  list: {
+    backgroundColor: theme.colors.background,
+  },
+  padded: {
+    padding: rs.padding(16),
+  },
+}));

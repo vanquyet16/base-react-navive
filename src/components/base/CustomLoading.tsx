@@ -56,20 +56,17 @@ export const CustomLoading: React.FC<CustomLoadingProps> = ({
 
 export default memo(CustomLoading);
 
-const useStyles = createStyles(
-  theme => ({
-    container: {
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: theme.spacing[2],
-    },
-    fullScreen: {
-      ...StyleSheet.absoluteFillObject,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'rgba(255, 255, 255, 0.7)',
-      zIndex: 9999,
-    },
-  }),
-  true,
-);
+const useStyles = createStyles((_theme, rs) => ({
+  container: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: rs.padding(8),
+  },
+  fullScreen: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    zIndex: 9999,
+  },
+}));

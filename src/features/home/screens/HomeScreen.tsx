@@ -1,62 +1,53 @@
-import React, { FC, memo, useMemo } from 'react';
+import React, { FC, memo } from 'react';
 import { View } from 'react-native';
-import {
-  useSharedValue,
-  useAnimatedScrollHandler,
-} from 'react-native-reanimated';
-import { useSessionActions } from '@/shared/store/selectors';
-import { useMainNavigation } from '@/shared/hooks/useNavigation';
+import { CustomText } from '@/components';
 import { createStyles } from '@/shared/theme/create-styles';
-import HeaderHome from '../components/HeaderHome';
-import ContentHome from '../components/ContentHome';
-import { moderateVerticalScale } from 'react-native-size-matters';
 
+/**
+ * HomeScreen - Pure Screen View
+ * Trách nhiệm: Render nội dung UI của Home với khả năng thích ứng màn hình (Phone + iPad/Tablet).
+ * Tầng Navigation (MainTabs) phụ trách bọc MainLayout và Header.
+ */
 const HomeScreen: FC = memo(() => {
-  const navigation = useMainNavigation();
-  const { clearSession } = useSessionActions();
   const styles = useStyles();
-
-  const scrollY = useSharedValue(0);
-
-  const scrollHandler = useAnimatedScrollHandler(event => {
-    scrollY.value = event.contentOffset.y;
-  });
-
-  const dataHome = useMemo(() => [], []);
 
   return (
     <View style={styles.container}>
-      <HeaderHome scrollY={scrollY} />
-      <ContentHome
-        dataHome={dataHome}
-        onScroll={scrollHandler}
-        scrollY={scrollY}
-      />
+      <View style={styles.welcomeCard}>
+        <CustomText variant="h6" weight="bold">
+          Xin chào! 👋
+        </CustomText>
+        <CustomText variant="body" color="secondary" style={styles.subtitle}>
+          Chào mừng bạn đến với ứng dụng.
+        </CustomText>
+      </View>
     </View>
   );
 });
 
+HomeScreen.displayName = 'HomeScreen';
+
 export default HomeScreen;
 
-const useStyles = createStyles(
-  theme => ({
-    container: {
-      flex: 1,
-      paddingBottom: moderateVerticalScale(50),
-    },
-    scroll: {
-      flex: 1,
-    },
-    scrollContent: {
-      paddingBottom: theme.spacing[6],
-
-      flexGrow: 1, // ✅ Fill remaining space
-    },
-    content: {
-      flex: 1,
-      paddingHorizontal: theme.spacing[4], // Thay thế WingBlank
-      paddingVertical: theme.spacing[4],
-    },
-  }),
-  true,
-);
+const useStyles = createStyles((theme, rs) => ({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: rs.px(16),
+    paddingVertical: rs.py(16),
+  },
+  welcomeCard: {
+    width: rs.containerWidth,
+    padding: rs.padding(16),
+    borderRadius: rs.radius(12),
+    backgroundColor: theme.colors.white,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+  },
+  subtitle: {
+    marginTop: rs.verticalGap(8),
+  },
+}));

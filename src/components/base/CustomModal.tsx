@@ -5,7 +5,7 @@
  * Supports 'center' (default) and 'bottom' (popup) modes.
  */
 
-import React, { useMemo, memo } from 'react';
+import React, {  memo } from 'react';
 import {
   StyleSheet,
   ViewStyle,
@@ -47,6 +47,65 @@ interface CustomModalProps extends Partial<ModalProps> {
   contentContainerStyle?: StyleProp<ViewStyle>;
 }
 
+const getEffectivePosition = (
+  type: string,
+  position?: 'center' | 'bottom' | 'top',
+): 'center' | 'bottom' | 'top' => {
+  if (position) return position;
+  if (type === 'popup') return 'bottom';
+  if (type === 'toast') return 'top';
+  return 'center';
+};
+
+const getModalAnimations = (position: 'center' | 'bottom' | 'top') => {
+  if (position === 'bottom') {
+    return { in: 'slideInUp' as const, out: 'slideOutDown' as const };
+  }
+  if (position === 'top') {
+    return { in: 'slideInDown' as const, out: 'slideOutUp' as const };
+  }
+  return { in: 'fadeIn' as const, out: 'fadeOut' as const };
+};
+
+interface ModalDefaultHeaderProps {
+  title?: string;
+  isPopup: boolean;
+  onClose?: () => void;
+  iconColor: string;
+}
+
+const ModalDefaultHeader: React.FC<ModalDefaultHeaderProps> = React.memo(
+  ({ title, isPopup, onClose, iconColor }) => (
+    <View style={styles.header}>
+      {isPopup && <View style={styles.dragHandle} />}
+      <View style={styles.headerRow}>
+        {title ? (
+          <CustomText variant="h6" weight="bold">
+            {title}
+          </CustomText>
+        ) : (
+          <View />
+        )}
+        <Pressable
+          onPress={onClose}
+          style={({ pressed }) => [
+            styles.closeBtn,
+            { opacity: pressed ? 0.7 : 1 },
+          ]}
+        >
+          <AppIcon
+            name="x"
+            size={moderateScale(20)}
+            color={iconColor}
+          />
+        </Pressable>
+      </View>
+    </View>
+  ),
+);
+
+ModalDefaultHeader.displayName = 'ModalDefaultHeader';
+
 const CustomModalBase: React.FC<CustomModalProps> = ({
   visible,
   onClose,
@@ -63,20 +122,8 @@ const CustomModalBase: React.FC<CustomModalProps> = ({
 }) => {
   const theme = useTheme();
 
-  // Determine effective position based on type
-  const effectivePosition = useMemo(() => {
-    if (position) return position;
-    switch (type) {
-      case 'popup':
-        return 'bottom';
-      case 'toast':
-        return 'top';
-      case 'fullscreen':
-        return 'center';
-      default:
-        return 'center';
-    }
-  }, [type, position]);
+  const effectivePosition = getEffectivePosition(type, position);
+  const animations = getModalAnimations(effectivePosition);
 
   // Modal (Wrapper) Style - Controls Position
   const modalStyle = [
@@ -98,28 +145,7 @@ const CustomModalBase: React.FC<CustomModalProps> = ({
     contentContainerStyle,
   ];
 
-  // Determine animations
-  const animationIn = useMemo(() => {
-    switch (effectivePosition) {
-      case 'bottom':
-        return 'slideInUp';
-      case 'top':
-        return 'slideInDown';
-      default:
-        return 'fadeIn';
-    }
-  }, [effectivePosition]);
-
-  const animationOut = useMemo(() => {
-    switch (effectivePosition) {
-      case 'bottom':
-        return 'slideOutDown';
-      case 'top':
-        return 'slideOutUp';
-      default:
-        return 'fadeOut';
-    }
-  }, [effectivePosition]);
+  const showDefaultHeader = (title || type === 'popup') && !header;
 
   return (
     <Modal
@@ -132,10 +158,8 @@ const CustomModalBase: React.FC<CustomModalProps> = ({
       avoidKeyboard
       useNativeDriver
       hideModalContentWhileAnimating
-      animationIn={animationIn || (type === 'popup' ? 'slideInUp' : 'fadeIn')}
-      animationOut={
-        animationOut || (type === 'popup' ? 'slideOutDown' : 'fadeOut')
-      }
+      animationIn={animations.in}
+      animationOut={animations.out}
       animationInTiming={300}
       animationOutTiming={250}
       backdropTransitionInTiming={300}
@@ -144,34 +168,13 @@ const CustomModalBase: React.FC<CustomModalProps> = ({
       {...props}
     >
       <View style={containerStyle}>
-        {/* Built-in Header for Popup/Bottom Sheet */}
-        {(title || type === 'popup') && !header && (
-          <View style={styles.header}>
-            {type === 'popup' && <View style={styles.dragHandle} />}
-            <View style={styles.headerRow}>
-              {title ? (
-                <CustomText variant="h6" weight="bold">
-                  {title}
-                </CustomText>
-              ) : (
-                <View />
-              )}
-
-              <Pressable
-                onPress={onClose}
-                style={({ pressed }) => [
-                  styles.closeBtn,
-                  { opacity: pressed ? 0.7 : 1 },
-                ]}
-              >
-                <AppIcon
-                  name="x"
-                  size={moderateScale(20)}
-                  color={theme.colors.textSecondary}
-                />
-              </Pressable>
-            </View>
-          </View>
+        {showDefaultHeader && (
+          <ModalDefaultHeader
+            title={title}
+            isPopup={type === 'popup'}
+            onClose={onClose}
+            iconColor={theme.colors.textSecondary}
+          />
         )}
 
         {/* Custom Header Injection */}

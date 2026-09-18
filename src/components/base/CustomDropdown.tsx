@@ -4,11 +4,6 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { CustomText } from '@/components/base';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
-import {
-  moderateScale,
-  moderateVerticalScale,
-  scale,
-} from 'react-native-size-matters';
 
 export interface DropdownOption {
   label: string;
@@ -139,28 +134,26 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = memo(
   },
 );
 
-const useStyles = createStyles(theme => ({
+const useStyles = createStyles((theme, rs) => ({
   container: {
-    // marginBottom: moderateVerticalScale(12),
     width: '100%',
   },
   label: {
-    fontSize: theme.typography.fontSizes.xs,
-    fontWeight: theme.typography.fontWeights.bold,
+    fontSize: rs.fontSize(12),
+    fontWeight: '700',
     textTransform: 'uppercase',
     color: theme.colors.textSecondary,
-    marginBottom: moderateVerticalScale(8),
-    marginLeft: scale(4),
+    marginBottom: rs.verticalGap(8),
+    marginLeft: rs.horizontalGap(4),
   },
   dropdown: {
-    minHeight: moderateVerticalScale(40),
+    minHeight: rs.inputHeight('sm'),
     backgroundColor: theme.colors.inputBackground,
     borderWidth: 1.5,
     borderColor: theme.colors.inputBorder,
-    borderRadius: theme.radius.md,
-    paddingHorizontal: scale(12),
-    paddingVertical: theme.spacing[2], // Match CustomInput (was 2.5)
-    // Match CustomInput shadow
+    borderRadius: rs.radius(8),
+    paddingHorizontal: rs.px(12),
+    paddingVertical: rs.py(8),
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
@@ -179,7 +172,7 @@ const useStyles = createStyles(theme => ({
   },
   dropdownError: {
     borderColor: theme.colors.error,
-    borderWidth: moderateScale(1),
+    borderWidth: 1,
   },
   dropdownDisabled: {
     backgroundColor: theme.colors.backgroundSecondary,
@@ -188,43 +181,43 @@ const useStyles = createStyles(theme => ({
   dropdownContainer: {
     backgroundColor: theme.colors.background,
     borderColor: theme.colors.border,
-    borderRadius: theme.radius.md,
+    borderRadius: rs.radius(8),
     ...theme.shadows.md,
-    paddingVertical: moderateVerticalScale(4),
+    paddingVertical: rs.verticalGap(4),
   },
   placeholderStyle: {
-    fontSize: theme.typography.fontSizes.xs,
+    fontSize: rs.fontSize(12),
     color: theme.colors.textTertiary,
   },
   selectedTextStyle: {
-    fontSize: theme.typography.fontSizes.xs,
+    fontSize: rs.fontSize(12),
     color: theme.colors.text,
-    fontWeight: theme.typography.fontWeights.medium,
+    fontWeight: '500',
   },
   iconStyle: {
-    width: 20,
-    height: 20,
+    width: rs.scale(20),
+    height: rs.scale(20),
     tintColor: theme.colors.textSecondary,
   },
   inputSearchStyle: {
-    height: 40,
-    fontSize: 14,
+    height: rs.inputHeight('sm'),
+    fontSize: rs.fontSize(14),
     color: theme.colors.text,
     borderColor: theme.colors.border,
-    borderRadius: theme.radius.sm,
+    borderRadius: rs.radius(4),
   },
   itemTextStyle: {
     color: theme.colors.text,
-    fontSize: theme.typography.fontSizes.xs,
+    fontSize: rs.fontSize(12),
   },
   errorText: {
     color: theme.colors.error,
-    marginTop: moderateVerticalScale(4),
-    marginLeft: scale(4),
-    fontSize: theme.typography.fontSizes.xs,
+    marginTop: rs.verticalGap(4),
+    marginLeft: rs.horizontalGap(4),
+    fontSize: rs.fontSize(12),
   },
   loadingFooter: {
-    padding: moderateVerticalScale(8),
+    padding: rs.padding(8),
     alignItems: 'center',
     justifyContent: 'center',
   },

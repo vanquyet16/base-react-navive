@@ -1,32 +1,16 @@
-import React, { useCallback, useState, memo } from 'react';
-import { FaceIdIcon } from '@/assets/icons';
+import React, { memo } from 'react';
 import {
   View,
-  StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Button, Icon, WhiteSpace, WingBlank } from '@ant-design/react-native';
-import { SCREEN_PADDING, ERROR_MESSAGES, VALIDATION } from '@/shared/constants';
-import FormInput from '@/components/form/FormInput';
-import {
-  CustomButton,
-  LabelDivider,
-  LoginOther,
-  Logo,
-  Spacer,
-  SpacerLg,
-  SpacerSm,
-} from '@/components/base';
-import { useLogin } from '../hooks';
-import { moderateScale, moderateVerticalScale, useBaseForm } from '@/shared';
-import { useTheme } from '@/shared/theme/use-theme';
+import { moderateScale, moderateVerticalScale } from 'react-native-size-matters';
 import { createStyles } from '@/shared/theme/create-styles';
 import Header from '../components/Header';
-import { spacing } from '@/shared/theme/tokens';
 import Main from '../components/Main';
 import Footer from '../components/Footer';
+import { LabelDivider, Spacer } from '@/components/base';
 
 const LoginScreen = memo(() => {
   const styles = useStyles();

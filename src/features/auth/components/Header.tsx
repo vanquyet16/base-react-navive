@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { ImageBackground, View } from 'react-native';
-import { moderateScale, scale, verticalScale } from 'react-native-size-matters';
-import { CustomText, Logo, Spacer, SpacerLg } from '@/components';
+import { moderateScale, verticalScale } from 'react-native-size-matters';
+import { CustomText, Logo, SpacerLg } from '@/components';
 import { createStyles } from '@/shared/theme/create-styles';
 
 /**

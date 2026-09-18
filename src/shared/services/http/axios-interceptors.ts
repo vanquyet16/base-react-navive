@@ -15,13 +15,13 @@ import type {
 import type { HttpRequestConfig } from './http-types';
 import { createHttpError } from './http-error';
 import { HTTP_STATUS } from '@/shared/constants/http';
+import { logger } from '@/shared/utils/logger';
 
 /**
  * Token storage - sẽ được inject từ auth service
  * Trade-off: Circular dependency avoidance bằng function injection
  */
 let getAccessToken: (() => Promise<string | null> | string | null) | null = null;
-let getRefreshToken: (() => Promise<string | null> | string | null) | null = null;
 let refreshTokenFn: (() => Promise<string> | string) | null = null;
 let onTokenRefreshFailed: (() => void) | null = null;
 
@@ -31,12 +31,11 @@ let onTokenRefreshFailed: (() => void) | null = null;
  */
 export const setupTokenHandlers = (handlers: {
     getAccessToken: () => Promise<string | null> | string | null;
-    getRefreshToken: () => Promise<string | null> | string | null;
+    getRefreshToken?: () => Promise<string | null> | string | null;
     refreshToken: () => Promise<string> | string;
     onTokenRefreshFailed: () => void;
 }) => {
     getAccessToken = handlers.getAccessToken;
-    getRefreshToken = handlers.getRefreshToken;
     refreshTokenFn = handlers.refreshToken;
     onTokenRefreshFailed = handlers.onTokenRefreshFailed;
 };
@@ -86,7 +85,7 @@ export const registerInterceptors = (instance: AxiosInstance): void => {
 
             // Log request trong DEV mode
             if (__DEV__) {
-                console.log(`[HTTP Request] ${config.method?.toUpperCase()} ${config.url}`, {
+                logger.debug(`[HTTP Request] ${config.method?.toUpperCase()} ${config.url}`, {
                     params: config.params,
                     data: config.data,
                     headers: config.headers,
@@ -98,7 +97,7 @@ export const registerInterceptors = (instance: AxiosInstance): void => {
         (error: AxiosError) => {
             // Request setup error
             if (__DEV__) {
-                console.error('[HTTP Request Error]', error);
+                logger.error('[HTTP Request Error]', error);
             }
             return Promise.reject(createHttpError(error));
         },
@@ -109,7 +108,7 @@ export const registerInterceptors = (instance: AxiosInstance): void => {
         (response: AxiosResponse) => {
             // Success response - log trong DEV
             if (__DEV__) {
-                console.log(`[HTTP Response] ${response.config.url}`, {
+                logger.debug(`[HTTP Response] ${response.config.url}`, {
                     status: response.status,
                     data: response.data,
                 });
@@ -122,7 +121,7 @@ export const registerInterceptors = (instance: AxiosInstance): void => {
 
             // Log error trong DEV
             if (__DEV__) {
-                console.error('[HTTP Response Error]', {
+                logger.error('[HTTP Response Error]', {
                     url: error.config?.url,
                     status: error.response?.status,
                     message: error.message,

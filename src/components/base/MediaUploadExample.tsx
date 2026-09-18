@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { MediaUploadButton } from '@/components/base';

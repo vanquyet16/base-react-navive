@@ -78,7 +78,7 @@ export class PdfUtils {
     static async fileExists(filePath: string): Promise<boolean> {
         try {
             return await ReactNativeBlobUtil.fs.exists(filePath);
-        } catch (error) {
+        } catch {
             return false;
         }
     }

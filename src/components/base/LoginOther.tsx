@@ -1,9 +1,8 @@
 import React, { memo } from 'react';
-import { StyleSheet, Pressable, View } from 'react-native';
+import {  Pressable, View } from 'react-native';
 import { createStyles } from '@/shared/theme/create-styles';
 import { useTheme } from '@/shared/theme/use-theme';
 import { CustomText } from '@/components/base/CustomText';
-import { moderateScale } from 'react-native-size-matters';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { WingBlank } from '@ant-design/react-native';
 
@@ -82,7 +81,7 @@ const LoginOther: React.FC<LoginOtherProps> = ({
   );
 };
 
-const useStyles = createStyles(theme => ({
+const useStyles = createStyles((theme, rs) => ({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -93,9 +92,9 @@ const useStyles = createStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    height: moderateScale(50),
+    height: rs.scale(50),
     backgroundColor: theme.colors.background,
-    borderRadius: 16, // Match input radius
+    borderRadius: rs.radius(16), // Match input radius
     borderWidth: 1.5,
     borderColor: '#E5E7EB', // Gray-200
     // Shadow
@@ -107,7 +106,7 @@ const useStyles = createStyles(theme => ({
     position: 'relative', // Changed for absolute icon positioning
   },
   mainButtonText: {
-    fontSize: 16,
+    fontSize: rs.fontSize(16),
     fontWeight: 'bold',
     color: '#374151', // Gray-700
     // Removed marginLeft since icon is absolute
@@ -119,15 +118,15 @@ const useStyles = createStyles(theme => ({
     alignItems: 'center',
   },
   spacer: {
-    width: theme.spacing[4],
+    width: rs.scale(16),
   },
   biometricButton: {
-    width: moderateScale(50),
-    height: moderateScale(50),
+    width: rs.scale(50),
+    height: rs.scale(50),
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: theme.colors.background,
-    borderRadius: 16,
+    borderRadius: rs.radius(16),
     borderWidth: 1.5,
     borderColor: '#E5E7EB',
     // Shadow

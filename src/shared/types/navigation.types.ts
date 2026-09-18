@@ -24,12 +24,8 @@ export type RootStackParamList = {
 // DRAWER NAVIGATION
 // ============================================================================
 
-export type DrawerStackParamList = {
-    Main: NavigatorScreenParams<MainStackParamList>;
-};
-
 export type DrawerParamList = {
-    DrawerStack: NavigatorScreenParams<DrawerStackParamList>;
+    MainStack: NavigatorScreenParams<MainStackParamList>;
 };
 
 // ============================================================================
@@ -46,14 +42,7 @@ export type AuthStackParamList = {
 // ============================================================================
 
 export type MainStackParamList = {
-    CreateFeedbackScreen: undefined;
-    DetailFeedBackScreen: undefined;
     MainTabsScreen: undefined;
-    SearchScreen: undefined;
-    ProfileScreen: undefined;
-    // Thêm screen mới ở đây khi cần:
-    // DetailScreen: { id: string };
-    // NotificationScreen: undefined;
 };
 
 // ============================================================================
@@ -62,8 +51,21 @@ export type MainStackParamList = {
 
 export type MainTabParamList = {
     Home: undefined;
-    Feedback: undefined;
-    Emergency: undefined;
-    Notifications: undefined;
-    Apps: undefined;
-}; 
+};
+
+// ============================================================================
+// GLOBAL TYPE DECLARATION (SENIOR STANDARD)
+// ============================================================================
+// Giúp useNavigation() mặc định tự động gợi ý (autocomplete) toàn bộ màn hình
+// mà không cần phải truyền Generic phức tạp ở mỗi component.
+
+export type AppNavigationParamList = MainStackParamList &
+    AuthStackParamList &
+    MainTabParamList &
+    DrawerParamList; // Thêm DrawerParamList để 'MainStack' có trong global autocomplete
+
+declare global {
+    namespace ReactNavigation {
+        interface RootParamList extends AppNavigationParamList {}
+    }
+}

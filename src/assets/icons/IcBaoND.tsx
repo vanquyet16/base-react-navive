@@ -1,15 +1,12 @@
 import React from 'react';
-import Svg, { Path, Rect } from 'react-native-svg';
-import { moderateScale } from 'react-native-size-matters';
+import Svg, { Path } from 'react-native-svg';
 
 type IcBNDProps = {
   size?: number;
   color?: string;
 };
 
-export const IcBND = ({ size = 24, color = '#000' }: IcBNDProps) => {
-  const iconSize = moderateScale(size);
-
+export const IcBND = (_props: IcBNDProps) => {
   return (
     <Svg width="60" height="20" viewBox="0 0 312 120" fill="none">
       <Path

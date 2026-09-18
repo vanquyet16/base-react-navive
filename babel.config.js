@@ -1,5 +1,10 @@
 module.exports = {
-  presets: ['module:@react-native/babel-preset'],
+  presets: [
+    [
+      'module:@react-native/babel-preset',
+      { enableBabelRuntime: '^7.25.0' },
+    ],
+  ],
   plugins: [
     [
       'module-resolver',
@@ -10,6 +15,6 @@ module.exports = {
         },
       },
     ],
-    'react-native-reanimated/plugin',
+    'react-native-worklets/plugin',
   ],
 };

@@ -43,6 +43,9 @@ interface NewsBoxProps {
   brandSubSmallTextColor?: string;
 }
 
+const GRADIENT_START = { x: 0, y: 0 };
+const GRADIENT_END = { x: 1, y: 0 };
+
 const NewsBox: React.FC<NewsBoxProps> = ({
   data,
   headerTitle,
@@ -54,9 +57,9 @@ const NewsBox: React.FC<NewsBoxProps> = ({
   backgroundColor,
   borderColor,
   headerTitleColor,
-  brandTextColor,
-  brandSubTextColor,
-  brandSubSmallTextColor,
+  brandTextColor: _brandTextColor,
+  brandSubTextColor: _brandSubTextColor,
+  brandSubSmallTextColor: _brandSubSmallTextColor,
 }) => {
   const styles = useStyles();
   const theme = useTheme();
@@ -89,16 +92,6 @@ const NewsBox: React.FC<NewsBoxProps> = ({
     [headerTitleColor, variantColors.text],
   );
 
-  const finalBrandTextColor = useMemo(
-    () => brandTextColor || variantColors.text,
-    [brandTextColor, variantColors.text],
-  );
-
-  const finalBrandSubTextColor = useMemo(
-    () => brandSubTextColor || variantColors.subText,
-    [brandSubTextColor, variantColors.subText],
-  );
-
   // Memoized dynamic style objects
   const dynamicContainerStyle = useMemo(
     () => ({
@@ -108,29 +101,9 @@ const NewsBox: React.FC<NewsBoxProps> = ({
     [finalBackgroundColor, finalBorderColor],
   );
 
-  const dynamicHeaderTitleStyle = useMemo(
-    () => ({ color: finalHeaderTitleColor }),
-    [finalHeaderTitleColor],
-  );
+  const dynamicHeaderTitleStyle = { color: finalHeaderTitleColor };
 
-  const dynamicBrandTextStyle = useMemo(
-    () => ({ color: finalBrandTextColor }),
-    [finalBrandTextColor],
-  );
-
-  // Memoized gradient config objects
-  const gradientStart = useMemo(() => ({ x: 0, y: 0 }), []);
-  const gradientEnd = useMemo(() => ({ x: 1, y: 0 }), []);
-  const gradientLocations = useMemo(
-    () => (finalHeaderColors.length === 3 ? [0, 0.5, 1] : [0, 1]),
-    [finalHeaderColors.length],
-  );
-
-  // Memoized spacing style
-  const emptyBrandSpacing = useMemo(
-    () => ({ height: moderateVerticalScale(12) }),
-    [],
-  );
+  const gradientLocations = finalHeaderColors.length === 3 ? [0, 0.5, 1] : [0, 1];
 
   const handlePress = useCallback(
     (item: NewsItem) => {
@@ -205,8 +178,8 @@ const NewsBox: React.FC<NewsBoxProps> = ({
         <View style={styles.headerWrapper}>
           <LinearGradient
             colors={finalHeaderColors}
-            start={gradientStart}
-            end={gradientEnd}
+            start={GRADIENT_START}
+            end={GRADIENT_END}
             style={styles.headerGradient}
             locations={gradientLocations}
           />
@@ -230,7 +203,7 @@ const NewsBox: React.FC<NewsBoxProps> = ({
       {brand ? (
         <View style={styles.subHeader}>{brand}</View>
       ) : (
-        <View style={emptyBrandSpacing} />
+        <View style={styles.emptyBrandSpacing} />
       )}
 
       {/* Content List */}
@@ -248,48 +221,50 @@ const NewsBox: React.FC<NewsBoxProps> = ({
 
 export default memo(NewsBox);
 
-const useStyles = createStyles(
-  theme => ({
-    container: {
-      backgroundColor: theme.colors.partyBg, // Light beige "warm" background from image
-      borderRadius: moderateScale(12),
-      overflow: 'hidden',
-      marginBottom: moderateVerticalScale(16),
-      // ...theme.shadows.sm,
-      borderWidth: 1,
-      borderColor: theme.colors.partyBorder, // Subtle border matching the background tone
-    },
-    headerWrapper: {
-      width: '100%',
-    },
-    headerGradient: {
-      ...StyleSheet.absoluteFillObject,
-      opacity: 0.1, // Fallback if we want just a tint
-    },
-    headerContent: {
-      backgroundColor: theme.colors.partyHeaderBg, // Light yellow gradient start
-    },
-    headerTopDisplay: {
-      flexDirection: 'row',
-    },
-    // Redesigning the Header to match the image exactly:
-    // Top strip: Yellow to White Gradient? Or Solid Yellow?
-    // Image: "DAI HOI DANG..." is Red text on Yellow background.
-    // Left side: Red Flag with Star/Hammer.
-    flagIconContainer: {
-      backgroundColor: theme.colors.partyRed, // Party Red
-      paddingHorizontal: scale(8),
-      paddingVertical: moderateVerticalScale(4),
-      borderTopLeftRadius: moderateScale(12),
-      borderBottomRightRadius: moderateScale(20), // Curved effect
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    flagIcon: {
-      color: theme.colors.partyYellow, // Gold Yellow
-      fontSize: theme.typography.fontSizes.sm,
-      fontWeight: 'bold',
-    },
+const useStyles = createStyles((theme, rs) => ({
+  container: {
+    backgroundColor: theme.colors.partyBg, // Light beige "warm" background from image
+    borderRadius: moderateScale(12),
+    overflow: 'hidden',
+    marginBottom: moderateVerticalScale(16),
+    // ...theme.shadows.sm,
+    borderWidth: 1,
+    borderColor: theme.colors.partyBorder, // Subtle border matching the background tone
+  },
+  emptyBrandSpacing: {
+    height: moderateVerticalScale(12),
+  },
+  headerWrapper: {
+    width: '100%',
+  },
+  headerGradient: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.1, // Fallback if we want just a tint
+  },
+  headerContent: {
+    backgroundColor: theme.colors.partyHeaderBg, // Light yellow gradient start
+  },
+  headerTopDisplay: {
+    flexDirection: 'row',
+  },
+  // Redesigning the Header to match the image exactly:
+  // Top strip: Yellow to White Gradient? Or Solid Yellow?
+  // Image: "DAI HOI DANG..." is Red text on Yellow background.
+  // Left side: Red Flag with Star/Hammer.
+  flagIconContainer: {
+    backgroundColor: theme.colors.partyRed, // Party Red
+    paddingHorizontal: scale(8),
+    paddingVertical: moderateVerticalScale(4),
+    borderTopLeftRadius: moderateScale(12),
+    borderBottomRightRadius: moderateScale(20), // Curved effect
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  flagIcon: {
+    color: theme.colors.partyYellow, // Gold Yellow
+    fontSize: rs.fontSize(14),
+    fontWeight: 'bold',
+  },
     headerTitle: {
       flex: 1,
       fontWeight: '900',
@@ -361,7 +336,7 @@ const useStyles = createStyles(
       padding: moderateScale(12),
     },
     cardTitle: {
-      fontSize: theme.typography.fontSizes.xs,
+      fontSize: rs.fontSize(12),
       // fontWeight: '600',
       color: theme.colors.text,
       lineHeight: moderateScale(20),
@@ -377,9 +352,8 @@ const useStyles = createStyles(
       marginRight: scale(4),
     },
     dateText: {
-      fontSize: theme.typography.fontSizes.xs,
+      fontSize: rs.fontSize(12),
       color: theme.colors.textTertiary,
     },
-  }),
-  true,
+  })
 );

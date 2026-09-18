@@ -10,7 +10,7 @@ import {
 } from 'react-native-size-matters';
 
 // Cấu hình tiếng Việt cho Calendar
-LocaleConfig.locales['vi'] = {
+LocaleConfig.locales.vi = {
   monthNames: [
     'Tháng 1',
     'Tháng 2',
@@ -90,11 +90,6 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = memo(
   }) => {
     const theme = useTheme();
     const styles = useStyles(theme);
-
-    // Debug log
-    useEffect(() => {
-      console.log('CustomDatePicker render - visible:', visible);
-    }, [visible]);
 
     const [tempSelectedDate, setTempSelectedDate] = useState<string>(() =>
       formatDateString(selectedDate),

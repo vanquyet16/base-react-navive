@@ -37,21 +37,21 @@ const CustomSearchFilter = (props: CustomSearchFilterProps) => {
   );
 };
 
-const useStyles = createStyles(theme => {
+const useStyles = createStyles((theme, rs) => {
   return {
     container: {
       flexDirection: 'row',
       alignItems: 'center',
-      gap: theme.spacing[2.5],
+      gap: rs.gap(10),
     },
     inputSearch: {
-      borderRadius: 20,
+      borderRadius: rs.radius(20),
       width: '80%',
     },
     filterContainer: {
       backgroundColor: theme.colors.white,
-      padding: theme.spacing[2],
-      borderRadius: theme.radius.full,
+      padding: rs.padding(8),
+      borderRadius: 9999,
       justifyContent: 'center',
       alignItems: 'center',
       shadowColor: '#000',
@@ -61,6 +61,6 @@ const useStyles = createStyles(theme => {
       elevation: 2,
     },
   };
-}, true);
+});
 
 export default CustomSearchFilter;

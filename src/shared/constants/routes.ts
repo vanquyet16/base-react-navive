@@ -42,7 +42,6 @@ export const ROOT_STACKS = {
     AUTH_STACK: 'AuthStack',
     MAIN_STACK: 'MainStack',
     DRAWER: 'Drawer',
-    DRAWER_STACK: 'DrawerStack',
 } as const;
 
 /**

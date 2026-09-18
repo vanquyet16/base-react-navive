@@ -10,12 +10,11 @@
  */
 
 import React, { useMemo, memo } from 'react';
-import { View, type ViewStyle, type StyleProp, TextStyle } from 'react-native';
+import { View, type ViewStyle, type StyleProp } from 'react-native';
 import { CustomText } from './CustomText';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import { colors } from '@/shared/theme/tokens';
-import { scale } from 'react-native-size-matters';
 
 export type BadgeVariant = 'success' | 'warning' | 'error' | 'info' | 'primary';
 export type BadgeSize = 'sm' | 'md' | 'lg';
@@ -39,7 +38,7 @@ export interface CustomBadgeProps {
 
 export const CustomBadge: React.FC<CustomBadgeProps> = ({
   variant = 'error',
-  size = 'sm',
+  size: _size = 'sm',
   text,
   badgeCount,
   showZero = false,
@@ -125,56 +124,52 @@ const getTextColor = (theme: any, variant: BadgeVariant): string => {
   }
 };
 
-const useStyles = createStyles(
-  theme => ({
-    // Standalone styles
-    container: {
-      paddingHorizontal: theme.spacing[2],
-      paddingVertical: theme.spacing[1] / 2,
-      borderRadius: theme.radius.full,
-      alignSelf: 'flex-start',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    text: {
-      fontSize: theme.typography.fontSizes.xs,
-      fontWeight: theme.typography.fontWeights.bold,
-      textTransform: 'uppercase',
-    },
+const useStyles = createStyles((theme, rs) => ({
+  // Standalone styles
+  container: {
+    paddingHorizontal: rs.px(8),
+    paddingVertical: rs.py(2),
+    borderRadius: 9999,
+    alignSelf: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    fontSize: rs.fontSize(12),
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
 
-    // Wrapper styles
-    wrapper: {
-      position: 'relative',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    badgeAbsolute: {
-      position: 'absolute',
-      top: -10,
-      right: -9,
-      minWidth: scale(14),
-      height: scale(14),
-      borderRadius: scale(7),
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderWidth: 1.5,
-      borderColor: theme.colors.white,
-      zIndex: 10,
-      paddingHorizontal: 2,
-    },
-    badgeText: {
-      fontSize: theme.typography.fontSizes['3xs'],
-      fontWeight: 'bold',
-      // lineHeight: 10, // Removed hardcoded line height, let font scale handle it or use theme
-      textAlign: 'center',
-    },
+  // Wrapper styles
+  wrapper: {
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  badgeAbsolute: {
+    position: 'absolute',
+    top: -10,
+    right: -9,
+    minWidth: rs.scale(14),
+    height: rs.scale(14),
+    borderRadius: rs.scale(7),
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: theme.colors.white,
+    zIndex: 10,
+    paddingHorizontal: 2,
+  },
+  badgeText: {
+    fontSize: rs.fontSize(8),
+    fontWeight: '700',
+    textAlign: 'center',
+  },
 
-    // Variants
-    successBadge: { backgroundColor: colors.success.light },
-    warningBadge: { backgroundColor: colors.warning.light },
-    errorBadge: { backgroundColor: colors.error.main },
-    infoBadge: { backgroundColor: colors.info.light },
-    primaryBadge: { backgroundColor: theme.colors.primary },
-  }),
-  true,
-);
+  // Variants
+  successBadge: { backgroundColor: colors.success.light },
+  warningBadge: { backgroundColor: colors.warning.light },
+  errorBadge: { backgroundColor: colors.error.main },
+  infoBadge: { backgroundColor: colors.info.light },
+  primaryBadge: { backgroundColor: theme.colors.primary },
+}));

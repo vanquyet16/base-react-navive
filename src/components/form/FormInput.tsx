@@ -25,7 +25,7 @@
  */
 
 import React, { memo } from 'react';
-import { View, type TextInputProps } from 'react-native';
+import { View } from 'react-native';
 import {
   Controller,
   Control,
@@ -34,7 +34,6 @@ import {
   RegisterOptions,
 } from 'react-hook-form';
 import { CustomInput, type CustomInputProps } from '@/components/base';
-import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import { moderateVerticalScale } from 'react-native-size-matters';
 
@@ -80,7 +79,6 @@ const FormInputBase = <T extends FieldValues = FieldValues>({
   height,
   ...props
 }: FormInputProps<T>) => {
-  const theme = useTheme();
   const styles = useStyles();
 
   // Format label với required indicator
@@ -159,14 +157,11 @@ const FormInputBase = <T extends FieldValues = FieldValues>({
 /**
  * Minimal styles - most styling is handled by CustomInput
  */
-const useStyles = createStyles(
-  theme => ({
-    container: {
-      marginBottom: theme.spacing[1], // Gap between form fields
-    },
-  }),
-  true,
-);
+const useStyles = createStyles((_theme, rs) => ({
+  container: {
+    marginBottom: rs.verticalScale(4), // Gap between form fields
+  },
+}));
 
 export const FormInput = memo(FormInputBase) as typeof FormInputBase;
 export default FormInput;
