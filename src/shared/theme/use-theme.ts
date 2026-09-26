@@ -1,32 +1,26 @@
 /**
- * USE THEME HOOK
- * ==============
- * Hook để access current theme trong components.
- * Integrates với Zustand store cho theme switching.
- * 
+ * USE THEME
+ * =========
+ * Theme hiện hành = lựa chọn của người dùng (settings) hoặc theo hệ điều hành khi chọn 'system'.
+ * Tự cập nhật khi người dùng đổi chế độ sáng/tối của máy.
  */
 
+import { useColorScheme } from 'react-native';
 import { useThemeMode } from '@/shared/store/selectors';
-import { getTheme, type Theme } from './theme';
+import type { ThemeMode } from '@/shared/types/common';
+import { getTheme, type Theme, type ThemeName } from './theme';
 
-/**
- * useTheme Hook
- * Returns current theme object based on store state
- * 
- * @example
- * const theme = useTheme();
- * const { colors, spacing } = theme;
- */
+export const resolveThemeName = (mode: ThemeMode, systemScheme: string | null | undefined): ThemeName => {
+    if (mode === 'system') {
+        return systemScheme === 'dark' ? 'dark' : 'light';
+    }
+    return mode;
+};
+
 export const useTheme = (): Theme => {
-    const themeName = useThemeMode();
-    return getTheme(themeName);
+    const mode = useThemeMode();
+    const systemScheme = useColorScheme();
+    return getTheme(resolveThemeName(mode, systemScheme));
 };
 
-/**
- * useIsDarkMode Hook
- * Convenience hook để check dark mode
- */
-export const useIsDarkMode = (): boolean => {
-    const theme = useTheme();
-    return theme.isDark;
-};
+export const useIsDarkMode = (): boolean => useTheme().isDark;

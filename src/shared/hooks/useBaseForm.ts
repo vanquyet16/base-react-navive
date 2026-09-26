@@ -13,7 +13,7 @@ import {
   type FieldError,
 } from 'react-hook-form';
 import { useState, useCallback } from 'react';
-import Toast from 'react-native-toast-message';
+import CustomToast from '@/shared/utils/CustomToast';
 
 export interface UseBaseFormProps<T extends FieldValues> extends UseFormProps<T> {
   /** Hàm xử lý khi submit form */
@@ -79,32 +79,21 @@ export const useBaseForm = <T extends FieldValues>({
           await onSubmit(data);
 
           if (showSuccessToast) {
-            Toast.show({
-              type: 'success',
-              text1: successMessage,
-            });
+            CustomToast.success(successMessage);
           }
 
           if (resetOnSuccess) {
             form.reset();
           }
-        } catch (error: any) {
-          const message =
-            error?.message ||
-            error?.response?.data?.message ||
-            errorMessage;
+        } catch (error) {
+          const message = error instanceof Error && error.message ? error.message : errorMessage;
 
           setSubmitError(message);
 
           if (showErrorToast) {
-            Toast.show({
-              type: 'error',
-              text1: 'Lỗi',
-              text2: message,
-            });
+            CustomToast.error(message);
           }
-          // Ném lỗi tiếp tục để caller (nếu có) xử lý tiếp
-          throw error;
+          // Không ném tiếp: handler gắn thẳng vào onPress, lỗi đã nằm trong `submitError`
         }
       })(e);
     },

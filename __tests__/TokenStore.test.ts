@@ -1,46 +1,67 @@
-/**
- * UNIT TESTS - TOKEN STORE
- * =========================
- * Kiểm thử tính đúng đắn của logic lưu trữ, truy xuất và xóa Tokens.
- */
+import { TokenStore, readJwtExpiry } from '@/shared/store/token-store';
 
-import { tokenStore } from '@/shared/store/token-store';
+const base64Url = (text: string) =>
+  btoa(unescape(encodeURIComponent(text))).replace(/\+/g, '-').replace(/\//g, '_').replace(/[=]+$/, '');
 
-describe('TokenStore Unit Tests', () => {
+const makeJwt = (payload: Record<string, unknown>) => `header.${base64Url(JSON.stringify(payload))}.signature`;
+
+describe('TokenStore', () => {
+  let store: TokenStore;
+
   beforeEach(async () => {
-    await tokenStore.clearTokens();
+    store = new TokenStore();
+    await store.clear();
   });
 
-  it('Lưu trữ và lấy đúng access token và refresh token', async () => {
-    const mockTokens = {
-      accessToken: 'test_access_token_123',
-      refreshToken: 'test_refresh_token_456',
-    };
+  it('lưu phiên và nạp lại được sau khi khởi động lại', async () => {
+    await store.saveTokens({ accessToken: 'a1', refreshToken: 'r1', expiresAt: 123 }, null);
 
-    await tokenStore.setTokens(mockTokens);
+    const restarted = new TokenStore();
+    const session = await restarted.hydrate();
 
-    const tokens = await tokenStore.getTokens();
-    expect(tokens.accessToken).toBe(mockTokens.accessToken);
-    expect(tokens.refreshToken).toBe(mockTokens.refreshToken);
+    expect(session?.tokens).toEqual({ accessToken: 'a1', refreshToken: 'r1', expiresAt: 123 });
+    expect(restarted.getAccessToken()).toBe('a1');
   });
 
-  it('Xóa tokens hoàn toàn khi gọi clearTokens', async () => {
-    await tokenStore.setTokens({
-      accessToken: 'access_to_clear',
-      refreshToken: 'refresh_to_clear',
-    });
+  it('không kế thừa expiresAt cũ khi token mới không có expiresAt', async () => {
+    await store.saveTokens({ accessToken: 'a1', refreshToken: 'r1', expiresAt: Date.now() - 1000 });
+    await store.saveTokens({ accessToken: makeJwt({ exp: Date.now() / 1000 + 3600 }), refreshToken: 'r2' });
 
-    await tokenStore.clearTokens();
-
-    const tokens = await tokenStore.getTokens();
-    expect(tokens.accessToken).toBeNull();
-    expect(tokens.refreshToken).toBeNull();
+    expect(store.getSession()?.tokens.expiresAt).toBeUndefined();
+    expect(store.isAccessTokenExpired()).toBe(false);
   });
 
-  it('Kiểm tra trạng thái hasAccessToken', async () => {
-    expect(await tokenStore.hasAccessToken()).toBe(false);
+  it('giữ refresh token cũ khi server không rotate', async () => {
+    await store.saveTokens({ accessToken: 'a1', refreshToken: 'r1' });
+    await store.saveTokens({ accessToken: 'a2', refreshToken: '' });
 
-    await tokenStore.setAccessToken('new_access_token');
-    expect(await tokenStore.hasAccessToken()).toBe(true);
+    expect(store.getRefreshToken()).toBe('r1');
+    expect(store.getAccessToken()).toBe('a2');
+  });
+
+  it('coi token là hết hạn trước thời điểm exp một khoảng skew', async () => {
+    const now = Date.now();
+    await store.saveTokens({ accessToken: 'a', refreshToken: 'r', expiresAt: now + 10_000 });
+
+    expect(store.isAccessTokenExpired(now)).toBe(true);
+    expect(store.isAccessTokenExpired(now - 60_000)).toBe(false);
+  });
+
+  it('clear() xoá cả bộ nhớ và dữ liệu đã lưu', async () => {
+    await store.saveTokens({ accessToken: 'a', refreshToken: 'r' });
+    await store.clear();
+
+    expect(store.getAccessToken()).toBeNull();
+    await expect(new TokenStore().hydrate()).resolves.toBeNull();
+  });
+});
+
+describe('readJwtExpiry', () => {
+  it('đọc claim exp (giây → ms)', () => {
+    expect(readJwtExpiry(makeJwt({ exp: 1000, name: 'Nguyễn Văn A' }))).toBe(1_000_000);
+  });
+
+  it('trả null với token không phải JWT', () => {
+    expect(readJwtExpiry('opaque-token')).toBeNull();
   });
 });

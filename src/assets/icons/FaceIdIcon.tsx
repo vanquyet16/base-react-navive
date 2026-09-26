@@ -1,6 +1,6 @@
 import React from 'react';
 import Svg, { Path } from 'react-native-svg';
-import { moderateScale } from 'react-native-size-matters';
+import { useResponsiveSize } from '@/shared/hooks/useResponsiveSize';
 
 type FaceIdIconProps = {
   size?: number;
@@ -8,7 +8,7 @@ type FaceIdIconProps = {
 };
 
 export const FaceIdIcon = ({ size = 24, color = '#000' }: FaceIdIconProps) => {
-  const iconSize = moderateScale(size);
+  const iconSize = useResponsiveSize().iconSize(size);
 
   return (
     <Svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="none">

@@ -4,11 +4,6 @@ import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import { CustomText } from './CustomText';
 import AppIcon from './AppIcon';
-import {
-  moderateScale,
-  moderateVerticalScale,
-  scale,
-} from 'react-native-size-matters';
 
 interface FilterChipProps {
   label: string;
@@ -43,7 +38,7 @@ interface FilterChipProps {
 export const FilterChip = memo<FilterChipProps>(
   ({ label, selected, onPress, icon, disabled = false }) => {
     const theme = useTheme();
-    const styles = useStyles(theme);
+    const styles = useStyles();
 
     const containerStyle = useMemo(
       () => [
@@ -75,7 +70,7 @@ export const FilterChip = memo<FilterChipProps>(
         {icon && (
           <AppIcon
             name={icon}
-            size={moderateScale(14)}
+            size={14}
             color={
               disabled
                 ? theme.colors.textSecondary
@@ -83,7 +78,7 @@ export const FilterChip = memo<FilterChipProps>(
                 ? theme.colors.white
                 : theme.colors.textSecondary
             }
-            style={{ marginRight: scale(6) }}
+            style={{ marginRight: styles.rs.horizontalGap(6) }}
           />
         )}
         <CustomText variant="caption" style={textStyle}>
@@ -97,14 +92,14 @@ export const FilterChip = memo<FilterChipProps>(
 /**
  * Styles
  */
-const useStyles = createStyles(theme => ({
+const useStyles = createStyles((theme, rs) => ({
   chip: {
-    paddingHorizontal: scale(12),
-    paddingVertical: moderateVerticalScale(8),
-    borderRadius: moderateScale(8),
+    paddingHorizontal: rs.scale(12),
+    paddingVertical: rs.moderateVerticalScale(8),
+    borderRadius: rs.moderateScale(8),
     backgroundColor: theme.colors.backgroundSecondary,
-    marginRight: scale(8),
-    marginBottom: moderateVerticalScale(8),
+    marginRight: rs.scale(8),
+    marginBottom: rs.moderateVerticalScale(8),
     flexDirection: 'row',
     alignItems: 'center',
   },

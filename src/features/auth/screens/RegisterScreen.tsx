@@ -5,10 +5,9 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useRegister } from '../hooks';
 import { SCREEN_PADDING, VALIDATION, ERROR_MESSAGES } from '@/shared/constants';
 import FormInput from '@/components/form/FormInput';
-import { Logo } from '@/components/base';
+import { Logo } from '@/components/base/logo';
 import { createStyles } from '@/shared/theme/create-styles';
-import { useBaseForm } from '@/shared';
-import { moderateVerticalScale } from 'react-native-size-matters';
+import { useBaseForm } from '@/shared/hooks/useBaseForm';
 import { AuthStackParamList } from '@/shared/types/navigation.types';
 import { NAVIGATION_KEYS } from '@/navigation/config/navigationConfig';
 
@@ -20,21 +19,20 @@ interface RegisterFormData {
 }
 
 const useStyles = createStyles(
-  theme => ({
+  (theme, rs) => ({
     container: {
       flex: 1,
       backgroundColor: theme.colors.background,
     },
     header: {
       alignItems: 'center',
-      paddingTop: moderateVerticalScale(80),   // Responsive thay vì hardcode 80
-      paddingBottom: moderateVerticalScale(40), // Responsive thay vì hardcode 40
+      paddingTop: rs.moderateVerticalScale(80),
+      paddingBottom: rs.moderateVerticalScale(40),
     },
     form: {
       paddingHorizontal: SCREEN_PADDING,
     },
   }),
-  true,
 );
 
 const RegisterScreen = memo(({ navigation }: NativeStackScreenProps<AuthStackParamList, 'Register'>) => {

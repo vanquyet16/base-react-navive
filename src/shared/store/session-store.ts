@@ -1,85 +1,28 @@
 /**
- * SESSION STORE (Zustand Slice)
- * ==============================
- * Quản lý auth session state: user, tokens, authentication status.
- * Client-side state cho session management.
- * 
+ * SESSION STORE (Zustand slice)
+ * =============================
+ * Chỉ giữ TRẠNG THÁI phiên để điều hướng (Auth stack ↔ Main).
+ * - Token: tokenStore (Keychain).
+ * - Hồ sơ user: TanStack Query (`authKeys.me`) — một nguồn sự thật duy nhất.
+ * Chỉ SessionManager được phép đổi state này.
  */
 
-import { StateCreator } from 'zustand';
-import type { User } from '@/shared/types/domain/user';
-import type { AuthSession } from '@/shared/types/domain/auth';
+import type { StateCreator } from 'zustand';
 import type { AppStoreState } from './app-store';
 
-/**
- * Session Store State
- */
-export interface SessionState {
-    // State
-    isAuthenticated: boolean;
-    user: User | null;
+export type SessionStatus = 'unknown' | 'authenticated' | 'guest';
 
-    // Actions
-    setSession: (session: Partial<AuthSession>) => void;
-    setUser: (user: User | null) => void;
-    clearSession: () => void;
+export interface SessionState {
+    sessionStatus: SessionStatus;
+    setSessionStatus: (status: SessionStatus) => void;
 }
 
-/**
- * Initial state
- */
-const initialState: Pick<
-    SessionState,
-    'isAuthenticated' | 'user'
-> = {
-    isAuthenticated: false,
-    user: null,
-};
-
-/**
- * Create session slice
- * Pattern: Slice factory function để compose vào root store
- */
-export const createSessionSlice: StateCreator<
-    AppStoreState,
-    [],
-    [],
-    SessionState
-> = (set) => ({
-    ...initialState,
-
-    /**
-     * Set session data (partial update)
-     */
-    setSession: (session) => {
-        set({
-            ...session,
-            isAuthenticated: true,
-        });
-    },
-
-    /**
-     * Set user data
-     */
-    setUser: (user) => {
-        set({ user });
-    },
-
-    /**
-     * Clear session (logout)
-     */
-    clearSession: () => {
-        set(initialState);
-    },
+export const createSessionSlice: StateCreator<AppStoreState, [], [], SessionState> = set => ({
+    sessionStatus: 'unknown',
+    setSessionStatus: sessionStatus => set({ sessionStatus }),
 });
 
-/**
- * Selectors cho session store
- * Trade-off: Memoized selectors để avoid unnecessary re-renders
- */
 export const sessionSelectors = {
-    isAuthenticated: (state: SessionState) => state.isAuthenticated,
-    user: (state: SessionState) => state.user,
-    userId: (state: SessionState) => state.user?.id ?? null,
-    userRole: (state: SessionState) => state.user?.role ?? null,
+    status: (state: SessionState) => state.sessionStatus,
+    isAuthenticated: (state: SessionState) => state.sessionStatus === 'authenticated',
 };

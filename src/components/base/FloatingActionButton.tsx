@@ -2,11 +2,6 @@ import React, { memo, useMemo } from 'react';
 import {  Pressable, ViewStyle } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
-import {
-  scale,
-  moderateScale,
-  moderateVerticalScale,
-} from 'react-native-size-matters';
 import AppIcon from './AppIcon';
 
 interface FloatingActionButtonProps {
@@ -49,7 +44,7 @@ const FloatingActionButton = memo<FloatingActionButtonProps>(
     iconName = 'plus',
     onPress,
     backgroundColor,
-    iconColor = '#FFFFFF',
+    iconColor,
     iconSize = 24,
     style,
     position = 'bottom-right',
@@ -94,8 +89,8 @@ const FloatingActionButton = memo<FloatingActionButtonProps>(
       >
         <AppIcon
           name={iconName}
-          size={moderateScale(iconSize)}
-          color={iconColor}
+          size={iconSize}
+          color={iconColor ?? styles.theme.colors.white}
         />
       </Pressable>
     );
@@ -103,15 +98,15 @@ const FloatingActionButton = memo<FloatingActionButtonProps>(
 );
 
 const useStyles = createStyles(
-  _theme => ({
+  (theme, rs) => ({
     container: {
       position: 'absolute',
-      width: scale(45),
-      height: scale(45), // Reverting to scale for circle consistency
-      borderRadius: scale(15),
+      width: rs.scale(45),
+      height: rs.scale(45), // Reverting to scale for circle consistency
+      borderRadius: rs.scale(15),
       justifyContent: 'center',
       alignItems: 'center',
-      shadowColor: '#000',
+      shadowColor: theme.colors.black,
       shadowOffset: {
         width: 0,
         height: 4,
@@ -122,19 +117,18 @@ const useStyles = createStyles(
       zIndex: 999,
     },
     positionBottomRight: {
-      bottom: moderateVerticalScale(50), // Vertical spacing
-      right: scale(10), // Horizontal spacing
+      bottom: rs.moderateVerticalScale(50), // Vertical spacing
+      right: rs.scale(10), // Horizontal spacing
     },
     positionBottomLeft: {
-      bottom: moderateVerticalScale(50),
-      left: scale(10),
+      bottom: rs.moderateVerticalScale(50),
+      left: rs.scale(10),
     },
     positionBottomCenter: {
-      bottom: moderateVerticalScale(50),
+      bottom: rs.moderateVerticalScale(50),
       alignSelf: 'center',
     },
   }),
-  true,
 );
 
 export default FloatingActionButton;

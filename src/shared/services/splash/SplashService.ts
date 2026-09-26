@@ -8,6 +8,7 @@
  */
 
 import RNBootSplash from 'react-native-bootsplash';
+import { logger } from '@/shared/utils/logger';
 
 /**
  * SplashConfig - Configuration cho splash behavior
@@ -60,7 +61,7 @@ class SplashService {
             this.hidePromise = null;
         } catch (error) {
             // Defensive: Log error nhưng không throw để không crash app
-            console.warn('[SplashService] Failed to hide splash:', error);
+            logger.warn('[SplashService] Failed to hide splash:', error);
             this.hidePromise = null;
         }
     }
@@ -74,7 +75,7 @@ class SplashService {
             const isVisible = await RNBootSplash.isVisible();
             return isVisible;
         } catch (error) {
-            console.warn('[SplashService] Failed to check visibility:', error);
+            logger.warn('[SplashService] Failed to check visibility:', error);
             return false; // Default fallback
         }
     }

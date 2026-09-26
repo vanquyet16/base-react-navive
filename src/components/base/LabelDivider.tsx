@@ -34,7 +34,7 @@ export const LabelDivider: React.FC<LabelDividerProps> = memo(
   },
 );
 
-const useStyles = createStyles((_theme, rs) => ({
+const useStyles = createStyles((theme, rs) => ({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -43,11 +43,11 @@ const useStyles = createStyles((_theme, rs) => ({
   line: {
     flex: 1,
     height: 1,
-    backgroundColor: '#E5E7EB', // Gray-200
+    backgroundColor: theme.colors.border,
   },
   text: {
     marginHorizontal: rs.mx(12),
-    color: '#9CA3AF', // Gray-400
+    color: theme.colors.textTertiary,
     fontSize: rs.fontSize(12),
     fontWeight: '600',
     textTransform: 'uppercase',

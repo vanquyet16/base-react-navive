@@ -9,7 +9,7 @@ import {
 } from '@react-navigation/drawer';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
-import { useSessionActions } from '@/shared/store/selectors';
+import { useCurrentUser, useLogout } from '@/features/auth/hooks/queries/useAuth';
 import type { MainStackParamList } from '@/shared/types/navigation.types';
 import { NAVIGATION_KEYS } from '@/navigation/config/navigationConfig';
 
@@ -37,17 +37,13 @@ const menuItems: DrawerMenuItem[] = [
  */
 const CustomDrawer: React.FC<DrawerContentComponentProps> = ({ navigation, ...props }) => {
   const theme = useTheme();
-  const { clearSession } = useSessionActions();
   const styles = useStyles();
-
-  const handleLogout = useCallback(() => {
-    clearSession();
-    // Navigate ve Auth stack (được handle bởi AppNavigator state)
-  }, [clearSession]);
+  const { logout } = useLogout();
+  const { data: user } = useCurrentUser();
 
   const handleNavigation = useCallback(
-    (screenName: keyof MainStackParamList) => {
-      navigation.navigate(screenName as any);
+    (screen: keyof MainStackParamList) => {
+      navigation.navigate(NAVIGATION_KEYS.DRAWER.MAIN_STACK, { screen });
       navigation.closeDrawer();
     },
     [navigation],
@@ -63,11 +59,13 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = ({ navigation, ...pr
           </View>
           <View style={styles.userDetails}>
             <CustomText variant="h5" weight="bold" style={styles.userName}>
-              Người dùng
+              {user?.displayName ?? 'Người dùng'}
             </CustomText>
-            <CustomText variant="bodySmall" style={styles.userEmail}>
-              user@example.com
-            </CustomText>
+            {!!user?.email && (
+              <CustomText variant="bodySmall" style={styles.userEmail}>
+                {user.email}
+              </CustomText>
+            )}
           </View>
         </View>
       </View>
@@ -98,7 +96,7 @@ const CustomDrawer: React.FC<DrawerContentComponentProps> = ({ navigation, ...pr
             styles.logoutButton,
             { opacity: pressed ? 0.7 : 1 },
           ]}
-          onPress={handleLogout}
+          onPress={logout}
         >
           <Icon name="logout" size={24} color={theme.colors.error} />
           <CustomText variant="body" weight="medium" style={styles.logoutText}>
@@ -175,5 +173,4 @@ const useStyles = createStyles(
       marginLeft: 15,
     },
   }),
-  true,
 );

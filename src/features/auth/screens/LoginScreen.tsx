@@ -5,12 +5,12 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { moderateScale, moderateVerticalScale } from 'react-native-size-matters';
 import { createStyles } from '@/shared/theme/create-styles';
 import Header from '../components/Header';
 import Main from '../components/Main';
 import Footer from '../components/Footer';
-import { LabelDivider, Spacer } from '@/components/base';
+import { LabelDivider } from '@/components/base/LabelDivider';
+import { Spacer } from '@/components/base/spacer';
 
 const LoginScreen = memo(() => {
   const styles = useStyles();
@@ -21,8 +21,8 @@ const LoginScreen = memo(() => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={
         Platform.OS === 'ios'
-          ? moderateVerticalScale(-20)
-          : moderateVerticalScale(20)
+          ? styles.rs.moderateVerticalScale(-20)
+          : styles.rs.moderateVerticalScale(20)
       }
     >
       <ScrollView
@@ -50,14 +50,14 @@ export default LoginScreen;
  */
 
 const useStyles = createStyles(
-  theme => ({
+  (theme, rs) => ({
     keyboardAvoidingView: {
       flex: 1,
       backgroundColor: theme.colors.background, // #f5f7fa từ theme
     },
     container: {
       flex: 1,
-      backgroundColor: theme.colors.white,
+      backgroundColor: theme.colors.surface,
     },
     overscrollBackground: {
       position: 'absolute',
@@ -73,12 +73,11 @@ const useStyles = createStyles(
 
     content: {
       flex: 1,
-      backgroundColor: theme.colors.white,
-      marginTop: moderateScale(-30), // Overlap header
-      borderTopLeftRadius: moderateScale(30),
-      borderTopRightRadius: moderateScale(30),
-      paddingTop: moderateScale(20),
+      backgroundColor: theme.colors.surface,
+      marginTop: rs.moderateScale(-30), // Overlap header
+      borderTopLeftRadius: rs.moderateScale(30),
+      borderTopRightRadius: rs.moderateScale(30),
+      paddingTop: rs.moderateScale(20),
     },
   }),
-  true,
 );

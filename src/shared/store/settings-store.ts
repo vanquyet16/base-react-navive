@@ -7,7 +7,7 @@
  */
 
 import { StateCreator } from 'zustand';
-import type { Theme, Language } from '@/shared/types/common';
+import type { ThemeMode, Language } from '@/shared/types/common';
 import type { AppStoreState } from './app-store';
 
 /**
@@ -15,12 +15,12 @@ import type { AppStoreState } from './app-store';
  */
 export interface SettingsState {
     // State
-    theme: Theme;
+    theme: ThemeMode;
     language: Language;
     notificationsEnabled: boolean;
 
     // Actions
-    setTheme: (theme: Theme) => void;
+    setTheme: (theme: ThemeMode) => void;
     setLanguage: (language: Language) => void;
     setNotificationsEnabled: (enabled: boolean) => void;
     resetSettings: () => void;
@@ -86,5 +86,4 @@ export const settingsSelectors = {
     language: (state: SettingsState) => state.language,
     notificationsEnabled: (state: SettingsState) =>
         state.notificationsEnabled,
-    isDarkMode: (state: SettingsState) => state.theme === 'dark',
 };

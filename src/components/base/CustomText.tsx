@@ -9,25 +9,17 @@ import React, { useMemo, memo } from 'react';
 import { Text, type TextProps, type TextStyle } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
+import { MAX_FONT_SIZE_MULTIPLIER } from '@/shared/hooks/useResponsiveSize';
+import {
+  fontWeights,
+  typography,
+  type FontWeight,
+  type TypographyVariant,
+} from '@/shared/theme/tokens';
+import type { Theme } from '@/shared/theme/theme';
 
-/**
- * Text variant types
- */
-export type TextVariant =
-  | 'h1'
-  | 'h2'
-  | 'h3'
-  | 'h4'
-  | 'h5'
-  | 'h6'
-  | 'h7'
-  | 'h8'
-  | 'h9'
-  | 'h10'
-  | 'body'
-  | 'bodySmall'
-  | 'caption'
-  | 'label';
+/** Biến thể chữ — định nghĩa trong theme.typography */
+export type TextVariant = TypographyVariant;
 
 /**
  * Text color variants
@@ -41,22 +33,9 @@ export type TextColor =
   | 'success'
   | 'white';
 
-export type FontWeight =
-  | 'light'
-  | 'normal'
-  | 'medium'
-  | 'semibold'
-  | 'bold'
-  | 'extrabold';
-
-export const fontWeights: Record<FontWeight, TextStyle['fontWeight']> = {
-  light: '300',
-  normal: '400',
-  medium: '500',
-  semibold: '600',
-  bold: '700',
-  extrabold: '800',
-};
+export type { FontWeight };
+/** Giữ export cũ để không vỡ import hiện có — nguồn gốc: theme.fontWeights */
+export { fontWeights };
 
 /**
  * CustomText Props
@@ -131,7 +110,7 @@ const CustomTextBase: React.FC<CustomTextProps> = ({
   );
 
   return (
-    <Text style={textStyles} {...rest}>
+    <Text style={textStyles} maxFontSizeMultiplier={MAX_FONT_SIZE_MULTIPLIER} {...rest}>
       {children}
     </Text>
   );
@@ -146,7 +125,7 @@ export default CustomText;
 /**
  * Get color style helper
  */
-const getColorStyle = (theme: any, color: TextColor): TextStyle => {
+const getColorStyle = (theme: Theme, color: TextColor): TextStyle => {
   switch (color) {
     case 'primary':
       return { color: theme.colors.text };
@@ -168,98 +147,22 @@ const getColorStyle = (theme: any, color: TextColor): TextStyle => {
 };
 
 /**
- * Styles với variants — Tích hợp tự động responsive size
+ * Style cho mọi biến thể, sinh từ theme.typography + responsive engine
  */
-const useStyles = createStyles((theme, rs) => ({
-  // Headings
-  h1: {
-    fontSize: rs.fontSize(36),
-    lineHeight: rs.lineHeight(36, 1.25),
-    fontWeight: fontWeights.bold,
-    color: theme.colors.text,
-  },
-  h2: {
-    fontSize: rs.fontSize(30),
-    lineHeight: rs.lineHeight(30, 1.25),
-    fontWeight: fontWeights.bold,
-    color: theme.colors.text,
-  },
-  h3: {
-    fontSize: rs.fontSize(24),
-    lineHeight: rs.lineHeight(24, 1.35),
-    fontWeight: fontWeights.semibold,
-    color: theme.colors.text,
-  },
-  h4: {
-    fontSize: rs.fontSize(20),
-    lineHeight: rs.lineHeight(20, 1.35),
-    fontWeight: fontWeights.semibold,
-    color: theme.colors.text,
-  },
-  h5: {
-    fontSize: rs.fontSize(18),
-    lineHeight: rs.lineHeight(18, 1.35),
-    fontWeight: fontWeights.semibold,
-    color: theme.colors.text,
-  },
-  h6: {
-    fontSize: rs.fontSize(16),
-    lineHeight: rs.lineHeight(16, 1.35),
-    fontWeight: fontWeights.semibold,
-    color: theme.colors.text,
-  },
-  h7: {
-    fontSize: rs.fontSize(14),
-    lineHeight: rs.lineHeight(14, 1.35),
-    fontWeight: fontWeights.semibold,
-    color: theme.colors.text,
-  },
-  h8: {
-    fontSize: rs.fontSize(12),
-    lineHeight: rs.lineHeight(12, 1.35),
-    fontWeight: fontWeights.semibold,
-    color: theme.colors.text,
-  },
-  h9: {
-    fontSize: rs.fontSize(10),
-    lineHeight: rs.lineHeight(10, 1.35),
-    fontWeight: fontWeights.bold,
-    color: theme.colors.text,
-  },
-  h10: {
-    fontSize: rs.fontSize(8),
-    lineHeight: rs.lineHeight(8, 1.35),
-    fontWeight: fontWeights.bold,
-    color: theme.colors.text,
-  },
-
-  // Body text
-  body: {
-    fontSize: rs.fontSize(16),
-    lineHeight: rs.lineHeight(16, 1.35),
-    fontWeight: fontWeights.normal,
-    color: theme.colors.text,
-  },
-  bodySmall: {
-    fontSize: rs.fontSize(14),
-    lineHeight: rs.lineHeight(14, 1.35),
-    fontWeight: fontWeights.normal,
-    color: theme.colors.text,
-  },
-
-  // Caption
-  caption: {
-    fontSize: rs.fontSize(12),
-    lineHeight: rs.lineHeight(12, 1.35),
-    fontWeight: fontWeights.normal,
-    color: theme.colors.textSecondary,
-  },
-
-  // Label
-  label: {
-    fontSize: rs.fontSize(14),
-    lineHeight: rs.lineHeight(14, 1.35),
-    fontWeight: fontWeights.medium,
-    color: theme.colors.text,
-  },
-}));
+const useStyles = createStyles(
+  (theme, rs) =>
+    Object.fromEntries(
+      (Object.keys(typography) as TypographyVariant[]).map(variant => {
+        const token = typography[variant];
+        return [
+          variant,
+          {
+            fontSize: rs.fontSize(token.fontSize),
+            lineHeight: rs.lineHeight(token.fontSize, token.lineHeight),
+            fontWeight: fontWeights[token.fontWeight],
+            color: theme.colors[token.color],
+          },
+        ];
+      }),
+    ) as Record<TypographyVariant, TextStyle>,
+);

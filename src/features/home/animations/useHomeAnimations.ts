@@ -4,21 +4,20 @@ import {
     SharedValue,
     useAnimatedStyle,
 } from 'react-native-reanimated';
-import { moderateScale, moderateVerticalScale } from 'react-native-size-matters';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMemo } from 'react';
+import { useResponsiveSize, type ResponsiveSize } from '@/shared/hooks/useResponsiveSize';
 
-// Constants for animation
-export const HOME_ANIMATION_CONSTANTS = {
-    HEADER_MAX_HEIGHT: moderateVerticalScale(180),
-    HEADER_MIN_HEIGHT: moderateVerticalScale(56), // Without safe area
-    HEADER_EXPANSION: moderateVerticalScale(90),
-    PROFILE_IMAGE_SIZE: moderateScale(40),
-    COMPACT_IMAGE_SIZE: moderateScale(32),
-    // Increased from 100 to 200 for smoother transition
+// Kích thước animation theo màn hình hiện tại (cập nhật khi xoay / chia đôi màn hình)
+export const getHomeAnimationConstants = (rs: ResponsiveSize) => ({
+    HEADER_MAX_HEIGHT: rs.moderateVerticalScale(180),
+    HEADER_MIN_HEIGHT: rs.moderateVerticalScale(56), // Chưa gồm safe area
+    HEADER_EXPANSION: rs.moderateVerticalScale(90),
+    PROFILE_IMAGE_SIZE: rs.avatarSize(40),
+    COMPACT_IMAGE_SIZE: rs.avatarSize(32),
     SCROLL_DISTANCE: 300,
-    CONTENT_PARALLAX_OFFSET: moderateVerticalScale(180),
-};
+    CONTENT_PARALLAX_OFFSET: rs.moderateVerticalScale(180),
+});
 
 // Pointer events constants for optimization
 const POINTER_EVENTS_NONE = 'none' as const;
@@ -26,6 +25,8 @@ const POINTER_EVENTS_AUTO = 'auto' as const;
 
 export const useHomeAnimations = (scrollY?: SharedValue<number>) => {
     const insets = useSafeAreaInsets();
+    const rs = useResponsiveSize();
+    const HOME_ANIMATION_CONSTANTS = useMemo(() => getHomeAnimationConstants(rs), [rs]);
 
     // Calculate actual min height including safe area
     const minHeight = HOME_ANIMATION_CONSTANTS.HEADER_MIN_HEIGHT + insets.top;

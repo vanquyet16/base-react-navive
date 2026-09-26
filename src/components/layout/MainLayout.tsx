@@ -10,7 +10,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppHeader, AppHeaderProps } from './AppHeader';
 import CustomBottomTabBar from '@/components/navigation/CustomBottomTabBar';
 import { createStyles } from '@/shared/theme/create-styles';
-import { BOTTOM_TAB_HEIGHT } from '@/shared/constants/ui';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getTabBarContentHeight } from '@/components/navigation/CustomBottomTabBar';
 
 export interface MainLayoutConfig {
   showHeader?: boolean;
@@ -57,7 +58,6 @@ const useStyles = createStyles(
       flexGrow: 1,
     },
   }),
-  true,
 );
 
 const MainLayoutView: React.FC<MainLayoutInternalProps> = memo(
@@ -95,8 +95,9 @@ const MainLayoutView: React.FC<MainLayoutInternalProps> = memo(
       ],
     );
 
-    // Dùng BOTTOM_TAB_HEIGHT constant thay vì hardcode magic number 80
-    const contentPaddingBottom = hasBottomTabs ? BOTTOM_TAB_HEIGHT : 0;
+    // Chừa đúng chiều cao tab bar (absolute) + safe area dưới, cập nhật theo màn hình
+    const insets = useSafeAreaInsets();
+    const contentPaddingBottom = hasBottomTabs ? getTabBarContentHeight(styles.rs) + insets.bottom : 0;
 
     const scrollContentStyle = useMemo(
       () => [styles.scrollContent, { paddingBottom: contentPaddingBottom }],

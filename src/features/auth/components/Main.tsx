@@ -1,24 +1,17 @@
 import React, { useState, useCallback, memo } from 'react';
 import { Pressable, View } from 'react-native';
 import { WingBlank } from '@ant-design/react-native';
-import {
-  CustomButton,
-  CustomText,
-  FormInput,
-  Spacer,
-  SpacerSm,
-  SpacerMd,
-} from '@/components';
-import {
-  useBaseForm,
-  ERROR_MESSAGES,
-  VALIDATION,
-} from '@/shared';
+import { CustomButton } from '@/components/base/CustomButton';
+import { CustomText } from '@/components/base/CustomText';
+import AppIcon from '@/components/base/AppIcon';
+import { Spacer, SpacerSm, SpacerMd } from '@/components/base/spacer';
+import { FormInput } from '@/components/form/FormInput';
+import { useBaseForm } from '@/shared/hooks/useBaseForm';
+import { ERROR_MESSAGES, VALIDATION } from '@/shared/constants';
 import { useLogin } from '../hooks';
 import { LoginRequest } from '@/shared/types/domain/auth';
 import { createStyles } from '@/shared/theme/create-styles';
 import { useAuthNavigation } from '@/shared/hooks/useNavigation';
-import { AppIcon } from '@/components';
 
 const Main = memo(() => {
   const [showPassword, setShowPassword] = useState(false);
@@ -37,18 +30,9 @@ const Main = memo(() => {
       username: '',
       password: '',
     },
+    // Lỗi API do useBaseMutation hiển thị; SessionManager tự chuyển sang màn chính khi thành công
     onSubmit: async (data: LoginRequest) => {
-      try {
-        await loginMutation.mutateAsync(data);
-        // setSession({
-        //   isAuthenticated: true,
-        //   user: null,
-        // });
-        // Có thể thêm logic xử lý sau khi đăng nhập thành công ở đây
-      } catch (error) {
-        // Lỗi sẽ được xử lý bởi useBaseForm
-        throw error;
-      }
+      await loginMutation.mutateAsync(data);
     },
     successMessage: 'Đăng nhập thành công!',
     errorMessage: 'Đăng nhập thất bại!',
@@ -93,7 +77,7 @@ const Main = memo(() => {
         }}
         keyboardType="default"
         autoCapitalize="none"
-        leftIcon={<AppIcon name="credit-card" size={18} color="#9ca3af" />}
+        leftIcon={<AppIcon name="credit-card" size={18} color={styles.theme.colors.textTertiary} />}
       />
       <SpacerSm />
 
@@ -125,7 +109,7 @@ const Main = memo(() => {
             message: ERROR_MESSAGES.PASSWORD_TOO_SHORT,
           },
         }}
-        leftIcon={<AppIcon name="lock" size={18} color="#9ca3af" />}
+        leftIcon={<AppIcon name="lock" size={18} color={styles.theme.colors.textTertiary} />}
         rightIcon={
           <Pressable 
             style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
@@ -134,7 +118,7 @@ const Main = memo(() => {
             <AppIcon
               name={showPassword ? 'eye' : 'eye-off'}
               size={18}
-              color="#9ca3af"
+              color={styles.theme.colors.textTertiary}
             />
           </Pressable>
         }
@@ -167,7 +151,7 @@ const useStyles = createStyles((theme, rs) => ({
     backgroundColor: theme.colors.background,
   },
   container: {
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.surface,
   },
   scrollContent: {
     flexGrow: 1,

@@ -56,7 +56,7 @@ export const CustomLoading: React.FC<CustomLoadingProps> = ({
 
 export default memo(CustomLoading);
 
-const useStyles = createStyles((_theme, rs) => ({
+const useStyles = createStyles((theme, rs) => ({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -66,7 +66,7 @@ const useStyles = createStyles((_theme, rs) => ({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    backgroundColor: theme.alpha(theme.colors.background, 0.7),
     zIndex: 9999,
   },
 }));

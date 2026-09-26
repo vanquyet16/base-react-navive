@@ -1,243 +1,98 @@
 /**
- * AUTH SERVICE
- * ============
- * Authentication service: login, register, logout, refresh token.
- * Integrates với HTTP client và token store.
- * 
- * ✨ Multi-Domain Support:
- * Service này sử dụng dedicated AUTH domain client.
- * Auth API có thể nằm ở domain riêng (e.g., https://auth.production.com).
+ * AUTH API
+ * ========
+ * Chỉ gọi API xác thực — KHÔNG lưu token, KHÔNG đổi state.
+ * Vòng đời phiên (lưu token, đăng xuất, hết hạn) do SessionManager đảm nhiệm.
  */
 
-import { createHttpClient } from '@/shared/services/http/http-client';
-import { tokenStore } from '@/shared/store/token-store';
-import { setupTokenHandlers } from '@/shared/services/http/axios-interceptors';
+import { getHttpClient } from '@/shared/services/http/http-client';
 import { API_ENDPOINTS } from '@/shared/constants/api-endpoints';
 import type {
+    ChangePasswordRequest,
+    ForgotPasswordRequest,
     LoginRequest,
     LoginResponse,
+    RefreshTokenResponse,
     RegisterRequest,
     RegisterResponse,
-    RefreshTokenRequest,
-    RefreshTokenResponse,
-    ForgotPasswordRequest,
-    ChangePasswordRequest,
     ResetPasswordRequest,
+    TokenPair,
 } from '@/shared/types/domain/auth';
 import type { User } from '@/shared/types/domain/user';
 import type { ApiResponse } from '@/shared/types/api';
 
-/**
- * Auth Service class
- * 
- * Pattern: Dedicated HTTP client cho AUTH domain
- * - authApiClient gọi tới AUTH domain (cấu hình trong app.config.ts)
- * - Cho phép Auth API scale riêng, deploy riêng infrastructure
- * - Dễ dàng chuyển đổi giữa dev/staging/prod environments
- */
+const client = () => getHttpClient('AUTH');
+
+const unwrap = <T>(response: ApiResponse<T>, label: string): T => {
+    if (response?.data === undefined || response.data === null) {
+        throw new Error(`[AuthApi] ${label}: response không có data`);
+    }
+    return response.data;
+};
+
 class AuthService {
-    /**
-     * HTTP client riêng cho AUTH domain
-     * 
-     * Production: Sẽ gọi tới https://auth.production.com
-     * Development: Gọi tới http://172.20.20.175:40000
-     */
-    private authApiClient = createHttpClient('AUTH');
-    /**
-     * Initialize auth service
-     * Setup interceptors với token handlers
-     */
-    public initialize(): void {
-        setupTokenHandlers({
-            getAccessToken: () => tokenStore.getAccessToken(),
-            getRefreshToken: () => tokenStore.getRefreshToken(),
-            refreshToken: () => this.refreshTokenInternal(),
-            onTokenRefreshFailed: () => this.handleRefreshFailed(),
-        });
-    }
-
-    /**
-     * Login
-     * @param request - Login credentials
-     * @returns User + tokens
-     */
     public async login(request: LoginRequest): Promise<LoginResponse> {
-        // Call API với skipAuth vì chưa có token
-        const response = await this.authApiClient.post<ApiResponse<LoginResponse>>(
-            API_ENDPOINTS.AUTH.LOGIN,
-            request,
-            { skipAuth: true },
-        );
-
-        // Validate response
-        if (!response.data) {
-            throw new Error('Invalid login response');
-        }
-
-        const { tokens, user } = response.data;
-
-        // Store tokens
-        await tokenStore.setTokens(tokens);
-
-        return { tokens, user };
+        const response = await client().post<ApiResponse<LoginResponse>>(API_ENDPOINTS.AUTH.LOGIN, request, {
+            skipAuth: true,
+        });
+        return unwrap(response, 'login');
     }
 
-    /**
-     * Register
-     * @param request - Registration data
-     * @returns Success response
-     */
-    public async register(
-        request: RegisterRequest,
-    ): Promise<RegisterResponse> {
-        const response = await this.authApiClient.post<ApiResponse<RegisterResponse>>(
-            API_ENDPOINTS.AUTH.REGISTER,
-            request,
-            { skipAuth: true },
-        );
-
-        // Auto login sau register nếu backend return tokens
-        if (response.data.tokens) {
-            await tokenStore.setTokens(response.data.tokens);
-        }
-
-        return response.data;
+    public async register(request: RegisterRequest): Promise<RegisterResponse> {
+        const response = await client().post<ApiResponse<RegisterResponse>>(API_ENDPOINTS.AUTH.REGISTER, request, {
+            skipAuth: true,
+        });
+        return unwrap(response, 'register');
     }
 
-    /**
-     * Logout
-     * Clear tokens và gọi API logout nếu cần
-     */
-    public async logout(): Promise<void> {
-        try {
-            // Call API logout (best effort - không care nếu fail)
-            await this.authApiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
-        } catch (error) {
-            console.warn('[AuthService] Logout API error (ignored):', error);
-        } finally {
-            // Always clear local tokens
-            await tokenStore.clearTokens();
-        }
-    }
-
-    /**
-     * Refresh token (internal - called by interceptor)
-     */
-    private async refreshTokenInternal(): Promise<string> {
-        const refreshToken = await tokenStore.getRefreshToken();
-
-        if (!refreshToken) {
-            throw new Error('No refresh token available');
-        }
-
-        const request: RefreshTokenRequest = { refreshToken };
-
-        const response = await this.authApiClient.post<ApiResponse<RefreshTokenResponse>>(
+    public async refreshToken(refreshToken: string): Promise<TokenPair> {
+        const response = await client().post<ApiResponse<RefreshTokenResponse>>(
             API_ENDPOINTS.AUTH.REFRESH_TOKEN,
-            request,
+            { refreshToken },
+            { skipAuth: true, skipRefresh: true },
+        );
+        return unwrap(response, 'refreshToken').tokens;
+    }
+
+    /**
+     * Thu hồi phiên phía server. Token được truyền tường minh vì local state đã bị xoá trước đó;
+     * `skipRefresh` để 401 ở đây không kích hoạt refresh → logout lặp vô hạn.
+     */
+    public async logout(tokens: { accessToken: string; refreshToken: string }): Promise<void> {
+        await client().post(
+            API_ENDPOINTS.AUTH.LOGOUT,
+            { refreshToken: tokens.refreshToken },
             {
                 skipAuth: true,
-                skipRefresh: true, // Prevent infinite loop
+                skipRefresh: true,
+                headers: { Authorization: `Bearer ${tokens.accessToken}` },
             },
         );
-
-        const { tokens } = response.data;
-
-        // Update stored tokens
-        await tokenStore.setTokens(tokens);
-
-        return tokens.accessToken;
     }
 
-    /**
-     * Public refresh token method
-     */
-    public async refreshToken(): Promise<string> {
-        return this.refreshTokenInternal();
-    }
-
-    /**
-     * Handle refresh token failed
-     * Logout user khi refresh token expired/invalid
-     */
-    private async handleRefreshFailed(): Promise<void> {
-        console.warn('[AuthService] Refresh token failed - logging out');
-        await this.logout();
-    }
-
-    /**
-     * Forgot password
-     * @param request - Email để gửi reset link
-     */
-    public async forgotPassword(
-        request: ForgotPasswordRequest,
-    ): Promise<void> {
-        await this.authApiClient.post(
-            API_ENDPOINTS.AUTH.FORGOT_PASSWORD,
-            request,
-            { skipAuth: true },
-        );
-    }
-
-    /**
-     * Change password (khi đã login)
-     * @param request - Current + new password
-     */
-    public async changePassword(
-        request: ChangePasswordRequest,
-    ): Promise<void> {
-        await this.authApiClient.post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, request);
-    }
-
-    /**
-     * Get current user từ API
-     * Dùng để refresh user data
-     */
     public async getCurrentUser(): Promise<User> {
-        const response = await this.authApiClient.get<ApiResponse<User>>(
-            API_ENDPOINTS.AUTH.GET_CURRENT_USER,
-        );
-        return response.data;
+        const response = await client().get<ApiResponse<User>>(API_ENDPOINTS.AUTH.GET_CURRENT_USER);
+        return unwrap(response, 'getCurrentUser');
     }
 
-    /**
-     * Update profile
-     * @param request - Profile data to update
-     */
     public async updateProfile(request: Partial<User>): Promise<User> {
-        const response = await this.authApiClient.put<ApiResponse<User>>(
-            API_ENDPOINTS.AUTH.UPDATE_PROFILE,
-            request
-        );
-        return response.data;
+        const response = await client().put<ApiResponse<User>>(API_ENDPOINTS.AUTH.UPDATE_PROFILE, request);
+        return unwrap(response, 'updateProfile');
     }
 
-    /**
-     * Reset password
-     * @param request - Token and new password
-     */
+    public async forgotPassword(request: ForgotPasswordRequest): Promise<void> {
+        await client().post(API_ENDPOINTS.AUTH.FORGOT_PASSWORD, request, { skipAuth: true });
+    }
+
     public async resetPassword(request: ResetPasswordRequest): Promise<void> {
-        await this.authApiClient.post(
-            API_ENDPOINTS.AUTH.RESET_PASSWORD,
-            request,
-            { skipAuth: true }
-        );
+        await client().post(API_ENDPOINTS.AUTH.RESET_PASSWORD, request, { skipAuth: true });
     }
 
-    /**
-     * Check if user is authenticated
-     */
-    public async isAuthenticated(): Promise<boolean> {
-        return tokenStore.hasAccessToken();
+    public async changePassword(request: ChangePasswordRequest): Promise<void> {
+        await client().post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, request);
     }
 }
 
-/**
- * Singleton auth service instance
- */
 export const authService = new AuthService();
 
-/**
- * Export class nếu cần testing
- */
 export { AuthService };

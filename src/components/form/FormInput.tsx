@@ -33,9 +33,8 @@ import {
   Path,
   RegisterOptions,
 } from 'react-hook-form';
-import { CustomInput, type CustomInputProps } from '@/components/base';
+import { CustomInput, type CustomInputProps } from '@/components/base/CustomInput';
 import { createStyles } from '@/shared/theme/create-styles';
-import { moderateVerticalScale } from 'react-native-size-matters';
 
 interface FormInputProps<T extends FieldValues = FieldValues>
   extends Omit<CustomInputProps, 'onChangeText' | 'value' | 'error'> {
@@ -92,9 +91,9 @@ const FormInputBase = <T extends FieldValues = FieldValues>({
         numberOfLines: 4,
         textAlignVertical: 'top' as const,
         inputStyle: {
-          height: moderateVerticalScale(height || 70),
+          height: styles.rs.moderateVerticalScale(height || 70),
           textAlignVertical: 'top',
-          paddingTop: moderateVerticalScale(4), // Add padding for text area
+          paddingTop: styles.rs.moderateVerticalScale(4),
         },
       }
     : {};

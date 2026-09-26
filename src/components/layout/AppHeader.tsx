@@ -40,10 +40,10 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation, DrawerActions } from '@react-navigation/native';
-import { AppIcon, CustomText, type IconType } from '@/components';
+import AppIcon, { type IconType } from '@/components/base/AppIcon';
+import { CustomText } from '@/components/base/CustomText';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
-import { moderateScale, moderateVerticalScale } from 'react-native-size-matters';
 
 // ============================================================================
 // TYPES
@@ -139,7 +139,7 @@ const HeaderAction: React.FC<HeaderActionProps> = memo(({
       {icon && (
         <AppIcon
           name={icon}
-          size={moderateScale(22)}
+          size={styles.rs.iconSize(22)}
           color={actionColor}
           type={iconType}
         />
@@ -318,20 +318,20 @@ AppHeader.Action = HeaderAction;
 // STYLES — Dùng createStyles thay vì StyleSheet.create để truy cập theme tokens
 // ============================================================================
 
-const useHeaderStyles = createStyles(_theme => ({
+const useHeaderStyles = createStyles((_theme, rs) => ({
   container: {
     width: '100%',
     zIndex: 10,
   } as ViewStyle,
   contentRow: {
-    height: moderateVerticalScale(52),
+    height: rs.moderateVerticalScale(52),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: moderateScale(12),
+    paddingHorizontal: rs.moderateScale(12),
   } as ViewStyle,
   leftSlot: {
-    minWidth: moderateScale(44),
+    minWidth: rs.moderateScale(44),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
@@ -340,29 +340,29 @@ const useHeaderStyles = createStyles(_theme => ({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: moderateScale(8),
+    paddingHorizontal: rs.moderateScale(8),
   } as ViewStyle,
   rightSlot: {
-    minWidth: moderateScale(44),
+    minWidth: rs.moderateScale(44),
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    gap: moderateScale(8),
+    gap: rs.moderateScale(8),
   } as ViewStyle,
   titleText: {
     textAlign: 'center',
   } as TextStyle,
   subtitleText: {
     textAlign: 'center',
-    marginTop: moderateVerticalScale(2),
+    marginTop: rs.moderateVerticalScale(2),
     opacity: 0.85,
   } as TextStyle,
 }));
 
-const useActionStyles = createStyles(theme => ({
+const useActionStyles = createStyles((theme, rs) => ({
   actionButton: {
-    width: moderateScale(40),
-    height: moderateScale(40),
+    width: rs.moderateScale(40),
+    height: rs.moderateScale(40),
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
@@ -371,9 +371,9 @@ const useActionStyles = createStyles(theme => ({
     position: 'absolute',
     top: 2,
     right: 2,
-    minWidth: moderateScale(16),
-    height: moderateScale(16),
-    borderRadius: moderateScale(8),
+    minWidth: rs.moderateScale(16),
+    height: rs.moderateScale(16),
+    borderRadius: rs.moderateScale(8),
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 3,
@@ -381,8 +381,8 @@ const useActionStyles = createStyles(theme => ({
   badgeText: {
     // Dùng theme.colors.white thay vì hardcode '#ffffff'
     color: theme.colors.white,
-    fontSize: moderateScale(10),
-    lineHeight: moderateScale(12),
+    fontSize: rs.fontSize(10),
+    lineHeight: rs.lineHeight(10, 1.2),
   } as TextStyle,
 }));
 

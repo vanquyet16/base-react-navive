@@ -1,43 +1,29 @@
 /**
  * QUERY PROVIDER
  * ==============
- * QueryClientProvider wrapper component.
- * Setup TanStack Query cho toàn app.
- *
+ * Nối focusManager của TanStack Query với AppState: quay lại app → refetch dữ liệu stale.
  */
 
-import React from 'react';
-import { QueryClientProvider } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
+import { AppState, Platform, type AppStateStatus } from 'react-native';
+import { focusManager, QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './query-client';
 
-/**
- * Query Provider Props
- */
+const onAppStateChange = (status: AppStateStatus) => {
+  if (Platform.OS !== 'web') {
+    focusManager.setFocused(status === 'active');
+  }
+};
+
 interface QueryProviderProps {
   children: React.ReactNode;
 }
 
-/**
- * Query Provider Component
- * Wrap app với TanStack Query
- */
 export const QueryProvider: React.FC<QueryProviderProps> = ({ children }) => {
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
-};
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', onAppStateChange);
+    return () => subscription.remove();
+  }, []);
 
-/**
- * Dev Tools (optional)
- * Uncomment để enable React Query DevTools
- */
-// import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-//
-// export const QueryProvider: React.FC<QueryProviderProps> = ({ children }) => {
-//   return (
-//     <QueryClientProvider client={queryClient}>
-//       {children}
-//       {__DEV__ && <ReactQueryDevtools initialIsOpen={false} />}
-//     </QueryClientProvider>
-//   );
-// };
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+};

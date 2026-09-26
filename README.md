@@ -56,38 +56,31 @@ Xem hướng dẫn chi tiết tại [React Native Environment Setup](https://rea
 ### 1. Clone & Install
 
 ```bash
-# Clone repository
 git clone <repository-url>
 cd BaseReactNative
-
-# Install JavaScript dependencies
-yarn install
-
-# Install iOS dependencies (Required for macOS)
-cd ios && pod install && cd ..
+npm install                      # dùng npm (package-lock.json là lockfile duy nhất)
+cd ios && pod install && cd ..   # macOS
 ```
 
-### 2. Start Metro Bundler
+### 2. Chạy app
 
 ```bash
-yarn start
+npm start                # Metro
+npm run android:dev      # Android, flavor dev (server nội bộ)
+npm run ios:dev          # iOS, server nội bộ
 ```
 
-### 3. Run Application
-
-**iOS:**
+### 3. Xuất APK theo môi trường
 
 ```bash
-yarn ios
-# Hoặc chạy trên simulator cụ thể:
-yarn ios --simulator="iPhone 15 Pro"
+npm run apk:dev          # APK trỏ server dev — gửi tester nội bộ
+npm run apk:staging      # APK staging (cấu hình như prod, server staging)
+npm run apk:prod         # APK production — tự chặn nếu cấu hình chưa đạt
+npm run ios:prod         # iOS bản Release, server prod
+npm run archive:ios:prod # iOS archive để phát hành
 ```
 
-**Android:**
-
-```bash
-yarn android
-```
+Chi tiết: [docs/API_CONFIG_GUIDE.md](docs/API_CONFIG_GUIDE.md)
 
 ## 📁 Project Structure
 
@@ -119,7 +112,7 @@ src/
 │   │   └── ...
 │   ├── form/                # Form wrapper components
 │   ├── layout/              # Layout components (Screen, Container, etc.)
-│   ├── navigation/          # Navigation UI components (CustomDrawer, TabBar, Header)
+│   ├── navigation/          # Navigation UI dùng chung (TabBar, TabNavigator) — CustomDrawer nằm ở src/navigation/components
 │   └── utility/             # Utility components (ErrorBoundary, LazyScreen, etc.)
 │
 ├── features/                 # Feature modules (domain-driven)
@@ -218,39 +211,49 @@ Root Navigator (app-navigator.tsx)
 
 ## 🔧 Configuration
 
+### Môi trường
+
+Mỗi flavor Android (`dev` / `staging` / `prod`) nhúng file `.env.<flavor>` tương ứng qua `react-native-config`. Toàn bộ cấu hình được đọc và validate tại `src/shared/config/env.ts`. **Không đặt secret trong `.env`.**
+
 ### Path Aliases
 
-Dự án sử dụng `babel-plugin-module-resolver` để import gọn gàng:
-
 ```typescript
-import { CustomButton } from '@/components'; // thay vì ../../../components
-import { useAuth } from '@/features/auth'; // thay vì ../../features/auth
-import { API_URL } from '@/config';
+import { CustomButton } from '@/components/base/CustomButton';
+import { useLogin } from '@/features/auth';
+import { API_URLS, ENV } from '@/shared/config';
 ```
+
+### Ranh giới kiến trúc (ESLint ép buộc)
+
+```
+app → navigation → features → components → shared
+```
+
+- `shared` không import tầng trên; `components` không import `features`/`navigation`/`app`.
+- Feature không import chéo feature khác; từ `navigation` chỉ được dùng hằng số route.
+- Mọi thay đổi phiên đăng nhập đi qua `sessionManager` (`src/features/auth/session`).
 
 ## 📦 Key Dependencies
 
-| Package                    | Version | Usage            |
-| -------------------------- | ------- | ---------------- |
-| `react-native`             | 0.83.1  | Core             |
-| `@tanstack/react-query`    | v5      | Data Fetching    |
-| `zustand`                  | v5      | State Management |
-| `react-hook-form`          | v7      | Form Handling    |
-| `react-native-mmkv`        | v3      | Fast Storage     |
-| `@ant-design/react-native` | v5      | UI Framework     |
-| `react-native-svg`         | Latest  | SVG Support      |
+| Package | Usage |
+| --- | --- |
+| `react-native` 0.83 / React 19 | Core |
+| `@tanstack/react-query` v5 | Server state (dữ liệu API, hồ sơ user) |
+| `zustand` v5 | Client state (trạng thái phiên, settings) |
+| `react-native-mmkv` | Lưu phiên đăng nhập và settings |
+| `react-native-config` | Cấu hình theo môi trường |
+| `react-hook-form` v7 | Form |
+| `@ant-design/react-native` v5 | UI + Toast |
 
 ## 🛠️ Development
 
 ### Scripts
 
 ```bash
-yarn start          # Start Metro
-yarn ios            # Run iOS
-yarn android        # Run Android
-yarn test           # Run Jest Tests
-yarn lint           # Run ESLint
-yarn type-check     # Run TypeScript check
+npm run typecheck     # tsc --noEmit
+npm run lint          # ESLint (gồm luật ranh giới kiến trúc)
+npm test              # Jest
+npm run verify        # cả ba — chạy trước khi commit / trên CI
 ```
 
 ---
@@ -386,7 +389,7 @@ DRAWER_STACK: {
 }
 ```
 
-4. Thêm vào `menuItems` trong `CustomDrawer.tsx`:
+4. Thêm vào `menuItems` trong `src/navigation/components/CustomDrawer.tsx`:
 ```tsx
 {
   label: 'Màn hình mới',
@@ -605,7 +608,7 @@ navigation.navigate('SettingsStack', {
 - [ ] Thêm type vào `DrawerStackParamList` (types/index.ts)
 - [ ] Thêm screen vào `DrawerStackNavigator.tsx` với `initialParams`
 - [ ] Thêm key vào `NAVIGATION_KEYS.DRAWER_STACK` (navigationConfig.ts)
-- [ ] Thêm menu item vào `CustomDrawer.tsx` với `NAVIGATION_KEYS.DRAWER_STACK.*`
+- [ ] Thêm menu item vào `CustomDrawer.tsx` với `NAVIGATION_KEYS.MAIN_STACK.*`
 
 #### Checklist: Thêm stack mới
 
@@ -720,7 +723,7 @@ const menuItems: DrawerMenuItem[] = [
 - Khắc phục:
   ```bash
   cd ios && pod install && cd ..
-  yarn ios (hoặc yarn android)
+  npm run ios (hoặc npm run android:dev)
   ```
   </details>
 
@@ -729,7 +732,7 @@ const menuItems: DrawerMenuItem[] = [
 
 - Khắc phục: Reset cache
   ```bash
-  yarn start --reset-cache
+  npm start -- --reset-cache
   ```
   </details>
 

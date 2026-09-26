@@ -1,11 +1,6 @@
 import React, { memo } from 'react';
 import { View, ViewStyle, StyleProp } from 'react-native';
 import { createStyles } from '@/shared/theme/create-styles';
-import {
-  moderateScale,
-  
-  moderateVerticalScale,
-} from 'react-native-size-matters';
 
 export interface ShadowCardProps {
   children: React.ReactNode;
@@ -32,23 +27,22 @@ export const ShadowCard: React.FC<ShadowCardProps> = memo(
 );
 
 const useStyles = createStyles(
-  theme => ({
+  (theme, rs) => ({
     container: {
-      backgroundColor: theme.colors.white,
-      borderRadius: moderateScale(12),
-      padding: moderateScale(16),
-      // marginHorizontal: scale(16),
-      marginBottom: moderateVerticalScale(16),
+      backgroundColor: theme.colors.surface,
+      borderRadius: rs.moderateScale(12),
+      padding: rs.moderateScale(16),
+      // marginHorizontal: rs.scale(16),
+      marginBottom: rs.moderateVerticalScale(16),
 
       // Unified 3D Shadow Effect
-      shadowColor: '#000',
+      shadowColor: theme.colors.black,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 8,
       elevation: 4,
     },
   }),
-  true,
 );
 
 export default ShadowCard;

@@ -1,49 +1,27 @@
 /**
- * HTTP CLIENT WRAPPER
- * ===================
- * Type-safe HTTP client wrapper around axios.
- * Provides clean API với generics cho request/response types.
- * Hỗ trợ multiple domains cho các API services khác nhau.
+ * HTTP CLIENT
+ * ===========
+ * Wrapper type-safe quanh axios: trả thẳng `response.data`, lỗi luôn là AppHttpError.
+ *
+ * Usage:
+ *   const client = getHttpClient('AUTH');
+ *   const res = await client.post<ApiResponse<LoginResponse>>(url, body, { skipAuth: true });
  */
 
 import type { AxiosInstance } from 'axios';
-import { axiosInstance, createAxiosInstance } from './axios-instance';
+import type { ApiDomain } from '@/shared/config/env';
+import { createAxiosInstance } from './axios-instance';
 import type { HttpRequestConfig, HttpResponse } from './http-types';
-import type { ApiDomain } from '@/shared/config/app.config';
 
-/**
- * HTTP Client class
- * Wrapper để isolate axios và provide cleaner API
- */
-class HttpClient {
-    private instance: AxiosInstance;
+export class HttpClient {
+    constructor(private readonly instance: AxiosInstance) {}
 
-    constructor(axiosInst: AxiosInstance) {
-        this.instance = axiosInst;
-    }
-
-    /**
-     * GET request
-     * @param url - Request URL
-     * @param config - Request config
-     * @returns Promise<TResponse>
-     */
-    public async get<TResponse = any>(
-        url: string,
-        config?: HttpRequestConfig,
-    ): Promise<TResponse> {
+    public async get<TResponse>(url: string, config?: HttpRequestConfig): Promise<TResponse> {
         const response = await this.instance.get<TResponse>(url, config);
         return response.data;
     }
 
-    /**
-     * POST request
-     * @param url - Request URL
-     * @param data - Request payload
-     * @param config - Request config
-     * @returns Promise<TResponse>
-     */
-    public async post<TResponse = any, TRequest = any>(
+    public async post<TResponse, TRequest = unknown>(
         url: string,
         data?: TRequest,
         config?: HttpRequestConfig,
@@ -52,14 +30,7 @@ class HttpClient {
         return response.data;
     }
 
-    /**
-     * PUT request
-     * @param url - Request URL
-     * @param data - Request payload
-     * @param config - Request config
-     * @returns Promise<TResponse>
-     */
-    public async put<TResponse = any, TRequest = any>(
+    public async put<TResponse, TRequest = unknown>(
         url: string,
         data?: TRequest,
         config?: HttpRequestConfig,
@@ -68,14 +39,7 @@ class HttpClient {
         return response.data;
     }
 
-    /**
-     * PATCH request
-     * @param url - Request URL
-     * @param data - Request payload
-     * @param config - Request config
-     * @returns Promise<TResponse>
-     */
-    public async patch<TResponse = any, TRequest = any>(
+    public async patch<TResponse, TRequest = unknown>(
         url: string,
         data?: TRequest,
         config?: HttpRequestConfig,
@@ -84,71 +48,25 @@ class HttpClient {
         return response.data;
     }
 
-    /**
-     * DELETE request
-     * @param url - Request URL
-     * @param config - Request config
-     * @returns Promise<TResponse>
-     */
-    public async delete<TResponse = any>(
-        url: string,
-        config?: HttpRequestConfig,
-    ): Promise<TResponse> {
+    public async delete<TResponse>(url: string, config?: HttpRequestConfig): Promise<TResponse> {
         const response = await this.instance.delete<TResponse>(url, config);
         return response.data;
     }
 
-    /**
-     * Get full response (với headers, status, etc.)
-     * Dùng khi cần access response metadata
-     */
-    public async getFullResponse<TResponse = any>(
-        url: string,
-        config?: HttpRequestConfig,
-    ): Promise<HttpResponse<TResponse>> {
+    /** Khi cần headers/status của response */
+    public getFullResponse<TResponse>(url: string, config?: HttpRequestConfig): Promise<HttpResponse<TResponse>> {
         return this.instance.get<TResponse>(url, config);
-    }
-
-    /**
-     * Get underlying axios instance nếu cần
-     * Trade-off: Expose axios cho advanced use cases
-     */
-    public getAxiosInstance(): AxiosInstance {
-        return this.instance;
     }
 }
 
-/**
- * Factory function: Tạo HTTP client cho domain cụ thể
- * @param domain - Domain cần tạo client (MAIN, AUTH, MANAGER, etc.)
- * @returns HttpClient instance cho domain đó
- * 
- * Usage:
- * ```ts
- * // Tạo client cho Auth API
- * const authClient = createHttpClient('AUTH');
- * await authClient.post('/login', credentials);
- * 
- * // Tạo client cho Manager API
- * const managerClient = createHttpClient('MANAGER');
- * await managerClient.get('/users');
- * ```
- */
-export const createHttpClient = (domain: ApiDomain = 'MAIN'): HttpClient => {
-    const instance = createAxiosInstance(domain);
-    return new HttpClient(instance);
+const clients = new Map<ApiDomain, HttpClient>();
+
+/** Một client (một axios instance) cho mỗi domain — tạo lười, dùng lại */
+export const getHttpClient = (domain: ApiDomain = 'MAIN'): HttpClient => {
+    let client = clients.get(domain);
+    if (!client) {
+        client = new HttpClient(createAxiosInstance(domain));
+        clients.set(domain, client);
+    }
+    return client;
 };
-
-/**
- * Default HTTP client cho MAIN domain
- * Sử dụng: import { httpClient } from '@/shared/services/http/http-client';
- * 
- * @deprecated Nên sử dụng createHttpClient() để tạo client cho domain cụ thể
- */
-export const httpClient = new HttpClient(axiosInstance);
-
-/**
- * Export class nếu cần create custom instances
- */
-export { HttpClient };
-

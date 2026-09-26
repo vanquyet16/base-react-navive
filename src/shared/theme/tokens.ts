@@ -4,12 +4,9 @@
  * Single source of truth for design decisions.
  * Includes: Colors, Spacing, Typography, Radius, Shadows, zIndex.
  * 
- * @system Atomic Design
- * @responsive Uses react-native-size-matters for scaling
+ * Token giữ giá trị thiết kế gốc (base units, màn 390×844); co giãn theo màn hình do
+ * useResponsiveSize đảm nhiệm tại nơi dùng (vd: rs.padding(theme.spacing.md)).
  */
-
-// Đã gỡ bỏ react-native-size-matters: các token giữ nguyên giá trị thiết kế gốc (Raw Base Units).
-// Việc co giãn kích thước động được đảm nhiệm hoàn toàn bởi useResponsiveSize.
 
 /**
  * Color Palette
@@ -150,11 +147,74 @@ export const zIndex = {
 } as const;
 
 /**
- * Breakpoints
+ * Spacing scale (base unit 4). Dùng qua responsive: `rs.padding(theme.spacing.lg)`.
  */
-export const breakpoints = {
-    sm: 320,
-    md: 768,
-    lg: 1024,
-    xl: 1280,
+export const spacing = {
+    none: 0,
+    xxs: 2,
+    xs: 4,
+    sm: 8,
+    md: 12,
+    lg: 16,
+    xl: 20,
+    xxl: 24,
+    xxxl: 32,
+    huge: 48,
 } as const;
+
+/**
+ * Bo góc. Dùng qua responsive: `rs.radius(theme.radii.md)`.
+ */
+export const radii = {
+    none: 0,
+    xs: 4,
+    sm: 6,
+    md: 8,
+    lg: 12,
+    xl: 16,
+    xxl: 20,
+    full: 9999,
+} as const;
+
+export const fontWeights = {
+    light: '300',
+    normal: '400',
+    medium: '500',
+    semibold: '600',
+    bold: '700',
+    extrabold: '800',
+} as const;
+
+export type FontWeight = keyof typeof fontWeights;
+
+type TextColorRole = 'text' | 'textSecondary';
+
+interface TypographyToken {
+    fontSize: number;
+    /** Bội số line-height so với fontSize */
+    lineHeight: number;
+    fontWeight: FontWeight;
+    color: TextColorRole;
+}
+
+/**
+ * Thang chữ (giá trị thiết kế gốc). CustomText sinh style từ đây qua rs.fontSize / rs.lineHeight.
+ */
+export const typography = {
+    h1: { fontSize: 36, lineHeight: 1.25, fontWeight: 'bold', color: 'text' },
+    h2: { fontSize: 30, lineHeight: 1.25, fontWeight: 'bold', color: 'text' },
+    h3: { fontSize: 24, lineHeight: 1.35, fontWeight: 'semibold', color: 'text' },
+    h4: { fontSize: 20, lineHeight: 1.35, fontWeight: 'semibold', color: 'text' },
+    h5: { fontSize: 18, lineHeight: 1.35, fontWeight: 'semibold', color: 'text' },
+    h6: { fontSize: 16, lineHeight: 1.35, fontWeight: 'semibold', color: 'text' },
+    h7: { fontSize: 14, lineHeight: 1.35, fontWeight: 'semibold', color: 'text' },
+    h8: { fontSize: 12, lineHeight: 1.35, fontWeight: 'semibold', color: 'text' },
+    h9: { fontSize: 10, lineHeight: 1.35, fontWeight: 'bold', color: 'text' },
+    h10: { fontSize: 8, lineHeight: 1.35, fontWeight: 'bold', color: 'text' },
+    body: { fontSize: 16, lineHeight: 1.35, fontWeight: 'normal', color: 'text' },
+    bodySmall: { fontSize: 14, lineHeight: 1.35, fontWeight: 'normal', color: 'text' },
+    caption: { fontSize: 12, lineHeight: 1.35, fontWeight: 'normal', color: 'textSecondary' },
+    label: { fontSize: 14, lineHeight: 1.35, fontWeight: 'medium', color: 'text' },
+} as const satisfies Record<string, TypographyToken>;
+
+export type TypographyVariant = keyof typeof typography;

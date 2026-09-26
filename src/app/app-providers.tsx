@@ -1,35 +1,34 @@
 /**
  * APP PROVIDERS
  * =============
- * Centralized providers wrapper cho toàn app.
- * Wrap QueryProvider, custom providers nếu cần.
- *
+ * Thứ tự (ngoài → trong):
+ *   SafeAreaProvider → QueryProvider → ThemedAntdProvider → children
+ * - SafeAreaProvider ở gốc: mọi màn (kể cả loading/lỗi ngoài navigator) đọc được insets.
+ * - Antd Provider nhận theme của app → component antd đổi theo sáng/tối.
+ * - Zustand không cần provider.
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Provider as AntdProvider } from '@ant-design/react-native';
 import { QueryProvider } from '@/shared/query/query-provider';
-import { Provider } from '@ant-design/react-native';
+import { useTheme } from '@/shared/theme/use-theme';
+import { toAntdTheme } from '@/shared/theme/antd-theme';
 
-/**
- * AppProviders Props
- */
 interface AppProvidersProps {
   children: React.ReactNode;
 }
 
-/**
- * AppProviders Component
- * Wrap tất cả providers theo order: outer -> inner
- * Order matters: Query -> Theme -> Navigation -> Children
- */
-export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => {
-  return (
-    <QueryProvider>
-      <Provider>
-        {/* Zustand store không cần provider - global by default */}
-        {/* Theme được access qua useTheme hook từ Zustand */}
-        {children}
-      </Provider>
-    </QueryProvider>
-  );
+const ThemedAntdProvider: React.FC<AppProvidersProps> = ({ children }) => {
+  const theme = useTheme();
+  const antdTheme = useMemo(() => toAntdTheme(theme), [theme]);
+  return <AntdProvider theme={antdTheme}>{children}</AntdProvider>;
 };
+
+export const AppProviders: React.FC<AppProvidersProps> = ({ children }) => (
+  <SafeAreaProvider>
+    <QueryProvider>
+      <ThemedAntdProvider>{children}</ThemedAntdProvider>
+    </QueryProvider>
+  </SafeAreaProvider>
+);

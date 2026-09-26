@@ -110,9 +110,9 @@ export type SortOrder = 'asc' | 'desc';
 export type Status = 'idle' | 'loading' | 'success' | 'error';
 
 /**
- * Theme type
+ * Chế độ giao diện người dùng chọn. 'system' = theo cài đặt sáng/tối của thiết bị.
  */
-export type Theme = 'light' | 'dark';
+export type ThemeMode = 'light' | 'dark' | 'system';
 
 /**
  * Language type - extend khi support thêm languages

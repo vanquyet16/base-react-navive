@@ -1,23 +1,19 @@
 /**
  * APP ROOT
  * ========
- * App root component - entry point cho app.
- * Wrap providers, handle initialization, render navigator.
- *
+ * Providers → khởi tạo (bootstrap) → điều hướng.
  */
 
 import React, { useEffect } from 'react';
 import { StatusBar, StyleSheet } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { AppProviders } from './app-providers';
-import { useAppInit } from '@/app/hooks/use-app-init';
-import { useTheme } from '@/shared/theme/use-theme';
-import { useSplashScreen } from '@/shared/hooks';
-import {
-  ErrorBoundary,
-  LoadingScreen,
-} from '@/components';
 import { AppNavigator } from './app-navigator';
+import { useAppInit } from './hooks/use-app-init';
+import { useTheme } from '@/shared/theme/use-theme';
+import { useSplashScreen } from '@/shared/hooks/useSplashScreen';
+import ErrorBoundary from '@/components/utility/ErrorBoundary';
+import LoadingScreen from '@/components/utility/LoadingScreen';
 
 const styles = StyleSheet.create({
   root: {
@@ -25,66 +21,42 @@ const styles = StyleSheet.create({
   },
 });
 
-/**
- * Loading Screen
- * Show khi app đang initialize
- */
-
-/**
- * App Content
- * Rendered sau khi initialization complete
- */
 const AppContent: React.FC = () => {
-  const { isLoading, isReady, error } = useAppInit();
+  const { status, error, retry } = useAppInit();
   const theme = useTheme();
   const { hideSplash } = useSplashScreen();
 
   useEffect(() => {
-    if (isReady || error) {
+    if (status !== 'loading') {
       hideSplash();
     }
-  }, [isReady, error, hideSplash]);
+  }, [status, hideSplash]);
 
-  // Show loading
-  if (isLoading) {
+  if (status === 'loading') {
     return <LoadingScreen />;
   }
 
-  // Show error
-  if (error) {
-    return <ErrorBoundary error={error} />;
+  if (status === 'error') {
+    return <ErrorBoundary error={error} title="Không thể khởi động ứng dụng" onRetry={retry} />;
   }
 
-  // Show app
-  if (isReady) {
-    return (
-      <ErrorBoundary>
-        <StatusBar
-          barStyle={theme.isDark ? 'light-content' : 'dark-content'}
-          backgroundColor={theme.colors.background}
-        />
-        <AppNavigator />
-      </ErrorBoundary>
-    );
-  }
-
-  // Fallback
-  return <LoadingScreen />;
-};
-
-/**
- * AppRoot Component
- * Top-level component
- */
-export const AppRoot: React.FC = () => {
   return (
-    <GestureHandlerRootView style={styles.root}>
-      <ErrorBoundary>
-        <AppProviders>
-          <AppContent />
-        </AppProviders>
-      </ErrorBoundary>
-    </GestureHandlerRootView>
+    <ErrorBoundary>
+      <StatusBar
+        barStyle={theme.isDark ? 'light-content' : 'dark-content'}
+        backgroundColor={theme.colors.background}
+      />
+      <AppNavigator />
+    </ErrorBoundary>
   );
 };
 
+export const AppRoot: React.FC = () => (
+  <GestureHandlerRootView style={styles.root}>
+    <ErrorBoundary>
+      <AppProviders>
+        <AppContent />
+      </AppProviders>
+    </ErrorBoundary>
+  </GestureHandlerRootView>
+);

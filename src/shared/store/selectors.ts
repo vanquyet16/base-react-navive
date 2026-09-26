@@ -10,31 +10,19 @@ import { useShallow } from 'zustand/react/shallow';
 import { useAppStore } from './app-store';
 import { sessionSelectors } from './session-store';
 import { settingsSelectors } from './settings-store';
-import type { User } from '@/shared/types/domain/user';
-import type { Theme, Language } from '@/shared/types/common';
+import type { ThemeMode, Language } from '@/shared/types/common';
 
 /**
  * Session Selectors
- * Sử dụng: const isAuth = useIsAuthenticated();
  */
-export const useIsAuthenticated = () =>
-    useAppStore(sessionSelectors.isAuthenticated);
+export const useSessionStatus = () => useAppStore(sessionSelectors.status);
 
-export const useCurrentUser = (): User | null =>
-    useAppStore(sessionSelectors.user);
-
-export const useUserId = () =>
-    useAppStore(sessionSelectors.userId);
-
-export const useUserRole = () =>
-    useAppStore(sessionSelectors.userRole);
-
-
+export const useIsAuthenticated = () => useAppStore(sessionSelectors.isAuthenticated);
 
 /**
  * Settings Selectors
  */
-export const useThemeMode = (): Theme =>
+export const useThemeMode = (): ThemeMode =>
     useAppStore(settingsSelectors.theme);
 
 export const useLanguage = (): Language =>
@@ -43,23 +31,12 @@ export const useLanguage = (): Language =>
 export const useNotificationsEnabled = () =>
     useAppStore(settingsSelectors.notificationsEnabled);
 
-export const useIsDarkMode = () =>
-    useAppStore(settingsSelectors.isDarkMode);
 
 /**
  * Actions Selectors
  * CRITICAL FIX: Use useShallow to prevent infinite loop
  * Without shallow equality, object is recreated every render → infinite loop
  */
-export const useSessionActions = () =>
-    useAppStore(
-        useShallow((state) => ({
-            setSession: state.setSession,
-            setUser: state.setUser,
-            clearSession: state.clearSession,
-        }))
-    );
-
 export const useSettingsActions = () =>
     useAppStore(
         useShallow((state) => ({
@@ -69,20 +46,6 @@ export const useSettingsActions = () =>
             resetSettings: state.resetSettings,
         }))
     );
-
-/**
- * Combined selectors cho complex logic
- */
-export const useAuthUser = () => {
-    const isAuthenticated = useIsAuthenticated();
-    const user = useCurrentUser();
-
-    return {
-        isAuthenticated,
-        user,
-        isGuest: !isAuthenticated,
-    };
-};
 
 /**
  * Export all

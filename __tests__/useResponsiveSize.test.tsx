@@ -1,134 +1,140 @@
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
-import { Dimensions } from 'react-native';
-import { useResponsiveSize, ResponsiveSize } from '@/shared/hooks/useResponsiveSize';
+import { Dimensions, StyleSheet } from 'react-native';
+import {
+  computeResponsiveSize,
+  getResponsiveSize,
+  useResponsiveSize,
+  type ResponsiveSize,
+} from '@/shared/hooks/useResponsiveSize';
 
-// Helper component để test hook qua react-test-renderer
-const TestConsumer: React.FC<{ onHookResult: (res: ResponsiveSize) => void }> = ({ onHookResult }) => {
-  const res = useResponsiveSize();
-  onHookResult(res);
-  return null;
-};
+const rs = (width: number, height: number, fontScale = 1) => computeResponsiveSize({ width, height, fontScale });
 
-describe('useResponsiveSize Hook', () => {
-  const setWindowDimensions = (width: number, height: number) => {
-    ReactTestRenderer.act(() => {
-      Dimensions.set({
-        window: { width, height, scale: 2, fontScale: 1 },
-        screen: { width, height, scale: 2, fontScale: 1 },
+describe('Responsive engine — thiết bị chuẩn', () => {
+  it('iPhone 14 (390×844): giá trị thiết kế giữ nguyên', () => {
+    const r = rs(390, 844);
+    expect(r.isPhone).toBe(true);
+    expect(r.fontSize(16)).toBe(16);
+    expect(r.padding(20)).toBe(20);
+    expect(r.iconSize(24)).toBe(24);
+    expect(r.scale(16)).toBe(16);
+    expect(r.wp(50)).toBe(195);
+    expect(r.hp(50)).toBe(422);
+    expect(r.buttonHeight('md')).toBe(48);
+    expect(r.headerHeight).toBe(56);
+    expect(r.containerWidth).toBe(r.wp(92));
+  });
+
+  it('iPhone SE (320×568): chữ không co dưới 90%', () => {
+    const r = rs(320, 568);
+    expect(r.isSmallPhone).toBe(true);
+    expect(r.fontSize(16)).toBeGreaterThanOrEqual(14);
+    expect(r.padding(16)).toBeGreaterThanOrEqual(14);
+  });
+
+  it('iPad (768×1024): lớn hơn phone nhưng có trần', () => {
+    const r = rs(768, 1024);
+    expect(r.isTablet).toBe(true);
+    expect(r.fontSize(16)).toBeGreaterThanOrEqual(17);
+    expect(r.fontSize(16)).toBeLessThanOrEqual(20);
+    expect(r.padding(16)).toBeLessThanOrEqual(24);
+    expect(r.iconSize(24)).toBeLessThanOrEqual(31);
+    expect(r.buttonHeight('md')).toBe(54);
+    expect(r.columns(1, 2)).toBe(2);
+  });
+});
+
+describe('Responsive engine — xoay màn hình & màn đặc biệt', () => {
+  it('xoay ngang KHÔNG làm đổi cỡ chữ/icon/padding (co giãn theo cạnh ngắn)', () => {
+    const portrait = rs(390, 844);
+    const landscape = rs(844, 390);
+    for (const size of [8, 12, 16, 24, 32]) {
+      expect(landscape.fontSize(size)).toBe(portrait.fontSize(size));
+      expect(landscape.padding(size)).toBe(portrait.padding(size));
+      expect(landscape.iconSize(size)).toBe(portrait.iconSize(size));
+      expect(landscape.scale(size)).toBe(portrait.scale(size));
+      expect(landscape.moderateVerticalScale(size)).toBe(portrait.moderateVerticalScale(size));
+    }
+  });
+
+  it('bố cục phần trăm (wp/hp) theo hướng hiện tại', () => {
+    const r = rs(844, 390);
+    expect(r.isLandscape).toBe(true);
+    expect(r.wp(100)).toBe(844);
+    expect(r.hp(100)).toBe(390);
+  });
+
+  it('điện thoại lớn xoay ngang (932×430) vẫn là phone, không phải tablet', () => {
+    const r = rs(932, 430);
+    expect(r.isTablet).toBe(false);
+    expect(r.isPhone).toBe(true);
+    expect(r.buttonHeight('md')).toBe(48);
+  });
+
+  it('tablet xoay ngang vẫn là tablet', () => {
+    expect(rs(1024, 768).isTablet).toBe(true);
+  });
+
+  it('iPad chia đôi màn hình hẹp (507×1024) được coi là phone để layout một cột', () => {
+    const r = rs(507, 1024);
+    expect(r.isTablet).toBe(false);
+    expect(r.columns(1, 2)).toBe(1);
+  });
+
+  it('khối nội dung không bị kéo quá rộng trên màn lớn', () => {
+    expect(rs(1366, 1024).maxContentWidth).toBe(720);
+    expect(rs(390, 844).maxContentWidth).toBe(390);
+    expect(rs(844, 390).containerWidth).toBeLessThanOrEqual(640);
+  });
+
+  it('viền không bị phóng to khi xoay; 0 → hairline', () => {
+    expect(rs(844, 390).borderWidth(1)).toBe(1);
+    expect(rs(390, 844).borderWidth(0)).toBe(StyleSheet.hairlineWidth);
+  });
+
+  it('control luôn đạt vùng chạm tối thiểu 44dp', () => {
+    expect(rs(320, 568).buttonHeight('sm')).toBeGreaterThanOrEqual(44);
+    expect(rs(320, 568).inputHeight(30)).toBeGreaterThanOrEqual(44);
+  });
+
+  it('giá trị âm (shadow offset) được kẹp theo độ lớn, giữ dấu', () => {
+    const value = rs(768, 1024).moderateVerticalScale(-3);
+    expect(value).toBeLessThan(0);
+    expect(Math.abs(value)).toBeLessThanOrEqual(5);
+  });
+});
+
+describe('Responsive engine — cache dùng chung', () => {
+  it('cùng kích thước cửa sổ → cùng một object (để cache style theo tham chiếu)', () => {
+    const a = getResponsiveSize({ width: 390, height: 844, fontScale: 1 });
+    const b = getResponsiveSize({ width: 390, height: 844, fontScale: 1 });
+    const c = getResponsiveSize({ width: 844, height: 390, fontScale: 1 });
+    expect(a).toBe(b);
+    expect(a).not.toBe(c);
+  });
+
+  it('hook cập nhật khi đổi kích thước cửa sổ', () => {
+    let result!: ResponsiveSize;
+    const Consumer = () => {
+      result = useResponsiveSize();
+      return null;
+    };
+    const set = (width: number, height: number) =>
+      ReactTestRenderer.act(() => {
+        Dimensions.set({
+          window: { width, height, scale: 2, fontScale: 1 },
+          screen: { width, height, scale: 2, fontScale: 1 },
+        });
       });
-    });
-  };
 
-  beforeEach(() => {
-    setWindowDimensions(390, 844);
-  });
-
-  it('tính toán chính xác trên màn hình iPhone 14 chuẩn (390 x 844)', () => {
-    setWindowDimensions(390, 844);
-
-    let result!: ResponsiveSize;
+    set(390, 844);
     ReactTestRenderer.act(() => {
-      ReactTestRenderer.create(<TestConsumer onHookResult={res => { result = res; }} />);
+      ReactTestRenderer.create(<Consumer />);
     });
+    expect(result.isPortrait).toBe(true);
 
-    expect(result.width).toBe(390);
-    expect(result.height).toBe(844);
-    expect(result.isTablet).toBe(false);
-    expect(result.isLandscape).toBe(false);
-
-    // Tại base dimensions, scale trả về đúng giá trị gốc
-    expect(result.scale(16)).toBe(16);
-    expect(result.verticalScale(20)).toBe(20);
-    expect(result.fontSize(16)).toBe(16);
-    expect(result.padding(20)).toBe(20);
-    expect(result.iconSize(24)).toBe(24);
-    expect(result.wp(50)).toBe(195);
-    expect(result.hp(50)).toBe(422);
-  });
-
-  it('kiểm soát fontSize trên Phone nhỏ (iPhone SE 320px) không bị quá nhỏ', () => {
-    setWindowDimensions(320, 568);
-
-    let result!: ResponsiveSize;
-    ReactTestRenderer.act(() => {
-      ReactTestRenderer.create(<TestConsumer onHookResult={res => { result = res; }} />);
-    });
-
-    // Cỡ chữ 16 trên màn 320px không bị co dúm dưới 14px (giới hạn 0.9x)
-    expect(result.fontSize(16)).toBeGreaterThanOrEqual(14);
-  });
-
-  it('kiểm soát fontSize trên Tablet/iPad (768px, 1024px) không bị quá nhỏ cũng không bị quá to', () => {
-    setWindowDimensions(768, 1024);
-
-    let result!: ResponsiveSize;
-    ReactTestRenderer.act(() => {
-      ReactTestRenderer.create(<TestConsumer onHookResult={res => { result = res; }} />);
-    });
-
-    expect(result.isTablet).toBe(true);
-
-    // Chữ 16 trên Tablet: lớn hơn phone (>= 17) nhưng không bị to như kính lúp (<= 20)
-    const tabletFont = result.fontSize(16);
-    expect(tabletFont).toBeGreaterThanOrEqual(17);
-    expect(tabletFont).toBeLessThanOrEqual(20);
-
-    // Padding trên Tablet được mở rộng thoáng đãng (16 -> 18..23)
-    const tabletPadding = result.padding(16);
-    expect(tabletPadding).toBeGreaterThanOrEqual(18);
-    expect(tabletPadding).toBeLessThanOrEqual(24);
-
-    // Icon 24 trên Tablet vừa vặn (26..31) chứ không bị 48-60px
-    const tabletIcon = result.iconSize(24);
-    expect(tabletIcon).toBeGreaterThanOrEqual(26);
-    expect(tabletIcon).toBeLessThanOrEqual(31);
-  });
-
-  it('nhận diện đúng chế độ xoay ngang (Landscape)', () => {
-    setWindowDimensions(844, 390);
-
-    let result!: ResponsiveSize;
-    ReactTestRenderer.act(() => {
-      ReactTestRenderer.create(<TestConsumer onHookResult={res => { result = res; }} />);
-    });
-
+    set(844, 390);
     expect(result.isLandscape).toBe(true);
-    expect(result.wp(100)).toBe(844);
-    expect(result.hp(100)).toBe(390);
-  });
-
-  it('tính toán chính xác các component sizing và layout helpers (All-in-One)', () => {
-    // 1. Phone chuẩn (390 x 844)
-    setWindowDimensions(390, 844);
-    let result!: ResponsiveSize;
-    ReactTestRenderer.act(() => {
-      ReactTestRenderer.create(<TestConsumer onHookResult={res => { result = res; }} />);
-    });
-
-    expect(result.isPhone).toBe(true);
-    expect(result.buttonHeight('md')).toBe(48);
-    expect(result.inputHeight('md')).toBe(48);
-    expect(result.headerHeight).toBe(56);
-    expect(result.containerWidth).toBe(result.wp(92));
-    expect(result.columns(1, 2)).toBe(1);
-    expect(result.px(16)).toBe(16);
-    expect(result.py(12)).toBe(12);
-    expect(result.lineHeight(16)).toBeGreaterThanOrEqual(20);
-
-    // Conditional selector
-    expect(result.select({ phone: 'A', tablet: 'B' })).toBe('A');
-
-    // 2. Tablet (768 x 1024)
-    setWindowDimensions(768, 1024);
-    ReactTestRenderer.act(() => {
-      ReactTestRenderer.create(<TestConsumer onHookResult={res => { result = res; }} />);
-    });
-
-    expect(result.isTablet).toBe(true);
-    expect(result.buttonHeight('md')).toBe(54);
-    expect(result.headerHeight).toBe(64);
-    expect(result.columns(1, 2)).toBe(2);
-    expect(result.select({ phone: 'A', tablet: 'B' })).toBe('B');
+    expect(result.width).toBe(844);
   });
 });

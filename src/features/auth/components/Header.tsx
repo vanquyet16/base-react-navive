@@ -1,7 +1,8 @@
 import React, { memo } from 'react';
 import { ImageBackground, View } from 'react-native';
-import { moderateScale, verticalScale } from 'react-native-size-matters';
-import { CustomText, Logo, SpacerLg } from '@/components';
+import { CustomText } from '@/components/base/CustomText';
+import { Logo } from '@/components/base/logo';
+import { SpacerLg } from '@/components/base/spacer';
 import { createStyles } from '@/shared/theme/create-styles';
 
 /**
@@ -9,7 +10,6 @@ import { createStyles } from '@/shared/theme/create-styles';
  * Hiển thị Logo ở đầu màn hình auth
  */
 const Header = memo(() => {
-  // ✅ Chỉ cần 1 dòng - auto inject theme
   const styles = useStyles();
 
   return (
@@ -40,33 +40,32 @@ const Header = memo(() => {
 
 export default Header;
 
-// ✅ Thêm flag `true` để auto-inject theme
 const useStyles = createStyles(
-  theme => ({
+  (theme, rs) => ({
     header: {
       alignItems: 'center',
 
       // Vertical spacing → verticalScale
-      paddingTop: verticalScale(60),
-      paddingBottom: verticalScale(50),
+      paddingTop: rs.verticalScale(60),
+      paddingBottom: rs.verticalScale(50),
 
       backgroundColor: theme.colors.primary,
       // Radius → moderateScale (KHÔNG scale mạnh)
-      // borderBottomLeftRadius: moderateScale(50),
-      // borderBottomRightRadius: moderateScale(50),
+      // borderBottomLeftRadius: rs.moderateScale(50),
+      // borderBottomRightRadius: rs.moderateScale(50),
     },
     headerImage: {
-      // borderBottomLeftRadius: moderateScale(50),
-      // borderBottomRightRadius: moderateScale(50),
+      // borderBottomLeftRadius: rs.moderateScale(50),
+      // borderBottomRightRadius: rs.moderateScale(50),
     },
     logoContainer: {
-      backgroundColor: '#fff',
-      padding: moderateScale(10),
-      borderRadius: moderateScale(40),
-      shadowColor: '#000',
+      backgroundColor: theme.colors.white,
+      padding: rs.moderateScale(10),
+      borderRadius: rs.moderateScale(40),
+      shadowColor: theme.colors.black,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
-      shadowRadius: moderateScale(4),
+      shadowRadius: rs.moderateScale(4),
       elevation: 3,
       borderColor: theme.colors.borderColorLogo,
       borderWidth: 3,
@@ -83,5 +82,4 @@ const useStyles = createStyles(
       color: theme.colors.textTertiarySecond,
     },
   }),
-  true,
-); // 👈 Thêm `true` ở đây
+);

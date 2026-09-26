@@ -1,67 +1,26 @@
 /**
- * AXIOS INSTANCE
- * ==============
- * Configured axios instance với base URL, timeout, headers.
- * Hỗ trợ multiple domains cho các API services khác nhau.
+ * AXIOS INSTANCE FACTORY
+ * ======================
+ * Mỗi domain API có đúng một axios instance (cache trong http-client.ts).
+ * Base URL / timeout lấy từ env của flavor đang build.
  */
 
-import axios, { AxiosInstance } from 'axios';
-import { getApiUrl, type ApiDomain } from '@/shared/config/app.config';
-import { TIMEOUT, HEADERS } from '@/shared/constants/http';
+import axios, { type AxiosInstance } from 'axios';
+import { API_TIMEOUT_MS, API_URLS, type ApiDomain } from '@/shared/config/env';
+import { HEADERS } from '@/shared/constants/http';
 import { registerInterceptors } from './axios-interceptors';
 
-/**
- * Factory function: Tạo axios instance cho domain cụ thể
- * @param domain - Domain cần tạo instance (MAIN, AUTH, MANAGER, etc.)
- * @returns Configured axios instance cho domain đó
- * 
- * Usage:
- * ```ts
- * const authClient = createAxiosInstance('AUTH');
- * const managerClient = createAxiosInstance('MANAGER');
- * ```
- */
-export const createAxiosInstance = (domain: ApiDomain = 'MAIN'): AxiosInstance => {
+export const createAxiosInstance = (domain: ApiDomain): AxiosInstance => {
     const instance = axios.create({
-        // Base URL cho domain cụ thể
-        baseURL: getApiUrl(domain),
-
-        // Timeout
-        timeout: TIMEOUT.DEFAULT,
-
-        // Default headers
+        baseURL: API_URLS[domain],
+        timeout: API_TIMEOUT_MS,
         headers: {
             'Content-Type': HEADERS.CONTENT_TYPE.JSON,
             Accept: HEADERS.ACCEPT.JSON,
         },
-
-        // Custom JSON parsing để handle edge cases
-        transformResponse: [
-            (data) => {
-                try {
-                    return JSON.parse(data);
-                } catch {
-                    return data;
-                }
-            },
-        ],
     });
-
-    // Tự động gắn interceptors (access token, refresh token, error normalization)
     registerInterceptors(instance);
-
     return instance;
 };
 
-/**
- * Default axios instance cho MAIN domain
- * Sử dụng trong interceptors và http client mặc định
- * 
- * @deprecated Nên sử dụng createAxiosInstance() để tạo instance cho domain cụ thể
- */
-export const axiosInstance = createAxiosInstance('MAIN');
-
-/**
- * Type helpers
- */
 export type { AxiosInstance };

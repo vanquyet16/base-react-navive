@@ -1,5 +1,6 @@
 import ReactNativeBlobUtil from 'react-native-blob-util';
 import { Platform } from 'react-native';
+import { logger } from '@/shared/utils/logger';
 
 export interface PdfSource {
     uri?: string;
@@ -25,7 +26,7 @@ export class PdfUtils {
 
             return Platform.OS === 'ios' ? filePath : `file://${filePath}`;
         } catch (error) {
-            console.error('Error downloading PDF:', error);
+            logger.error('Error downloading PDF:', error);
             throw error;
         }
     }
@@ -40,7 +41,7 @@ export class PdfUtils {
 
             return Platform.OS === 'ios' ? filePath : `file://${filePath}`;
         } catch (error) {
-            console.error('Error saving base64 PDF:', error);
+            logger.error('Error saving base64 PDF:', error);
             throw error;
         }
     }
@@ -53,7 +54,7 @@ export class PdfUtils {
             const files = await ReactNativeBlobUtil.fs.ls(ReactNativeBlobUtil.fs.dirs.DocumentDir);
             return files.filter(file => file.endsWith('.pdf'));
         } catch (error) {
-            console.error('Error getting saved PDFs:', error);
+            logger.error('Error getting saved PDFs:', error);
             return [];
         }
     }
@@ -67,7 +68,7 @@ export class PdfUtils {
             await ReactNativeBlobUtil.fs.unlink(filePath);
             return true;
         } catch (error) {
-            console.error('Error deleting PDF:', error);
+            logger.error('Error deleting PDF:', error);
             return false;
         }
     }
@@ -91,7 +92,7 @@ export class PdfUtils {
             const stats = await ReactNativeBlobUtil.fs.stat(filePath);
             return stats.size;
         } catch (error) {
-            console.error('Error getting file size:', error);
+            logger.error('Error getting file size:', error);
             return 0;
         }
     }

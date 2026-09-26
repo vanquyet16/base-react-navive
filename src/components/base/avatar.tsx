@@ -122,5 +122,4 @@ const useStyles = createStyles(
       elevation: 4,
     },
   }),
-  true,
 );

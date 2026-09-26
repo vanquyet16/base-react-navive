@@ -1,7 +1,8 @@
 import React, { memo } from 'react';
 import { View } from '@ant-design/react-native';
 import { FaceIdIcon } from '@/assets/icons';
-import {  LoginOther, SpacerSm } from '@/components';
+import LoginOther from '@/components/base/LoginOther';
+import { SpacerSm } from '@/components/base/spacer';
 import Logo from '@/components/base/logo';
 import { createStyles } from '@/shared/theme/create-styles';
 
@@ -13,7 +14,7 @@ const Footer = memo(() => {
         title="VNeID"
         icon={<Logo name="logoVnid" size={65} />}
         biometricType="face"
-        biometricIcon={<FaceIdIcon size={28} color="#2B4B9B" />}
+        biometricIcon={<FaceIdIcon size={28} color={styles.theme.colors.primary} />}
         onBiometricPress={() => {}}
       />
       <SpacerSm />
@@ -41,5 +42,4 @@ const useStyles = createStyles(
       textDecorationLine: 'underline',
     },
   }),
-  true,
 );

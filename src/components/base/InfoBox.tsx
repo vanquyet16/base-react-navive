@@ -2,17 +2,12 @@ import React, { useMemo, useCallback, memo } from 'react';
 import {
   View,
   Pressable,
-  StyleSheet,
   ViewStyle,
   ImageSourcePropType,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
-import {
-  scale,
-  moderateScale,
-  moderateVerticalScale,
-} from 'react-native-size-matters';
+import FastImage from '@d11/react-native-fast-image';
 import { useTheme } from '@/shared/theme/use-theme';
+import { createStyles } from '@/shared/theme/create-styles';
 import { CustomText } from './CustomText';
 import AppIcon from './AppIcon';
 
@@ -101,7 +96,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
   } = props;
 
   const theme = useTheme();
-  const styles = useStyles(theme);
+  const styles = useStyles();
 
   const containerStyle = useMemo(
     () => [
@@ -117,12 +112,12 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
       styles.iconCircle,
       type === 'utility' && {
         marginBottom: 4,
-        shadowColor: '#000000', // Standard black shadow
+        shadowColor: theme.colors.black,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1, // Softer opacity
         shadowRadius: 6,
         elevation: 4,
-        borderRadius: moderateScale(18), // Squircle
+        borderRadius: styles.rs.radius(18), // Squircle
         borderWidth: 0,
       },
       {
@@ -131,9 +126,11 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
     ],
     [
       styles.iconCircle,
+      styles.rs,
       type,
       iconBackgroundColor,
       theme.colors.primaryLight,
+      theme.colors.black,
     ],
   );
 
@@ -143,7 +140,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
         <View style={iconCircleStyle}>
           <AppIcon
             name={icon || 'appstore-o'}
-            size={moderateScale(24)}
+            size={24}
             color={
               iconColor ||
               (type === 'utility' ? theme.colors.white : theme.colors.primary)
@@ -202,7 +199,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
               <View style={styles.statusMetaRow}>
                 <AppIcon
                   name="map-pin"
-                  size={moderateScale(12)}
+                  size={12}
                   color={theme.colors.textSecondary}
                 />
                 <CustomText
@@ -220,7 +217,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
               <View style={styles.statusMetaRow}>
                 <AppIcon
                   name="clock"
-                  size={moderateScale(12)}
+                  size={12}
                   color={theme.colors.textSecondary}
                 />
                 <CustomText
@@ -352,7 +349,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
         <View style={styles.suggestionIconWrapper}>
           <AppIcon
             name="bulb"
-            size={moderateScale(24)}
+            size={24}
             color={theme.colors.orangeAccent}
           />
         </View>
@@ -381,7 +378,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
                 <View style={styles.likeContainer}>
                   <AppIcon
                     name="like-o"
-                    size={moderateScale(14)}
+                    size={14}
                     color={theme.colors.textSecondary}
                   />
                   <CustomText variant="caption" style={styles.likeCount}>
@@ -415,7 +412,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
         >
           <AppIcon
             name={icon || 'phone'}
-            size={moderateScale(24)}
+            size={24}
             color={iconColor || theme.colors.text}
           />
         </View>
@@ -463,7 +460,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
         >
           <AppIcon
             name={rightIcon || 'phone-call'}
-            size={moderateScale(20)}
+            size={20}
             color={theme.colors.white}
           />
         </Pressable>
@@ -511,7 +508,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
       <Pressable
         onPress={onPress}
         style={({ pressed }) => [
-          { marginBottom: moderateVerticalScale(16) },
+          styles.pressableSpacing,
           style, // Allow override
           { opacity: pressed ? 0.7 : 1 },
         ]}
@@ -524,15 +521,14 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
   return <ShadowCard style={containerStyle}>{content}</ShadowCard>;
 });
 
-const useStyles = (theme: any) =>
-  StyleSheet.create({
+const useStyles = createStyles((theme, rs) => ({
     // Removed duplicate container styles to use ShadowCard's styles
     containerVertical: {
-      padding: moderateScale(12),
+      padding: rs.moderateScale(12),
       alignItems: 'center',
       justifyContent: 'center',
-      minWidth: scale(100),
-      minHeight: scale(100),
+      minWidth: rs.scale(100),
+      minHeight: rs.scale(100),
     },
     containerUtility: {
       padding: 0,
@@ -549,12 +545,12 @@ const useStyles = (theme: any) =>
       justifyContent: 'center',
     },
     iconCircle: {
-      width: scale(48),
-      height: scale(48), // Circle symmetry
-      borderRadius: moderateScale(15),
+      width: rs.scale(48),
+      height: rs.scale(48), // Circle symmetry
+      borderRadius: rs.moderateScale(15),
       alignItems: 'center',
       justifyContent: 'center',
-      marginBottom: moderateVerticalScale(8),
+      marginBottom: rs.moderateVerticalScale(8),
     },
     verticalTitle: {
       textAlign: 'center',
@@ -571,29 +567,29 @@ const useStyles = (theme: any) =>
     // Status Styles
     title: {
       fontWeight: 'bold',
-      marginBottom: moderateVerticalScale(2),
+      marginBottom: rs.moderateVerticalScale(2),
     },
     subTitle: {
       color: theme.colors.textSecondary,
-      marginBottom: moderateVerticalScale(2),
+      marginBottom: rs.moderateVerticalScale(2),
     },
     dateText: {
       color: theme.colors.textSecondary,
     },
     statusBadge: {
-      paddingHorizontal: scale(8),
-      paddingVertical: moderateVerticalScale(2),
-      borderRadius: moderateScale(100), // Full radius
-      marginTop: moderateVerticalScale(4),
-      marginLeft: scale(8),
+      paddingHorizontal: rs.scale(8),
+      paddingVertical: rs.moderateVerticalScale(2),
+      borderRadius: rs.moderateScale(100), // Full radius
+      marginTop: rs.moderateVerticalScale(4),
+      marginLeft: rs.scale(8),
       alignSelf: 'flex-end', // Align to bottom
     },
     // News Styles
     thumbnail: {
-      width: scale(80),
-      height: scale(80), // Square thumbnail
-      borderRadius: moderateScale(8),
-      marginRight: scale(12),
+      width: rs.scale(80),
+      height: rs.scale(80), // Square thumbnail
+      borderRadius: rs.moderateScale(8),
+      marginRight: rs.scale(12),
       backgroundColor: theme.colors.backgroundSecondary,
     },
     newsContent: {
@@ -602,7 +598,7 @@ const useStyles = (theme: any) =>
     },
     newsTitle: {
       fontWeight: 'bold',
-      marginBottom: moderateVerticalScale(4),
+      marginBottom: rs.moderateVerticalScale(4),
     },
     newsMeta: {
       flexDirection: 'row',
@@ -610,8 +606,8 @@ const useStyles = (theme: any) =>
     },
     newsTime: {
       color: theme.colors.textSecondary,
-      marginLeft: scale(4),
-      marginRight: scale(8),
+      marginLeft: rs.scale(4),
+      marginRight: rs.scale(8),
     },
     newsTag: {
       color: theme.colors.textSecondary,
@@ -621,16 +617,16 @@ const useStyles = (theme: any) =>
       height: 4,
       borderRadius: 2,
       backgroundColor: theme.colors.textSecondary,
-      marginRight: scale(8),
+      marginRight: rs.scale(8),
     },
     // Suggestion Styles
     suggestionIconWrapper: {
-      marginRight: scale(12),
+      marginRight: rs.scale(12),
       justifyContent: 'flex-start',
       paddingTop: 2, // Align icon visually with text
     },
     suggestionTitle: {
-      marginBottom: moderateVerticalScale(4),
+      marginBottom: rs.moderateVerticalScale(4),
     },
     suggestionMeta: {
       flexDirection: 'row',
@@ -645,37 +641,37 @@ const useStyles = (theme: any) =>
     },
     likeCount: {
       color: theme.colors.textSecondary,
-      marginLeft: scale(4),
+      marginLeft: rs.scale(4),
     },
     // New Status Styles
     statusContentRow: {
       flexDirection: 'row',
-      marginBottom: moderateVerticalScale(10),
+      marginBottom: rs.moderateVerticalScale(10),
     },
     statusImage: {
-      width: scale(80),
-      height: scale(80),
-      borderRadius: moderateScale(12),
-      marginRight: scale(12),
+      width: rs.scale(80),
+      height: rs.scale(80),
+      borderRadius: rs.moderateScale(12),
+      marginRight: rs.scale(12),
       backgroundColor: theme.colors.backgroundSecondary,
     },
     statusTitle: {
-      marginBottom: moderateVerticalScale(4),
+      marginBottom: rs.moderateVerticalScale(4),
     },
     statusMetaRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginTop: moderateVerticalScale(2),
+      marginTop: rs.moderateVerticalScale(2),
     },
     statusMetaText: {
       color: theme.colors.textSecondary,
-      marginLeft: scale(6),
+      marginLeft: rs.scale(6),
     },
     statusDivider: {
       height: 1,
       backgroundColor: theme.colors.border,
-      marginBottom: moderateVerticalScale(10),
-      // marginHorizontal: -moderateScale(10), // Extend to edges
+      marginBottom: rs.moderateVerticalScale(10),
+      // marginHorizontal: -rs.moderateScale(10), // Extend to edges
       opacity: 0.5,
     },
     statusFooter: {
@@ -685,41 +681,41 @@ const useStyles = (theme: any) =>
     },
     codeBadge: {
       backgroundColor: theme.colors.backgroundSecondary,
-      paddingHorizontal: scale(8),
-      paddingVertical: moderateVerticalScale(4),
-      borderRadius: moderateScale(4),
+      paddingHorizontal: rs.scale(8),
+      paddingVertical: rs.moderateVerticalScale(4),
+      borderRadius: rs.moderateScale(4),
     },
     codeText: {
       color: theme.colors.text,
     },
     statusPill: {
-      paddingHorizontal: scale(12),
-      paddingVertical: moderateVerticalScale(4),
-      borderRadius: moderateScale(16),
+      paddingHorizontal: rs.scale(12),
+      paddingVertical: rs.moderateVerticalScale(4),
+      borderRadius: rs.moderateScale(16),
       borderWidth: 1,
     },
     locationContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: moderateVerticalScale(4),
+      marginBottom: rs.moderateVerticalScale(4),
     },
     locationText: {
       color: theme.colors.textSecondary,
-      marginLeft: scale(4),
+      marginLeft: rs.scale(4),
     },
     // Contact Styles
     contactRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      padding: moderateScale(4),
+      padding: rs.moderateScale(4),
     },
     contactIconContainer: {
-      width: scale(56),
-      height: scale(56),
-      borderRadius: moderateScale(20), // Squircle
+      width: rs.scale(56),
+      height: rs.scale(56),
+      borderRadius: rs.moderateScale(20), // Squircle
       alignItems: 'center',
       justifyContent: 'center',
-      marginRight: scale(16),
+      marginRight: rs.scale(16),
     },
     contactTitle: {
       marginBottom: 2,
@@ -732,13 +728,16 @@ const useStyles = (theme: any) =>
       marginTop: 4,
     },
     contactRightButton: {
-      width: scale(48),
-      height: scale(48),
-      borderRadius: moderateScale(16), // Squircle
+      width: rs.scale(48),
+      height: rs.scale(48),
+      borderRadius: rs.moderateScale(16), // Squircle
       alignItems: 'center',
       justifyContent: 'center',
-      marginLeft: scale(12),
+      marginLeft: rs.scale(12),
     },
-  });
+  pressableSpacing: {
+    marginBottom: rs.verticalGap(16),
+  },
+}));
 
 export default InfoBox;

@@ -8,3 +8,6 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+# react-native-config đọc BuildConfig qua reflection — không được để R8 xoá/đổi tên field
+-keep class com.basereactnative083.BuildConfig { *; }

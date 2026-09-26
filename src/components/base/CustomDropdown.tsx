@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useCallback, memo } from 'react';
 import { View, ViewStyle } from 'react-native';
 import { Dropdown } from 'react-native-element-dropdown';
-import { CustomText } from '@/components/base';
+import { CustomText } from './CustomText';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 
@@ -46,7 +46,7 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = memo(
     labelTransform = 'uppercase',
   }) => {
     const theme = useTheme();
-    const styles = useStyles(theme);
+    const styles = useStyles();
     const [isFocused, setIsFocused] = useState(false);
 
     // Format label với required indicator
@@ -154,7 +154,7 @@ const useStyles = createStyles((theme, rs) => ({
     borderRadius: rs.radius(8),
     paddingHorizontal: rs.px(12),
     paddingVertical: rs.py(8),
-    shadowColor: '#000',
+    shadowColor: theme.colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
@@ -163,7 +163,7 @@ const useStyles = createStyles((theme, rs) => ({
   },
   dropdownFocused: {
     borderColor: theme.colors.primary,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.colors.inputBackground,
     shadowColor: theme.colors.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,

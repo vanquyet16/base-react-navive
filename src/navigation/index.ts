@@ -1,19 +1,13 @@
 /**
- * NAVIGATION EXPORTS
- * ==================
- * Centralized export cho tất cả navigation modules
- *
- * Architecture:
- * - navigators/: Dedicated navigator components (AuthStack, MainStack, MainDrawer)
- * - config/: Route constants (NAVIGATION_KEYS)
- * - MainTabs: Bottom tabs navigation component
+ * NAVIGATION
+ * - navigators/: cây navigator (Auth, Drawer → MainStack → Tabs)
+ * - components/: UI gắn với navigation (CustomDrawer)
+ * - config/: tên route (NAVIGATION_KEYS)
+ * - linking.ts, navigation-theme.ts, navigation-ref.ts: cấu hình NavigationContainer
  */
 
-// Navigator components
 export * from './navigators';
-
-// Main Tabs component
-export { default as MainTabs } from './MainTabs';
-
-// Route constants & config
 export * from './config';
+export { navigationRef } from './navigation-ref';
+export { linking } from './linking';
+export { toNavigationTheme } from './navigation-theme';

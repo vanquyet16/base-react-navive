@@ -6,12 +6,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import Swipeable from 'react-native-gesture-handler/ReanimatedSwipeable';
 import { createStyles } from '@/shared/theme/create-styles';
-import {
-  moderateScale,
-  moderateVerticalScale,
-  scale,
-} from 'react-native-size-matters';
-import { AppIcon, CustomText } from '@/components';
+import AppIcon from './AppIcon';
+import { CustomText } from './CustomText';
 
 /**
  * SwipeableItem Component - Reusable swipe-to-delete wrapper
@@ -85,7 +81,7 @@ const SwipeActionView = memo<SwipeActionViewProps>(
     const styles = useStyles();
 
     // Width of this specific action button
-    const btnWidth = scale(action.width || 80);
+    const btnWidth = styles.rs.scale(action.width || 80);
 
     const animatedStyle = useAnimatedStyle(() => {
       'worklet';
@@ -118,8 +114,8 @@ const SwipeActionView = memo<SwipeActionViewProps>(
         >
           <AppIcon
             name={action.icon || (direction === 'right' ? 'trash' : 'check')}
-            size={moderateScale(24)}
-            color="#FFF"
+            size={24}
+            color={styles.theme.colors.white}
           />
           <CustomText variant="caption" style={styles.actionText}>
             {action.text || (direction === 'right' ? 'Xóa' : 'Đánh dấu')}
@@ -146,7 +142,7 @@ const RightSwipeActions = memo<RightSwipeActionsProps>(
     const styles = useStyles();
     const actions = Array.isArray(action) ? action : [action];
     const totalWidth = actions.reduce(
-      (sum, act) => sum + scale(act.width || 80),
+      (sum, act) => sum + styles.rs.scale(act.width || 80),
       0,
     );
 
@@ -182,7 +178,7 @@ const LeftSwipeActions = memo<LeftSwipeActionsProps>(({ progress, action }) => {
   const styles = useStyles();
   const actions = Array.isArray(action) ? action : [action];
   const totalWidth = actions.reduce(
-    (sum, act) => sum + scale(act.width || 80),
+    (sum, act) => sum + styles.rs.scale(act.width || 80),
     0,
   );
 
@@ -359,13 +355,13 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({
 export default memo(SwipeableItem);
 
 const useStyles = createStyles(
-  theme => ({
+  (theme, rs) => ({
     // Swipe Action Container
     actionContainer: {
       backgroundColor: theme.colors.error,
       justifyContent: 'center',
       alignItems: 'center',
-      width: scale(80),
+      width: rs.scale(80),
       height: '100%',
       flexDirection: 'column',
     },
@@ -374,16 +370,15 @@ const useStyles = createStyles(
       justifyContent: 'center',
       alignItems: 'center',
       width: '100%',
-      paddingVertical: moderateVerticalScale(12),
+      paddingVertical: rs.moderateVerticalScale(12),
     },
     actionText: {
-      color: '#FFF',
+      color: theme.colors.white,
       fontWeight: '600',
-      marginTop: moderateVerticalScale(4),
+      marginTop: rs.moderateVerticalScale(4),
     },
     actionsRow: {
       flexDirection: 'row',
     },
   }),
-  true,
 );

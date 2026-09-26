@@ -1,10 +1,11 @@
 /**
  * HOME SERVICE — PLACEHOLDER
- * Implement khi tích hợp API thực
+ * Thêm các lời gọi API của màn Home tại đây.
  */
-import { createHttpClient } from '@/shared/services/http/http-client';
+import { getHttpClient } from '@/shared/services/http/http-client';
+
 class HomeService {
-  private client = createHttpClient('MAIN');
-  // TODO: Thêm methods khi có API thực
+  private readonly client = getHttpClient('MAIN');
 }
+
 export const homeService = new HomeService();

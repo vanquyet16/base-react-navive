@@ -16,14 +16,12 @@ export interface HttpRequestConfig extends AxiosRequestConfig {
     skipAuth?: boolean;
     /** Skip token refresh nếu 401 (e.g., refresh token endpoint) */
     skipRefresh?: boolean;
-    /** Custom error handler */
-    onError?: (error: HttpError) => void;
 }
 
 /**
  * HTTP Response wrapper - generic type-safe response
  */
-export interface HttpResponse<T = any> extends AxiosResponse<T> {
+export interface HttpResponse<T = unknown> extends AxiosResponse<T> {
     data: T;
 }
 
@@ -39,7 +37,7 @@ export interface HttpError {
     /** Error code từ backend (nếu có) */
     code?: string;
     /** Original error object */
-    originalError?: any;
+    originalError?: unknown;
     /** Validation errors cho forms */
     validationErrors?: Record<string, string[]>;
     /** Is network error (no internet, timeout) */

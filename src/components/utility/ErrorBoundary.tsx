@@ -1,75 +1,80 @@
 /**
  * ERROR BOUNDARY
  * ==============
- * Component bắt lỗi React và hiển thị UI fallback
- * Sử dụng theme system
+ * - Bắt lỗi render của cây con và hiển thị màn hình dự phòng.
+ * - Cũng dùng để hiển thị lỗi truyền vào (vd: lỗi khởi tạo) qua prop `error`.
+ * - "Thử lại": reset boundary và gọi `onRetry` (nếu có) để chạy lại nguồn gây lỗi.
+ *   Ẩn nút khi `canRetry=false` (vd: thiết bị bị chặn vì không an toàn).
  */
 
-import React, { Component, ReactNode } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import React, { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { CustomText } from '@/components/base/CustomText';
+import { lightTheme } from '@/shared/theme/theme';
+import { logger } from '@/shared/utils/logger';
 
 interface Props {
   children?: ReactNode;
-  error?: Error;
+  /** Lỗi từ bên ngoài (không phải lỗi render) */
+  error?: Error | null;
+  onRetry?: () => void;
+  canRetry?: boolean;
+  title?: string;
 }
 
 interface State {
-  hasError: boolean;
-  error?: Error;
+  renderError: Error | null;
 }
 
 class ErrorBoundary extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = { hasError: false };
+  state: State = { renderError: null };
+
+  static getDerivedStateFromError(renderError: Error): State {
+    return { renderError };
   }
 
-  static getDerivedStateFromError(error: Error): State {
-    // Cập nhật state để hiển thị giao diện lỗi
-    return { hasError: true, error };
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    logger.error('[ErrorBoundary] Lỗi render', { error, componentStack: errorInfo.componentStack });
   }
 
-  componentDidCatch(error: Error, errorInfo: any) {
-    // Log lỗi để debug
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
-  }
-
-  handleRetry = () => {
-    this.setState({ hasError: false, error: undefined });
+  private handleRetry = () => {
+    this.setState({ renderError: null });
+    this.props.onRetry?.();
   };
 
   render() {
-    const error = this.state.error || this.props.error;
-    const hasError = this.state.hasError || !!this.props.error;
+    const { children, error, canRetry = true, title = 'Có lỗi xảy ra!' } = this.props;
+    const shownError = this.state.renderError ?? error ?? null;
 
-    if (hasError) {
-      return (
-        <View style={styles.container}>
-          <CustomText variant="h3" style={styles.title}>
-            Có lỗi xảy ra!
-          </CustomText>
-          <CustomText variant="body" style={styles.message}>
-            {error?.message || 'Ứng dụng gặp phải một lỗi không mong muốn.'}
-          </CustomText>
-          <Pressable 
-            style={({ pressed }) => [
-              styles.button,
-              { opacity: pressed ? 0.7 : 1 },
-            ]} 
+    if (!shownError) {
+      return children ?? null;
+    }
+
+    return (
+      <View style={styles.container} accessibilityRole="alert">
+        <CustomText variant="h3" style={styles.title}>
+          {title}
+        </CustomText>
+        <CustomText variant="body" style={styles.message}>
+          {shownError.message || 'Ứng dụng gặp phải một lỗi không mong muốn.'}
+        </CustomText>
+        {canRetry && (
+          <Pressable
+            accessibilityRole="button"
+            style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]}
             onPress={this.handleRetry}
           >
             <CustomText variant="body" weight="bold" style={styles.buttonText}>
               Thử lại
             </CustomText>
           </Pressable>
-        </View>
-      );
-    }
-
-    return this.props.children;
+        )}
+      </View>
+    );
   }
 }
+
+const { colors } = lightTheme;
 
 const styles = StyleSheet.create({
   container: {
@@ -77,29 +82,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.background,
   },
   title: {
-    // fontSize, fontWeight replaced by variant="h3"
-    color: '#d32f2f',
+    color: colors.error,
     textAlign: 'center',
     marginBottom: 16,
   },
   message: {
-    // fontSize replaced by variant="body"
-    color: '#666',
+    color: colors.textSecondary,
     textAlign: 'center',
     marginBottom: 24,
   },
   button: {
-    backgroundColor: '#1976d2',
+    backgroundColor: colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
   },
+  buttonPressed: {
+    opacity: 0.7,
+  },
   buttonText: {
-    color: '#fff',
-    // fontSize, fontWeight replaced by variant="body" + bold
+    color: colors.white,
   },
 });
 

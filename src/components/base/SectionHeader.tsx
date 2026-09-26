@@ -9,11 +9,6 @@ import {
 import { CustomText } from './CustomText';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
-import {
-  moderateScale,
-  moderateVerticalScale,
-  scale,
-} from 'react-native-size-matters';
 import AppIcon from './AppIcon';
 
 export interface SectionHeaderProps {
@@ -179,7 +174,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = memo(
 
     const titleStyle = useMemo(() => {
       const baseStyle: any = [styles.title];
-      if (fontSize) baseStyle.push({ fontSize: moderateScale(fontSize) });
+      if (fontSize) baseStyle.push({ fontSize: styles.rs.fontSize(fontSize) });
       if (color) baseStyle.push({ color: color });
       if (transform) baseStyle.push({ textTransform: transform });
       else if (isUppercase) baseStyle.push({ textTransform: 'uppercase' });
@@ -190,7 +185,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = memo(
       }
 
       return baseStyle;
-    }, [fontSize, color, transform, isUppercase, fontBold, styles.title]);
+    }, [fontSize, color, transform, isUppercase, fontBold, styles.title, styles.rs]);
 
     // Determine weight prop for CustomText (only if boolean)
     const textWeight =
@@ -226,10 +221,10 @@ const useStyles = createStyles((theme, rs) => ({
     alignItems: 'center',
   },
   verticalBar: {
-    width: moderateScale(3),
-    height: moderateVerticalScale(14),
+    width: rs.moderateScale(3),
+    height: rs.moderateVerticalScale(14),
     backgroundColor: theme.colors.primary,
-    borderRadius: moderateScale(2),
+    borderRadius: rs.moderateScale(2),
     marginRight: rs.scale(8),
   },
   title: {
@@ -245,14 +240,14 @@ const useStyles = createStyles((theme, rs) => ({
   actionButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.colors.white,
-    paddingHorizontal: scale(12),
-    paddingVertical: moderateVerticalScale(6),
-    borderRadius: moderateScale(8),
+    backgroundColor: theme.colors.surface,
+    paddingHorizontal: rs.scale(12),
+    paddingVertical: rs.moderateVerticalScale(6),
+    borderRadius: rs.moderateScale(8),
     borderWidth: 1,
     borderColor: theme.colors.border,
     // Optional shadow
-    shadowColor: '#000',
+    shadowColor: theme.colors.black,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 2,
@@ -263,7 +258,7 @@ const useStyles = createStyles((theme, rs) => ({
     fontWeight: '600',
   },
   actionIconWithLabel: {
-    marginRight: scale(4),
+    marginRight: rs.scale(4),
   },
 }));
 

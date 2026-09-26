@@ -1,5 +1,13 @@
-import { useMutation, UseMutationOptions, useQueryClient, QueryKey } from '@tanstack/react-query';
-import Toast from 'react-native-toast-message';
+/**
+ * useBaseMutation
+ * ===============
+ * useMutation + toast thành công/lỗi + invalidate/refetch query sau khi thành công.
+ * Toast đi qua CustomToast (antd) — hệ toast duy nhất của app.
+ */
+
+import { useMutation, useQueryClient, type QueryKey, type UseMutationOptions } from '@tanstack/react-query';
+import CustomToast from '@/shared/utils/CustomToast';
+import { createHttpError } from '@/shared/services/http/http-error';
 
 interface UseBaseMutationProps<TData, TError, TVariables>
     extends Omit<UseMutationOptions<TData, TError, TVariables>, 'mutationFn'> {
@@ -9,6 +17,7 @@ interface UseBaseMutationProps<TData, TError, TVariables>
     showSuccessToast?: boolean;
     successMessage?: string;
     showErrorToast?: boolean;
+    /** Dùng khi lỗi không có message từ server */
     errorMessage?: string;
     onSuccessCallback?: (data: TData, variables: TVariables) => void;
     onErrorCallback?: (error: TError, variables: TVariables) => void;
@@ -24,65 +33,31 @@ export const useBaseMutation = <TData, TError = Error, TVariables = void>({
     errorMessage = 'Có lỗi xảy ra!',
     onSuccessCallback,
     onErrorCallback,
+    onSuccess,
+    onError,
     ...options
 }: UseBaseMutationProps<TData, TError, TVariables>) => {
     const queryClient = useQueryClient();
 
-    return useMutation({
+    return useMutation<TData, TError, TVariables>({
         ...options,
         mutationFn,
-        onSuccess: (data, variables, context) => {
-            // Vô hiệu hóa cache queries
-            invalidateQueries && invalidateQueries.forEach(queryKey => {
-                queryClient.invalidateQueries({ queryKey });
-            });
-
-            // Tải lại queries
-            refetchQueries && refetchQueries.forEach(queryKey => {
-                queryClient.refetchQueries({ queryKey });
-            });
-
-            // Hiển thị toast thành công
+        onSuccess: (data, variables, onMutateResult, context) => {
+            invalidateQueries.forEach(queryKey => queryClient.invalidateQueries({ queryKey }));
+            refetchQueries.forEach(queryKey => queryClient.refetchQueries({ queryKey }));
             if (showSuccessToast) {
-                Toast.show({
-                    type: 'success',
-                    text1: successMessage,
-                });
+                CustomToast.success(successMessage);
             }
-
-            // Callback thành công tùy chỉnh
-            if (onSuccessCallback) {
-                onSuccessCallback(data, variables);
-            }
-
-            // Gọi onSuccess gốc nếu có
-            if (options.onSuccess) {
-                (options.onSuccess as any)(data, variables, context);
-            }
+            onSuccessCallback?.(data, variables);
+            return onSuccess?.(data, variables, onMutateResult, context);
         },
-        onError: (error, variables, context) => {
-            // Hiển thị toast lỗi
+        onError: (error, variables, onMutateResult, context) => {
             if (showErrorToast) {
-                const message = (error as any)?.response?.data?.message ||
-                    (error as any)?.message ||
-                    errorMessage;
-
-                Toast.show({
-                    type: 'error',
-                    text1: 'Lỗi',
-                    text2: message,
-                });
+                const { message } = createHttpError(error);
+                CustomToast.error(message || errorMessage);
             }
-
-            // Callback lỗi tùy chỉnh
-            if (onErrorCallback) {
-                onErrorCallback(error, variables);
-            }
-
-            // Gọi onError gốc nếu có
-            if (options.onError) {
-                (options.onError as any)(error, variables, context);
-            }
+            onErrorCallback?.(error, variables);
+            return onError?.(error, variables, onMutateResult, context);
         },
     });
-}; 
+};

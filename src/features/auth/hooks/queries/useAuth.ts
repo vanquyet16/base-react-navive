@@ -1,264 +1,107 @@
+/**
+ * AUTH HOOKS
+ * ==========
+ * Hook UI cho xác thực. Mọi thay đổi phiên đều đi qua sessionManager.
+ */
+
+import { useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { useMemo, useCallback } from 'react';
 import { useBaseMutation } from '@/shared/hooks/useBaseMutation';
 import { useBaseQuery } from '@/shared/hooks/useBaseQuery';
-import {
+import { authKeys } from '@/shared/query/query-keys';
+import { useIsAuthenticated } from '@/shared/store/selectors';
+import { STALE_TIME } from '@/shared/constants/query-defaults';
+import type {
+    ChangePasswordRequest,
+    ForgotPasswordRequest,
     LoginRequest,
     RegisterRequest,
-    ChangePasswordRequest,
     ResetPasswordRequest,
-    ForgotPasswordRequest
 } from '@/shared/types/domain/auth';
+import type { User } from '@/shared/types/domain/user';
 import { authService } from '../../services/auth.service';
-import { useIsAuthenticated, useSessionActions } from '@/shared/store/selectors';
-import { CACHE_TIME, STALE_TIME } from '@/shared/constants/query-defaults';
+import { sessionManager } from '../../session/session-manager';
 
-// ============================================================================
-// QUERY KEYS
-// ============================================================================
-
-export const authKeys = {
-    all: ['auth'] as const,
-    me: () => [...authKeys.all, 'me'] as const,
-    profile: () => [...authKeys.all, 'profile'] as const,
-    tokens: () => [...authKeys.all, 'tokens'] as const,
-} as const;
-
-// ============================================================================
-// QUERIES
-// ============================================================================
+export { authKeys };
 
 /**
- * Lấy thông tin user hiện tại
+ * Hồ sơ người dùng hiện tại — nguồn sự thật duy nhất cho dữ liệu user.
+ * Được seed từ cache Keychain khi khởi động (hiển thị ngay, kể cả offline) rồi đồng bộ với server.
  */
-export const useGetCurrentUser = () => {
+export const useCurrentUser = () => {
     const isAuthenticated = useIsAuthenticated();
 
-    // Memoize query key để tránh re-render không cần thiết
-    const queryKey = useMemo(() => authKeys.me(), []);
-
-    return useBaseQuery({
-        queryKey,
-        queryFn: authService.getCurrentUser,
-        enabled: isAuthenticated,
-        staleTime: STALE_TIME.MEDIUM, // 5 phút
-        showErrorToast: false, // Không hiển thị toast cho query này
-        errorMessage: 'Lỗi khi tải thông tin người dùng',
-        // Thêm retry logic tùy chỉnh cho auth queries
-        retry: (failureCount, error: any) => {
-            // Không retry với lỗi 401 (unauthorized)
-            if (error?.response?.status === 401) {
-                return false;
-            }
-            return failureCount < 2;
-        },
-    });
-};
-
-/**
- * Lấy thông tin profile user
- */
-export const useGetUserProfile = () => {
-    const isAuthenticated = useIsAuthenticated();
-
-    const queryKey = useMemo(() => authKeys.profile(), []);
-
-    return useBaseQuery({
-        queryKey,
-        queryFn: () => {
-            // Giả lập getUserProfile nếu chưa có trong service
-            return authService.getCurrentUser();
+    return useBaseQuery<User>({
+        queryKey: authKeys.me(),
+        queryFn: async () => {
+            const user = await authService.getCurrentUser();
+            await sessionManager.cacheUser(user);
+            return user;
         },
         enabled: isAuthenticated,
-        staleTime: STALE_TIME.SHORT,
-        gcTime: CACHE_TIME.MEDIUM,
+        staleTime: STALE_TIME.MEDIUM,
         showErrorToast: false,
-        errorMessage: 'Lỗi khi tải thông tin profile',
     });
 };
 
-// ============================================================================
-// MUTATIONS
-// ============================================================================
-
-/**
- * Đăng nhập
- */
-export const useLogin = () => {
-    const { setSession } = useSessionActions();
-    // Memoize invalidate queries
-    const invalidateQueries = useMemo(() => [authKeys.me(), authKeys.profile()], []);
-
-    return useBaseMutation({
-        mutationFn: (credentials: LoginRequest) => {
-            return authService.login(credentials);
-        },
-        showSuccessToast: false, // Không hiển thị toast success mặc định
-        showErrorToast: true,
+export const useLogin = () =>
+    useBaseMutation({
+        mutationFn: (credentials: LoginRequest) => sessionManager.signIn(credentials),
+        showSuccessToast: false,
         errorMessage: 'Đăng nhập thất bại',
-        invalidateQueries,
-        onSuccessCallback: (data) => {
-            // Set session với user data
-            const { user } = data;
-            setSession({
-                isAuthenticated: true,
-                user,
-            });
-        },
-        // Note: Loading state được handle bởi mutation's isPending
     });
-};
 
-/**
- * Đăng ký
- */
-export const useRegister = () => {
-    const { setSession } = useSessionActions();
-
-    // Memoize invalidate queries
-    const invalidateQueries = useMemo(() => [authKeys.me(), authKeys.profile()], []);
-
-    return useBaseMutation({
-        mutationFn: (userData: RegisterRequest) => authService.register(userData),
-        showSuccessToast: true,
-        successMessage: 'Đăng ký thành công!',
-        showErrorToast: true,
-        errorMessage: 'Đăng ký thất bại',
-        invalidateQueries,
-        onSuccessCallback: (data) => {
-            // Only auto-login if tokens are returned
-            if (data.tokens && data.user) {
-                setSession({
-                    isAuthenticated: true,
-                    user: data.user,
-                });
+export const useRegister = () =>
+    useBaseMutation({
+        mutationFn: async (payload: RegisterRequest) => {
+            const response = await authService.register(payload);
+            // Backend cấp token ngay sau đăng ký → vào app luôn
+            if (response.tokens) {
+                await sessionManager.establish(response.tokens, response.user ?? null);
             }
+            return response;
         },
+        successMessage: 'Đăng ký thành công!',
+        errorMessage: 'Đăng ký thất bại',
     });
-};
 
-/**
- * Đăng xuất
- */
+/** Đăng xuất luôn thành công ở local (kể cả offline); thu hồi server chạy nền */
 export const useLogout = () => {
-    const { clearSession } = useSessionActions();
-    const queryClient = useQueryClient();
-
-    // Memoize clear function
-    const clearAuthData = useCallback(() => {
-        clearSession();
-        queryClient.clear();
-    }, [clearSession, queryClient]);
-
-    return useBaseMutation({
-        mutationFn: authService.logout,
-        showSuccessToast: true,
-        successMessage: 'Đăng xuất thành công!',
-        showErrorToast: false, // Không hiển thị lỗi khi logout
-        onSuccessCallback: clearAuthData,
-        onErrorCallback: clearAuthData, // Ngay cả khi logout fail trên server, vẫn clear local state
-    });
+    const logout = useCallback(() => sessionManager.signOut('user'), []);
+    return { logout };
 };
 
-/**
- * Đổi mật khẩu
- */
-export const useChangePassword = () => {
-    return useBaseMutation({
+export const useChangePassword = () =>
+    useBaseMutation({
         mutationFn: (data: ChangePasswordRequest) => authService.changePassword(data),
-        showSuccessToast: true,
         successMessage: 'Đổi mật khẩu thành công!',
-        showErrorToast: true,
         errorMessage: 'Đổi mật khẩu thất bại',
-        // Không invalidate queries vì không ảnh hưởng đến user data
     });
-};
 
-
-/**
- * Cập nhật profile
- */
 export const useUpdateProfile = () => {
     const queryClient = useQueryClient();
 
-    // Memoize invalidate queries
-    const invalidateQueries = useMemo(() => [authKeys.me(), authKeys.profile()], []);
-
     return useBaseMutation({
-        mutationFn: authService.updateProfile,
-        showSuccessToast: true,
+        mutationFn: (data: Partial<User>) => authService.updateProfile(data),
         successMessage: 'Cập nhật thông tin thành công!',
-        showErrorToast: true,
         errorMessage: 'Cập nhật thông tin thất bại',
-        invalidateQueries,
-        onSuccessCallback: (updatedUser) => {
-            // Cập nhật cache cho user data
+        onSuccessCallback: updatedUser => {
             queryClient.setQueryData(authKeys.me(), updatedUser);
-            queryClient.setQueryData(authKeys.profile(), updatedUser);
+            sessionManager.cacheUser(updatedUser);
         },
     });
 };
 
-/**
- * Refresh token
- */
-export const useRefreshToken = () => {
-    return useBaseMutation({
-        mutationFn: authService.refreshToken,
-        showSuccessToast: false,
-        showErrorToast: false,
-        onSuccessCallback: (_accessToken: string) => {
-        },
-        // Không retry refresh token để tránh loop vô hạn
-        retry: false,
-    });
-};
-
-/**
- * Quên mật khẩu
- */
-export const useForgotPassword = () => {
-    return useBaseMutation({
+export const useForgotPassword = () =>
+    useBaseMutation({
         mutationFn: (data: ForgotPasswordRequest) => authService.forgotPassword(data),
-        showSuccessToast: true,
         successMessage: 'Email khôi phục mật khẩu đã được gửi!',
-        showErrorToast: true,
         errorMessage: 'Lỗi khi gửi email khôi phục mật khẩu',
     });
-};
 
-/**
- * Reset mật khẩu
- */
-export const useResetPassword = () => {
-    return useBaseMutation({
+export const useResetPassword = () =>
+    useBaseMutation({
         mutationFn: (data: ResetPasswordRequest) => authService.resetPassword(data),
-        showSuccessToast: true,
         successMessage: 'Đặt lại mật khẩu thành công!',
-        showErrorToast: true,
         errorMessage: 'Lỗi khi đặt lại mật khẩu',
     });
-};
-
-/**
- * Xác thực email
- */
-export const useVerifyEmail = () => {
-    const queryClient = useQueryClient();
-
-    return useBaseMutation({
-        mutationFn: (_token: string) => {
-            // Giả lập verifyEmail nếu chưa có trong service
-            return Promise.resolve({ success: true });
-        },
-        showSuccessToast: true,
-        successMessage: 'Xác thực email thành công!',
-        showErrorToast: true,
-        errorMessage: 'Lỗi khi xác thực email',
-        invalidateQueries: [authKeys.me()],
-        onSuccessCallback: () => {
-            // Invalidate user data sau khi verify email
-            queryClient.invalidateQueries({ queryKey: authKeys.me() });
-        },
-    });
-}; 

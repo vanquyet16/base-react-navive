@@ -81,7 +81,7 @@ const CustomButtonBase: React.FC<CustomButtonProps> = ({
   ...rest
 }) => {
   const theme = useTheme();
-  const styles = useStyles(theme);
+  const styles = useStyles();
 
   const isDisabled = disabled || loading;
   const isTextVariant = variant === 'text';

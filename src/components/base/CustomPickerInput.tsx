@@ -9,11 +9,6 @@ import { createStyles } from '@/shared/theme/create-styles';
 import { useTheme } from '@/shared/theme/use-theme';
 import { CustomText } from './CustomText';
 import AppIcon from './AppIcon';
-import {
-  moderateScale,
-  moderateVerticalScale,
-  scale,
-} from 'react-native-size-matters';
 
 export interface CustomPickerInputProps {
   label?: string;
@@ -93,7 +88,7 @@ export const CustomPickerInput = memo<CustomPickerInputProps>(
           </CustomText>
           <AppIcon
             name={rightIconName}
-            size={moderateScale(rightIconSize)}
+            size={rightIconSize}
             color={
               disabled
                 ? theme.colors.textSecondary
@@ -117,7 +112,7 @@ export const CustomPickerInput = memo<CustomPickerInputProps>(
 
 const useStyles = createStyles((theme, rs) => ({
   wrapper: {
-    marginBottom: moderateVerticalScale(12),
+    marginBottom: rs.moderateVerticalScale(12),
     width: '100%',
   },
   label: {
@@ -125,8 +120,8 @@ const useStyles = createStyles((theme, rs) => ({
     fontWeight: '700',
     textTransform: 'uppercase',
     color: theme.colors.textSecondary,
-    marginBottom: moderateVerticalScale(8),
-    marginLeft: scale(4),
+    marginBottom: rs.moderateVerticalScale(8),
+    marginLeft: rs.scale(4),
   },
   container: {
     minHeight: rs.scale(40),
@@ -134,10 +129,10 @@ const useStyles = createStyles((theme, rs) => ({
     borderWidth: 1.5,
     borderColor: theme.colors.inputBorder,
     borderRadius: rs.radius(8),
-    paddingHorizontal: scale(12),
+    paddingHorizontal: rs.scale(12),
     paddingVertical: rs.py(8), // Match CustomInput
     // Match CustomInput shadow
-    shadowColor: '#000',
+    shadowColor: theme.colors.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
@@ -168,8 +163,8 @@ const useStyles = createStyles((theme, rs) => ({
   },
   errorText: {
     color: theme.colors.error,
-    marginTop: moderateVerticalScale(4),
-    marginLeft: scale(4),
+    marginTop: rs.moderateVerticalScale(4),
+    marginLeft: rs.scale(4),
     fontSize: rs.fontSize(12),
   },
 }));

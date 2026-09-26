@@ -2,13 +2,8 @@ import React, { memo, useMemo } from 'react';
 import { Pressable, View } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
-import { CustomText } from '@/components/base';
+import { CustomText } from './CustomText';
 import AppIcon from '@/components/base/AppIcon';
-import {
-  moderateScale,
-  moderateVerticalScale,
-  scale,
-} from 'react-native-size-matters';
 
 type MediaUploadType = 'photo' | 'video' | 'file' | 'group';
 
@@ -62,27 +57,27 @@ export const MediaUploadButton: React.FC<MediaUploadButtonProps> = memo(
           return {
             icon: 'camera' as const,
             label: label || 'Chụp ảnh',
-            backgroundColor: '#FFFF',
+            backgroundColor: theme.colors.surface,
             textColor: theme.colors.text,
-            iconBackgroundColor: '#E3F2FD', // Light blue background
-            iconBorderColor: '#2196F3', // Blue border
-            iconColor: '#2196F3', // Blue icon
+            iconBackgroundColor: theme.colors.infoLight,
+            iconBorderColor: theme.colors.info,
+            iconColor: theme.colors.info,
           };
         case 'video':
           return {
             icon: 'video' as const,
             label: label || 'Quay video',
-            backgroundColor: '#FFFF',
+            backgroundColor: theme.colors.surface,
             textColor: theme.colors.text,
-            iconBackgroundColor: '#FFEBEE', // Light red background
-            iconBorderColor: '#F44336', // Red border
-            iconColor: '#F44336', // Red icon
+            iconBackgroundColor: theme.colors.errorLight,
+            iconBorderColor: theme.colors.error,
+            iconColor: theme.colors.error,
           };
         case 'file':
           return {
             icon: 'paperclip' as const,
             label: label || 'Tải file từ thiết bị',
-            backgroundColor: '#FFFFFF', // Màu trắng để nổi bật
+            backgroundColor: theme.colors.surface,
             textColor: theme.colors.text,
             isFullWidth: true,
             iconColor: theme.colors.textSecondary,
@@ -116,7 +111,7 @@ export const MediaUploadButton: React.FC<MediaUploadButtonProps> = memo(
                 styles.iconCamera,
               ]}
             >
-              <AppIcon name="camera" size={moderateScale(24)} color="#2196F3" />
+              <AppIcon name="camera" size={24} color={theme.colors.info} />
             </View>
             <CustomText variant="caption" style={styles.groupLabel}>
               Chụp ảnh
@@ -141,7 +136,7 @@ export const MediaUploadButton: React.FC<MediaUploadButtonProps> = memo(
                 styles.iconVideo,
               ]}
             >
-              <AppIcon name="video" size={moderateScale(24)} color="#F44336" />
+              <AppIcon name="video" size={24} color={theme.colors.error} />
             </View>
             <CustomText variant="caption" style={styles.groupLabel}>
               Quay video
@@ -168,8 +163,8 @@ export const MediaUploadButton: React.FC<MediaUploadButtonProps> = memo(
             >
               <AppIcon
                 name="paperclip"
-                size={moderateScale(24)}
-                color="#FFA000" // Darker Orange for visibility
+                size={24}
+                color={theme.colors.warning}
               />
             </View>
             <CustomText variant="caption" style={styles.groupLabel}>
@@ -207,7 +202,7 @@ export const MediaUploadButton: React.FC<MediaUploadButtonProps> = memo(
         >
           <AppIcon
             name={config.icon}
-            size={moderateScale(config.isFullWidth ? 20 : 28)}
+            size={config.isFullWidth ? 20 : 28}
             color={config.iconColor || theme.colors.white}
           />
         </View>
@@ -230,15 +225,15 @@ export const MediaUploadButton: React.FC<MediaUploadButtonProps> = memo(
  * Styles
  */
 const useStyles = createStyles(
-  theme => ({
+  (theme, rs) => ({
     // Button cho photo và video (dạng vuông)
     button: {
-      width: scale(156),
-      height: moderateVerticalScale(120),
-      borderRadius: moderateScale(12),
+      width: rs.scale(156),
+      height: rs.moderateVerticalScale(120),
+      borderRadius: rs.moderateScale(12),
       justifyContent: 'center',
       alignItems: 'center',
-      padding: moderateScale(16),
+      padding: rs.moderateScale(16),
       // Shadow để nổi lên
       ...theme.shadows.md,
       elevation: 4,
@@ -248,9 +243,9 @@ const useStyles = createStyles(
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center', // Căn giữa nội dung
-      paddingVertical: moderateVerticalScale(14),
-      paddingHorizontal: scale(16),
-      borderRadius: moderateScale(12),
+      paddingVertical: rs.moderateVerticalScale(14),
+      paddingHorizontal: rs.scale(16),
+      borderRadius: rs.moderateScale(12),
       borderWidth: 1,
       borderStyle: 'dashed', // Dashed border
       borderColor: theme.colors.border,
@@ -259,10 +254,10 @@ const useStyles = createStyles(
       elevation: 2,
     },
     iconContainer: {
-      marginBottom: moderateVerticalScale(12),
+      marginBottom: rs.moderateVerticalScale(12),
     },
     fileIconContainer: {
-      marginRight: scale(12),
+      marginRight: rs.scale(12),
     },
     label: {
       textAlign: 'center',
@@ -272,10 +267,10 @@ const useStyles = createStyles(
     },
     // Group Styles
     groupContainer: {
-      backgroundColor: '#FFFFFF',
-      borderRadius: moderateScale(16),
-      paddingVertical: moderateVerticalScale(20),
-      paddingHorizontal: scale(12),
+      backgroundColor: theme.colors.surface,
+      borderRadius: rs.radius(16),
+      paddingVertical: rs.moderateVerticalScale(20),
+      paddingHorizontal: rs.scale(12),
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -283,7 +278,7 @@ const useStyles = createStyles(
       ...theme.shadows.sm,
       elevation: 2,
       borderWidth: 1,
-      borderColor: '#F3F4F6', // Very light border
+      borderColor: theme.colors.borderLight,
     },
     groupItem: {
       alignItems: 'center',
@@ -291,12 +286,12 @@ const useStyles = createStyles(
       flex: 1,
     },
     groupIconContainer: {
-      width: moderateScale(56),
-      height: moderateScale(56),
-      borderRadius: moderateScale(28), // Circle
+      width: rs.moderateScale(56),
+      height: rs.moderateScale(56),
+      borderRadius: rs.moderateScale(28), // Circle
       justifyContent: 'center',
       alignItems: 'center',
-      marginBottom: moderateVerticalScale(8),
+      marginBottom: rs.moderateVerticalScale(8),
       borderWidth: 0, // No border by default, colors applied inline
     },
     groupLabel: {
@@ -305,29 +300,28 @@ const useStyles = createStyles(
     },
     divider: {
       width: 1,
-      height: moderateVerticalScale(40),
+      height: rs.moderateVerticalScale(40),
       backgroundColor: theme.colors.borderLight,
-      marginHorizontal: scale(4),
+      marginHorizontal: rs.scale(4),
     },
     iconCamera: {
-      backgroundColor: '#E3F2FD',
-      borderColor: '#2196F3',
+      backgroundColor: theme.colors.infoLight,
+      borderColor: theme.colors.info,
     },
     iconVideo: {
-      backgroundColor: '#FFEBEE',
-      borderColor: '#F44336',
+      backgroundColor: theme.colors.errorLight,
+      borderColor: theme.colors.error,
     },
     iconFile: {
-      backgroundColor: '#FFF8E1',
-      borderColor: '#FFC107',
+      backgroundColor: theme.colors.warningLight,
+      borderColor: theme.colors.warning,
     },
     customIconBox: {
       borderWidth: 2,
-      borderRadius: moderateScale(12),
-      padding: moderateScale(12),
+      borderRadius: rs.moderateScale(12),
+      padding: rs.moderateScale(12),
     },
   }),
-  true,
 );
 
 export default MediaUploadButton;

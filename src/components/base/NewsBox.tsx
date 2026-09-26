@@ -8,16 +8,12 @@ import {
   Linking,
   StyleSheet,
 } from 'react-native';
-import FastImage from 'react-native-fast-image';
+import FastImage from '@d11/react-native-fast-image';
 import LinearGradient from 'react-native-linear-gradient';
-import {
-  scale,
-  moderateScale,
-  moderateVerticalScale,
-} from 'react-native-size-matters';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useTheme } from '@/shared/theme/use-theme';
 import CustomText from './CustomText';
+import { logger } from '@/shared/utils/logger';
 
 export interface NewsItem {
   id: string;
@@ -112,7 +108,7 @@ const NewsBox: React.FC<NewsBoxProps> = ({
       } else if (item.url) {
         // Fallback to opening URL if no handler provided
         Linking.openURL(item.url).catch(err =>
-          console.error('An error occurred', err),
+          logger.error('An error occurred', err),
         );
       }
     },
@@ -141,7 +137,7 @@ const NewsBox: React.FC<NewsBoxProps> = ({
             <View style={styles.placeholderContainer}>
               <Icon
                 name="image"
-                size={moderateScale(40)}
+                size={styles.rs.iconSize(40)}
                 color={theme.colors.textSecondary}
               />
             </View>
@@ -154,7 +150,7 @@ const NewsBox: React.FC<NewsBoxProps> = ({
           <View style={styles.cardFooter}>
             <Icon
               name="calendar-today"
-              size={moderateScale(12)}
+              size={styles.rs.iconSize(12)}
               color={theme.colors.textTertiary}
               style={styles.dateIcon}
             />
@@ -224,15 +220,15 @@ export default memo(NewsBox);
 const useStyles = createStyles((theme, rs) => ({
   container: {
     backgroundColor: theme.colors.partyBg, // Light beige "warm" background from image
-    borderRadius: moderateScale(12),
+    borderRadius: rs.moderateScale(12),
     overflow: 'hidden',
-    marginBottom: moderateVerticalScale(16),
+    marginBottom: rs.moderateVerticalScale(16),
     // ...theme.shadows.sm,
     borderWidth: 1,
     borderColor: theme.colors.partyBorder, // Subtle border matching the background tone
   },
   emptyBrandSpacing: {
-    height: moderateVerticalScale(12),
+    height: rs.moderateVerticalScale(12),
   },
   headerWrapper: {
     width: '100%',
@@ -253,10 +249,10 @@ const useStyles = createStyles((theme, rs) => ({
   // Left side: Red Flag with Star/Hammer.
   flagIconContainer: {
     backgroundColor: theme.colors.partyRed, // Party Red
-    paddingHorizontal: scale(8),
-    paddingVertical: moderateVerticalScale(4),
-    borderTopLeftRadius: moderateScale(12),
-    borderBottomRightRadius: moderateScale(20), // Curved effect
+    paddingHorizontal: rs.scale(8),
+    paddingVertical: rs.moderateVerticalScale(4),
+    borderTopLeftRadius: rs.moderateScale(12),
+    borderBottomRightRadius: rs.moderateScale(20), // Curved effect
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -270,13 +266,13 @@ const useStyles = createStyles((theme, rs) => ({
       fontWeight: '900',
       textAlign: 'center',
       textTransform: 'uppercase',
-      paddingVertical: moderateVerticalScale(8),
+      paddingVertical: rs.moderateVerticalScale(8),
     },
 
     subHeader: {
-      paddingHorizontal: scale(16),
-      paddingBottom: moderateVerticalScale(4),
-      paddingTop: moderateVerticalScale(8),
+      paddingHorizontal: rs.scale(16),
+      paddingBottom: rs.moderateVerticalScale(4),
+      paddingTop: rs.moderateVerticalScale(8),
     },
     brandContainer: {
       alignItems: 'flex-start',
@@ -285,41 +281,41 @@ const useStyles = createStyles((theme, rs) => ({
       fontWeight: '900',
       color: theme.colors.partyRed, // Red
       fontFamily: 'serif', // Attempt to look like masthead
-      lineHeight: moderateVerticalScale(28),
+      lineHeight: rs.moderateVerticalScale(28),
     },
     brandTextSub: {
-      fontSize: moderateScale(6),
+      fontSize: rs.fontSize(6),
       color: theme.colors.textSecondary,
       fontWeight: '700',
       textTransform: 'uppercase',
     },
     brandTextSubSmall: {
-      fontSize: moderateScale(5),
+      fontSize: rs.fontSize(5),
       color: theme.colors.textTertiary,
       textTransform: 'uppercase',
     },
 
     listContainer: {
-      marginTop: moderateVerticalScale(4),
+      marginTop: rs.moderateVerticalScale(4),
     },
     listContent: {
-      paddingHorizontal: scale(16),
-      paddingBottom: moderateVerticalScale(16),
+      paddingHorizontal: rs.scale(16),
+      paddingBottom: rs.moderateVerticalScale(16),
     },
 
     // Card Styles
     cardContainer: {
-      width: scale(220), // Fixed width for carousel items
-      marginRight: scale(12),
-      backgroundColor: theme.colors.white,
-      borderRadius: moderateScale(8),
+      width: rs.scale(220), // Fixed width for carousel items
+      marginRight: rs.scale(12),
+      backgroundColor: theme.colors.surface,
+      borderRadius: rs.moderateScale(8),
       ...theme.shadows.sm,
       elevation: 2,
       overflow: 'hidden',
     },
     cardImageContainer: {
       width: '100%',
-      height: moderateVerticalScale(110),
+      height: rs.moderateVerticalScale(110),
       backgroundColor: theme.colors.backgroundSecondary,
     },
     cardImage: {
@@ -333,15 +329,15 @@ const useStyles = createStyles((theme, rs) => ({
       backgroundColor: theme.colors.backgroundSecondary,
     },
     cardContent: {
-      padding: moderateScale(12),
+      padding: rs.moderateScale(12),
     },
     cardTitle: {
       fontSize: rs.fontSize(12),
       // fontWeight: '600',
       color: theme.colors.text,
-      lineHeight: moderateScale(20),
-      // marginBottom: moderateVerticalScale(8),
-      height: moderateScale(50), // Fix height for max 3 lines alignment
+      lineHeight: rs.moderateScale(20),
+      // marginBottom: rs.moderateVerticalScale(8),
+      height: rs.moderateScale(50), // Fix height for max 3 lines alignment
     },
     cardFooter: {
       flexDirection: 'row',
@@ -349,7 +345,7 @@ const useStyles = createStyles((theme, rs) => ({
       marginTop: 'auto',
     },
     dateIcon: {
-      marginRight: scale(4),
+      marginRight: rs.scale(4),
     },
     dateText: {
       fontSize: rs.fontSize(12),

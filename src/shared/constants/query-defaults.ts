@@ -49,8 +49,7 @@ export const RETRY_CONFIG = {
 export const DEFAULT_QUERY_OPTIONS = {
     staleTime: STALE_TIME.MEDIUM,
     gcTime: CACHE_TIME.MEDIUM,
-    retry: RETRY_CONFIG.QUERY,
-    refetchOnWindowFocus: false, // Mobile app không cần vì không có window focus
+    refetchOnWindowFocus: true, // "focus" = app trở lại foreground (xem query-provider)
     refetchOnReconnect: true, // Re-fetch khi reconnect internet
 } as const;
 

@@ -114,7 +114,7 @@ const AdvancedLazyScreen: React.FC<AdvancedLazyScreenProps> = ({
               ]}
               onPress={handleRetry}
             >
-              <Icon name="refresh" size={20} color="#fff" />
+              <Icon name="refresh" size={20} color="white" />
               <CustomText
                 variant="body"
                 weight="semibold"
@@ -194,7 +194,7 @@ const useStyles = createStyles(
       marginBottom: 16,
     },
     retryText: {
-      color: '#fff',
+      color: 'white',
       // fontSize: 16, fontWeight: '600' handled by variant="body" + semibold
       marginLeft: 8,
     },
@@ -205,7 +205,6 @@ const useStyles = createStyles(
       lineHeight: 20,
     },
   }),
-  true,
 );
 
 export default AdvancedLazyScreen;

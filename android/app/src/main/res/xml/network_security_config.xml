@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  NETWORK SECURITY CONFIG — MẶC ĐỊNH (bản release của staging/prod)
+  Chỉ HTTPS. Bản debug dùng src/debug, bản release của flavor dev dùng src/dev.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

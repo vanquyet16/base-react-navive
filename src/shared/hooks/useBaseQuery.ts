@@ -1,59 +1,30 @@
-import { useQuery, UseQueryOptions, QueryKey } from '@tanstack/react-query';
+/**
+ * useBaseQuery
+ * ============
+ * useQuery + toast lỗi (tối đa một lần cho mỗi lần lỗi mới).
+ * Retry/staleTime kế thừa cấu hình chung của queryClient — chỉ override khi thật sự cần.
+ */
+
 import { useEffect, useRef } from 'react';
-import { logger } from '@/shared/utils/logger';
+import { useQuery, type QueryKey, type UseQueryOptions } from '@tanstack/react-query';
 import { errorHandler } from '@/shared/utils/errorHandler';
 
-interface UseBaseQueryProps<TData, TError = Error>
-    extends Omit<UseQueryOptions<TData, TError>, 'queryKey' | 'queryFn'> {
+interface UseBaseQueryProps<TData> extends Omit<UseQueryOptions<TData, Error>, 'queryKey' | 'queryFn'> {
     queryKey: QueryKey;
     queryFn: () => Promise<TData>;
     showErrorToast?: boolean;
-    errorMessage?: string;
-    showSuccessToast?: boolean;
-    successMessage?: string;
 }
 
-export const useBaseQuery = <TData, TError = Error>({
-    queryKey,
-    queryFn,
-    showErrorToast = true,
-    errorMessage: _errorMessage = 'Lỗi khi tải dữ liệu',
-    showSuccessToast = false,
-    successMessage = 'Tải dữ liệu thành công',
-    ...options
-}: UseBaseQueryProps<TData, TError>) => {
-    const { data, error, isSuccess, isFetching, errorUpdatedAt, ...rest } = useQuery({
-        queryKey,
-        queryFn,
-        retry: (failureCount, queryErr: any) => {
-            // Không retry với các lỗi 401, 403, 404
-            if (queryErr?.response?.status === 401 ||
-                queryErr?.response?.status === 403 ||
-                queryErr?.response?.status === 404) {
-                return false;
-            }
-            return failureCount < 2;
-        },
-        staleTime: 5 * 60 * 1000, // 5 phút
-        ...options,
-    });
+export const useBaseQuery = <TData>({ showErrorToast = true, ...options }: UseBaseQueryProps<TData>) => {
+    const query = useQuery(options);
+    const lastErrorShownAt = useRef(0);
 
-    const lastErrorShownAt = useRef<number>(0);
-
-    // Hiển thị toast lỗi (chỉ hiện 1 lần cho mỗi đợt lỗi mới thông qua errorUpdatedAt)
     useEffect(() => {
-        if (error && showErrorToast && errorUpdatedAt > lastErrorShownAt.current) {
-            errorHandler.handleApiError(error, 'useBaseQuery');
-            lastErrorShownAt.current = errorUpdatedAt;
+        if (query.error && showErrorToast && query.errorUpdatedAt > lastErrorShownAt.current) {
+            lastErrorShownAt.current = query.errorUpdatedAt;
+            errorHandler.handleApiError(query.error, 'useBaseQuery');
         }
-    }, [error, showErrorToast, errorUpdatedAt]);
+    }, [query.error, query.errorUpdatedAt, showErrorToast]);
 
-    // Log thành công nếu cần
-    useEffect(() => {
-        if (data && isSuccess && showSuccessToast && !isFetching) {
-            logger.info('Query thành công', { message: successMessage });
-        }
-    }, [data, isSuccess, showSuccessToast, successMessage, isFetching]);
-
-    return { data, error, isSuccess, isFetching, ...rest };
-}; 
+    return query;
+};

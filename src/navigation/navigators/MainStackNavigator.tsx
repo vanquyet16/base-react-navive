@@ -9,7 +9,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { MainStackParamList } from '@/shared/types/navigation.types';
 import { NAVIGATION_KEYS } from '@/navigation/config/navigationConfig';
-import MainTabs from '@/navigation/MainTabs';
+import { MainTabsNavigator } from './MainTabsNavigator';
 
 const MainStack = createNativeStackNavigator<MainStackParamList>();
 
@@ -28,7 +28,7 @@ export const MainStackNavigator: React.FC = () => {
       {/* 1. Màn hình MainTabs (chứa Home) */}
       <MainStack.Screen
         name={NAVIGATION_KEYS.MAIN_STACK.MAIN_TABS}
-        component={MainTabs}
+        component={MainTabsNavigator}
       />
     </MainStack.Navigator>
   );

@@ -120,13 +120,3 @@ export interface ChangePasswordRequest {
     passwordConfirmation: string;
 }
 
-/**
- * Auth Session State
- * Dùng trong Zustand store
- */
-export interface AuthSession {
-    /** Is user authenticated */
-    isAuthenticated: boolean;
-    /** Current user - null nếu chưa login */
-    user: User | null;
-}

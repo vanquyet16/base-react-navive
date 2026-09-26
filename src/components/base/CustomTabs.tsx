@@ -1,10 +1,6 @@
 import React, { memo, useMemo, useEffect, useState } from 'react';
 import { createStyles } from '@/shared/theme/create-styles';
 import {
-  moderateScale,
-  moderateVerticalScale,
-} from '@/shared/utils/sizeMatters';
-import {
   ScrollView,
   Pressable,
   View,
@@ -41,7 +37,7 @@ export const CustomTabs = memo<CustomTabsProps>(props => {
   // Animation state
   const [containerWidth, setContainerWidth] = useState(0);
   const translateX = useSharedValue(0);
-  const MARGIN = moderateScale(3);
+  const MARGIN = styles.rs.moderateScale(3);
 
   // Update animation value when page changes
   useEffect(() => {
@@ -57,18 +53,18 @@ export const CustomTabs = memo<CustomTabsProps>(props => {
     () => ({
       marginHorizontal:
         type === 'pill' || type === 'chip' || type === 'solid'
-          ? moderateVerticalScale(8)
+          ? styles.rs.moderateVerticalScale(8)
           : 0,
       marginVertical:
         type === 'pill' || type === 'chip' || type === 'solid'
-          ? moderateVerticalScale(8)
+          ? styles.rs.moderateVerticalScale(8)
           : 0,
 
       borderBottomWidth: type === 'underline' ? 1 : 0,
       borderBottomColor: theme.colors.border,
       backgroundColor: theme.colors.background,
     }),
-    [type, theme.colors.border, theme.colors.background],
+    [type, theme.colors.border, theme.colors.background, styles.rs],
   );
 
   // Animated Style for the Solid Indicator
@@ -184,24 +180,24 @@ const useStyles = createStyles((theme, rs) => ({
     backgroundColor: theme.colors.background,
   },
   scrollViewContent: {
-    gap: moderateScale(8),
+    gap: rs.moderateScale(8),
   },
   chipScrollView: {
-    paddingHorizontal: moderateScale(4),
+    paddingHorizontal: rs.moderateScale(4),
   },
   // Solid Container (Flex Row)
   solidContainer: {
     flexDirection: 'row',
     width: '100%',
-    borderRadius: moderateScale(8),
+    borderRadius: rs.moderateScale(8),
     backgroundColor: theme.colors.tabs.background,
     position: 'relative',
   },
 
   // Base Styles
   baseTabItem: {
-    paddingHorizontal: moderateScale(16),
-    paddingVertical: moderateVerticalScale(8),
+    paddingHorizontal: rs.moderateScale(16),
+    paddingVertical: rs.moderateVerticalScale(8),
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -215,10 +211,10 @@ const useStyles = createStyles((theme, rs) => ({
 
     // Pill Styles
     pillItem: {
-      borderRadius: moderateScale(20),
-      marginBottom: moderateVerticalScale(8),
-      marginTop: moderateVerticalScale(8),
-      paddingVertical: moderateVerticalScale(10),
+      borderRadius: rs.moderateScale(20),
+      marginBottom: rs.moderateVerticalScale(8),
+      marginTop: rs.moderateVerticalScale(8),
+      paddingVertical: rs.moderateVerticalScale(10),
     },
     pillActive: {
       backgroundColor: theme.colors.secondary[500],
@@ -235,13 +231,13 @@ const useStyles = createStyles((theme, rs) => ({
 
     // Chip Styles
     chipItem: {
-      borderRadius: moderateScale(8),
-      paddingVertical: moderateVerticalScale(6),
-      paddingHorizontal: moderateScale(12),
+      borderRadius: rs.moderateScale(8),
+      paddingVertical: rs.moderateVerticalScale(6),
+      paddingHorizontal: rs.moderateScale(12),
     },
     chipActive: {
-      backgroundColor: theme.colors.white,
-      shadowColor: '#000',
+      backgroundColor: theme.colors.surface,
+      shadowColor: theme.colors.black,
       shadowOffset: {
         width: 0,
         height: 1,
@@ -260,9 +256,9 @@ const useStyles = createStyles((theme, rs) => ({
 
     // Solid Styles
     solidItem: {
-      borderRadius: moderateScale(8),
-      paddingVertical: moderateVerticalScale(10),
-      margin: moderateScale(3),
+      borderRadius: rs.moderateScale(8),
+      paddingVertical: rs.moderateVerticalScale(10),
+      margin: rs.moderateScale(3),
       flex: 1,
       zIndex: 1,
     },
@@ -281,20 +277,20 @@ const useStyles = createStyles((theme, rs) => ({
       top: 0,
       left: 0,
       bottom: 0,
-      marginVertical: moderateScale(3),
+      marginVertical: rs.moderateScale(3),
       height: 'auto',
-      borderRadius: moderateScale(8),
+      borderRadius: rs.moderateScale(8),
       backgroundColor: theme.colors.tabs.backgroundActive,
       zIndex: 0,
     },
 
     // Underline Styles
     underlineContainer: {
-      backgroundColor: theme.colors.white,
+      backgroundColor: theme.colors.surface,
       width: '100%',
     },
     underlineItem: {
-      paddingVertical: moderateVerticalScale(12),
+      paddingVertical: rs.moderateVerticalScale(12),
     },
     underlineActive: {
       borderBottomWidth: 3,

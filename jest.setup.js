@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 /**
  * JEST SETUP CONFIGURATION
  * ========================
@@ -48,27 +47,25 @@ jest.mock('react-native-mmkv', () => {
   };
 });
 
-// 6. Mock React Native Toast Message
-jest.mock('react-native-toast-message', () => ({
-  show: jest.fn(),
-  hide: jest.fn(),
-}));
+// 6. Mock Fast Image (native view)
+jest.mock('@d11/react-native-fast-image', () => {
+  const { Image } = require('react-native');
+  const FastImage = props => require('react').createElement(Image, props);
+  FastImage.resizeMode = { contain: 'contain', cover: 'cover', stretch: 'stretch', center: 'center' };
+  FastImage.priority = { low: 'low', normal: 'normal', high: 'high' };
+  FastImage.preload = jest.fn();
+  return { __esModule: true, default: FastImage };
+});
 
 // 7. Mock React Native Vector Icons
 jest.mock('react-native-vector-icons/MaterialCommunityIcons', () => 'Icon');
 jest.mock('react-native-vector-icons/Feather', () => 'Icon');
 jest.mock('react-native-vector-icons/AntDesign', () => 'Icon');
 
-// 8. Mock Safe Area Context
-jest.mock('react-native-safe-area-context', () => {
-  const inset = { top: 0, right: 0, bottom: 0, left: 0 };
-  return {
-    SafeAreaProvider: ({ children }) => children,
-    SafeAreaConsumer: ({ children }) => children(inset),
-    SafeAreaView: ({ children }) => children,
-    useSafeAreaInsets: () => inset,
-  };
-});
+// 8. Mock Safe Area Context — mock chính thức (đủ SafeAreaInsetsContext cho React Navigation)
+jest.mock('react-native-safe-area-context', () =>
+  require('react-native-safe-area-context/jest/mock').default,
+);
 
 // 9. Mock React Native Blob Util
 jest.mock('react-native-blob-util', () => ({
@@ -88,3 +85,8 @@ jest.mock('react-native-blob-util', () => ({
     path: () => '/path/to/file',
   }),
 }));
+
+// 10. Mock React Native Device Info
+jest.mock('react-native-device-info', () => {
+  return require('react-native-device-info/jest/react-native-device-info-mock');
+});

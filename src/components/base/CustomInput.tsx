@@ -21,6 +21,7 @@ import { useTheme } from '@/shared/theme/use-theme';
 import type { Theme } from '@/shared/theme/theme';
 
 import { createStylesWithProps } from '@/shared/theme/create-styles';
+import { MAX_FONT_SIZE_MULTIPLIER } from '@/shared/hooks/useResponsiveSize';
 
 /**
  * CustomInput Props
@@ -152,6 +153,7 @@ const CustomInputBase: React.FC<CustomInputProps> = ({
           placeholderTextColor={theme.colors.textTertiary}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          maxFontSizeMultiplier={MAX_FONT_SIZE_MULTIPLIER}
           {...textInputProps}
         />
 
@@ -206,7 +208,7 @@ const useStyles = createStylesWithProps(
         paddingHorizontal: rs.px(12),
         paddingVertical: rs.py(8),
         minHeight: rs.inputHeight('sm'),
-        shadowColor: '#000',
+        shadowColor: theme.colors.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 3,
@@ -215,7 +217,7 @@ const useStyles = createStylesWithProps(
 
       inputContainerFocused: {
         borderColor: theme.colors.primary,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: theme.colors.inputBackground,
         shadowColor: theme.colors.primary,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.15,

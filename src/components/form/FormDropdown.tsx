@@ -7,7 +7,7 @@ import {
   Path,
   RegisterOptions,
 } from 'react-hook-form';
-import { CustomDropdown, DropdownOption } from '@/components/base';
+import { CustomDropdown, type DropdownOption } from '@/components/base/CustomDropdown';
 
 interface FormDropdownProps<T extends FieldValues = FieldValues> {
   label?: string;

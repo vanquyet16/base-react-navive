@@ -1,7 +1,7 @@
 import React, { useMemo, memo } from 'react';
 
-import FastImage, { FastImageProps } from 'react-native-fast-image';
-import { moderateScale, scale } from 'react-native-size-matters';
+import FastImage, { type FastImageProps } from '@d11/react-native-fast-image';
+import { useResponsiveSize } from '@/shared/hooks/useResponsiveSize';
 
 interface LogoProps {
   /** Kích thước của logo (width = height) */
@@ -39,15 +39,12 @@ const IMAGES: Record<string, any> = {
 
 export const Logo: React.FC<LogoProps> = memo(
   ({ size = 120, style, name = 'logo' }) => {
+    const rs = useResponsiveSize();
+    // Cùng một kích thước cho 2 chiều — giữ logo vuông, không méo trên màn khác chuẩn
     const styleMemo = useMemo(() => {
-      return [
-        {
-          width: scale(size),
-          height: moderateScale(size), // Ensure aspect ratio might need attention if images differ
-        },
-        style,
-      ];
-    }, [size, style]);
+      const dimension = rs.moderateScale(size);
+      return [{ width: dimension, height: dimension }, style];
+    }, [rs, size, style]);
 
     const source = IMAGES[name] || IMAGES.logo;
 

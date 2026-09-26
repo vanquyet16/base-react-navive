@@ -1,168 +1,107 @@
 /* eslint-disable no-console */
-// ============================================================================
-// LOGGER UTILITY - THAY THẾ CONSOLE.LOG VỚI CẤU HÌNH CHUYÊN NGHIỆP
-// ============================================================================
+/**
+ * LOGGER
+ * ======
+ * - Bundle debug: in ra console với mức DEBUG.
+ * - Bundle release: KHÔNG in console (tránh lộ dữ liệu qua logcat/Console.app); chỉ chuyển
+ *   WARN/ERROR tới `sink` (Sentry/Crashlytics) nếu đã đăng ký qua `setLogSink`.
+ * - Mọi `data` đều được che các trường nhạy cảm (token, mật khẩu, CCCD…) trước khi ghi.
+ */
 
-import { ENV } from '@/shared/config/app.config';
-
-// Định nghĩa các level log
 export enum LogLevel {
     ERROR = 0,
     WARN = 1,
     INFO = 2,
     DEBUG = 3,
-    VERBOSE = 4,
 }
 
-// Cấu hình logger
-const LOG_CONFIG = {
-    level: ENV.DEV ? LogLevel.DEBUG : LogLevel.ERROR,
-    enableConsole: ENV.DEV,
-    enableFile: ENV.PROD,
-    maxLogSize: 1000, // Số lượng log tối đa lưu trong memory
-} as const;
+export type LogSink = (level: LogLevel, message: string, data?: unknown) => void;
 
-// Interface cho log entry
-interface LogEntry {
-    timestamp: string;
-    level: LogLevel;
-    message: string;
-    data?: any;
-    stack?: string;
-}
+const MIN_LEVEL = __DEV__ ? LogLevel.DEBUG : LogLevel.WARN;
 
-// Class Logger chính
+const SENSITIVE_KEY = /pass(word)?|token|authorization|cookie|secret|cccd|otp|pin|deviceid/i;
+const MAX_DEPTH = 5;
+
+/** Che giá trị của các khoá nhạy cảm (đệ quy, có giới hạn độ sâu) */
+export const redact = (value: unknown, depth = 0): unknown => {
+    if (value === null || typeof value !== 'object') {
+        return value;
+    }
+    if (depth >= MAX_DEPTH) {
+        return '[…]';
+    }
+    if (value instanceof Error) {
+        return { name: value.name, message: value.message };
+    }
+    if (Array.isArray(value)) {
+        return value.map(item => redact(item, depth + 1));
+    }
+    return Object.fromEntries(
+        Object.entries(value as Record<string, unknown>).map(([key, item]) => [
+            key,
+            SENSITIVE_KEY.test(key) ? '[REDACTED]' : redact(item, depth + 1),
+        ]),
+    );
+};
+
+let sink: LogSink | null = null;
+
+/** Đăng ký nơi nhận log ở release (crash reporter). Gọi một lần trong bootstrap. */
+export const setLogSink = (next: LogSink | null): void => {
+    sink = next;
+};
+
+const CONSOLE_METHOD: Record<LogLevel, 'error' | 'warn' | 'info' | 'debug'> = {
+    [LogLevel.ERROR]: 'error',
+    [LogLevel.WARN]: 'warn',
+    [LogLevel.INFO]: 'info',
+    [LogLevel.DEBUG]: 'debug',
+};
+
 class Logger {
-    private logs: LogEntry[] = [];
-    private readonly context?: string;
+    constructor(private readonly context?: string) {}
 
-    constructor(context?: string) {
-        this.context = context;
+    error(message: string, data?: unknown): void {
+        this.write(LogLevel.ERROR, message, data);
     }
 
-    // Private method để format log
-    private formatMessage(level: LogLevel, message: string, _data?: unknown): string {
-        const timestamp = new Date().toISOString();
-        const levelName = LogLevel[level];
-        const context = this.context ? `[${this.context}]` : '';
-
-        return `${timestamp} ${levelName}${context}: ${message}`;
+    warn(message: string, data?: unknown): void {
+        this.write(LogLevel.WARN, message, data);
     }
 
-    // Private method để lưu log
-    private saveLog(level: LogLevel, message: string, data?: any, error?: Error): void {
-        if (level > LOG_CONFIG.level) return;
+    info(message: string, data?: unknown): void {
+        this.write(LogLevel.INFO, message, data);
+    }
 
-        const logEntry: LogEntry = {
-            timestamp: new Date().toISOString(),
-            level,
-            message,
-            data,
-            stack: error?.stack,
-        };
+    debug(message: string, data?: unknown): void {
+        this.write(LogLevel.DEBUG, message, data);
+    }
 
-        this.logs.push(logEntry);
-
-        // Giới hạn số lượng log trong memory
-        if (this.logs.length > LOG_CONFIG.maxLogSize) {
-            this.logs.shift();
+    private write(level: LogLevel, message: string, data?: unknown): void {
+        if (level > MIN_LEVEL) {
+            return;
         }
+        const text = this.context ? `[${this.context}] ${message}` : message;
+        const safeData = data === undefined ? undefined : redact(data);
 
-        // Hiển thị log nếu được enable
-        if (LOG_CONFIG.enableConsole) {
-            const formattedMessage = this.formatMessage(level, message, data);
-
-            switch (level) {
-                case LogLevel.ERROR:
-                     
-        console.error(formattedMessage, data || '');
-                    if (error) console.error(error);
-                    break;
-                case LogLevel.WARN:
-                     
-        console.warn(formattedMessage, data || '');
-                    break;
-                case LogLevel.INFO:
-                    console.info(formattedMessage, data || '');
-                    break;
-                case LogLevel.DEBUG:
-                    console.debug(formattedMessage, data || '');
-                    break;
-                case LogLevel.VERBOSE:
-                    console.log(formattedMessage, data || '');
-                    break;
+        if (__DEV__) {
+            if (safeData === undefined) {
+                console[CONSOLE_METHOD[level]](text);
+            } else {
+                console[CONSOLE_METHOD[level]](text, safeData);
             }
         }
-    }
-
-    // Public methods
-    error(message: string, data?: any, error?: Error): void {
-        this.saveLog(LogLevel.ERROR, message, data, error);
-    }
-
-    warn(message: string, data?: any): void {
-        this.saveLog(LogLevel.WARN, message, data);
-    }
-
-    info(message: string, data?: any): void {
-        this.saveLog(LogLevel.INFO, message, data);
-    }
-
-    debug(message: string, data?: any): void {
-        this.saveLog(LogLevel.DEBUG, message, data);
-    }
-
-    verbose(message: string, data?: any): void {
-        this.saveLog(LogLevel.VERBOSE, message, data);
-    }
-
-    // Method để lấy tất cả logs (cho debugging)
-    getLogs(): LogEntry[] {
-        return [...this.logs];
-    }
-
-    // Method để clear logs
-    clearLogs(): void {
-        this.logs = [];
-    }
-
-    // Method để export logs (cho production debugging)
-    exportLogs(): string {
-        return JSON.stringify(this.logs, null, 2);
+        sink?.(level, text, safeData);
     }
 }
 
-// Factory function để tạo logger với context
-export const createLogger = (context?: string): Logger => {
-    return new Logger(context);
-};
+export const createLogger = (context?: string): Logger => new Logger(context);
 
-// Default logger instance
 export const logger = createLogger('App');
 
-// Utility functions cho các trường hợp đặc biệt
-export const logError = (error: Error, context?: string): void => {
-    const contextLogger = context ? createLogger(context) : logger;
-    contextLogger.error(error.message, null, error);
+export const logError = (error: unknown, context?: string): void => {
+    (context ? createLogger(context) : logger).error(
+        error instanceof Error ? error.message : 'Unknown error',
+        error,
+    );
 };
-
-export const logApiRequest = (method: string, url: string, data?: any): void => {
-    logger.debug(`API Request: ${method} ${url}`, data);
-};
-
-export const logApiResponse = (status: number, url: string, data?: any): void => {
-    const level = status >= 400 ? LogLevel.ERROR : LogLevel.DEBUG;
-    const message = `API Response: ${status} ${url}`;
-
-    if (level === LogLevel.ERROR) {
-        logger.error(message, data);
-    } else {
-        logger.debug(message, data);
-    }
-};
-
-export const logPerformance = (operation: string, duration: number): void => {
-    logger.debug(`Performance: ${operation} took ${duration}ms`);
-};
-
-

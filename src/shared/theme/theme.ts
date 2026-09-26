@@ -4,7 +4,7 @@
  * - Tối ưu 60 FPS, memoized, type-safe
  */
 
-import { colors, shadows, zIndex } from './tokens';
+import { colors, fontWeights, radii, shadows, spacing, typography, zIndex } from './tokens';
 import { alpha } from './helpers';
 
 /**
@@ -146,6 +146,12 @@ export interface Theme {
     // Shadows & Depth
     shadows: typeof shadows;
     zIndex: typeof zIndex;
+
+    // Layout & typography scales (không đổi giữa sáng/tối)
+    spacing: typeof spacing;
+    radii: typeof radii;
+    typography: typeof typography;
+    fontWeights: typeof fontWeights;
 
     // Helper tạo màu trong suốt tiện lợi
     alpha: typeof alpha;
@@ -291,6 +297,10 @@ export const lightTheme: Theme = {
 
     shadows,
     zIndex,
+    spacing,
+    radii,
+    typography,
+    fontWeights,
     alpha,
     isDark: false,
 };
@@ -432,6 +442,10 @@ export const darkTheme: Theme = {
 
     shadows,
     zIndex,
+    spacing,
+    radii,
+    typography,
+    fontWeights,
     alpha,
     isDark: true,
 };

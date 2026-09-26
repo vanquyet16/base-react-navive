@@ -1,29 +1,26 @@
-// ============================================================================
-// ERROR HANDLER UTILITY - XỬ LÝ LỖI TẬP TRUNG VÀ CHUYÊN NGHIỆP
-// ============================================================================
+/**
+ * ERROR HANDLER
+ * =============
+ * Chuyển lỗi (thường là AppHttpError) thành thông báo thân thiện + toast.
+ * Chống spam: cùng một thông báo chỉ hiển thị một lần trong `DEDUPE_WINDOW_MS`.
+ */
 
 import { logError } from './logger';
-import Toast from 'react-native-toast-message';
+import CustomToast from './CustomToast';
+import { createHttpError } from '@/shared/services/http/http-error';
+import { HTTP_STATUS } from '@/shared/constants/http';
 
-const ERROR_MESSAGES = {
-    NETWORK: {
-        UNKNOWN: 'Lỗi kết nối không xác định',
-        TIMEOUT: 'Kết nối quá thời gian quy định',
-        NO_INTERNET: 'Không có kết nối mạng',
-        SERVER_ERROR: 'Lỗi hệ thống từ máy chủ',
-    },
-    VALIDATION: {
-        REQUIRED: 'Trường này là bắt buộc',
-        INVALID_EMAIL: 'Email không đúng định dạng',
-        INVALID_PHONE: 'Số điện thoại không hợp lệ',
-    },
-    AUTH: {
-        SESSION_EXPIRED: 'Phiên đăng nhập đã hết hạn',
-        UNAUTHORIZED: 'Không có quyền truy cập',
-    }
+const MESSAGES = {
+    TIMEOUT_OR_OFFLINE: 'Không có kết nối mạng hoặc máy chủ phản hồi quá lâu',
+    SERVER: 'Lỗi hệ thống từ máy chủ',
+    UNAUTHORIZED: 'Phiên đăng nhập đã hết hạn',
+    FORBIDDEN: 'Không có quyền truy cập',
+    NOT_FOUND: 'Không tìm thấy dữ liệu',
+    UNKNOWN: 'Đã có lỗi xảy ra',
 } as const;
 
-// Định nghĩa các loại lỗi
+const DEDUPE_WINDOW_MS = 3000;
+
 export enum ErrorType {
     NETWORK = 'NETWORK',
     AUTH = 'AUTH',
@@ -32,203 +29,61 @@ export enum ErrorType {
     UNKNOWN = 'UNKNOWN',
 }
 
-// Interface cho error info
 export interface ErrorInfo {
     type: ErrorType;
     message: string;
-    code?: string | number;
-    details?: any;
-    showToast?: boolean;
-    logError?: boolean;
+    statusCode?: number;
 }
 
-// Class Error Handler chính
+export const describeError = (error: unknown): ErrorInfo => {
+    const httpError = createHttpError(error);
+    const { statusCode } = httpError;
+
+    if (httpError.isNetworkError) {
+        return { type: ErrorType.NETWORK, message: MESSAGES.TIMEOUT_OR_OFFLINE };
+    }
+    if (statusCode === HTTP_STATUS.UNAUTHORIZED) {
+        return { type: ErrorType.AUTH, message: MESSAGES.UNAUTHORIZED, statusCode };
+    }
+    if (statusCode === HTTP_STATUS.FORBIDDEN) {
+        return { type: ErrorType.AUTH, message: MESSAGES.FORBIDDEN, statusCode };
+    }
+    if (statusCode === HTTP_STATUS.NOT_FOUND) {
+        return { type: ErrorType.SERVER, message: MESSAGES.NOT_FOUND, statusCode };
+    }
+    if (statusCode === HTTP_STATUS.BAD_REQUEST || statusCode === HTTP_STATUS.UNPROCESSABLE_ENTITY) {
+        return { type: ErrorType.VALIDATION, message: httpError.message, statusCode };
+    }
+    if (httpError.isServerError) {
+        return { type: ErrorType.SERVER, message: MESSAGES.SERVER, statusCode };
+    }
+    return { type: ErrorType.UNKNOWN, message: httpError.message || MESSAGES.UNKNOWN, statusCode };
+};
+
 class ErrorHandler {
-    private static instance: ErrorHandler;
-    private errorCount: Map<string, number> = new Map();
-    private readonly maxErrorCount = 5; // Số lần lỗi tối đa trước khi suppress
+    private lastShown = new Map<string, number>();
 
-    private constructor() { }
-
-    static getInstance(): ErrorHandler {
-        if (!ErrorHandler.instance) {
-            ErrorHandler.instance = new ErrorHandler();
-        }
-        return ErrorHandler.instance;
-    }
-
-    // Method để xử lý lỗi từ API response
-    handleApiError(error: any, context?: string): ErrorInfo {
-        const errorInfo: ErrorInfo = {
-            type: ErrorType.UNKNOWN,
-            message: ERROR_MESSAGES.NETWORK.UNKNOWN,
-            showToast: true,
-            logError: true,
-        };
-
-        // Xử lý lỗi network
-        if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
-            errorInfo.type = ErrorType.NETWORK;
-            errorInfo.message = ERROR_MESSAGES.NETWORK.TIMEOUT;
-        } else if (error.code === 'ERR_NETWORK') {
-            errorInfo.type = ErrorType.NETWORK;
-            errorInfo.message = ERROR_MESSAGES.NETWORK.NO_INTERNET;
-        }
-        // Xử lý lỗi HTTP status
-        else if (error.response?.status) {
-            errorInfo.code = error.response.status;
-
-            switch (error.response.status) {
-                case 400:
-                    errorInfo.type = ErrorType.VALIDATION;
-                    errorInfo.message = error.response.data?.message || ERROR_MESSAGES.VALIDATION.REQUIRED;
-                    break;
-                case 401:
-                    errorInfo.type = ErrorType.AUTH;
-                    errorInfo.message = ERROR_MESSAGES.AUTH.SESSION_EXPIRED;
-                    break;
-                case 403:
-                    errorInfo.type = ErrorType.AUTH;
-                    errorInfo.message = ERROR_MESSAGES.AUTH.UNAUTHORIZED;
-                    break;
-                case 404:
-                    errorInfo.type = ErrorType.SERVER;
-                    errorInfo.message = 'Tài nguyên không tìm thấy';
-                    break;
-                case 500:
-                    errorInfo.type = ErrorType.SERVER;
-                    errorInfo.message = ERROR_MESSAGES.NETWORK.SERVER_ERROR;
-                    break;
-                default:
-                    errorInfo.type = ErrorType.SERVER;
-                    errorInfo.message = error.response.data?.message || ERROR_MESSAGES.NETWORK.SERVER_ERROR;
-            }
-        }
-        // Xử lý lỗi validation từ server
-        else if (error.response?.data?.errors) {
-            errorInfo.type = ErrorType.VALIDATION;
-            errorInfo.message = Array.isArray(error.response.data.errors)
-                ? error.response.data.errors.join(', ')
-                : error.response.data.errors;
-        }
-
-        // Log error nếu được yêu cầu
-        if (errorInfo.logError) {
-            logError(error, context);
-        }
-
-        // Hiển thị toast nếu được yêu cầu
-        if (errorInfo.showToast) {
-            this.showErrorToast(errorInfo.message);
-        }
-
-        return errorInfo;
-    }
-
-    // Method để xử lý lỗi validation
-    handleValidationError(field: string, value: any, rules: any): ErrorInfo {
-        const errorInfo: ErrorInfo = {
-            type: ErrorType.VALIDATION,
-            message: ERROR_MESSAGES.VALIDATION.REQUIRED,
-            showToast: false, // Validation errors thường không cần toast
-            logError: false,
-        };
-
-        // Kiểm tra required
-        if (rules.required && (!value || value.toString().trim() === '')) {
-            errorInfo.message = `${field} là bắt buộc`;
-        }
-        // Kiểm tra email
-        else if (rules.email && value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-            errorInfo.message = ERROR_MESSAGES.VALIDATION.INVALID_EMAIL;
-        }
-        // Kiểm tra phone
-        else if (rules.phone && value && !/^[0-9]{10,11}$/.test(value)) {
-            errorInfo.message = ERROR_MESSAGES.VALIDATION.INVALID_PHONE;
-        }
-        // Kiểm tra min length
-        else if (rules.minLength && value && value.length < rules.minLength) {
-            errorInfo.message = `${field} phải có ít nhất ${rules.minLength} ký tự`;
-        }
-        // Kiểm tra max length
-        else if (rules.maxLength && value && value.length > rules.maxLength) {
-            errorInfo.message = `${field} không được vượt quá ${rules.maxLength} ký tự`;
-        }
-        // Kiểm tra pattern
-        else if (rules.pattern && value && !rules.pattern.test(value)) {
-            errorInfo.message = rules.message || `${field} không đúng định dạng`;
-        }
-
-        return errorInfo;
-    }
-
-    // Method để xử lý lỗi JavaScript/TypeScript
-    handleJsError(error: Error, context?: string): ErrorInfo {
-        const errorInfo: ErrorInfo = {
-            type: ErrorType.UNKNOWN,
-            message: error.message || ERROR_MESSAGES.NETWORK.UNKNOWN,
-            showToast: true,
-            logError: true,
-        };
-
-        // Log error
+    handleApiError(error: unknown, context?: string, showToast = true): ErrorInfo {
+        const info = describeError(error);
         logError(error, context);
-
-        // Hiển thị toast
-        this.showErrorToast(errorInfo.message);
-
-        return errorInfo;
-    }
-
-    // Method để hiển thị error toast
-    private showErrorToast(message: string): void {
-        const errorKey = message.substring(0, 50); // Tạo key từ message
-        const currentCount = this.errorCount.get(errorKey) || 0;
-
-        // Chỉ hiển thị toast nếu chưa vượt quá giới hạn
-        if (currentCount < this.maxErrorCount) {
-            Toast.show({
-                type: 'error',
-                text1: 'Lỗi',
-                text2: message,
-                position: 'top',
-                visibilityTime: 4000,
-            });
-
-            // Tăng counter
-            this.errorCount.set(errorKey, currentCount + 1);
+        if (showToast) {
+            this.showErrorToast(info.message);
         }
+        return info;
     }
 
-    // Method để reset error count (có thể gọi sau một khoảng thời gian)
-    resetErrorCount(): void {
-        this.errorCount.clear();
-    }
-
-    // Method để lấy thống kê lỗi
-    getErrorStats(): Record<string, number> {
-        const stats: Record<string, number> = {};
-        this.errorCount.forEach((count, key) => {
-            stats[key] = count;
-        });
-        return stats;
+    private showErrorToast(message: string): void {
+        const now = Date.now();
+        const last = this.lastShown.get(message) ?? 0;
+        if (now - last < DEDUPE_WINDOW_MS) {
+            return;
+        }
+        this.lastShown.set(message, now);
+        CustomToast.error(message);
     }
 }
 
-// Export singleton instance
-export const errorHandler = ErrorHandler.getInstance();
+export const errorHandler = new ErrorHandler();
 
-// Utility functions cho các trường hợp đặc biệt
-export const handleApiError = (error: any, context?: string): ErrorInfo => {
-    return errorHandler.handleApiError(error, context);
-};
-
-export const handleValidationError = (field: string, value: any, rules: any): ErrorInfo => {
-    return errorHandler.handleValidationError(field, value, rules);
-};
-
-export const handleJsError = (error: Error, context?: string): ErrorInfo => {
-    return errorHandler.handleJsError(error, context);
-};
-
-
+export const handleApiError = (error: unknown, context?: string): ErrorInfo =>
+    errorHandler.handleApiError(error, context);

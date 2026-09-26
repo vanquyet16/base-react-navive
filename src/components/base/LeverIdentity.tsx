@@ -30,7 +30,7 @@ const useStyles = createStyles((theme, rs) => ({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: theme.colors.white,
+    backgroundColor: theme.colors.surface,
     paddingHorizontal: rs.px(8),
     paddingVertical: rs.py(4),
     borderRadius: rs.radius(12),

@@ -1,91 +1,38 @@
 /**
  * APP INIT HOOK
  * =============
- * App initialization logic: load stored data, restore session, etc.
- * Chạy 1 lần khi app mount.
- * 
+ * Chạy bootstrap một lần khi mount; cho phép thử lại nếu lỗi tạm thời.
  */
 
-import { useEffect, useState, useCallback } from 'react';
-import { authService } from '@/features/auth/services/auth.service';
-import { tokenStore } from '@/shared/store/token-store';
-import { useSessionActions } from '@/shared/store/selectors';
+import { useCallback, useEffect, useState } from 'react';
+import { bootstrap } from '@/app/bootstrap';
+import { logger } from '@/shared/utils/logger';
 
-/**
- * App init state
- */
-interface AppInitState {
-    /** Is initializing */
-    isLoading: boolean;
-    /** Is initialized */
-    isReady: boolean;
-    /** Error if init failed */
-    error: Error | null;
-}
+type AppInitState =
+    | { status: 'loading'; error: null }
+    | { status: 'ready'; error: null }
+    | { status: 'error'; error: Error };
 
-/**
- * useAppInit Hook
- * Initialize app: restore session, setup services
- */
-export const useAppInit = (): AppInitState => {
-    const [state, setState] = useState<AppInitState>({
-        isLoading: true,
-        isReady: false,
-        error: null,
-    });
+export const useAppInit = () => {
+    const [state, setState] = useState<AppInitState>({ status: 'loading', error: null });
 
-    const { setSession } = useSessionActions();
-
-    /**
-     * Initialize app
-     * Memoized để avoid infinite loop
-     */
-    const initializeApp = useCallback(async () => {
+    const run = useCallback(async () => {
+        setState({ status: 'loading', error: null });
         try {
-            // 1. Initialize auth service (setup interceptors)
-            authService.initialize();
-
-            // 2. Try to restore session từ stored tokens
-            const tokens = await tokenStore.getTokens();
-
-            if (tokens.accessToken && tokens.refreshToken) {
-                // Has tokens - try to get current user
-                try {
-                    const user = await authService.getCurrentUser();
-
-                    // Restore session vào store
-                    setSession({
-                        isAuthenticated: true,
-                        user,
-                    });
-                } catch (error) {
-                    // Token invalid - clear tokens
-                    console.warn('[AppInit] Token invalid, clearing:', error);
-                    await tokenStore.clearTokens();
-                }
-            }
-
-            // 3. TODO: Load other app data (configs, cached data, etc.)
-
-            // Mark as ready
-            setState({
-                isLoading: false,
-                isReady: true,
-                error: null,
-            });
+            await bootstrap();
+            setState({ status: 'ready', error: null });
         } catch (error) {
-            console.error('[AppInit] Initialization error:', error);
+            logger.error('[AppInit] Khởi tạo thất bại', error);
             setState({
-                isLoading: false,
-                isReady: false,
-                error: error as Error,
+                status: 'error',
+                error: error instanceof Error ? error : new Error('Không thể khởi tạo ứng dụng'),
             });
         }
-    }, [setSession]); // Add setSession to dependencies
+    }, []);
 
     useEffect(() => {
-        initializeApp();
-    }, [initializeApp]); // Proper dependency
+        run();
+    }, [run]);
 
-    return state;
+    return { ...state, retry: run };
 };

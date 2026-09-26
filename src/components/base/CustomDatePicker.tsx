@@ -1,13 +1,9 @@
 import React, { memo, useCallback, useMemo, useState, useEffect } from 'react';
-import { View, StyleSheet, Modal, Pressable } from 'react-native';
+import { View, Modal, Pressable } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
-import { CustomText } from '@/components'; // Assuming index export exists
+import { CustomText } from './CustomText';
 import { useTheme } from '@/shared/theme/use-theme';
-import {
-  scale,
-  moderateScale,
-  moderateVerticalScale,
-} from 'react-native-size-matters';
+import { createStyles } from '@/shared/theme/create-styles';
 
 // Cấu hình tiếng Việt cho Calendar
 LocaleConfig.locales.vi = {
@@ -89,7 +85,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = memo(
     title = 'Chọn ngày',
   }) => {
     const theme = useTheme();
-    const styles = useStyles(theme);
+    const styles = useStyles();
 
     const [tempSelectedDate, setTempSelectedDate] = useState<string>(() =>
       formatDateString(selectedDate),
@@ -103,8 +99,8 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = memo(
     // Calendar theme configuration
     const calendarTheme = useMemo(
       () => ({
-        backgroundColor: theme.colors.white,
-        calendarBackground: theme.colors.white,
+        backgroundColor: theme.colors.surface,
+        calendarBackground: theme.colors.surface,
         textSectionTitleColor: theme.colors.textSecondary,
         selectedDayBackgroundColor: theme.colors.primary,
         selectedDayTextColor: theme.colors.white,
@@ -122,11 +118,11 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = memo(
         textDayFontWeight: '400' as const,
         textMonthFontWeight: '600' as const,
         textDayHeaderFontWeight: '500' as const,
-        textDayFontSize: moderateScale(13),
-        textMonthFontSize: moderateScale(15),
-        textDayHeaderFontSize: moderateScale(11),
+        textDayFontSize: styles.rs.fontSize(13),
+        textMonthFontSize: styles.rs.fontSize(15),
+        textDayHeaderFontSize: styles.rs.fontSize(11),
       }),
-      [theme],
+      [theme, styles.rs],
     );
 
     // Marked dates configuration
@@ -229,27 +225,24 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = memo(
   },
 );
 
-const useStyles = (theme: any) =>
-  useMemo(
-    () =>
-      StyleSheet.create({
+const useStyles = createStyles((theme, rs) => ({
         overlay: {
           flex: 1,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: theme.colors.backdrop,
           justifyContent: 'center',
           alignItems: 'center',
-          padding: scale(20),
+          padding: rs.scale(20),
         },
         container: {
-          backgroundColor: theme.colors.white,
-          borderRadius: moderateScale(16),
+          backgroundColor: theme.colors.surface,
+          borderRadius: rs.moderateScale(16),
           width: '100%',
-          maxWidth: scale(400),
+          maxWidth: rs.scale(400),
           overflow: 'hidden',
           ...theme.shadows.lg,
         },
         header: {
-          padding: moderateScale(16),
+          padding: rs.moderateScale(16),
           borderBottomWidth: 1,
           borderBottomColor: theme.colors.backgroundSecondary,
           alignItems: 'center',
@@ -261,16 +254,16 @@ const useStyles = (theme: any) =>
         footer: {
           flexDirection: 'row',
           justifyContent: 'flex-end',
-          gap: scale(8),
-          padding: moderateScale(12),
+          gap: rs.scale(8),
+          padding: rs.moderateScale(12),
           borderTopWidth: 1,
           borderTopColor: theme.colors.backgroundSecondary,
         },
         button: {
-          paddingHorizontal: scale(16),
-          paddingVertical: moderateVerticalScale(8),
-          borderRadius: moderateScale(8),
-          minWidth: scale(70),
+          paddingHorizontal: rs.scale(16),
+          paddingVertical: rs.moderateVerticalScale(8),
+          borderRadius: rs.moderateScale(8),
+          minWidth: rs.scale(70),
           alignItems: 'center',
           justifyContent: 'center',
         },
@@ -288,8 +281,6 @@ const useStyles = (theme: any) =>
           color: theme.colors.white,
           // fontSize và fontWeight được set bởi variant="bodySmall" + weight="semibold"
         },
-      }),
-    [theme],
-  );
+}));
 
 export default CustomDatePicker;

@@ -3,7 +3,6 @@ import Swiper from 'react-native-swiper';
 import { View, ViewStyle } from 'react-native';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
-import { moderateScale, verticalScale } from '@/shared/utils/sizeMatters';
 
 interface CustomSwiperProps {
   children?: React.ReactNode;
@@ -28,19 +27,20 @@ interface CustomSwiperProps {
 export const CustomSwiper = memo<CustomSwiperProps>(
   ({
     children,
-    height = verticalScale(150),
+    height,
     autoplay = true,
     autoplayTimeout = 3,
     style,
   }) => {
     const theme = useTheme();
     const styles = useStyles();
+    const resolvedHeight = height ?? styles.rs.moderateVerticalScale(150);
 
     return (
       <View
         style={[
           styles.container,
-          { height, backgroundColor: theme.colors.backgroundSecondary },
+          { height: resolvedHeight, backgroundColor: theme.colors.backgroundSecondary },
           style,
         ]}
       >
@@ -60,13 +60,13 @@ export const CustomSwiper = memo<CustomSwiperProps>(
   },
 );
 
-const useStyles = createStyles(() => ({
+const useStyles = createStyles((_theme, rs) => ({
   container: {
-    borderRadius: moderateScale(12),
+    borderRadius: rs.radius(12),
     overflow: 'hidden',
   },
   pagination: {
-    bottom: verticalScale(10),
+    bottom: rs.verticalGap(10),
   },
 }));
 

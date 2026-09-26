@@ -75,3 +75,10 @@ yarn-error.log
 !.yarn/versions
 
 .fake
+# Release signing — KHÔNG commit keystore/mật khẩu (xem android/keystore.properties.example)
+android/keystore.properties
+*.jks
+android/keystores/
+
+# Log build cục bộ
+*.log

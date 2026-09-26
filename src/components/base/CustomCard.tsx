@@ -66,5 +66,4 @@ const useStyles = createStyles(
       borderWidth: 1,
     },
   }),
-  true,
 );

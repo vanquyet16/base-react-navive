@@ -3,19 +3,14 @@ import {
   View,
   Text,
   Pressable,
-  Platform,
   type ViewStyle,
 } from 'react-native';
 import type { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles, createStylesWithProps } from '@/shared/theme/create-styles';
+import type { ResponsiveSize } from '@/shared/hooks/useResponsiveSize';
 import type { MainTabParamList } from '@/shared/types/navigation.types';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {
-  moderateScale,
-  moderateVerticalScale,
-  scale,
-} from 'react-native-size-matters';
 import CustomBadge from '../base/CustomBadge';
 
 type TabRoute = {
@@ -23,6 +18,12 @@ type TabRoute = {
   name: keyof MainTabParamList;
   params: MainTabParamList[keyof MainTabParamList];
 };
+
+/**
+ * Chiều cao phần nội dung của tab bar (chưa gồm safe area dưới).
+ * Dùng chung với MainLayout để chừa đúng khoảng trống cho tab bar dạng absolute.
+ */
+export const getTabBarContentHeight = (rs: ResponsiveSize): number => rs.moderateVerticalScale(62);
 
 const CustomBottomTabBar: React.FC<BottomTabBarProps> = ({
   state,
@@ -181,21 +182,21 @@ const useBaseStyles = createStylesWithProps<
   },
   { bottomInset: number }
 >(
-  (theme, _rs, props) => ({
+  (theme, rs, props) => ({
     container: {
-      backgroundColor: theme.colors.white,
+      backgroundColor: theme.colors.surface,
       position: 'absolute',
       bottom: 0,
       left: 0,
       right: 0,
 
-      shadowColor: '#000',
+      shadowColor: theme.colors.black,
       shadowOffset: {
         width: 0,
-        height: moderateVerticalScale(-3),
+        height: rs.moderateVerticalScale(-3),
       },
       shadowOpacity: 0.08,
-      shadowRadius: moderateScale(6),
+      shadowRadius: rs.moderateScale(6),
       elevation: 6,
       borderTopWidth: 0,
       paddingBottom: props.bottomInset,
@@ -203,8 +204,8 @@ const useBaseStyles = createStylesWithProps<
 
     tabsContainer: {
       flexDirection: 'row',
-      height: Platform.OS === 'ios' ? moderateVerticalScale(62) : moderateVerticalScale(62),
-      paddingHorizontal: scale(8),
+      height: getTabBarContentHeight(rs),
+      paddingHorizontal: rs.scale(8),
 
       backgroundColor: 'transparent',
     },
@@ -218,7 +219,7 @@ const useStyles = createStyles((theme, rs) => ({
     justifyContent: 'center',
     alignItems: 'center',
 
-    paddingVertical: moderateVerticalScale(4),
+    paddingVertical: rs.moderateVerticalScale(4),
 
     position: 'relative',
   },
@@ -229,13 +230,13 @@ const useStyles = createStyles((theme, rs) => ({
   },
 
   iconContainer: {
-    marginTop: moderateVerticalScale(4),
-    marginBottom: moderateVerticalScale(4),
+    marginTop: rs.moderateVerticalScale(4),
+    marginBottom: rs.moderateVerticalScale(4),
 
     position: 'relative',
 
-    width: scale(32),
-    height: scale(32),
+    width: rs.scale(32),
+    height: rs.scale(32),
 
     justifyContent: 'center',
     alignItems: 'center',
@@ -250,7 +251,7 @@ const useStyles = createStyles((theme, rs) => ({
       color: theme.colors.textSecondary ?? theme.colors.text,
 
       // ✅ giúp text cân hơn trên Android
-      lineHeight: moderateScale(12),
+      lineHeight: rs.moderateScale(12),
     },
 
     activeTabLabel: {
@@ -264,26 +265,26 @@ const useStyles = createStyles((theme, rs) => ({
 
     badge: {
       position: 'absolute',
-      top: moderateVerticalScale(-2),
-      right: scale(-6),
+      top: rs.moderateVerticalScale(-2),
+      right: rs.scale(-6),
       backgroundColor: theme.colors.error,
-      borderRadius: moderateScale(10),
-      minWidth: scale(16),
-      height: scale(16),
+      borderRadius: rs.moderateScale(10),
+      minWidth: rs.scale(16),
+      height: rs.scale(16),
 
       justifyContent: 'center',
       alignItems: 'center',
-      paddingHorizontal: scale(4),
+      paddingHorizontal: rs.scale(4),
 
       borderWidth: 1,
       borderColor: theme.colors.background,
     },
 
     badgeText: {
-      color: '#FFFFFF',
+      color: theme.colors.white,
       fontSize: rs.fontSize(10),
       fontWeight: '700',
-      lineHeight: moderateScale(12),
+      lineHeight: rs.moderateScale(12),
     },
 
     // Middle Button Styles
@@ -292,14 +293,14 @@ const useStyles = createStyles((theme, rs) => ({
       paddingVertical: 0,
     },
     middleIconContainer: {
-      width: scale(50),
-      height: scale(50),
-      borderRadius: scale(50),
+      width: rs.scale(50),
+      height: rs.scale(50),
+      borderRadius: rs.scale(50),
       backgroundColor: theme.colors.primary, // Blue background
       justifyContent: 'center',
       alignItems: 'center',
       // Lift it up
-      marginTop: moderateVerticalScale(-10),
+      marginTop: rs.moderateVerticalScale(-10),
       // Shadow
       shadowColor: theme.colors.primary,
       shadowOffset: {

@@ -1,39 +1,30 @@
 /**
- * NAVIGATION CONFIG & CONSTANTS
- * =============================
- * Hằng số định tuyến tập trung — tránh hardcode string trong navigators.
- *
- * Nguồn gốc duy nhất (Single Source of Truth):
- * - ROOT: tái sử dụng ROOT_STACKS từ @/shared/constants/routes
- * - AUTH: tái sử dụng ROUTES.AUTH từ @/shared/constants/routes
- * - MAIN_STACK, TAB: khai báo tại đây, đồng bộ với ParamList types
+ * NAVIGATION KEYS
+ * ===============
+ * Nguồn DUY NHẤT cho tên route. Tên phải khớp ParamList trong
+ * `@/shared/types/navigation.types` — TypeScript báo lỗi ngay nếu lệch.
  */
 
-import { ROOT_STACKS, ROUTES } from '@/shared/constants/routes';
-
-// ============================================================================
-// NAVIGATION KEYS — HẰNG SỐ ĐỊNH DANH ROUTE TRÁNH HARDCODE STRING
-// ============================================================================
-
 export const NAVIGATION_KEYS = {
-  /**
-   * Root Navigator — tái sử dụng ROOT_STACKS (Single Source of Truth).
-   * Tránh mismatch: ROOT.AUTH = 'Auth' ≠ ROOT_STACKS.AUTH_STACK = 'AuthStack'
-   */
-  ROOT: ROOT_STACKS,
-
-  /** Main Stack Screens — phải khớp với MainStackParamList */
+  /** Root stack: chuyển giữa Auth và Main theo trạng thái phiên */
+  ROOT: {
+    AUTH_STACK: 'AuthStack',
+    DRAWER: 'Drawer',
+  },
+  /** Màn hình trong Drawer */
+  DRAWER: {
+    MAIN_STACK: 'MainStack',
+  },
+  AUTH: {
+    LOGIN: 'Login',
+    REGISTER: 'Register',
+  },
   MAIN_STACK: {
     MAIN_TABS: 'MainTabsScreen',
-  } as const,
-
-  /** Tab Navigator — phải khớp với MainTabParamList */
+  },
   TAB: {
     HOME: 'Home',
-  } as const,
-
-  /** Auth Stack — tái sử dụng ROUTES.AUTH (Single Source of Truth) */
-  AUTH: ROUTES.AUTH,
+  },
 } as const;
 
 export type NavigationKeys = typeof NAVIGATION_KEYS;

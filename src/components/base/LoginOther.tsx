@@ -33,7 +33,7 @@ const LoginOther: React.FC<LoginOtherProps> = ({
   onBiometricPress,
 }) => {
   const theme = useTheme();
-  const styles = useStyles(theme);
+  const styles = useStyles();
 
   const biometricIconName =
     biometricType === 'face' ? 'face-recognition' : 'fingerprint';
@@ -96,7 +96,7 @@ const useStyles = createStyles((theme, rs) => ({
     backgroundColor: theme.colors.background,
     borderRadius: rs.radius(16), // Match input radius
     borderWidth: 1.5,
-    borderColor: '#E5E7EB', // Gray-200
+    borderColor: theme.colors.border,
     // Shadow
     shadowColor: theme.colors.primary,
     shadowOffset: { width: 0, height: 2 },
@@ -108,7 +108,7 @@ const useStyles = createStyles((theme, rs) => ({
   mainButtonText: {
     fontSize: rs.fontSize(16),
     fontWeight: 'bold',
-    color: '#374151', // Gray-700
+    color: theme.colors.textSecondary,
     // Removed marginLeft since icon is absolute
   },
   logoContainer: {
@@ -128,7 +128,7 @@ const useStyles = createStyles((theme, rs) => ({
     backgroundColor: theme.colors.background,
     borderRadius: rs.radius(16),
     borderWidth: 1.5,
-    borderColor: '#E5E7EB',
+    borderColor: theme.colors.border,
     // Shadow
     shadowColor: theme.colors.primary,
     shadowOffset: { width: 0, height: 2 },

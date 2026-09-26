@@ -5,7 +5,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useTheme } from '@/shared/theme/use-theme';
-import { moderateScale } from 'react-native-size-matters';
+import { useResponsiveSize } from '@/shared/hooks/useResponsiveSize';
 
 export type IconType = 'ant' | 'feather' | 'material' | 'ionic';
 
@@ -33,6 +33,7 @@ export interface AppIconProps {
 const AppIcon = memo<AppIconProps>(
   ({ name, type = 'feather', size = 24, color, style, onPress }) => {
     const theme = useTheme();
+    const rs = useResponsiveSize();
     const iconColor = color || theme.colors.text;
 
     const IconComponent = getIconComponent(type);
@@ -40,7 +41,7 @@ const AppIcon = memo<AppIconProps>(
     return (
       <IconComponent
         name={name}
-        size={moderateScale(size, 0.3)}
+        size={rs.iconSize(size)}
         color={iconColor as string}
         style={style}
         onPress={onPress}

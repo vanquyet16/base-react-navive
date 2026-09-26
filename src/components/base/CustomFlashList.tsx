@@ -1,14 +1,14 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   View,
   ActivityIndicator,
   Text,
+  StyleSheet,
   type ViewStyle,
 } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { FlashList, FlashListProps } from '@shopify/flash-list';
 import { useTheme } from '@/shared/theme/use-theme';
-import { moderateVerticalScale } from '@/shared/utils/sizeMatters';
 import { createStyles } from '@/shared/theme/create-styles';
 
 const AnimatedFlashList = Animated.createAnimatedComponent(FlashList) as any;
@@ -55,9 +55,15 @@ export function CustomFlashList<T>(props: CustomFlashListProps<T>) {
     return ListFooterComponent ? (
       <>{ListFooterComponent}</>
     ) : (
-      <View style={{ height: moderateVerticalScale(20) }} />
+      <View style={styles.footerSpacer} />
     );
-  }, [isLoadingMore, theme.colors.primary, ListFooterComponent, styles.footer]);
+  }, [isLoadingMore, theme.colors.primary, ListFooterComponent, styles.footer, styles.footerSpacer]);
+
+  const contentStyle = useMemo(
+    // FlashList v1 chỉ nhận object phẳng
+    () => StyleSheet.flatten([styles.content, contentContainerStyle as ViewStyle]),
+    [styles.content, contentContainerStyle],
+  );
 
   // Default Empty State
   const renderEmpty = useCallback(() => {
@@ -77,12 +83,7 @@ export function CustomFlashList<T>(props: CustomFlashListProps<T>) {
       ListFooterComponent={renderFooter}
       ListEmptyComponent={renderEmpty}
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={{
-        // paddingBottom: moderateVerticalScale(20),
-        paddingVertical: moderateVerticalScale(1),
-        paddingHorizontal: moderateVerticalScale(1),
-        ...(contentContainerStyle as ViewStyle),
-      }}
+      contentContainerStyle={contentStyle}
     />
   );
 }
@@ -93,15 +94,21 @@ const useStyles = createStyles((theme, rs) => ({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  content: {
+    padding: 1,
+  },
+  footerSpacer: {
+    height: rs.verticalGap(20),
+  },
   emptyContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: rs.verticalScale(40),
+    paddingTop: rs.verticalGap(40),
   },
   emptyText: {
     color: theme.colors.textSecondary,
     fontSize: rs.fontSize(16),
-    marginTop: rs.verticalScale(8),
+    marginTop: rs.verticalGap(8),
   },
 }));

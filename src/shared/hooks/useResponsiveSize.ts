@@ -1,56 +1,76 @@
-import { useWindowDimensions, Platform } from 'react-native';
-import { useMemo } from 'react';
-
 /**
- * Kích thước thiết kế chuẩn (Base theo Figma / iPhone 14)
- * Chiều rộng chuẩn: 390pt, Chiều cao chuẩn: 844pt
+ * RESPONSIVE ENGINE
+ * =================
+ * Nguồn DUY NHẤT cho kích thước co giãn theo màn hình (thay react-native-size-matters).
+ *
+ * Nguyên tắc:
+ * 1. Co giãn theo kích thước "portrait tương đương" (cạnh ngắn / cạnh dài), KHÔNG theo width hiện
+ *    tại → xoay ngang không làm chữ, icon, padding phình to gấp đôi.
+ * 2. Phân loại tablet theo cạnh ngắn ≥ 600dp (chuẩn sw600dp của Android): điện thoại lớn xoay ngang
+ *    vẫn là phone; iPad chia đôi màn hình vẫn đúng bậc.
+ * 3. Mọi hàm tỉ lệ đều bị kẹp (clamp) trong biên an toàn theo bậc thiết bị → không vỡ layout trên
+ *    màn quá nhỏ (iPhone SE) hoặc quá lớn (tablet 13").
+ * 4. `wp/hp` theo kích thước cửa sổ HIỆN TẠI (bố cục phần trăm phải theo hướng xoay).
+ * 5. Một bộ metrics được tính một lần cho mỗi kích thước cửa sổ và dùng chung cho mọi component
+ *    (cache theo `width × height × fontScale`), giữ nguyên tham chiếu để memo/cache phía sau hiệu quả.
  */
-const GUIDELINE_BASE_WIDTH = 390;
-const GUIDELINE_BASE_HEIGHT = 844;
 
-/** Hàm kẹp giá trị an toàn trong khoảng [min, max] để chống vỡ giao diện */
-const clamp = (val: number, min: number, max: number): number =>
-  Math.min(Math.max(val, min), max);
+import { useWindowDimensions, Platform, StyleSheet } from 'react-native';
+
+/** Thiết kế gốc: iPhone 14/15 (390 × 844) */
+const GUIDELINE_SHORT_SIDE = 390;
+const GUIDELINE_LONG_SIDE = 844;
+/** Ngưỡng tablet theo cạnh ngắn (dp) */
+const TABLET_MIN_SHORT_SIDE = 600;
+const SMALL_PHONE_MAX_SHORT_SIDE = 360;
+/** Giới hạn cỡ chữ hệ thống (Accessibility) để layout không vỡ — dùng cho `maxFontSizeMultiplier` */
+export const MAX_FONT_SIZE_MULTIPLIER = 1.3;
+/** Bề rộng nội dung tối đa trên màn lớn — tránh dòng chữ/form kéo dài hết màn tablet */
+const MAX_CONTENT_WIDTH = 720;
+
+const clamp = (val: number, min: number, max: number): number => Math.min(Math.max(val, min), max);
 
 export type ComponentSizePreset = 'sm' | 'md' | 'lg';
 
+type Bounds = readonly [min: number, max: number];
+
+/** Biên co giãn [min, max] (bội số của giá trị thiết kế) theo bậc thiết bị */
+const BOUNDS = {
+  font: { phone: [0.9, 1.12], tablet: [1.08, 1.25] },
+  spacing: { phone: [0.85, 1.2], tablet: [1.15, 1.45] },
+  gap: { phone: [0.85, 1.2], tablet: [1.1, 1.35] },
+  radius: { phone: [0.9, 1.15], tablet: [1.05, 1.25] },
+  icon: { phone: [0.88, 1.15], tablet: [1.1, 1.3] },
+  avatar: { phone: [0.85, 1.15], tablet: [1.15, 1.4] },
+  control: { phone: [0.9, 1.15], tablet: [1.05, 1.25] },
+} as const satisfies Record<string, { phone: Bounds; tablet: Bounds }>;
+
 export interface ResponsiveSize {
-  // ----------------------------------------------------------------------------
-  // 1. KÍCH THƯỚC MÀN HÌNH HIỆN TẠI
-  // ----------------------------------------------------------------------------
+  /** Kích thước cửa sổ hiện tại (đổi theo hướng xoay) */
   width: number;
   height: number;
-  /** Alias của `width` — lấy nhanh chiều rộng thực tế màn hình. */
+  /** @deprecated Dùng `width`/`height` — giữ để tương thích */
   screenWidth: number;
-  /** Alias của `height` — lấy nhanh chiều cao thực tế màn hình. */
+  /** @deprecated Dùng `width`/`height` — giữ để tương thích */
   screenHeight: number;
+  /** Cạnh ngắn / cạnh dài — không đổi khi xoay */
+  shortSide: number;
+  longSide: number;
+  /** Hệ số cỡ chữ hệ thống (Accessibility) */
+  fontScale: number;
 
-  // ----------------------------------------------------------------------------
-  // 2. PHÂN LOẠI THIẾT BỊ & HƯỚNG HIỂN THỊ (3 bậc: Phone / Tablet / Desktop)
-  // ----------------------------------------------------------------------------
-  /** true nếu là iPad/Tablet cầm tay thật sự (width >= 768 VÀ không phải web). */
   isTablet: boolean;
-  /** true nếu là Smartphone (không phải tablet, không phải web). */
   isPhone: boolean;
-  /**
-   * true nếu đang chạy trên nền tảng Web (trình duyệt), bất kể kích thước cửa sổ.
-   * Tách riêng khỏi isTablet/isPhone để tránh desktop bị xử lý nhầm như phone
-   * (bug đã phát hiện: ép isTablet=false khiến isPhone tự động = true trên web).
-   */
   isDesktop: boolean;
   isSmallPhone: boolean;
   isLandscape: boolean;
   isPortrait: boolean;
 
-  // ----------------------------------------------------------------------------
-  // 3. TYPOGRAPHY
-  // ----------------------------------------------------------------------------
+  // Typography
   fontSize: (size: number, factor?: number) => number;
   lineHeight: (fontSizeVal: number, multiplier?: number) => number;
 
-  // ----------------------------------------------------------------------------
-  // 4. SPACING & BOX MODEL
-  // ----------------------------------------------------------------------------
+  // Spacing
   padding: (size: number, factor?: number) => number;
   px: (size: number, factor?: number) => number;
   py: (size: number, factor?: number) => number;
@@ -61,263 +81,210 @@ export interface ResponsiveSize {
   verticalGap: (size: number) => number;
   horizontalGap: (size: number) => number;
 
-  // ----------------------------------------------------------------------------
-  // 5. BORDERS & SHAPES
-  // ----------------------------------------------------------------------------
+  // Shapes
   radius: (size: number, factor?: number) => number;
+  /** Viền KHÔNG co giãn (viền dày lên trông lỗi); `0` → hairline */
   borderWidth: (size?: number) => number;
 
-  // ----------------------------------------------------------------------------
-  // 6. ICONS & MEDIA
-  // ----------------------------------------------------------------------------
+  // Icons & media
   iconSize: (size: number) => number;
   avatarSize: (size: number) => number;
 
-  // ----------------------------------------------------------------------------
-  // 7. COMPONENT SIZING CHUẨN
-  // ----------------------------------------------------------------------------
-  /**
-   * DÙNG CHO: `height` của Button.
-   * Preset: 'sm' (36/42), 'md' (48/54), 'lg' (56/64) — Phone/Tablet.
-   * Truyền số tùy chỉnh: dùng `moderateVerticalScale` + clamp riêng theo trục dọc
-   * (KHÔNG dùng chung công thức `fontSize` như bản trước, vì chiều cao button
-   * là kích thước dọc / vùng chạm, không phải kích thước chữ).
-   */
+  // Component sizing
   buttonHeight: (presetOrCustom?: ComponentSizePreset | number) => number;
   inputHeight: (presetOrCustom?: ComponentSizePreset | number) => number;
   headerHeight: number;
 
-  // ----------------------------------------------------------------------------
-  // 8. LAYOUT & CONTAINERS
-  // ----------------------------------------------------------------------------
-  /**
-   * DÙNG CHO: `width` của Card/Form chính, có lề an toàn.
-   * - Phone: 92% màn hình (lề 4% mỗi bên) — KHÔNG dùng 100% vì nếu View cha có
-   *   thêm paddingHorizontal, tổng chiều rộng sẽ tràn ra ngoài màn hình.
-   * - Tablet: giới hạn tối đa 60% hoặc 640px, căn giữa.
-   * Nếu bạn thật sự muốn 1 View ăn hết chiều rộng của View cha, dùng trực tiếp
-   * `width: '100%'` hoặc `alignSelf: 'stretch'` trong style — không cần hàm này.
-   */
+  // Layout
   containerWidth: number;
   modalWidth: number;
+  /** Bề rộng tối đa của khối nội dung (form, bài viết) trên màn lớn */
+  maxContentWidth: number;
   columns: (phoneCols?: number, tabletCols?: number, landscapeCols?: number) => number;
-  select: <T>(options: {
-    phone: T;
-    tablet: T;
-    smallPhone?: T;
-    landscape?: T;
-  }) => T;
+  select: <T>(options: { phone: T; tablet: T; smallPhone?: T; landscape?: T }) => T;
 
-  // ----------------------------------------------------------------------------
-  // 9. TỈ LỆ % & HÀM NỀN TẢNG
-  // ----------------------------------------------------------------------------
+  // Primitives
   wp: (percent: number) => number;
   hp: (percent: number) => number;
+  /** Tỉ lệ tuyến tính theo cạnh ngắn — KHÔNG kẹp, chỉ dùng khi thật cần */
   scale: (size: number) => number;
+  /** Tỉ lệ tuyến tính theo cạnh dài — KHÔNG kẹp */
   verticalScale: (size: number) => number;
+  /** Co giãn vừa phải theo cạnh ngắn, có kẹp theo bậc thiết bị */
   moderateScale: (size: number, factor?: number) => number;
+  /** Co giãn vừa phải theo cạnh dài, có kẹp theo bậc thiết bị */
   moderateVerticalScale: (size: number, factor?: number) => number;
 }
 
+export interface WindowMetrics {
+  width: number;
+  height: number;
+  fontScale?: number;
+}
+
 /**
- * Hook `useResponsiveSize`
- * =======================
- * Gọi `const rs = useResponsiveSize()` — không cần cấu hình gì thêm.
+ * Tính bộ metrics từ kích thước cửa sổ (hàm thuần — dùng được ngoài React và trong test).
+ */
+export function computeResponsiveSize({ width, height, fontScale = 1 }: WindowMetrics): ResponsiveSize {
+  const shortSide = Math.min(width, height);
+  const longSide = Math.max(width, height);
+
+  const isDesktop = Platform.OS === 'web';
+  const isTablet = !isDesktop && shortSide >= TABLET_MIN_SHORT_SIDE;
+  const isPhone = !isDesktop && !isTablet;
+  const isSmallPhone = isPhone && shortSide < SMALL_PHONE_MAX_SHORT_SIDE;
+  const isLandscape = width > height;
+  const isPortrait = !isLandscape;
+
+  const tier = isTablet ? 'tablet' : 'phone';
+  // Kẹp trong [size×lo, size×hi]; giá trị âm (vd: shadow offset) kẹp theo độ lớn, giữ dấu
+  const bounded = (raw: number, size: number, bounds: { phone: Bounds; tablet: Bounds }) => {
+    const [lo, hi] = bounds[tier];
+    const sign = size < 0 ? -1 : 1;
+    const magnitude = Math.abs(size);
+    return sign * Math.round(clamp(Math.abs(raw), magnitude * lo, magnitude * hi));
+  };
+
+  // Tỉ lệ tuyến tính theo kích thước portrait tương đương
+  const scale = (size: number) => (shortSide / GUIDELINE_SHORT_SIDE) * size;
+  const verticalScale = (size: number) => (longSide / GUIDELINE_LONG_SIDE) * size;
+  const rawModerate = (size: number, factor: number) => size + (scale(size) - size) * factor;
+  const rawModerateVertical = (size: number, factor: number) => size + (verticalScale(size) - size) * factor;
+
+  const moderateScale = (size: number, factor = 0.5) => bounded(rawModerate(size, factor), size, BOUNDS.spacing);
+  const moderateVerticalScale = (size: number, factor = 0.5) =>
+    bounded(rawModerateVertical(size, factor), size, BOUNDS.spacing);
+
+  // Typography — RN tự nhân thêm fontScale hệ thống khi render Text (đã giới hạn bằng
+  // MAX_FONT_SIZE_MULTIPLIER trong CustomText), nên KHÔNG nhân fontScale ở đây.
+  const fontSize = (size: number, factor = 0.25) => bounded(rawModerate(size, factor), size, BOUNDS.font);
+  const lineHeight = (fontSizeVal: number, multiplier = 1.35) => Math.round(fontSize(fontSizeVal) * multiplier);
+
+  // Spacing
+  const spacing = (size: number, factor = 0.5) => bounded(rawModerate(size, factor), size, BOUNDS.spacing);
+  const verticalGap = (size: number) => bounded(verticalScale(size), size, BOUNDS.gap);
+  const horizontalGap = (size: number) => bounded(scale(size), size, BOUNDS.gap);
+
+  // Shapes
+  const radius = (size: number, factor = 0.5) => bounded(rawModerate(size, factor), size, BOUNDS.radius);
+  const borderWidth = (size = 1) => (size <= 0 ? StyleSheet.hairlineWidth : size);
+
+  // Icons & media
+  const iconSize = (size: number) => bounded(scale(size), size, BOUNDS.icon);
+  const avatarSize = (size: number) => bounded(scale(size), size, BOUNDS.avatar);
+
+  // Component sizing — chiều cao control theo cạnh dài, đảm bảo vùng chạm tối thiểu 44dp
+  const controlHeight = (size: number) =>
+    Math.max(44, bounded(rawModerateVertical(size, 0.4), size, BOUNDS.control));
+  const PRESETS = {
+    button: isTablet ? { sm: 44, md: 54, lg: 64 } : { sm: 44, md: 48, lg: 56 },
+    input: isTablet ? { sm: 44, md: 54, lg: 62 } : { sm: 44, md: 48, lg: 56 },
+  };
+  const buttonHeight = (preset: ComponentSizePreset | number = 'md') =>
+    typeof preset === 'number' ? controlHeight(preset) : PRESETS.button[preset] ?? PRESETS.button.md;
+  const inputHeight = (preset: ComponentSizePreset | number = 'md') =>
+    typeof preset === 'number' ? controlHeight(preset) : PRESETS.input[preset] ?? PRESETS.input.md;
+  const headerHeight = isTablet ? 64 : 56;
+
+  // Layout
+  const wp = (percent: number) => (width * percent) / 100;
+  const hp = (percent: number) => (height * percent) / 100;
+  const maxContentWidth = Math.min(width, MAX_CONTENT_WIDTH);
+  const containerWidth = isTablet || isLandscape ? Math.min(wp(isTablet ? 60 : 80), 640) : wp(92);
+  const modalWidth = isTablet || isLandscape ? Math.min(wp(isTablet ? 50 : 60), 520) : wp(90);
+
+  const columns = (phoneCols = 1, tabletCols = 2, landscapeCols?: number) => {
+    if (isTablet) {
+      return tabletCols;
+    }
+    if (isLandscape && landscapeCols !== undefined) {
+      return landscapeCols;
+    }
+    return phoneCols;
+  };
+
+  const select = <T,>(options: { phone: T; tablet: T; smallPhone?: T; landscape?: T }): T => {
+    if (isLandscape && options.landscape !== undefined) {
+      return options.landscape;
+    }
+    if (isSmallPhone && options.smallPhone !== undefined) {
+      return options.smallPhone;
+    }
+    return isTablet ? options.tablet : options.phone;
+  };
+
+  return {
+    width,
+    height,
+    screenWidth: width,
+    screenHeight: height,
+    shortSide,
+    longSide,
+    fontScale,
+    isTablet,
+    isPhone,
+    isDesktop,
+    isSmallPhone,
+    isLandscape,
+    isPortrait,
+    fontSize,
+    lineHeight,
+    padding: spacing,
+    px: spacing,
+    py: spacing,
+    margin: spacing,
+    mx: spacing,
+    my: spacing,
+    gap: verticalGap,
+    verticalGap,
+    horizontalGap,
+    radius,
+    borderWidth,
+    iconSize,
+    avatarSize,
+    buttonHeight,
+    inputHeight,
+    headerHeight,
+    containerWidth,
+    modalWidth,
+    maxContentWidth,
+    columns,
+    select,
+    wp,
+    hp,
+    scale,
+    verticalScale,
+    moderateScale,
+    moderateVerticalScale,
+  };
+}
+
+/** Cache dùng chung: cùng kích thước cửa sổ → cùng một object (tham chiếu ổn định) */
+const MAX_CACHE_ENTRIES = 8;
+const metricsCache = new Map<string, ResponsiveSize>();
+
+export function getResponsiveSize(metrics: WindowMetrics): ResponsiveSize {
+  const key = `${metrics.width}x${metrics.height}@${metrics.fontScale ?? 1}`;
+  let result = metricsCache.get(key);
+  if (!result) {
+    result = computeResponsiveSize(metrics);
+    if (metricsCache.size >= MAX_CACHE_ENTRIES) {
+      const oldest = metricsCache.keys().next().value;
+      if (oldest !== undefined) {
+        metricsCache.delete(oldest);
+      }
+    }
+    metricsCache.set(key, result);
+  }
+  return result;
+}
+
+/**
+ * Hook responsive — tự cập nhật khi xoay màn hình, chia đôi màn hình, đổi cỡ chữ hệ thống.
  */
 export function useResponsiveSize(): ResponsiveSize {
-  const { width, height } = useWindowDimensions();
-
-  return useMemo<ResponsiveSize>(() => {
-    // 1. Phân loại thiết bị & hướng — tách 3 bậc: Phone / Tablet / Desktop(web)
-    const isDesktop = Platform.OS === 'web';
-    const isTabletBySize = width >= 768;
-    const isTablet = !isDesktop && isTabletBySize;
-    const isPhone = !isDesktop && !isTablet;
-    const isSmallPhone = !isDesktop && width < 360;
-    const isLandscape = width > height;
-    const isPortrait = !isLandscape;
-
-    // 2. Linear scaling gốc
-    const scale = (size: number) => (width / GUIDELINE_BASE_WIDTH) * size;
-    const verticalScale = (size: number) => (height / GUIDELINE_BASE_HEIGHT) * size;
-    const moderateScale = (size: number, factor: number = 0.5) =>
-      size + (scale(size) - size) * factor;
-    const moderateVerticalScale = (size: number, factor: number = 0.5) =>
-      size + (verticalScale(size) - size) * factor;
-
-    // 3. Typography
-    const fontSize = (size: number, factor: number = 0.25) => {
-      const raw = moderateScale(size, factor);
-      return isTablet
-        ? Math.round(clamp(raw, size * 1.08, size * 1.25))
-        : Math.round(clamp(raw, size * 0.9, size * 1.12));
-    };
-    const lineHeight = (fontSizeVal: number, multiplier: number = 1.35) =>
-      Math.round(fontSize(fontSizeVal) * multiplier);
-
-    // 4. Spacing (padding/margin dùng chung 1 công thức)
-    const spacing = (size: number, factor: number = 0.5) => {
-      const raw = moderateScale(size, factor);
-      return isTablet
-        ? Math.round(clamp(raw, size * 1.15, size * 1.45))
-        : Math.round(clamp(raw, size * 0.85, size * 1.2));
-    };
-    const padding = spacing;
-    const margin = spacing;
-    const px = spacing;
-    const py = spacing;
-    const mx = spacing;
-    const my = spacing;
-
-    const verticalGap = (size: number) => {
-      const raw = verticalScale(size);
-      return isTablet
-        ? Math.round(clamp(raw, size * 1.1, size * 1.35))
-        : Math.round(clamp(raw, size * 0.85, size * 1.2));
-    };
-    const horizontalGap = (size: number) => {
-      const raw = scale(size);
-      return isTablet
-        ? Math.round(clamp(raw, size * 1.1, size * 1.35))
-        : Math.round(clamp(raw, size * 0.85, size * 1.2));
-    };
-    const gap = (size: number) => verticalGap(size);
-
-    // 5. Borders & shapes
-    const radius = (size: number, factor: number = 0.5) => {
-      const raw = moderateScale(size, factor);
-      return isTablet
-        ? Math.round(clamp(raw, size * 1.05, size * 1.25))
-        : Math.round(clamp(raw, size * 0.9, size * 1.15));
-    };
-    const borderWidth = (size: number = 1) => Math.max(1, Math.round(scale(size)));
-
-    // 6. Icons & media
-    const iconSize = (size: number) => {
-      const raw = scale(size);
-      return isTablet
-        ? Math.round(clamp(raw, size * 1.1, size * 1.3))
-        : Math.round(clamp(raw, size * 0.88, size * 1.15));
-    };
-    const avatarSize = (size: number) => {
-      const raw = scale(size);
-      return isTablet
-        ? Math.round(clamp(raw, size * 1.15, size * 1.4))
-        : Math.round(clamp(raw, size * 0.85, size * 1.15));
-    };
-
-    // 7. Component sizing
-    // FIX Rủi ro 1: custom number giờ dùng moderateVerticalScale + clamp riêng
-    // theo trục dọc, KHÔNG còn gọi nhầm fontSize().
-    const clampedVertical = (size: number, factor: number, lo: number, hi: number) => {
-      const raw = moderateVerticalScale(size, factor);
-      return isTablet
-        ? Math.round(clamp(raw, size * 1.05, size * 1.25))
-        : Math.round(clamp(raw, size * lo, size * hi));
-    };
-
-    const buttonHeight = (presetOrCustom: ComponentSizePreset | number = 'md') => {
-      if (typeof presetOrCustom === 'number') {
-        return clampedVertical(presetOrCustom, 0.4, 0.9, 1.15);
-      }
-      const presets = {
-        sm: isTablet ? 42 : 36,
-        md: isTablet ? 54 : 48,
-        lg: isTablet ? 64 : 56,
-      };
-      return presets[presetOrCustom] ?? presets.md;
-    };
-
-    const inputHeight = (presetOrCustom: ComponentSizePreset | number = 'md') => {
-      if (typeof presetOrCustom === 'number') {
-        return clampedVertical(presetOrCustom, 0.4, 0.9, 1.15);
-      }
-      const presets = {
-        sm: isTablet ? 44 : 38,
-        md: isTablet ? 54 : 48,
-        lg: isTablet ? 62 : 56,
-      };
-      return presets[presetOrCustom] ?? presets.md;
-    };
-
-    const headerHeight = isTablet ? 64 : 56;
-
-    // 8. Layout & containers
-    const wp = (percent: number) => (width * percent) / 100;
-    const hp = (percent: number) => (height * percent) / 100;
-
-    const screenWidth = width;
-    const screenHeight = height;
-
-    // FIX Rủi ro 2: quay lại wp(92) trên phone để đảm bảo lề an toàn, không
-    // tràn màn hình khi View cha có thêm padding. Muốn full-width thật sự,
-    // dùng `width: '100%'` trực tiếp trong style thay vì containerWidth.
-    const containerWidth = isTablet ? Math.min(wp(60), 640) : wp(92);
-    const modalWidth = isTablet ? Math.min(wp(50), 520) : wp(90);
-
-    const columns = (
-      phoneCols: number = 1,
-      tabletCols: number = 2,
-      landscapeCols?: number
-    ) => {
-      if (isTablet) return tabletCols;
-      if (isLandscape && landscapeCols !== undefined) return landscapeCols;
-      return phoneCols;
-    };
-
-    // 9. Conditional selector
-    const select = <T,>(options: {
-      phone: T;
-      tablet: T;
-      smallPhone?: T;
-      landscape?: T;
-    }): T => {
-      if (isLandscape && options.landscape !== undefined) return options.landscape;
-      if (isSmallPhone && options.smallPhone !== undefined) return options.smallPhone;
-      return isTablet ? options.tablet : options.phone;
-    };
-
-    return {
-      width,
-      height,
-      screenWidth,
-      screenHeight,
-      isTablet,
-      isPhone,
-      isDesktop,
-      isSmallPhone,
-      isLandscape,
-      isPortrait,
-      fontSize,
-      lineHeight,
-      padding,
-      px,
-      py,
-      margin,
-      mx,
-      my,
-      gap,
-      verticalGap,
-      horizontalGap,
-      radius,
-      borderWidth,
-      iconSize,
-      avatarSize,
-      buttonHeight,
-      inputHeight,
-      headerHeight,
-      containerWidth,
-      modalWidth,
-      columns,
-      select,
-      wp,
-      hp,
-      scale,
-      verticalScale,
-      moderateScale,
-      moderateVerticalScale,
-    };
-  }, [width, height]);
+  const { width, height, fontScale } = useWindowDimensions();
+  return getResponsiveSize({ width, height, fontScale });
 }
 
 export default useResponsiveSize;

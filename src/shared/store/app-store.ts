@@ -58,27 +58,18 @@ export const useAppStore = create<AppStoreState>()(
             name: 'app-store', // Storage key
             storage: createJSONStorage(() => mmkvStorage),
 
-            // Partition: chỉ persist settings, không persist session
-            // Trade-off: Session sensitive nên không persist, load từ tokenStore
-            partialize: (state) => ({
-                // Persist settings
+            // Chỉ persist settings. Phiên đăng nhập nằm trong Keychain (tokenStore).
+            partialize: state => ({
                 theme: state.theme,
                 language: state.language,
                 notificationsEnabled: state.notificationsEnabled,
-
-                // Không persist session (sẽ restore từ tokenStore)
-                // isAuthenticated: state.isAuthenticated,
-                // user: state.user,
-                // tokens: ...
             }),
         },
     ),
 );
 
-/**
- * Dev-only: Reset entire store (để testing)
- */
+/** Reset toàn bộ store (dùng trong test) */
 export const resetAppStore = () => {
-    useAppStore.getState().clearSession();
+    useAppStore.getState().setSessionStatus('unknown');
     useAppStore.getState().resetSettings();
 };

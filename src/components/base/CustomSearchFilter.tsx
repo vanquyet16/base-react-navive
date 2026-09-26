@@ -2,7 +2,6 @@ import { createStyles } from '@/shared/theme/create-styles';
 import React from 'react';
 import { Pressable, View } from 'react-native';
 
-import { moderateScale } from 'react-native-size-matters';
 import AppIcon from './AppIcon';
 import CustomInput, { CustomInputProps } from './CustomInput';
 
@@ -18,7 +17,7 @@ const CustomSearchFilter = (props: CustomSearchFilterProps) => {
     <View style={styles.container}>
       <CustomInput
         {...props}
-        leftIcon={<AppIcon name="search" size={moderateScale(16)} />}
+        leftIcon={<AppIcon name="search" size={16} />}
         placeholder="Tìm kiếm mã phản ánh, nội dung..."
         style={styles.inputSearch}
         borderRadius={20}
@@ -31,7 +30,7 @@ const CustomSearchFilter = (props: CustomSearchFilterProps) => {
         ]}
         onPress={onFilter}
       >
-        <AppIcon name="sliders" size={moderateScale(20)} />
+        <AppIcon name="sliders" size={20} />
       </Pressable>
     </View>
   );
@@ -49,12 +48,12 @@ const useStyles = createStyles((theme, rs) => {
       width: '80%',
     },
     filterContainer: {
-      backgroundColor: theme.colors.white,
+      backgroundColor: theme.colors.surface,
       padding: rs.padding(8),
       borderRadius: 9999,
       justifyContent: 'center',
       alignItems: 'center',
-      shadowColor: '#000',
+      shadowColor: theme.colors.black,
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.05,
       shadowRadius: 3,

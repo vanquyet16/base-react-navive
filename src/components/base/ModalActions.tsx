@@ -3,11 +3,6 @@ import { View, Pressable, StyleProp, ViewStyle } from 'react-native';
 import { createStyles } from '@/shared/theme/create-styles';
 import { CustomButton, ButtonVariant } from './CustomButton';
 import { CustomText } from './CustomText';
-import {
-  moderateScale,
-  moderateVerticalScale,
-  scale,
-} from 'react-native-size-matters';
 
 export type ModalActionType =
   | 'vertical' // Button trên, Text/Button dưới (như ảnh)
@@ -114,7 +109,7 @@ export const ModalActions = memo<ModalActionsProps>(
                   title={secondaryLabel}
                   onPress={onSecondaryPress}
                   variant={secondaryVariant}
-                  style={[styles.smallButton, { marginRight: scale(12) }]}
+                  style={[styles.smallButton, { marginRight: styles.rs.horizontalGap(12) }]}
                 />
               )}
               <CustomButton
@@ -146,10 +141,10 @@ export const ModalActions = memo<ModalActionsProps>(
 );
 
 const useStyles = createStyles(
-  theme => ({
+  (theme, rs) => ({
     container: {
       width: '100%',
-      paddingHorizontal: scale(16),
+      paddingHorizontal: rs.scale(16),
     },
     verticalContainer: {
       alignItems: 'center',
@@ -161,24 +156,23 @@ const useStyles = createStyles(
       width: '100%',
     },
     button: {
-      minHeight: moderateVerticalScale(44),
+      minHeight: rs.moderateVerticalScale(44),
     },
     smallButton: {
-      minWidth: scale(100),
+      minWidth: rs.scale(100),
     },
     fullWidth: {
       width: '100%',
     },
     verticalSecondaryBtn: {
-      marginTop: moderateVerticalScale(12),
-      padding: moderateScale(8),
+      marginTop: rs.moderateVerticalScale(12),
+      padding: rs.moderateScale(8),
     },
     secondaryText: {
       color: theme.colors.textSecondary,
       // fontSize và fontWeight đã được set bởi variant="bodySmall" + weight="medium"
     },
   }),
-  true,
 );
 
 export default ModalActions;

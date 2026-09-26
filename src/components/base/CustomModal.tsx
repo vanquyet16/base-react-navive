@@ -7,7 +7,6 @@
 
 import React, {  memo } from 'react';
 import {
-  StyleSheet,
   ViewStyle,
   View,
   StyleProp,
@@ -15,11 +14,9 @@ import {
 } from 'react-native';
 import Modal, { ModalProps } from 'react-native-modal';
 import { useTheme } from '@/shared/theme/use-theme';
-import {
-  moderateScale,
-  moderateVerticalScale,
-} from 'react-native-size-matters';
-import { AppIcon, CustomText } from '@/components';
+import AppIcon from './AppIcon';
+import { CustomText } from './CustomText';
+import { createStyles } from '@/shared/theme/create-styles';
 
 interface CustomModalProps extends Partial<ModalProps> {
   visible: boolean;
@@ -75,7 +72,9 @@ interface ModalDefaultHeaderProps {
 }
 
 const ModalDefaultHeader: React.FC<ModalDefaultHeaderProps> = React.memo(
-  ({ title, isPopup, onClose, iconColor }) => (
+  ({ title, isPopup, onClose, iconColor }) => {
+    const styles = useStyles();
+    return (
     <View style={styles.header}>
       {isPopup && <View style={styles.dragHandle} />}
       <View style={styles.headerRow}>
@@ -95,13 +94,14 @@ const ModalDefaultHeader: React.FC<ModalDefaultHeaderProps> = React.memo(
         >
           <AppIcon
             name="x"
-            size={moderateScale(20)}
+            size={20}
             color={iconColor}
           />
         </Pressable>
       </View>
     </View>
-  ),
+    );
+  },
 );
 
 ModalDefaultHeader.displayName = 'ModalDefaultHeader';
@@ -121,6 +121,7 @@ const CustomModalBase: React.FC<CustomModalProps> = ({
   ...props
 }) => {
   const theme = useTheme();
+  const styles = useStyles();
 
   const effectivePosition = getEffectivePosition(type, position);
   const animations = getModalAnimations(effectivePosition);
@@ -188,10 +189,10 @@ const CustomModalBase: React.FC<CustomModalProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const useStyles = createStyles((theme, rs) => ({
   // Wrapper Styles
   modal: {
-    margin: moderateScale(20),
+    margin: rs.moderateScale(20),
     justifyContent: 'center',
   },
   modalBottom: {
@@ -201,7 +202,7 @@ const styles = StyleSheet.create({
   modalTop: {
     justifyContent: 'flex-start',
     margin: 0,
-    marginTop: moderateScale(20),
+    marginTop: rs.moderateScale(20),
   },
   modalFullscreen: {
     margin: 0,
@@ -213,13 +214,13 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   contentDefault: {
-    borderRadius: moderateScale(16),
-    padding: moderateScale(16),
+    borderRadius: rs.moderateScale(16),
+    padding: rs.moderateScale(16),
   },
   contentPopup: {
-    borderTopLeftRadius: moderateScale(16),
-    borderTopRightRadius: moderateScale(16),
-    paddingBottom: moderateVerticalScale(20), // Safe area handling usually
+    borderTopLeftRadius: rs.moderateScale(16),
+    borderTopRightRadius: rs.moderateScale(16),
+    paddingBottom: rs.moderateVerticalScale(20), // Safe area handling usually
     width: '100%',
   },
   contentFullscreen: {
@@ -234,28 +235,28 @@ const styles = StyleSheet.create({
   // Header Styles
   header: {
     alignItems: 'center',
-    paddingVertical: moderateVerticalScale(8),
+    paddingVertical: rs.moderateVerticalScale(8),
   },
   dragHandle: {
-    width: moderateScale(40),
+    width: rs.moderateScale(40),
     height: 4,
-    backgroundColor: '#E0E0E0', // Hardcoded neutral gray or use theme.colors.divider if accessible in styles scope (it's not, styles is outside component)
+    backgroundColor: theme.colors.divider,
     borderRadius: 2,
-    marginBottom: moderateVerticalScale(12),
+    marginBottom: rs.moderateVerticalScale(12),
   },
   headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    paddingHorizontal: moderateScale(16),
+    paddingHorizontal: rs.moderateScale(16),
   },
   closeBtn: {
     padding: 4,
-    backgroundColor: '#F5F5F5', // theme.colors.backgroundSecondary
+    backgroundColor: theme.colors.backgroundSecondary,
     borderRadius: 50,
   },
-});
+}));
 
 export const CustomModal = memo(CustomModalBase);
 export default CustomModal;
