@@ -64,7 +64,7 @@ export const CustomDropdown: React.FC<CustomDropdownProps> = memo(
 
     // Handlers
     const handleChange = useCallback(
-      (item: any) => {
+      (item: DropdownOption) => {
         if (onChange) onChange(item.value);
         setIsFocused(false);
       },

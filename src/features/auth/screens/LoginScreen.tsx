@@ -10,7 +10,7 @@ import Header from '../components/Header';
 import Main from '../components/Main';
 import Footer from '../components/Footer';
 import { LabelDivider } from '@/components/base/LabelDivider';
-import { Spacer } from '@/components/base/spacer';
+import { Spacer } from '@/components/base/Spacer';
 
 const LoginScreen = memo(() => {
   const styles = useStyles();

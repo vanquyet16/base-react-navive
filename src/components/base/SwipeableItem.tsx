@@ -76,8 +76,7 @@ interface SwipeActionViewProps {
 }
 
 const SwipeActionView = memo<SwipeActionViewProps>(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ({ progress, action, direction, totalActions = 1, index = 0 }) => {
+  ({ progress: _progress, action, direction, totalActions: _totalActions = 1, index: _index = 0 }) => {
     const styles = useStyles();
 
     // Width of this specific action button
@@ -212,24 +211,6 @@ const SwipeableItem: React.FC<SwipeableItemProps> = ({
   onPress,
 }) => {
   const swipeableRef = useRef<React.ElementRef<typeof Swipeable>>(null);
-
-  // Handle right action (only for single action long press fallback)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleRightAction = useCallback(() => {
-    swipeableRef.current?.close();
-    if (!Array.isArray(rightAction) && rightAction?.onPress) {
-      rightAction.onPress();
-    }
-  }, [rightAction]);
-
-  // Handle left action (only for single action long press fallback)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleLeftAction = useCallback(() => {
-    swipeableRef.current?.close();
-    if (!Array.isArray(leftAction) && leftAction?.onPress) {
-      leftAction.onPress();
-    }
-  }, [leftAction]);
 
   // Handle long press to open swipeable
   const handleLongPress = useCallback(() => {

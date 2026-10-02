@@ -1,5 +1,6 @@
 import React, { useMemo, memo } from 'react';
 
+import type { ImageRequireSource } from 'react-native';
 import FastImage, { type FastImageProps } from '@d11/react-native-fast-image';
 import { useResponsiveSize } from '@/shared/hooks/useResponsiveSize';
 
@@ -9,7 +10,7 @@ interface LogoProps {
   /** Custom style cho Image - sử dụng kiểu của FastImage để tránh conflict */
   style?: FastImageProps['style'];
   /** Tên file logo */
-  name?: string;
+  name?: LogoName;
 }
 
 /**
@@ -32,10 +33,12 @@ interface LogoProps {
  * <Logo size={120} style={{ tintColor: theme.colors.primary }} />
  * ```
  */
-const IMAGES: Record<string, any> = {
+const IMAGES = {
   logo: require('@/assets/images/logo.png'),
   logoVnid: require('@/assets/images/logoVnid.png'),
-};
+} satisfies Record<string, ImageRequireSource>;
+
+export type LogoName = keyof typeof IMAGES;
 
 export const Logo: React.FC<LogoProps> = memo(
   ({ size = 120, style, name = 'logo' }) => {
@@ -46,7 +49,7 @@ export const Logo: React.FC<LogoProps> = memo(
       return [{ width: dimension, height: dimension }, style];
     }, [rs, size, style]);
 
-    const source = IMAGES[name] || IMAGES.logo;
+    const source = IMAGES[name];
 
     return (
       <FastImage

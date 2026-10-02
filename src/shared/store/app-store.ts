@@ -58,7 +58,7 @@ export const useAppStore = create<AppStoreState>()(
             name: 'app-store', // Storage key
             storage: createJSONStorage(() => mmkvStorage),
 
-            // Chỉ persist settings. Phiên đăng nhập nằm trong Keychain (tokenStore).
+            // Chỉ persist settings. Phiên đăng nhập nằm trong tokenStore (MMKV riêng).
             partialize: state => ({
                 theme: state.theme,
                 language: state.language,

@@ -15,21 +15,22 @@
 - [Project Structure](#-project-structure)
 - [Configuration](#-configuration)
 - [Dependencies](#-key-dependencies)
-- [Development](#-development)
+- [Development](#️-development)
+- [Thêm màn hình / feature](#-thêm-màn-hình--feature-mới)
 - [Troubleshooting](#-troubleshooting)
 
 ---
 
 ## 📖 Introduction
 
-Đây là base project React Native chuẩn senior level, được xây dựng với các best practices hàng đầu như Feature-based architecture, Strict TypeScript, Generic Factory Pattern cho navigation, và New Architecture (Fabric).
+Đây là base project React Native chuẩn senior level, được xây dựng với các best practices hàng đầu như Feature-based architecture, Strict TypeScript, declarative navigation (React Navigation v7), và New Architecture (Fabric).
 
 ## 🌟 Features
 
 - ✅ **React Native 0.83.1** với New Architecture (Fabric + TurboModules)
-- ✅ **TypeScript Strict Mode** - Type safety 100%, không dùng `any`
+- ✅ **TypeScript Strict Mode** - Cấm `any` bằng ESLint (`no-explicit-any`)
 - ✅ **Feature-based Architecture** - Modular, scalable, maintainable
-- ✅ **Generic Factory Pattern** - Navigation type-safe, reusable, no `any`
+- ✅ **Ranh giới kiến trúc** - Phụ thuộc một chiều giữa các tầng, ESLint ép buộc
 - ✅ **TanStack Query** - Server state management & Caching
 - ✅ **Zustand** - Client state management (nhẹ nhàng, hiệu quả)
 - ✅ **React Navigation v7** - Routing mới nhất với nested navigation
@@ -84,130 +85,68 @@ Chi tiết: [docs/API_CONFIG_GUIDE.md](docs/API_CONFIG_GUIDE.md)
 
 ## 📁 Project Structure
 
-Cấu trúc dự án theo hướng Feature-based architecture với **Generic Factory Pattern** cho navigation:
+Feature-based architecture, phụ thuộc **một chiều**: `app → navigation → features → components → shared` (ESLint ép buộc, xem [Ranh giới kiến trúc](#ranh-giới-kiến-trúc-eslint-ép-buộc)).
 
 ```
 src/
-├── app/                      # App entry, providers & root navigation
-│   ├── app-navigator.tsx    # Root navigation (Auth/Drawer switching)
-│   ├── app-providers.tsx    # Global providers (Query, Theme, etc.)
-│   ├── app-root.tsx         # App entry point
-│   └── hooks/               # App-level hooks (useAppInit, etc.)
+├── app/                          # Composition root
+│   ├── app-root.tsx              # Providers → bootstrap → navigator
+│   ├── app-providers.tsx         # SafeArea, TanStack Query, Antd theme
+│   ├── app-navigator.tsx         # Root stack: Auth ↔ Drawer theo trạng thái phiên
+│   ├── bootstrap.ts              # Nơi DUY NHẤT nối HTTP ↔ SessionManager, khôi phục phiên
+│   └── hooks/use-app-init.ts
 │
-├── assets/                   # Static resources
-│   ├── fonts/               # Font files
-│   ├── icons/               # SVG icons & icon components
-│   └── images/              # Image assets
+├── navigation/                   # Cây điều hướng của app
+│   ├── navigators/               # AuthStack, MainDrawer → MainStack → MainTabs
+│   ├── components/               # UI gắn với route của app (CustomDrawer)
+│   ├── config/                   # NAVIGATION_KEYS (tên route)
+│   ├── linking.ts                # Deep link
+│   ├── navigation-ref.ts         # Điều hướng ngoài component
+│   └── navigation-theme.ts
 │
-├── components/               # Shared UI components (domain-agnostic)
-│   ├── antd/                # Ant Design custom wrappers
-│   ├── base/                # Base atomic components
-│   │   ├── CustomButton.tsx
-│   │   ├── CustomInput.tsx
-│   │   ├── CustomText.tsx
-│   │   ├── CustomCard.tsx
-│   │   ├── CustomBadge.tsx
-│   │   ├── Avatar.tsx
-│   │   ├── Logo.tsx
-│   │   └── ...
-│   ├── form/                # Form wrapper components
-│   ├── layout/              # Layout components (Screen, Container, etc.)
-│   ├── navigation/          # Navigation UI dùng chung (TabBar, TabNavigator) — CustomDrawer nằm ở src/navigation/components
-│   └── utility/             # Utility components (ErrorBoundary, LazyScreen, etc.)
+├── features/<feature>/           # Module theo domain (auth, home)
+│   ├── screens/                  # Màn hình
+│   ├── components/               # UI riêng của feature
+│   ├── hooks/queries/            # React Query hooks
+│   ├── services/                 # Gọi API
+│   ├── types/
+│   └── index.ts                  # Public API của feature
 │
-├── features/                 # Feature modules (domain-driven)
-│   ├── auth/                # Authentication feature
-│   │   ├── components/      # Auth-specific UI components
-│   │   ├── hooks/           # Auth hooks (useLogin, useAuth)
-│   │   ├── screens/         # Auth screens (LoginScreen, etc.)
-│   │   ├── services/        # Auth API services
-│   │   ├── store/           # Auth state (Zustand)
-│   │   └── types/           # Auth TypeScript types
-│   │
-│   ├── home/                # Home feature
-│   ├── profile/             # Profile feature
-│   ├── performance/         # Performance feature
-│   └── example/             # Example/Demo feature
+├── components/                   # UI dùng chung, không biết feature/navigation
+│   ├── base/                     # Atomic: CustomText, CustomButton, Avatar, Logo, Spacer…
+│   ├── form/                     # Bọc react-hook-form (FormInput, FormDropdown…)
+│   ├── layout/                   # MainLayout, AppHeader, ScreenContainer
+│   ├── navigation/               # Tab bar dùng chung (CustomBottomTabBar, CustomTabNavigator)
+│   └── utility/                  # ErrorBoundary, LoadingScreen
 │
-├── navigation/               # Navigation configuration & factories
-│   ├── config/              # ⚙️ Screen configs & route constants
-│   │   └── navigationConfig.ts  # Screen definitions & NAVIGATION_KEYS
-│   │
-│   ├── factories/           # 🏭 Generic factory functions
-│   │   ├── screenFactory.tsx    # Screen wrapper factories (MainLayout + LazyScreen)
-│   │   ├── navigatorFactory.tsx # Navigator factories (type-safe, no `any`)
-│   │   └── index.ts
-│   │
-│   ├── navigators/          # 🧭 Dedicated navigator components
-│   │   ├── AuthStackNavigator.tsx   # Auth flow navigator
-│   │   ├── MainStackNavigator.tsx   # Main app navigator (uses factory)
-│   │   ├── DrawerNavigator.tsx      # Drawer UI layer (menu + swipe gesture)
-│   │   ├── DrawerStackNavigator.tsx # Drawer content layer (screens trong drawer)
-│   │   └── index.ts
-│   │
-│   ├── MainTabs.tsx         # Bottom tab navigator
-│   └── index.ts
+├── shared/                       # Hạ tầng thuần, không biết UI/feature
+│   ├── config/                   # env (validate khi khởi động), app config
+│   ├── constants/                # API endpoints, storage keys, messages…
+│   ├── hooks/                    # useBaseForm, useBaseQuery, useBaseMutation, useResponsiveSize…
+│   ├── query/                    # QueryClient, query keys, mutation helpers
+│   ├── services/http/            # Axios instance + interceptors (single-flight refresh)
+│   ├── store/                    # Zustand (session, settings) + tokenStore (MMKV)
+│   ├── theme/                    # tokens, light/dark theme, createStyles
+│   ├── types/                    # Kiểu dùng chung, navigation types
+│   └── utils/                    # logger, errorHandler, toast…
 │
-├── shared/                   # Shared utilities & configurations
-│   ├── config/              # App configuration (env, API URLs, etc.)
-│   ├── constants/           # App constants (enums, keys, routes)
-│   ├── hooks/               # Shared hooks (useDebounce, useNetwork, etc.)
-│   ├── query/               # TanStack Query setup & utilities
-│   ├── services/            # Shared services (API client, Storage, etc.)
-│   ├── store/               # Shared Zustand stores
-│   ├── theme/               # Design system (colors, spacing, typography)
-│   │   ├── tokens.ts        # Design tokens
-│   │   ├── theme.ts         # Theme configuration
-│   │   ├── create-styles.ts # StyleSheet helper with theme
-│   │   └── use-theme.ts     # useTheme hook
-│   ├── types/               # Shared TypeScript types & models
-│   └── utils/               # Utility functions
+└── assets/                       # images, icons, fonts
 ```
-
-### Nguyên tắc tổ chức
-
-- **`shared/`**: Code dùng chung, không phụ thuộc domain cụ thể
-- **`components/`**: UI components có thể tái sử dụng, không chứa business logic
-- **`features/`**: Module theo domain, chứa đầy đủ components/hooks/services/screens riêng
-- **`navigation/`**: Navigation architecture với generic factories (type-safe, no `any`)
-  - **`factories/`**: Generic factory functions (tái sử dụng cho nhiều navigator)
-  - **`navigators/`**: Navigator components cụ thể (AuthStack, MainStack, DrawerStack, Drawer)
-- **`app/`**: Entry point, global setup, root navigation
 
 ### Navigation Architecture
 
-Cấu trúc navigation theo **separation of concerns** pattern:
-
 ```
-Root Navigator (app-navigator.tsx)
-├── Auth Stack (AuthStackNavigator)
+Root Stack (app/app-navigator.tsx)
+├── AuthStack (chưa đăng nhập)
 │   ├── Login
 │   └── Register
-│
-└── Drawer Navigator (DrawerNavigator - UI layer)
-    └── Drawer Stack (DrawerStackNavigator - Content layer)
-        ├── MainTabs (shortcut route)
-        ├── ProductScreen (shortcut route)
-        ├── LazyDemoScreen (shortcut route)
-        └── ... (các routes khác)
-            └── Main Stack Navigator (MainStackNavigator)
-                ├── MainTabs (Bottom Tabs)
-                │   ├── Home
-                │   ├── Profile
-                │   ├── Settings
-                │   └── ResponsiveDemo
-                └── Feature Screens
-                    ├── ProductScreen
-                    ├── LazyDemoScreen
-                    └── ...
+└── MainDrawer (đã đăng nhập)
+    └── MainStack
+        └── MainTabsScreen → MainTabs
+            └── Home
 ```
 
-**Pattern:**
-- **DrawerNavigator**: UI layer (drawer menu, swipe gesture, CustomDrawer component)
-- **DrawerStackNavigator**: Content layer (Stack chứa các screens trong drawer)
-- **MainStackNavigator**: Main app flow (tabs + feature screens)
-- **Type-safe**: Tất cả navigation đều type-safe với `ParamList`, không dùng `any`
-- **Factory Pattern**: `MainStackNavigator` và `AuthStackNavigator` dùng generic factory từ config
+Đăng xuất chỉ cần đổi trạng thái phiên — conditional screens của React Navigation v7 tự gỡ toàn bộ màn hình đã đăng nhập.
 
 ## 🔧 Configuration
 
@@ -258,461 +197,23 @@ npm run verify        # cả ba — chạy trước khi commit / trên CI
 
 ---
 
-## 📱 Adding New Screens & Stacks
+## 📱 Thêm màn hình / feature mới
 
-### ✅ CASE 1: Thêm màn hình mới vào Main Stack
+Hướng dẫn chi tiết (khai báo type, tạo screen, đăng ký navigator, mẫu `AppHeader`): **[docs/NAVIGATION_GUIDE.md](docs/NAVIGATION_GUIDE.md)**.
 
-> **Khi nào dùng:** Thêm một màn hình đơn lẻ vào ứng dụng chính (sau khi đã login)
+Checklist thêm feature mới:
 
-#### Bước 1: Tạo Screen Component
+1. Tạo `src/features/<feature-name>/` theo cấu trúc ở trên, export public API qua `index.ts`.
+2. Thêm tên feature vào mảng `FEATURES` trong [.eslintrc.js](.eslintrc.js) để bật luật chặn import chéo feature.
+3. Khai báo route trong `src/shared/types/navigation.types.ts` + `NAVIGATION_KEYS`, rồi đăng ký vào navigator tương ứng.
+4. Chạy `npm run verify`.
 
-**File:** `src/features/<feature-name>/screens/NewScreen.tsx`
+### 📚 Tài liệu khác
 
-```tsx
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-
-/**
- * NewScreen - Mô tả màn hình
- */
-const NewScreen: React.FC = () => {
-  return (
-    <View style={styles.container}>
-      <Text>New Screen Content</Text>
-    </View>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
-
-export default NewScreen;
-```
-
-#### Bước 2: Thêm vào Navigation Config
-
-**File:** `src/navigation/config/navigationConfig.ts`
-
-```typescript
-export const MAIN_STACK_SCREENS: Record<string, ScreenConfig> = {
-  // ... existing screens
-
-  // ✨ Thêm màn hình mới
-  NewScreen: {
-    title: 'Tiêu đề màn hình',
-    component: () => import('@/features/<feature-name>/screens/NewScreen'),
-    showHeader: true, // Hiển thị header
-    showTabs: false, // Ẩn bottom tabs
-    headerType: 'minimal', // Loại header: 'minimal' | 'default' | 'search'
-    showBack: true, // Hiển thị nút back
-  },
-};
-```
-
-#### Bước 3: Thêm Type Definition
-
-**File:** `src/shared/types/index.ts`
-
-```typescript
-export type MainStackParamList = {
-  MainTabs: undefined;
-  ProductScreen: undefined;
-  // ... existing screens
-
-  // ✨ Thêm type cho screen mới
-  NewScreen: undefined; // Không có params
-  // Hoặc nếu cần params:
-  // ProductDetail: { productId: string; categoryId?: number };
-};
-```
-
-#### Bước 4: Navigate đến màn hình
-
-**Từ MainStack (trong app):**
-
-```tsx
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { MainStackParamList } from '@/shared/types';
-
-const MyComponent = () => {
-  const navigation = useNavigation<StackNavigationProp<MainStackParamList>>();
-
-  const handlePress = () => {
-    // Navigate đến màn hình mới trong MainStack
-    navigation.navigate('NewScreen');
-
-    // Hoặc với params (nếu có):
-    // navigation.navigate('ProductDetail', {
-    //   productId: '123',
-    //   categoryId: 5
-    // });
-  };
-
-  return <Button onPress={handlePress}>Go to New Screen</Button>;
-};
-```
-
-**Từ Drawer Menu (CustomDrawer):**
-
-Nếu muốn thêm vào drawer menu, cần:
-
-1. Thêm route vào `DrawerStackParamList` trong `shared/types/index.ts`:
-```typescript
-export type DrawerStackParamList = {
-  MainTabs: NavigatorScreenParams<MainStackParamList>;
-  ProductScreen: NavigatorScreenParams<MainStackParamList>;
-  // ... existing routes
-  NewScreen: NavigatorScreenParams<MainStackParamList>; // ← Thêm
-};
-```
-
-2. Thêm screen vào `DrawerStackNavigator.tsx`:
-```tsx
-<DrawerStack.Screen
-  name="NewScreen"
-  component={MainStackNavigator}
-  initialParams={{ screen: 'NewScreen' }}
-/>
-```
-
-3. Thêm key vào `NAVIGATION_KEYS.DRAWER_STACK` trong `navigationConfig.ts`:
-```typescript
-DRAWER_STACK: {
-  // ... existing keys
-  NEW_SCREEN: 'NewScreen', // ← Thêm
-}
-```
-
-4. Thêm vào `menuItems` trong `src/navigation/components/CustomDrawer.tsx`:
-```tsx
-{
-  label: 'Màn hình mới',
-  icon: 'star',
-  screen: NAVIGATION_KEYS.DRAWER_STACK.NEW_SCREEN,
-}
-```
-
-#### ✅ Xong! Không cần code thêm
-
-Màn hình sẽ **tự động:**
-
-- ✅ Được wrap với `MainLayout` (header + layout)
-- ✅ Lazy loading khi cần
-- ✅ Type-safe navigation
-- ✅ Header được quản lý theo config
-
----
-
-### 🚀 CASE 2: Thêm Stack Navigator mới
-
-> **Khi nào dùng:** Tạo một nhóm màn hình liên quan (flow riêng biệt), ví dụ: Settings Stack, Onboarding Stack, Checkout Stack
-
-**Ví dụ:** Tạo Settings Stack với 3 màn hình (Settings Home, Account, Privacy)
-
-#### Bước 1: Định nghĩa ParamList Types
-
-**File:** `src/shared/types/index.ts`
-
-```typescript
-// ✨ Thêm Settings Stack ParamList
-export type SettingsStackParamList = {
-  SettingsHome: undefined;
-  AccountSettings: undefined;
-  PrivacySettings: undefined;
-  NotificationSettings: { enabled: boolean }; // Với params
-};
-
-// Update RootStackParamList
-export type RootStackParamList = {
-  Auth: undefined;
-  Drawer: undefined; // Drawer wrap toàn bộ Main flow
-  SettingsStack: undefined; // ← Thêm stack mới (nếu cần)
-};
-```
-
-#### Bước 2: Tạo Screen Components
-
-**File:** `src/features/settings/screens/SettingsHomeScreen.tsx`
-
-```tsx
-import React from 'react';
-import { View, Text } from 'react-native';
-
-const SettingsHomeScreen: React.FC = () => {
-  return (
-    <View>
-      <Text>Settings Home</Text>
-    </View>
-  );
-};
-
-export default SettingsHomeScreen;
-```
-
-**Lặp lại cho:** `AccountSettingsScreen.tsx`, `PrivacySettingsScreen.tsx`, etc.
-
-#### Bước 3: Định nghĩa Screen Configs
-
-**File:** `src/navigation/config/navigationConfig.ts`
-
-```typescript
-// ✨ Thêm config cho Settings screens
-export const SETTINGS_STACK_SCREENS: Record<string, ScreenConfig> = {
-  SettingsHome: {
-    title: 'Cài đặt',
-    component: () => import('@/features/settings/screens/SettingsHomeScreen'),
-    showHeader: true,
-    headerType: 'default',
-  },
-  AccountSettings: {
-    title: 'Tài khoản',
-    component: () =>
-      import('@/features/settings/screens/AccountSettingsScreen'),
-    showHeader: true,
-    showBack: true,
-  },
-  PrivacySettings: {
-    title: 'Quyền riêng tư',
-    component: () =>
-      import('@/features/settings/screens/PrivacySettingsScreen'),
-    showHeader: true,
-    showBack: true,
-  },
-};
-```
-
-#### Bước 4: Tạo Navigator Component
-
-**File:** `src/navigation/navigators/SettingsStackNavigator.tsx`
-
-```tsx
-/**
- * SETTINGS STACK NAVIGATOR
- * =========================
- * Navigator cho settings flow
- *
- * @senior-pattern Separation of concerns và type-safe navigation
- */
-
-import { createStackNavigator } from '@react-navigation/stack';
-import { SettingsStackParamList } from '@/shared/types';
-import { SETTINGS_STACK_SCREENS } from '@/navigation/config';
-import { createMainStackNavigatorComponent } from '@/navigation/factories/navigatorFactory';
-
-/**
- * Settings Stack Navigator instance
- * Typed với SettingsStackParamList
- */
-const SettingsStack = createStackNavigator<SettingsStackParamList>();
-
-/**
- * Settings Stack Navigator Component
- * Tự động tạo từ config sử dụng generic factory
- */
-export const SettingsStackNavigator = createMainStackNavigatorComponent(
-  SettingsStack,
-  SETTINGS_STACK_SCREENS,
-  {
-    initialRouteName: 'SettingsHome',
-    screenOptions: { headerShown: false },
-  },
-);
-```
-
-#### Bước 5: Export Navigator
-
-**File:** `src/navigation/navigators/index.ts`
-
-```typescript
-export { AuthStackNavigator } from './AuthStackNavigator';
-export { MainStackNavigator } from './MainStackNavigator';
-export { DrawerNavigator } from './DrawerNavigator';
-export { DrawerStackNavigator } from './DrawerStackNavigator';
-export { SettingsStackNavigator } from './SettingsStackNavigator'; // ← Thêm
-```
-
-#### Bước 6: Thêm vào Root Navigation
-
-**File:** `src/app/app-navigator.tsx`
-
-```tsx
-import {
-  AuthStackNavigator,
-  DrawerNavigator,
-  SettingsStackNavigator, // ← Import
-} from '@/navigation/navigators';
-
-export const AppNavigator: React.FC = () => {
-  const isAuthenticated = useIsAuthenticated();
-
-  return (
-    <NavigationContainer>
-      <RootStack.Navigator screenOptions={{ headerShown: false }}>
-        {isAuthenticated ? (
-          <>
-            <RootStack.Screen name="Drawer" component={DrawerNavigator} />
-            {/* ✨ Thêm Settings Stack (nếu cần) */}
-            {/* <RootStack.Screen
-              name="SettingsStack"
-              component={SettingsStackNavigator}
-            /> */}
-          </>
-        ) : (
-          <RootStack.Screen name="Auth" component={AuthStackNavigator} />
-        )}
-      </RootStack.Navigator>
-    </NavigationContainer>
-  );
-};
-```
-
-#### Bước 7: Navigate to Settings Stack
-
-```tsx
-// Từ Root navigate sang Settings Stack
-navigation.navigate('SettingsStack', {
-  screen: 'SettingsHome', // Initial screen
-});
-
-// Hoặc navigate trực tiếp đến specific screen
-navigation.navigate('SettingsStack', {
-  screen: 'AccountSettings',
-});
-
-// Với params
-navigation.navigate('SettingsStack', {
-  screen: 'NotificationSettings',
-  params: { enabled: true },
-});
-```
-
----
-
-### 📋 Quick Reference
-
-#### Checklist: Thêm màn hình mới vào MainStack
-
-- [ ] Tạo screen component trong `features/<name>/screens/`
-- [ ] Thêm config vào `MAIN_STACK_SCREENS` (navigationConfig.ts)
-- [ ] Thêm type vào `MainStackParamList` (types/index.ts)
-- [ ] Navigate: `navigation.navigate('ScreenName')`
-
-#### Checklist: Thêm màn hình vào Drawer Menu
-
-- [ ] Thêm type vào `DrawerStackParamList` (types/index.ts)
-- [ ] Thêm screen vào `DrawerStackNavigator.tsx` với `initialParams`
-- [ ] Thêm key vào `NAVIGATION_KEYS.DRAWER_STACK` (navigationConfig.ts)
-- [ ] Thêm menu item vào `CustomDrawer.tsx` với `NAVIGATION_KEYS.MAIN_STACK.*`
-
-#### Checklist: Thêm stack mới
-
-- [ ] Định nghĩa `<Stack>ParamList` type (types/index.ts)
-- [ ] Thêm stack name vào `RootStackParamList`
-- [ ] Tạo screen components
-- [ ] Tạo screen configs `<STACK>_SCREENS` (navigationConfig.ts)
-- [ ] Tạo `<Stack>Navigator.tsx` trong `navigators/`
-- [ ] Export từ `navigators/index.ts`
-- [ ] Thêm `<RootStack.Screen>` vào `app-navigator.tsx`
-
----
-
-### 💡 Best Practices
-
-**1. Type-safe Navigation**
-
-```tsx
-// ✅ ĐÚNG - Type-safe với autocomplete
-type NavigationProp = StackNavigationProp<MainStackParamList>;
-const navigation = useNavigation<NavigationProp>();
-navigation.navigate('ProductDetail', { productId: '123' }); // ← Type-checked
-
-// ❌ SAI - Không type-safe
-navigation.navigate('ProductDetail'); // Missing params, no error!
-```
-
-**2. Screen với Params**
-
-```typescript
-// Define types
-export type MainStackParamList = {
-  ProductDetail: { productId: string; variant?: string };
-};
-
-// Navigate với params
-navigation.navigate('ProductDetail', {
-  productId: '123',
-  variant: 'blue',
-});
-
-// Access params trong screen
-import { RouteProp } from '@react-navigation/native';
-
-type ProductDetailRouteProp = RouteProp<MainStackParamList, 'ProductDetail'>;
-
-const ProductDetailScreen = () => {
-  const route = useRoute<ProductDetailRouteProp>();
-  const { productId, variant } = route.params; // ← Type-safe
-
-  return <Text>Product: {productId}</Text>;
-};
-```
-
-**3. Reuse Generic Factory**
-
-```tsx
-// Generic factory tự động handle mọi stack type
-export const MyStackNavigator = createMainStackNavigatorComponent(
-  MyStack,
-  MY_SCREENS,
-  { initialRouteName: 'Home' },
-);
-// ✅ Type-safe, no `any`, reusable
-```
-
-**4. Drawer Navigation Pattern**
-
-```tsx
-// ✅ ĐÚNG - Navigate từ Drawer menu
-// CustomDrawer.tsx
-const handleNavigation = (screenName: keyof DrawerStackParamList) => {
-  props.navigation.navigate(ROOT_STACKS.DRAWER_STACK, { screen: screenName });
-  props.navigation.closeDrawer();
-};
-
-// Menu items dùng NAVIGATION_KEYS.DRAWER_STACK.*
-const menuItems: DrawerMenuItem[] = [
-  {
-    label: 'Trang chủ',
-    icon: 'home',
-    screen: NAVIGATION_KEYS.DRAWER_STACK.MAIN_TABS, // ← Type-safe
-  },
-];
-```
-
----
-
-### Adding New Feature Module
-
-1. Tạo thư mục trong `src/features/<feature-name>`
-2. Tuân thủ cấu trúc:
-   ```
-   features/
-   └── <feature-name>/
-       ├── components/    # Feature-specific components
-       ├── screens/       # Screen components
-       ├── hooks/         # Custom hooks
-       ├── services/      # API services
-       ├── types/         # TypeScript types
-       └── index.ts       # Public exports
-   ```
-3. Export public API qua `index.ts`
-4. Follow navigation guides above để thêm screens
+- [docs/API_CONFIG_GUIDE.md](docs/API_CONFIG_GUIDE.md) — cấu hình API & môi trường
+- [docs/COMPONENTS_GUIDE.md](docs/COMPONENTS_GUIDE.md) — CustomTabs, CustomSwiper, CustomFlashList
+- [docs/RESPONSIVE_RULES.md](docs/RESPONSIVE_RULES.md) — quy tắc responsive
+- [docs/ASSETS_GUIDE.md](docs/ASSETS_GUIDE.md) — quy ước ảnh, icon, font
 
 ## 🐛 Troubleshooting
 

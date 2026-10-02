@@ -17,6 +17,9 @@ import {
   type DimensionValue,
 } from 'react-native';
 import { CustomText } from './CustomText';
+
+type FocusEvent = Parameters<NonNullable<TextInputProps['onFocus']>>[0];
+type BlurEvent = Parameters<NonNullable<TextInputProps['onBlur']>>[0];
 import { useTheme } from '@/shared/theme/use-theme';
 import type { Theme } from '@/shared/theme/theme';
 
@@ -85,7 +88,7 @@ const CustomInputBase: React.FC<CustomInputProps> = ({
   // Merge internal focus handler với prop onFocus
   // Memoized với dependency onFocus
   const handleFocus = useCallback(
-    (e: any) => {
+    (e: FocusEvent) => {
       setIsFocused(true);
       onFocus?.(e);
     },
@@ -95,7 +98,7 @@ const CustomInputBase: React.FC<CustomInputProps> = ({
   // Merge internal blur handler với prop onBlur
   // Memoized với dependency onBlur
   const handleBlur = useCallback(
-    (e: any) => {
+    (e: BlurEvent) => {
       setIsFocused(false);
       onBlur?.(e);
     },

@@ -2,8 +2,8 @@ import React, { memo } from 'react';
 import { View } from '@ant-design/react-native';
 import { FaceIdIcon } from '@/assets/icons';
 import LoginOther from '@/components/base/LoginOther';
-import { SpacerSm } from '@/components/base/spacer';
-import Logo from '@/components/base/logo';
+import { SpacerSm } from '@/components/base/Spacer';
+import Logo from '@/components/base/Logo';
 import { createStyles } from '@/shared/theme/create-styles';
 
 const Footer = memo(() => {

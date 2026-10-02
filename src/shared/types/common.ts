@@ -73,7 +73,7 @@ export type EmptyObject = Record<string, never>;
 /**
  * Dictionary type - key-value pairs
  */
-export type Dictionary<T = any> = Record<string, T>;
+export type Dictionary<T = unknown> = Record<string, T>;
 
 /**
  * Timestamp types

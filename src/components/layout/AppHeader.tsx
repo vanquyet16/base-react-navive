@@ -39,7 +39,7 @@ import {
   type TextStyle,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation, DrawerActions } from '@react-navigation/native';
+import { useNavigation, DrawerActions, type NavigationAction } from '@react-navigation/native';
 import AppIcon, { type IconType } from '@/components/base/AppIcon';
 import { CustomText } from '@/components/base/CustomText';
 import { useTheme } from '@/shared/theme/use-theme';
@@ -56,7 +56,7 @@ type AppHeaderNavigation = {
   canGoBack?: () => boolean;
   goBack?: () => void;
   openDrawer?: () => void;
-  dispatch?: (action: any) => void;
+  dispatch?: (action: NavigationAction) => void;
 };
 
 export interface AppHeaderProps {

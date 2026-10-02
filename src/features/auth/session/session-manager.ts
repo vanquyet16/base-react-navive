@@ -2,10 +2,10 @@
  * SESSION MANAGER
  * ===============
  * Owner DUY NHẤT của vòng đời phiên đăng nhập. Mọi nơi (UI, interceptor, app lifecycle) đều
- * đi qua đây, nên token (Keychain), trạng thái điều hướng (Zustand) và cache dữ liệu
+ * đi qua đây, nên token (tokenStore — MMKV), trạng thái điều hướng (Zustand) và cache dữ liệu
  * (TanStack Query) luôn đồng bộ.
  *
- *   restore()  → khi khởi động: nạp phiên từ Keychain, không cần mạng
+ *   restore()  → khi khởi động: nạp phiên từ MMKV (tokenStore), không cần mạng
  *   signIn()   → lưu token + user, chuyển sang Main
  *   signOut()  → xoá local TRƯỚC (luôn thành công kể cả offline), thu hồi server sau (best-effort)
  *   refreshAccessToken() / handleSessionExpired() → cung cấp cho interceptor HTTP

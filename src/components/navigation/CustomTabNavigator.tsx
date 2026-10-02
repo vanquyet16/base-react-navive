@@ -15,7 +15,7 @@ export interface CustomTabNavigatorProps {
   screens: {
     name: string;
     label: string; // Label displayed in the tab
-    component: React.ComponentType<any>;
+    component: React.ComponentType;
     initialParams?: object;
   }[];
   /**
@@ -113,16 +113,13 @@ const CustomTabBar = memo(
 export const CustomTabNavigator = memo<CustomTabNavigatorProps>(
   ({ screens, initialRouteName, style, tabType = 'pill' }) => {
 
-    const sceneContainerStyle = useMemo(
-      () => ({ backgroundColor: 'transparent' }),
-      [], // Fixed: removed unused dependency theme.colors.background
-    );
-
     const screenOptions = useMemo(
       () => ({
         swipeEnabled: true,
         lazy: true, // Optimize performance
         tabBarScrollEnabled: true,
+        // v7: `sceneContainerStyle` của Navigator đã bị bỏ, thay bằng `sceneStyle` trong screenOptions
+        sceneStyle: { backgroundColor: 'transparent' },
       }),
       [],
     );
@@ -138,7 +135,6 @@ export const CustomTabNavigator = memo<CustomTabNavigatorProps>(
       <Tab.Navigator
         initialRouteName={initialRouteName}
         tabBar={renderTabBar}
-        sceneContainerStyle={sceneContainerStyle}
         screenOptions={screenOptions}
         style={style}
       >

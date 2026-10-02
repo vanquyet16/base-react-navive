@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useMemo, useState, useEffect } from 'react';
 import { View, Modal, Pressable } from 'react-native';
-import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { Calendar, LocaleConfig, type DateData } from 'react-native-calendars';
 import { CustomText } from './CustomText';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
@@ -137,7 +137,7 @@ export const CustomDatePicker: React.FC<CustomDatePickerProps> = memo(
     }, [tempSelectedDate, theme.colors.primary]);
 
     // Handlers
-    const handleDayPress = useCallback((day: any) => {
+    const handleDayPress = useCallback((day: DateData) => {
       setTempSelectedDate(day.dateString);
     }, []);
 

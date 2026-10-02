@@ -95,8 +95,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = memo(
     color,
     fontBold = true,
     transform,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    styleAction,
+    styleAction: _styleAction,
     rightActionStyle,
   }) => {
     const theme = useTheme();
@@ -173,7 +172,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = memo(
     ]);
 
     const titleStyle = useMemo(() => {
-      const baseStyle: any = [styles.title];
+      const baseStyle: StyleProp<TextStyle>[] = [styles.title];
       if (fontSize) baseStyle.push({ fontSize: styles.rs.fontSize(fontSize) });
       if (color) baseStyle.push({ color: color });
       if (transform) baseStyle.push({ textTransform: transform });

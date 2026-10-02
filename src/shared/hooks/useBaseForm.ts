@@ -11,6 +11,9 @@ import {
   type FieldValues,
   type UseFormReturn,
   type FieldError,
+  type Path,
+  type Control,
+  type UseControllerProps,
 } from 'react-hook-form';
 import { useState, useCallback } from 'react';
 import CustomToast from '@/shared/utils/CustomToast';
@@ -44,13 +47,16 @@ export interface UseBaseFormReturn<T extends FieldValues> extends UseFormReturn<
   /** Kiểm tra xem field có lỗi không */
   hasFieldError: (fieldName: keyof T) => boolean;
   /** Xóa lỗi của một field */
-  clearFieldError: (fieldName: keyof T) => void;
+  clearFieldError: (fieldName: Path<T>) => void;
   /** Xóa toàn bộ lỗi form */
   clearAllErrors: () => void;
   /** Kiểm tra tính hợp lệ của form */
   isFormValid: boolean;
   /** Helper lấy props cho Controller */
-  getControllerProps: (fieldName: keyof T, rules?: any) => { name: keyof T; control: any; rules?: any };
+  getControllerProps: (
+    fieldName: Path<T>,
+    rules?: UseControllerProps<T>['rules'],
+  ) => { name: Path<T>; control: Control<T>; rules?: UseControllerProps<T>['rules'] };
 }
 
 export const useBaseForm = <T extends FieldValues>({
@@ -115,8 +121,8 @@ export const useBaseForm = <T extends FieldValues>({
   );
 
   const clearFieldError = useCallback(
-    (fieldName: keyof T) => {
-      form.clearErrors(fieldName as any);
+    (fieldName: Path<T>) => {
+      form.clearErrors(fieldName);
     },
     [form],
   );
@@ -127,7 +133,7 @@ export const useBaseForm = <T extends FieldValues>({
   }, [form]);
 
   const getControllerProps = useCallback(
-    (fieldName: keyof T, rules?: any) => {
+    (fieldName: Path<T>, rules?: UseControllerProps<T>['rules']) => {
       return {
         name: fieldName,
         control: form.control,

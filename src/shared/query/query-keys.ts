@@ -6,6 +6,7 @@
  * 
  */
 
+import type { QueryClient, QueryKey } from '@tanstack/react-query';
 import type { ID } from '@/shared/types/common';
 import type { ListRequest } from '@/shared/types/api';
 
@@ -56,8 +57,8 @@ export const productKeys = {
  * Get domain từ query key
  * E.g., ['users', 'list'] => 'users'
  */
-export const getDomainFromKey = (queryKey: readonly any[]): string => {
-    return queryKey[0] as string;
+export const getDomainFromKey = (queryKey: QueryKey): string => {
+    return String(queryKey[0]);
 };
 
 /**
@@ -65,7 +66,7 @@ export const getDomainFromKey = (queryKey: readonly any[]): string => {
  * E.g., invalidateDomain('users') invalidate tất cả user queries
  */
 export const invalidateDomain = async (
-    queryClient: any,
+    queryClient: QueryClient,
     domain: string,
 ) => {
     await queryClient.invalidateQueries({

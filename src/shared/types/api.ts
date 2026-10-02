@@ -15,7 +15,7 @@ import type { PaginationMeta } from './common';
  * @example
  * type UserResponse = ApiResponse<User>;
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
     /** Response data - generic type */
     data: T;
     /** Success flag */
@@ -23,7 +23,7 @@ export interface ApiResponse<T = any> {
     /** Optional message từ server */
     message?: string;
     /** Optional metadata */
-    meta?: Record<string, any>;
+    meta?: Record<string, unknown>;
 }
 
 /**
@@ -33,7 +33,7 @@ export interface ApiResponse<T = any> {
  * @example
  * type UserListResponse = PaginatedResponse<User>;
  */
-export interface PaginatedResponse<T = any> {
+export interface PaginatedResponse<T = unknown> {
     /** Array of items */
     data: T[];
     /** Pagination metadata */
@@ -80,7 +80,7 @@ export interface RequestConfig {
     /** Custom headers */
     headers?: Record<string, string>;
     /** Query params */
-    params?: Record<string, any>;
+    params?: Record<string, unknown>;
     /** Cancel token */
     signal?: AbortSignal;
 }
@@ -116,7 +116,7 @@ export interface ListRequest {
     search?: string;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
-    filters?: Record<string, any>;
+    filters?: Record<string, unknown>;
 }
 
 /**

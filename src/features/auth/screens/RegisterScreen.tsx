@@ -5,7 +5,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useRegister } from '../hooks';
 import { SCREEN_PADDING, VALIDATION, ERROR_MESSAGES } from '@/shared/constants';
 import FormInput from '@/components/form/FormInput';
-import { Logo } from '@/components/base/logo';
+import { Logo } from '@/components/base/Logo';
 import { createStyles } from '@/shared/theme/create-styles';
 import { useBaseForm } from '@/shared/hooks/useBaseForm';
 import { AuthStackParamList } from '@/shared/types/navigation.types';

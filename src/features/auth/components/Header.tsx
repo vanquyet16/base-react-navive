@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import { ImageBackground, View } from 'react-native';
 import { CustomText } from '@/components/base/CustomText';
-import { Logo } from '@/components/base/logo';
-import { SpacerLg } from '@/components/base/spacer';
+import { Logo } from '@/components/base/Logo';
+import { SpacerLg } from '@/components/base/Spacer';
 import { createStyles } from '@/shared/theme/create-styles';
 
 /**

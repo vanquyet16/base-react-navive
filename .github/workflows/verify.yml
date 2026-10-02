@@ -1,0 +1,33 @@
+# Verify — chặn merge khi typecheck / lint / test thất bại.
+# Chạy cùng lệnh với local: `npm run verify`.
+
+name: Verify
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# Huỷ lượt chạy cũ của cùng PR/branch khi có commit mới
+concurrency:
+  group: verify-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run verify

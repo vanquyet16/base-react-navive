@@ -46,6 +46,8 @@ module.exports = {
   extends: '@react-native',
   rules: {
     '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    // Strict typing: dùng `unknown` + type guard thay cho `any`
+    '@typescript-eslint/no-explicit-any': 'error',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
     // Dùng logger (tự che dữ liệu nhạy cảm, im lặng ở release)

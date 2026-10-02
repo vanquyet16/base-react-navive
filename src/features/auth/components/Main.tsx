@@ -4,7 +4,7 @@ import { WingBlank } from '@ant-design/react-native';
 import { CustomButton } from '@/components/base/CustomButton';
 import { CustomText } from '@/components/base/CustomText';
 import AppIcon from '@/components/base/AppIcon';
-import { Spacer, SpacerSm, SpacerMd } from '@/components/base/spacer';
+import { Spacer, SpacerSm, SpacerMd } from '@/components/base/Spacer';
 import { FormInput } from '@/components/form/FormInput';
 import { useBaseForm } from '@/shared/hooks/useBaseForm';
 import { ERROR_MESSAGES, VALIDATION } from '@/shared/constants';

@@ -4,4 +4,4 @@ export { default as MainLayout } from './MainLayout';
 
 
 // New layout components (Phase 4)
-export * from './screen-container';
+export * from './ScreenContainer';

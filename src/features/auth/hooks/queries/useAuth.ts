@@ -26,7 +26,7 @@ export { authKeys };
 
 /**
  * Hồ sơ người dùng hiện tại — nguồn sự thật duy nhất cho dữ liệu user.
- * Được seed từ cache Keychain khi khởi động (hiển thị ngay, kể cả offline) rồi đồng bộ với server.
+ * Được seed từ cache MMKV (tokenStore) khi khởi động (hiển thị ngay, kể cả offline) rồi đồng bộ với server.
  */
 export const useCurrentUser = () => {
     const isAuthenticated = useIsAuthenticated();

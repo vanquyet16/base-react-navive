@@ -82,57 +82,6 @@ export interface Theme {
         // Logo
         borderColorLogo: string;
 
-        // Specific Party Colors (Backward compatible)
-        partyRed: string;
-        partyYellow: string;
-        partyBg: string;
-        partyBorder: string;
-        partyText: string;
-        partyHeaderBg: string;
-        partyGradientStart: string;
-        partyGradientEnd: string;
-        partySubText: string;
-
-        // NewsBox Variants (Backward compatible)
-        newsBox: {
-            primary: {
-                bg: string;
-                border: string;
-                text: string;
-                headerBg: string;
-                gradientStart: string;
-                gradientEnd: string;
-                subText: string;
-            };
-            success: {
-                bg: string;
-                border: string;
-                text: string;
-                headerBg: string;
-                gradientStart: string;
-                gradientEnd: string;
-                subText: string;
-            };
-            info: {
-                bg: string;
-                border: string;
-                text: string;
-                headerBg: string;
-                gradientStart: string;
-                gradientEnd: string;
-                subText: string;
-            };
-            party: {
-                bg: string;
-                border: string;
-                text: string;
-                headerBg: string;
-                gradientStart: string;
-                gradientEnd: string;
-                subText: string;
-            };
-        };
-
         // Tabs
         tabs: {
             background: string;
@@ -234,57 +183,6 @@ export const lightTheme: Theme = {
         // Logo
         borderColorLogo: colors.special.avatarBorder,
 
-        // Party Colors
-        partyRed: '#D71920',
-        partyYellow: '#FFFF00',
-        partyBg: '#FFF8E1',
-        partyBorder: '#F5E0B7',
-        partyText: '#D71920',
-        partyHeaderBg: '#FFE5B4',
-        partyGradientStart: '#D22D28',
-        partyGradientEnd: '#F1B226',
-        partySubText: colors.gray[500],
-
-        // NewsBox Variants
-        newsBox: {
-            primary: {
-                bg: '#F5F7FB',
-                border: '#D1DCEA',
-                text: colors.primary[700],
-                headerBg: '#E8EDF7',
-                gradientStart: colors.primary[500],
-                gradientEnd: colors.primary[600],
-                subText: colors.gray[600],
-            },
-            success: {
-                bg: '#F4F9F6',
-                border: '#D0E8D8',
-                text: '#166534',
-                headerBg: '#E6F4EA',
-                gradientStart: '#22C55E',
-                gradientEnd: '#16A34A',
-                subText: colors.gray[600],
-            },
-            info: {
-                bg: '#F4F8FB',
-                border: '#CFE3F3',
-                text: '#0369A1',
-                headerBg: '#E7F2F9',
-                gradientStart: '#3B82F6',
-                gradientEnd: '#2563EB',
-                subText: colors.gray[600],
-            },
-            party: {
-                bg: '#FAF7F3',
-                border: '#E8DED0',
-                text: '#D71920',
-                headerBg: '#F5EDE3',
-                gradientStart: '#D22D28',
-                gradientEnd: '#F1B226',
-                subText: colors.gray[500],
-            },
-        },
-
         // Tabs
         tabs: {
             background: colors.gray[75], // Cập nhật từ gray[80] → gray[75]
@@ -378,57 +276,6 @@ export const darkTheme: Theme = {
 
         // Logo
         borderColorLogo: colors.special.avatarBorder,
-
-        // Party Colors
-        partyRed: '#FF8080',
-        partyYellow: '#FFD700',
-        partyBg: '#2C1313',
-        partyBorder: '#4E1A1A',
-        partyText: '#FF8080',
-        partyHeaderBg: '#3D1414',
-        partyGradientStart: '#8A1A16',
-        partyGradientEnd: '#9C6A15',
-        partySubText: colors.gray[300],
-
-        // NewsBox Variants
-        newsBox: {
-            primary: {
-                bg: '#1E3A8A',
-                border: colors.primary[600],
-                text: colors.primary[100],
-                headerBg: colors.primary[700],
-                gradientStart: colors.primary[600],
-                gradientEnd: colors.primary[700],
-                subText: colors.gray[300],
-            },
-            success: {
-                bg: '#14532D',
-                border: '#15803D',
-                text: '#BBF7D0',
-                headerBg: '#166534',
-                gradientStart: '#15803D',
-                gradientEnd: '#166534',
-                subText: colors.gray[300],
-            },
-            info: {
-                bg: '#0C4A6E',
-                border: '#0369A1',
-                text: '#BAE6FD',
-                headerBg: '#075985',
-                gradientStart: '#0369A1',
-                gradientEnd: '#075985',
-                subText: colors.gray[300],
-            },
-            party: {
-                bg: '#2C1313',
-                border: '#4E1A1A',
-                text: '#FF8080',
-                headerBg: '#3D1414',
-                gradientStart: '#8A1A16',
-                gradientEnd: '#9C6A15',
-                subText: colors.gray[300],
-            },
-        },
 
         // Tabs
         tabs: {

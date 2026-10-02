@@ -6,7 +6,7 @@
  * 
  */
 
-import type { UseMutationOptions } from '@tanstack/react-query';
+import type { QueryKey, UseMutationOptions } from '@tanstack/react-query';
 import { queryClient } from './query-client';
 
 /**
@@ -18,7 +18,7 @@ import { queryClient } from './query-client';
  * @returns Mutation callbacks (onMutate, onError, onSettled)
  */
 export const createOptimisticUpdate = <TData, TVariables>(
-    queryKey: any[],
+    queryKey: QueryKey,
     updateFn: (oldData: TData | undefined, variables: TVariables) => TData,
 ) => {
     return {
@@ -45,8 +45,8 @@ export const createOptimisticUpdate = <TData, TVariables>(
          * onError: Rollback on error
          */
         onError: (
-            error: any,
-            variables: TVariables,
+            _error: unknown,
+            _variables: TVariables,
             context?: { previousData?: TData },
         ) => {
             if (context?.previousData) {
@@ -70,7 +70,7 @@ export const createOptimisticUpdate = <TData, TVariables>(
  * @param queryKeys - Query keys để invalidate
  * @returns Mutation callbacks
  */
-export const createInvalidationCallbacks = (queryKeys: any[][]) => {
+export const createInvalidationCallbacks = (queryKeys: QueryKey[]) => {
     return {
         onSuccess: async () => {
             // Invalidate tất cả query keys
@@ -87,10 +87,10 @@ export const createInvalidationCallbacks = (queryKeys: any[][]) => {
  * Type helper cho mutation options
  */
 export type MutationOptions<
-    TData = any,
+    TData = unknown,
     TError = Error,
-    TVariables = any,
-    TContext = any,
+    TVariables = void,
+    TContext = unknown,
 > = UseMutationOptions<TData, TError, TVariables, TContext>;
 
 /**

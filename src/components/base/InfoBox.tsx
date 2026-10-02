@@ -3,9 +3,8 @@ import {
   View,
   Pressable,
   ViewStyle,
-  ImageSourcePropType,
 } from 'react-native';
-import FastImage from '@d11/react-native-fast-image';
+import FastImage, { type FastImageProps } from '@d11/react-native-fast-image';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 import { CustomText } from './CustomText';
@@ -41,7 +40,7 @@ export interface InfoBoxProps {
   location?: string;
 
   // News Props
-  image?: ImageSourcePropType | string;
+  image?: FastImageProps['source'] | string;
   tag?: string;
   time?: string;
 
@@ -177,7 +176,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
           {image && (
             <FastImage
               source={
-                typeof image === 'string' ? { uri: image } : (image as any)
+                typeof image === 'string' ? { uri: image } : image
               }
               style={styles.statusImage}
               resizeMode={FastImage.resizeMode.cover}
@@ -293,7 +292,7 @@ export const InfoBox: React.FC<InfoBoxProps> = memo(props => {
       <View style={styles.rowContent}>
         {image && (
           <FastImage
-            source={typeof image === 'string' ? { uri: image } : (image as any)}
+            source={typeof image === 'string' ? { uri: image } : image}
             style={styles.thumbnail}
             resizeMode={FastImage.resizeMode.cover}
           />

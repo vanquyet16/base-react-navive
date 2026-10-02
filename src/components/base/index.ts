@@ -11,14 +11,14 @@ export * from './CustomCard';
 export * from './ShadowCard';
 export * from './CustomInput';
 export * from './CustomBadge';
-export * from './spacer';
+export * from './Spacer';
 export * from './LabelDivider';
 export { default as FloatingActionButton } from './FloatingActionButton';
 export { default as LoginOther } from './LoginOther';
 // Re-export Avatar as default import
-export { default as Avatar } from './avatar';
+export { default as Avatar } from './Avatar';
 // Re-export Logo as named export (khớp với export const Logo trong logo.tsx)
-export { Logo } from './logo';
+export { Logo } from './Logo';
 export * from './CustomTabs';
 export * from './CustomSwiper';
 export * from './CustomFlashList';

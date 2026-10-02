@@ -11,7 +11,8 @@ import { FlashList, FlashListProps } from '@shopify/flash-list';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
 
-const AnimatedFlashList = Animated.createAnimatedComponent(FlashList) as any;
+// createAnimatedComponent làm mất generic <T> của FlashList → khôi phục lại kiểu gốc để giữ type-check cho props
+const AnimatedFlashList = Animated.createAnimatedComponent(FlashList) as unknown as typeof FlashList;
 
 interface CustomFlashListProps<T> extends FlashListProps<T> {
   /** Triggered when end of list is reached */

@@ -31,8 +31,8 @@ src/
     ├── navigators/
     │   ├── MainStackNavigator.tsx    # 👉 Stack chính của ứng dụng
     │   ├── AuthStackNavigator.tsx    # 👉 Stack xác thực (Login, Register)
-    │   └── MainDrawer.tsx            # 👉 Side menu drawer
-    └── MainTabs.tsx                  # 👉 Bottom Tab bar
+    │   ├── MainDrawer.tsx            # 👉 Side menu drawer
+    │   └── MainTabsNavigator.tsx     # 👉 Bottom Tab bar
 ```
 
 ---
@@ -40,7 +40,7 @@ src/
 ## 2. Quy Trình 3 Bước Chuẩn Thêm Màn Hình
 
 ### Bước 1: Khai báo Type an toàn
-Mở file [src/shared/types/navigation.types.ts](file:///Users/quyet/Desktop/Teca/Mobile/base-react-navive/src/shared/types/navigation.types.ts).
+Mở file [src/shared/types/navigation.types.ts](../src/shared/types/navigation.types.ts).
 
 Thêm tên màn hình và kiểu dữ liệu tham số (params) vào `MainStackParamList` (nếu là màn hình nằm trong Main Stack):
 
@@ -156,7 +156,7 @@ export default OrderDetailScreen;
 Mở file Navigator quản lý luồng màn hình đó:
 
 #### Trường hợp A: Màn hình thuộc Main Flow
-Mở [src/navigation/navigators/MainStackNavigator.tsx](file:///Users/quyet/Desktop/Teca/Mobile/base-react-navive/src/navigation/navigators/MainStackNavigator.tsx):
+Mở [src/navigation/navigators/MainStackNavigator.tsx](../src/navigation/navigators/MainStackNavigator.tsx):
 
 ```tsx
 import OrderDetailScreen from '@/features/order/screens/OrderDetailScreen';
@@ -186,9 +186,9 @@ export const MainStackNavigator: React.FC = () => {
 ```
 
 #### Trường hợp B: Màn hình là 1 Tab ở thanh điều hướng dưới đáy
-Mở [src/navigation/MainTabs.tsx](file:///Users/quyet/Desktop/Teca/Mobile/base-react-navive/src/navigation/MainTabs.tsx):
+Mở [src/navigation/navigators/MainTabsNavigator.tsx](../src/navigation/navigators/MainTabsNavigator.tsx):
 
-1. Khai báo tab name trong `MainTabParamList` ([src/shared/types/navigation.types.ts](file:///Users/quyet/Desktop/Teca/Mobile/base-react-navive/src/shared/types/navigation.types.ts)).
+1. Khai báo tab name trong `MainTabParamList` ([src/shared/types/navigation.types.ts](../src/shared/types/navigation.types.ts)).
 2. Thêm thẻ `<Tab.Screen>`:
 
 ```tsx

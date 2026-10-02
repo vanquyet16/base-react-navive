@@ -2,7 +2,7 @@
  * SESSION STORE (Zustand slice)
  * =============================
  * Chỉ giữ TRẠNG THÁI phiên để điều hướng (Auth stack ↔ Main).
- * - Token: tokenStore (Keychain).
+ * - Token: tokenStore (MMKV).
  * - Hồ sơ user: TanStack Query (`authKeys.me`) — một nguồn sự thật duy nhất.
  * Chỉ SessionManager được phép đổi state này.
  */

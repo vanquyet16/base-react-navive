@@ -14,6 +14,7 @@ import { View, type ViewStyle, type StyleProp } from 'react-native';
 import { CustomText } from './CustomText';
 import { useTheme } from '@/shared/theme/use-theme';
 import { createStyles } from '@/shared/theme/create-styles';
+import type { Theme } from '@/shared/theme/theme';
 import { colors } from '@/shared/theme/tokens';
 
 export type BadgeVariant = 'success' | 'warning' | 'error' | 'info' | 'primary';
@@ -68,8 +69,7 @@ export const CustomBadge: React.FC<CustomBadgeProps> = ({
   }, [text, badgeCount, showZero]);
 
   // Get variant styles
-  const variantKey = `${variant}Badge` as const;
-  const variantStyle = (styles as any)[variantKey];
+  const variantStyle = styles[`${variant}Badge`];
 
   // Get text color
   const textColor = useMemo(
@@ -107,7 +107,7 @@ export const CustomBadge: React.FC<CustomBadgeProps> = ({
 
 export default memo(CustomBadge);
 
-const getTextColor = (theme: any, variant: BadgeVariant): string => {
+const getTextColor = (theme: Theme, variant: BadgeVariant): string => {
   switch (variant) {
     case 'success':
       return colors.success.dark;

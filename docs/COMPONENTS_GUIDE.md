@@ -59,12 +59,13 @@ Banner trượt tự động (Auto-scroll), dùng cho Home Banner hoặc Intro.
 import React from 'react';
 import { Image, View } from 'react-native';
 import { CustomSwiper } from '@/components/base';
-import { verticalScale } from '@/shared/utils/sizeMatters';
+import { useResponsiveSize } from '@/shared/hooks/useResponsiveSize';
 
 const HomeBanner = () => {
+  const rs = useResponsiveSize();
   return (
     <CustomSwiper
-      height={verticalScale(180)} // Chiều cao responsive
+      height={rs.verticalScale(180)} // Chiều cao responsive
       autoplay={true} // Tự động chạy
       autoplayTimeout={3} // 3 giây chuyển slide
     >
@@ -111,11 +112,12 @@ interface ApiResponse {
 import React, { useCallback } from 'react';
 import { CustomFlashList, CustomText } from '@/components/base';
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { productService } from '@/shared/services/productService'; // Ví dụ service
-import { moderateScale } from '@/shared/utils/sizeMatters';
+import { productService } from '@/features/product/services/product.service'; // Ví dụ service
+import { useResponsiveSize } from '@/shared/hooks/useResponsiveSize';
 import { View } from 'react-native';
 
 const ProductListScreen = () => {
+  const rs = useResponsiveSize();
   // 1. Setup Query
   const {
     data,
@@ -152,8 +154,8 @@ const ProductListScreen = () => {
     ({ item }) => (
       <View
         style={{
-          height: moderateScale(80),
-          padding: moderateScale(12),
+          height: rs.moderateScale(80),
+          padding: rs.moderateScale(12),
           borderBottomWidth: 1,
           borderColor: '#eee',
         }}
@@ -187,7 +189,7 @@ const ProductListScreen = () => {
       // Empty State
       emptyText="Chưa có sản phẩm nào"
       // Styling
-      contentContainerStyle={{ padding: moderateScale(16) }}
+      contentContainerStyle={{ padding: rs.moderateScale(16) }}
     />
   );
 };
