@@ -15,11 +15,18 @@
  *    (cache theo `width × height × fontScale`), giữ nguyên tham chiếu để memo/cache phía sau hiệu quả.
  */
 
-import { useWindowDimensions, Platform, StyleSheet } from 'react-native';
+import { useWindowDimensions, Platform, PixelRatio, StyleSheet } from 'react-native';
+import { DESIGN_FRAME } from '@/shared/constants/ui';
 
-/** Thiết kế gốc: iPhone 14/15 (390 × 844) */
-const GUIDELINE_SHORT_SIDE = 390;
-const GUIDELINE_LONG_SIDE = 844;
+/** Khung thiết kế gốc — cấu hình tại DESIGN_FRAME (`@/shared/constants/ui`) */
+const GUIDELINE_SHORT_SIDE = Math.min(DESIGN_FRAME.width, DESIGN_FRAME.height);
+const GUIDELINE_LONG_SIDE = Math.max(DESIGN_FRAME.width, DESIGN_FRAME.height);
+
+/**
+ * Làm tròn tới điểm ảnh vật lý gần nhất (vd 3x → bước 1/3 dp): sắc nét như làm tròn số nguyên
+ * nhưng giữ được độ chính xác dưới 1dp cho chi tiết nhỏ.
+ */
+const roundToPixel = (value: number): number => PixelRatio.roundToNearestPixel(value);
 /** Ngưỡng tablet theo cạnh ngắn (dp) */
 const TABLET_MIN_SHORT_SIDE = 600;
 const SMALL_PHONE_MAX_SHORT_SIDE = 360;
@@ -142,7 +149,7 @@ export function computeResponsiveSize({ width, height, fontScale = 1 }: WindowMe
     const [lo, hi] = bounds[tier];
     const sign = size < 0 ? -1 : 1;
     const magnitude = Math.abs(size);
-    return sign * Math.round(clamp(Math.abs(raw), magnitude * lo, magnitude * hi));
+    return sign * roundToPixel(clamp(Math.abs(raw), magnitude * lo, magnitude * hi));
   };
 
   // Tỉ lệ tuyến tính theo kích thước portrait tương đương
@@ -158,7 +165,7 @@ export function computeResponsiveSize({ width, height, fontScale = 1 }: WindowMe
   // Typography — RN tự nhân thêm fontScale hệ thống khi render Text (đã giới hạn bằng
   // MAX_FONT_SIZE_MULTIPLIER trong CustomText), nên KHÔNG nhân fontScale ở đây.
   const fontSize = (size: number, factor = 0.25) => bounded(rawModerate(size, factor), size, BOUNDS.font);
-  const lineHeight = (fontSizeVal: number, multiplier = 1.35) => Math.round(fontSize(fontSizeVal) * multiplier);
+  const lineHeight = (fontSizeVal: number, multiplier = 1.35) => roundToPixel(fontSize(fontSizeVal) * multiplier);
 
   // Spacing
   const spacing = (size: number, factor = 0.5) => bounded(rawModerate(size, factor), size, BOUNDS.spacing);
